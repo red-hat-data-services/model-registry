@@ -1,0 +1,54 @@
+# Build arguments
+ARG SOURCE_CODE=.
+ARG CI_CONTAINER_VERSION="unknown"
+ 
+FROM registry.redhat.io/ubi8/go-toolset@sha256:4ec05fd5b355106cc0d990021a05b71bbfb9231e4f5bdc0c5316515edf6a1c96 as builder
+ 
+## Build args to be used at this step
+ARG SOURCE_CODE
+ARG CI_CONTAINER_VERSION
+ 
+USER root
+ 
+WORKDIR /workspace
+
+
+COPY go.mod go.mod
+COPY go.sum go.sum
+
+RUN go mod download
+
+# Copy the go source
+COPY . .
+ 
+RUN CGO_ENABLED=1 GOOS=linux go build -tags strictfipsruntime -a -o model-registry main.go
+ 
+FROM registry.redhat.io/ubi8/ubi-minimal@sha256:7583ca0ea52001562bd81a961da3f75222209e6192e4e413ee226cff97dbd48c
+ 
+WORKDIR /
+ 
+COPY --from=builder /workspace/model-registry .
+ 
+RUN chmod +x /model-registry
+ 
+USER root
+ 
+USER 1001
+ 
+# Expose default proxy port
+EXPOSE 8080
+ 
+# Start the model registry proxy
+CMD /model-registry proxy -logtostderr=true
+ 
+LABEL com.redhat.component="odh-model-registry-container" \
+      name="managed-open-data-hub/odh-model-registry-rhel8" \
+      version="${CI_CONTAINER_VERSION}" \
+      git.url="${CI_MODEL_REGISTRY_UPSTREAM_URL}" \
+      git.commit="${CI_MODEL_REGISTRY_UPSTREAM_COMMIT}" \
+      summary="odh-model-registry" \
+      io.openshift.expose-services="" \
+      io.k8s.display-name="odh-model-registry" \
+      maintainer="['managed-open-data-hub@redhat.com']" \
+      description="Container that provides a central repository for model developers to store and manage models, versions, and artifacts metadata." \
+      com.redhat.license_terms="https://www.redhat.com/licenses/Red_Hat_Standard_EULA_20191108.pdf"
