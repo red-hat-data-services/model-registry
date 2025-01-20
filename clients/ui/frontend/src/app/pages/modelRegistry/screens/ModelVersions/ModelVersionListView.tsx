@@ -7,6 +7,7 @@ import {
   DropdownList,
   MenuToggle,
   MenuToggleElement,
+  SearchInput,
   TextInput,
   ToolbarContent,
   ToolbarFilter,
@@ -18,21 +19,22 @@ import { EllipsisVIcon, FilterIcon } from '@patternfly/react-icons';
 import { useNavigate } from 'react-router';
 import { ModelVersion, RegisteredModel } from '~/app/types';
 import { ModelRegistrySelectorContext } from '~/app/context/ModelRegistrySelectorContext';
-import { SearchType } from '~/app/components/DashboardSearchField';
+import { SearchType } from '~/shared/components/DashboardSearchField';
 import {
   filterModelVersions,
   sortModelVersionsByCreateTime,
 } from '~/app/pages/modelRegistry/screens/utils';
 import EmptyModelRegistryState from '~/app/pages/modelRegistry/screens/components/EmptyModelRegistryState';
-import { ProjectObjectType, typedEmptyImage } from '~/app/components/design/utils';
+import { ProjectObjectType, typedEmptyImage } from '~/shared/components/design/utils';
 import {
   modelVersionArchiveUrl,
   registerVersionForModelUrl,
 } from '~/app/pages/modelRegistry/screens/routeUtils';
 import { asEnumMember } from '~/app/utils';
 import ModelVersionsTable from '~/app/pages/modelRegistry/screens/ModelVersions/ModelVersionsTable';
-import SimpleSelect from '~/app/components/SimpleSelect';
+import SimpleSelect from '~/shared/components/SimpleSelect';
 import FormFieldset from '~/app/pages/modelRegistry/screens/components/FormFieldset';
+import { isMUITheme } from '~/shared/utilities/const';
 
 type ModelVersionListViewProps = {
   modelVersions: ModelVersion[];
@@ -148,22 +150,35 @@ const ModelVersionListView: React.FC<ModelVersionListViewProps> = ({
                   />
                 </ToolbarFilter>
                 <ToolbarItem>
-                  <FormFieldset
-                    className="toolbar-fieldset-wrapper"
-                    component={
-                      <TextInput
-                        value={search}
-                        type="text"
-                        onChange={(_, searchValue) => {
-                          setSearch(searchValue);
-                        }}
-                        style={{ minWidth: '200px' }}
-                        data-testid="model-versions-table-search"
-                        aria-label="Search"
-                      />
-                    }
-                    field={`Find by ${searchType.toLowerCase()}`}
-                  />
+                  {isMUITheme() ? (
+                    <FormFieldset
+                      className="toolbar-fieldset-wrapper"
+                      component={
+                        <TextInput
+                          value={search}
+                          type="text"
+                          onChange={(_, searchValue) => {
+                            setSearch(searchValue);
+                          }}
+                          style={{ minWidth: '200px' }}
+                          data-testid="model-versions-table-search"
+                          aria-label="Search"
+                        />
+                      }
+                      field={`Find by ${searchType.toLowerCase()}`}
+                    />
+                  ) : (
+                    <SearchInput
+                      placeholder={`Find by ${searchType.toLowerCase()}`}
+                      value={search}
+                      onChange={(_, searchValue) => {
+                        setSearch(searchValue);
+                      }}
+                      onClear={() => setSearch('')}
+                      style={{ minWidth: '200px' }}
+                      data-testid="model-versions-table-search"
+                    />
+                  )}
                 </ToolbarItem>
               </ToolbarGroup>
             </ToolbarToggleGroup>

@@ -5,7 +5,6 @@ import { mockModelVersionList } from '~/__mocks__/mockModelVersionList';
 import { mockRegisteredModel } from '~/__mocks__/mockRegisteredModel';
 import { mockRegisteredModelList } from '~/__mocks__/mockRegisteredModelsList';
 import { labelModal, modelRegistry } from '~/__tests__/cypress/cypress/pages/modelRegistry';
-import { mockBFFResponse } from '~/__mocks__/mockBFFResponse';
 import type { ModelRegistry, ModelVersion, RegisteredModel } from '~/app/types';
 import { be } from '~/__tests__/cypress/cypress/utils/should';
 import { MODEL_REGISTRY_API_VERSION } from '~/__tests__/cypress/cypress/support/commands/api';
@@ -69,7 +68,7 @@ const initIntercepts = ({
     {
       path: { apiVersion: MODEL_REGISTRY_API_VERSION },
     },
-    mockBFFResponse(modelRegistries),
+    modelRegistries,
   );
 
   cy.interceptApi(
@@ -77,7 +76,7 @@ const initIntercepts = ({
     {
       path: { modelRegistryName: 'modelregistry-sample', apiVersion: MODEL_REGISTRY_API_VERSION },
     },
-    mockBFFResponse(mockRegisteredModelList({ items: registeredModels })),
+    mockRegisteredModelList({ items: registeredModels }),
   );
 
   cy.interceptApi(
@@ -89,7 +88,7 @@ const initIntercepts = ({
         registeredModelId: 1,
       },
     },
-    mockBFFResponse(mockModelVersionList({ items: modelVersions })),
+    mockModelVersionList({ items: modelVersions }),
   );
 };
 
@@ -205,35 +204,22 @@ describe('Model Registry core', () => {
   });
 });
 
-// TODO: Enable when model registration is there
-// describe('Register Model button', () => {
-//   it('Navigates to register page from empty state', () => {
-//     initIntercepts({ disableModelRegistryFeature: false, registeredModels: [] });
-//     modelRegistry.visit();
-//     modelRegistry.findRegisterModelButton().click();
-//     cy.findByTestId('app-page-title').should('exist');
-//     cy.findByTestId('app-page-title').contains('Register model');
-//     cy.findByText('Model registry - modelregistry-sample').should('exist');
-//   });
+describe('Register Model button', () => {
+  it('Navigates to register page from empty state', () => {
+    initIntercepts({ registeredModels: [] });
+    modelRegistry.visit();
+    modelRegistry.findRegisterModelButton().click();
+    cy.findByTestId('app-page-title').should('exist');
+    cy.findByTestId('app-page-title').contains('Register model');
+    cy.findByText('Model registry - modelregistry-sample').should('exist');
+  });
 
-//   it('Navigates to register page from table toolbar', () => {
-//     initIntercepts({ disableModelRegistryFeature: false });
-//     modelRegistry.visit();
-//     modelRegistry.findRegisterModelButton().click();
-//     cy.findByTestId('app-page-title').should('exist');
-//     cy.findByTestId('app-page-title').contains('Register model');
-//     cy.findByText('Model registry - modelregistry-sample').should('exist');
-//   });
-
-//   it('should be accessible for non-admin users', () => {
-//     asProjectEditUser();
-//     initIntercepts({
-//       disableModelRegistryFeature: false,
-//       allowed: false,
-//     });
-
-//     modelRegistry.visit();
-//     modelRegistry.navigate();
-//     modelRegistry.shouldModelRegistrySelectorExist();
-//   });
-// });
+  it('Navigates to register page from table toolbar', () => {
+    initIntercepts({ registeredModels: [] });
+    modelRegistry.visit();
+    modelRegistry.findRegisterModelButton().click();
+    cy.findByTestId('app-page-title').should('exist');
+    cy.findByTestId('app-page-title').contains('Register model');
+    cy.findByText('Model registry - modelregistry-sample').should('exist');
+  });
+});

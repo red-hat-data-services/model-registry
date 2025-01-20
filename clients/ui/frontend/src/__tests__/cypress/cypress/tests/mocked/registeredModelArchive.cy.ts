@@ -67,7 +67,7 @@ const initIntercepts = ({
     {
       path: { apiVersion: MODEL_REGISTRY_API_VERSION },
     },
-    mockBFFResponse(modelRegistries),
+    modelRegistries,
   );
 
   cy.interceptApi(
@@ -75,7 +75,7 @@ const initIntercepts = ({
     {
       path: { modelRegistryName: 'modelregistry-sample', apiVersion: MODEL_REGISTRY_API_VERSION },
     },
-    mockBFFResponse(mockRegisteredModelList({ items: registeredModels })),
+    mockRegisteredModelList({ items: registeredModels }),
   );
 
   cy.interceptApi(
@@ -87,7 +87,7 @@ const initIntercepts = ({
         modelVersionId: 1,
       },
     },
-    mockBFFResponse(mockModelVersion({ id: '1', name: 'Version 2' })),
+    mockModelVersion({ id: '1', name: 'Version 2' }),
   );
 
   cy.interceptApi(
@@ -99,7 +99,7 @@ const initIntercepts = ({
         registeredModelId: 2,
       },
     },
-    mockBFFResponse(mockModelVersionList({ items: modelVersions })),
+    mockModelVersionList({ items: modelVersions }),
   );
 
   cy.interceptApi(
@@ -111,7 +111,7 @@ const initIntercepts = ({
         registeredModelId: 2,
       },
     },
-    mockBFFResponse(mockRegisteredModel({ id: '2', name: 'model 2', state: ModelState.ARCHIVED })),
+    mockRegisteredModel({ id: '2', name: 'model 2', state: ModelState.ARCHIVED }),
   );
 
   cy.interceptApi(
@@ -123,7 +123,7 @@ const initIntercepts = ({
         registeredModelId: 3,
       },
     },
-    mockBFFResponse(mockRegisteredModel({ id: '3', name: 'model 3' })),
+    mockRegisteredModel({ id: '3', name: 'model 3' }),
   );
 };
 
@@ -133,28 +133,28 @@ describe('Model archive list', () => {
       registeredModels: [],
     });
     registeredModelArchive.visit();
-    verifyRelativeURL('/modelRegistry/modelregistry-sample/registeredModels/archive');
+    verifyRelativeURL('/model-registry/modelregistry-sample/registeredModels/archive');
     registeredModelArchive.shouldArchiveVersionsEmpty();
   });
 
   it('Archived model details browser back button should lead to archived models table', () => {
     initIntercepts({});
     registeredModelArchive.visit();
-    verifyRelativeURL('/modelRegistry/modelregistry-sample/registeredModels/archive');
+    verifyRelativeURL('/model-registry/modelregistry-sample/registeredModels/archive');
     registeredModelArchive.findArchiveModelBreadcrumbItem().contains('Archived models');
     const archiveModelRow = registeredModelArchive.getRow('model 2');
     archiveModelRow.findName().contains('model 2').click();
-    verifyRelativeURL('/modelRegistry/modelregistry-sample/registeredModels/archive/2/versions');
+    verifyRelativeURL('/model-registry/modelregistry-sample/registeredModels/archive/2/versions');
     cy.findByTestId('app-page-title').should('have.text', 'model 2Archived');
     cy.go('back');
-    verifyRelativeURL('/modelRegistry/modelregistry-sample/registeredModels/archive');
+    verifyRelativeURL('/model-registry/modelregistry-sample/registeredModels/archive');
     registeredModelArchive.findArchiveModelTable().should('be.visible');
   });
 
   it('Archived model with no versions', () => {
     initIntercepts({ modelVersions: [] });
     registeredModelArchive.visit();
-    verifyRelativeURL('/modelRegistry/modelregistry-sample/registeredModels/archive');
+    verifyRelativeURL('/model-registry/modelregistry-sample/registeredModels/archive');
     registeredModelArchive.findArchiveModelBreadcrumbItem().contains('Archived models');
     const archiveModelRow = registeredModelArchive.getRow('model 2');
     archiveModelRow.findName().contains('model 2').click();
@@ -164,23 +164,23 @@ describe('Model archive list', () => {
   it('Archived model flow', () => {
     initIntercepts({});
     registeredModelArchive.visitArchiveModelVersionList();
-    verifyRelativeURL('/modelRegistry/modelregistry-sample/registeredModels/archive/2/versions');
+    verifyRelativeURL('/model-registry/modelregistry-sample/registeredModels/archive/2/versions');
 
     modelRegistry.findModelVersionsTable().should('be.visible');
     modelRegistry.findModelVersionsTableRows().should('have.length', 2);
     const version = modelRegistry.getModelVersionRow('model version');
     version.findModelVersionName().contains('model version').click();
     verifyRelativeURL(
-      '/modelRegistry/modelregistry-sample/registeredModels/archive/2/versions/1/details',
+      '/model-registry/modelregistry-sample/registeredModels/archive/2/versions/1/details',
     );
     cy.go('back');
-    verifyRelativeURL('/modelRegistry/modelregistry-sample/registeredModels/archive/2/versions');
+    verifyRelativeURL('/model-registry/modelregistry-sample/registeredModels/archive/2/versions');
   });
 
   it('Archive models list', () => {
     initIntercepts({});
     registeredModelArchive.visit();
-    verifyRelativeURL('/modelRegistry/modelregistry-sample/registeredModels/archive');
+    verifyRelativeURL('/model-registry/modelregistry-sample/registeredModels/archive');
 
     //breadcrumb
     registeredModelArchive.findArchiveModelBreadcrumbItem().contains('Archived models');
@@ -233,7 +233,7 @@ describe('Model archive list', () => {
     archiveModelRow.findKebabAction('View details').click();
     cy.location('pathname').should(
       'be.equals',
-      '/modelRegistry/modelregistry-sample/registeredModels/archive/2/details',
+      '/model-registry/modelregistry-sample/registeredModels/archive/2/details',
     );
   });
 });
@@ -249,7 +249,7 @@ describe('Restoring archive model', () => {
           registeredModelId: 2,
         },
       },
-      mockBFFResponse(mockRegisteredModel({ id: '2', name: 'model 2', state: ModelState.LIVE })),
+      mockRegisteredModel({ id: '2', name: 'model 2', state: ModelState.LIVE }),
     ).as('modelRestored');
 
     initIntercepts({});
@@ -278,7 +278,7 @@ describe('Restoring archive model', () => {
           registeredModelId: 2,
         },
       },
-      mockBFFResponse(mockRegisteredModel({ id: '2', name: 'model 2', state: ModelState.LIVE })),
+      mockRegisteredModel({ id: '2', name: 'model 2', state: ModelState.LIVE }),
     ).as('modelRestored');
 
     initIntercepts({});
@@ -307,9 +307,7 @@ describe('Archiving model', () => {
           registeredModelId: 3,
         },
       },
-      mockBFFResponse(
-        mockRegisteredModel({ id: '3', name: 'model 3', state: ModelState.ARCHIVED }),
-      ),
+      mockRegisteredModel({ id: '3', name: 'model 3', state: ModelState.ARCHIVED }),
     ).as('modelArchived');
 
     initIntercepts({});
@@ -339,9 +337,7 @@ describe('Archiving model', () => {
           registeredModelId: 3,
         },
       },
-      mockBFFResponse(
-        mockRegisteredModel({ id: '3', name: 'model 3', state: ModelState.ARCHIVED }),
-      ),
+      mockRegisteredModel({ id: '3', name: 'model 3', state: ModelState.ARCHIVED }),
     ).as('modelArchived');
 
     initIntercepts({});

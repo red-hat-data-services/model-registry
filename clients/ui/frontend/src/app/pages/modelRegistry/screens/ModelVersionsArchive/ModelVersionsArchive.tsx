@@ -2,7 +2,7 @@ import React from 'react';
 import { useParams } from 'react-router';
 import { Breadcrumb, BreadcrumbItem } from '@patternfly/react-core';
 import { Link } from 'react-router-dom';
-import ApplicationsPage from '~/app/components/ApplicationsPage';
+import ApplicationsPage from '~/shared/components/ApplicationsPage';
 import { ModelRegistrySelectorContext } from '~/app/context/ModelRegistrySelectorContext';
 import useRegisteredModelById from '~/app/hooks/useRegisteredModelById';
 import useModelVersionsByRegisteredModel from '~/app/hooks/useModelVersionsByRegisteredModel';
@@ -29,7 +29,7 @@ const ModelVersionsArchive: React.FC<ModelVersionsArchiveProps> = ({ ...pageProp
         <Breadcrumb>
           <BreadcrumbItem
             render={() => (
-              <Link to="/modelRegistry">Model registry - {preferredModelRegistry?.name}</Link>
+              <Link to="/model-registry">Model registry - {preferredModelRegistry?.name}</Link>
             )}
           />
           <BreadcrumbItem

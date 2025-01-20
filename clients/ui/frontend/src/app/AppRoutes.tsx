@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { NotFound } from './pages/notFound/NotFound';
 import ModelRegistrySettingsRoutes from './pages/settings/ModelRegistrySettingsRoutes';
 import ModelRegistryRoutes from './pages/modelRegistry/ModelRegistryRoutes';
+import useUser from './hooks/useUser';
 
 export const isNavDataGroup = (navItem: NavDataItem): navItem is NavDataGroup =>
   'children' in navItem;
@@ -22,19 +23,16 @@ export type NavDataGroup = NavDataCommon & {
 type NavDataItem = NavDataHref | NavDataGroup;
 
 export const useAdminSettings = (): NavDataItem[] => {
-  // get auth access for example set admin as true
-  const isAdmin = true; //this should be a call to getting auth / role access
+  const { clusterAdmin } = useUser();
 
-  // TODO: Remove the linter skip when we implement authentication
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  if (!isAdmin) {
+  if (!clusterAdmin) {
     return [];
   }
 
   return [
     {
       label: 'Settings',
-      children: [{ label: 'Model Registry', path: '/modelRegistrySettings' }],
+      children: [{ label: 'Model Registry', path: '/model-registry-settings' }],
     },
   ];
 };
@@ -42,26 +40,23 @@ export const useAdminSettings = (): NavDataItem[] => {
 export const useNavData = (): NavDataItem[] => [
   {
     label: 'Model Registry',
-    path: '/modelRegistry',
+    path: '/model-registry',
   },
   ...useAdminSettings(),
 ];
 
 const AppRoutes: React.FC = () => {
-  const isAdmin = true;
+  const { clusterAdmin } = useUser();
 
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/modelRegistry" replace />} />
-      <Route path="/modelRegistry/*" element={<ModelRegistryRoutes />} />
+      <Route path="/" element={<Navigate to="/model-registry" replace />} />
+      <Route path="/model-registry/*" element={<ModelRegistryRoutes />} />
       <Route path="*" element={<NotFound />} />
-      {
-        // TODO: Remove the linter skip when we implement authentication
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        isAdmin && (
-          <Route path="/modelRegistrySettings/*" element={<ModelRegistrySettingsRoutes />} />
-        )
-      }
+      {/* TODO: [Conditional render] Follow up add testing and conditional rendering when in standalone mode*/}
+      {clusterAdmin && (
+        <Route path="/model-registry-settings/*" element={<ModelRegistrySettingsRoutes />} />
+      )}
     </Routes>
   );
 };

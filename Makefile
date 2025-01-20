@@ -3,8 +3,12 @@ MKFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
 PROJECT_PATH := $(patsubst %/,%,$(dir $(MKFILE_PATH)))
 PROJECT_BIN := $(PROJECT_PATH)/bin
 GO ?= "$(shell which go)"
-BFF_PATH := $(PROJECT_PATH)/clients/ui/bff
-UI_PATH := $(PROJECT_PATH)/clients/ui/frontend
+UI_PATH := $(PROJECT_PATH)/clients/ui
+CSI_PATH := $(PROJECT_PATH)/cmd/csi
+
+# ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
+ENVTEST_K8S_VERSION = 1.29
+ENVTEST ?= $(PROJECT_BIN)/setup-envtest
 
 # add tools bin directory
 PATH := $(PROJECT_BIN):$(PATH)
@@ -38,9 +42,9 @@ ifeq ($(IMG_REPO),model-registry-ui)
 	BUILD_PATH := $(UI_PATH)
 endif
 
-ifeq ($(IMG_REPO),model-registry-bff)
-    DOCKERFILE := $(BFF_PATH)/Dockerfile
-	BUILD_PATH := $(BFF_PATH)
+# The BUILD_PATH is still the root
+ifeq ($(IMG_REPO),model-registry-storage-initializer)
+    DOCKERFILE := $(CSI_PATH)/Dockerfile.csi
 endif
 
 model-registry: build
@@ -110,11 +114,15 @@ pkg/openapi/client.go: bin/openapi-generator-cli api/openapi/model-registry.yaml
 vet:
 	${GO} vet ./...
 
+.PHONY: clean/csi
+clean/csi:
+	rm -Rf ./mr-storage-initializer
+
 .PHONY: clean-pkg-openapi
 	while IFS= read -r file; do rm -f "pkg/openapi/$file"; done < pkg/openapi/.openapi-generator/FILES
 
-.PHONY: clean clean-pkg-openapi
-clean:
+.PHONY: clean 
+clean: clean-pkg-openapi clean/csi
 	rm -Rf ./model-registry internal/ml_metadata/proto/*.go internal/converter/generated/*.go internal/server/openapi/api_model_registry_service.go
 
 .PHONY: clean/odh
@@ -132,6 +140,9 @@ bin/protoc-gen-go:
 
 bin/protoc-gen-go-grpc:
 	GOBIN=$(PROJECT_BIN) ${GO} install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.3.0
+
+bin/envtest:
+	GOBIN=$(PROJECT_BIN) ${GO} install sigs.k8s.io/controller-runtime/tools/setup-envtest@v0.0.0-20240320141353-395cfc7486e6
 
 GOLANGCI_LINT ?= ${PROJECT_BIN}/golangci-lint
 bin/golangci-lint:
@@ -164,7 +175,7 @@ clean/deps:
 	rm -Rf bin/*
 
 .PHONY: deps
-deps: bin/protoc bin/go-enum bin/protoc-gen-go bin/protoc-gen-go-grpc bin/golangci-lint bin/goverter bin/openapi-generator-cli
+deps: bin/protoc bin/go-enum bin/protoc-gen-go bin/protoc-gen-go-grpc bin/golangci-lint bin/goverter bin/openapi-generator-cli bin/envtest
 
 .PHONY: vendor
 vendor:
@@ -190,26 +201,41 @@ build: build/prepare build/compile
 build/odh: vet
 	${GO} build -buildvcs=false
 
+.PHONY: build/prepare/csi
+build/prepare/csi: build/prepare lint/csi
+
+.PHONY: build/compile/csi
+build/compile/csi:
+	${GO} build -buildvcs=false -o mr-storage-initializer ${CSI_PATH}/main.go
+
+.PHONY: build/csi
+build/csi: build/prepare/csi build/compile/csi
+
 .PHONY: gen
 gen: deps gen/grpc gen/openapi gen/openapi-server gen/converter
 	${GO} generate ./...
 
 .PHONY: lint
 lint:
-	${GOLANGCI_LINT} run main.go
-	${GOLANGCI_LINT} run cmd/... internal/... ./pkg/...
+	${GOLANGCI_LINT} run main.go  --timeout 3m
+	${GOLANGCI_LINT} run cmd/... internal/... ./pkg/...  --timeout 3m
+
+.PHONY: lint/csi
+lint/csi:
+	${GOLANGCI_LINT} run ${CSI_PATH}/main.go
+	${GOLANGCI_LINT} run internal/csi/...
 
 .PHONY: test
-test: gen
-	${GO} test ./internal/... ./pkg/...
+test: gen bin/envtest
+	KUBEBUILDER_ASSETS="$(shell $(ENVTEST) use $(ENVTEST_K8S_VERSION) -p path)" ${GO} test ./internal/... ./pkg/...
 
 .PHONY: test-nocache
-test-nocache: gen
-	${GO} test ./internal/... ./pkg/... -count=1
+test-nocache: gen bin/envtest
+	KUBEBUILDER_ASSETS="$(shell $(ENVTEST) use $(ENVTEST_K8S_VERSION) -p path)" ${GO} test ./internal/... ./pkg/... -count=1
 
 .PHONY: test-cover
-test-cover: gen
-	${GO} test ./internal/... ./pkg/... -coverprofile=coverage.txt
+test-cover: gen bin/envtest
+	KUBEBUILDER_ASSETS="$(shell $(ENVTEST) use $(ENVTEST_K8S_VERSION) -p path)" ${GO} test ./internal/... ./pkg/... -coverprofile=coverage.txt
 	${GO} tool cover -html=coverage.txt -o coverage.html
 
 .PHONY: run/proxy
@@ -228,7 +254,6 @@ ifdef IMG_REGISTRY
 else
 	$(DOCKER) login -u "${DOCKER_USER}" -p "${DOCKER_PWD}"
 endif
-
 
 # build docker image
 .PHONY: image/build
@@ -249,12 +274,12 @@ ifeq ($(DOCKER),docker)
 	# docker uses builder containers
 	- $(DOCKER) buildx rm model-registry-builder
 	$(DOCKER) buildx create --use --name model-registry-builder --platform=$(PLATFORMS)
-	$(DOCKER) buildx build --push --platform=$(PLATFORMS) --tag ${IMG} -f ${DOCKERFILE} .
+	$(DOCKER) buildx build --push --platform=$(PLATFORMS) --tag ${IMG}:$(IMG_VERSION) -f ${DOCKERFILE} .
 	$(DOCKER) buildx rm model-registry-builder
 else ifeq ($(DOCKER),podman)
 	# podman uses image manifests
 	$(DOCKER) manifest create -a ${IMG}
-	$(DOCKER) buildx build --platform=$(PLATFORMS) --manifest ${IMG} -f ${DOCKERFILE} .
+	$(DOCKER) buildx build --platform=$(PLATFORMS) --manifest ${IMG}:$(IMG_VERSION) -f ${DOCKERFILE} .
 	$(DOCKER) manifest push ${IMG}
 	$(DOCKER) manifest rm ${IMG}
 else

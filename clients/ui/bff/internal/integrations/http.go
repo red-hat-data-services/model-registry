@@ -10,15 +10,16 @@ import (
 )
 
 type HTTPClientInterface interface {
+	GetModelRegistryID() (modelRegistryService string)
 	GET(url string) ([]byte, error)
 	POST(url string, body io.Reader) ([]byte, error)
 	PATCH(url string, body io.Reader) ([]byte, error)
 }
 
 type HTTPClient struct {
-	client      *http.Client
-	baseURL     string
-	bearerToken string
+	client          *http.Client
+	baseURL         string
+	ModelRegistryID string
 }
 
 type ErrorResponse struct {
@@ -35,15 +36,19 @@ func (e *HTTPError) Error() string {
 	return fmt.Sprintf("HTTP %d: %s - %s", e.StatusCode, e.Code, e.Message)
 }
 
-func NewHTTPClient(baseURL string, bearerToken string) (HTTPClientInterface, error) {
+func NewHTTPClient(modelRegistryID string, baseURL string) (HTTPClientInterface, error) {
 
 	return &HTTPClient{
 		client: &http.Client{Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		}},
-		baseURL:     baseURL,
-		bearerToken: bearerToken,
+		baseURL:         baseURL,
+		ModelRegistryID: modelRegistryID,
 	}, nil
+}
+
+func (c *HTTPClient) GetModelRegistryID() string {
+	return c.ModelRegistryID
 }
 
 func (c *HTTPClient) GET(url string) ([]byte, error) {
@@ -53,7 +58,6 @@ func (c *HTTPClient) GET(url string) ([]byte, error) {
 		return nil, err
 	}
 
-	req.Header.Add("Authorization", "Bearer "+c.bearerToken)
 	response, err := c.client.Do(req)
 	if err != nil {
 		return nil, err
@@ -76,7 +80,6 @@ func (c *HTTPClient) POST(url string, body io.Reader) ([]byte, error) {
 	}
 
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Add("Authorization", "Bearer "+c.bearerToken)
 
 	response, err := c.client.Do(req)
 	if err != nil {
@@ -118,7 +121,6 @@ func (c *HTTPClient) PATCH(url string, body io.Reader) ([]byte, error) {
 	}
 
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Add("Authorization", "Bearer "+c.bearerToken)
 
 	response, err := c.client.Do(req)
 	if err != nil {

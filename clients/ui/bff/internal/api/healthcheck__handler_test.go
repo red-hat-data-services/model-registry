@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/kubeflow/model-registry/ui/bff/internal/config"
 	"github.com/kubeflow/model-registry/ui/bff/internal/mocks"
@@ -25,9 +26,12 @@ func TestHealthCheckHandler(t *testing.T) {
 
 	rr := httptest.NewRecorder()
 	req, err := http.NewRequest(http.MethodGet, HealthCheckPath, nil)
+	ctx := context.WithValue(req.Context(), KubeflowUserIdKey, mocks.KubeflowUserIDHeaderValue)
+	req = req.WithContext(ctx)
 	assert.NoError(t, err)
 
 	app.HealthcheckHandler(rr, req, nil)
+
 	rs := rr.Result()
 
 	defer rs.Body.Close()
@@ -46,6 +50,7 @@ func TestHealthCheckHandler(t *testing.T) {
 		SystemInfo: models.SystemInfo{
 			Version: Version,
 		},
+		UserID: mocks.KubeflowUserIDHeaderValue,
 	}
 
 	assert.Equal(t, expected, healthCheckRes)

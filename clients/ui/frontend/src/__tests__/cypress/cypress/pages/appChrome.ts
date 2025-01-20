@@ -9,11 +9,10 @@ class AppChrome {
     cy.testA11y();
   }
 
-  // TODO: implement when authorization is enabled
-  // shouldBeUnauthorized() {
-  //   cy.findByTestId('unauthorized-error');
-  //   return this;
-  // }
+  shouldBeUnauthorized() {
+    cy.findByTestId('unauthorized-error');
+    return this;
+  }
 
   findNavToggle() {
     return cy.get('#page-nav-toggle');

@@ -63,7 +63,7 @@ const initIntercepts = ({
     {
       path: { apiVersion: MODEL_REGISTRY_API_VERSION },
     },
-    mockBFFResponse(modelRegistries),
+    modelRegistries,
   );
 
   cy.interceptApi(
@@ -71,7 +71,7 @@ const initIntercepts = ({
     {
       path: { modelRegistryName: 'modelregistry-sample', apiVersion: MODEL_REGISTRY_API_VERSION },
     },
-    mockBFFResponse(mockRegisteredModelList({ size: registeredModelsSize })),
+    mockRegisteredModelList({ size: registeredModelsSize }),
   );
 
   cy.interceptApi(
@@ -83,11 +83,9 @@ const initIntercepts = ({
         registeredModelId: 1,
       },
     },
-    mockBFFResponse(
-      mockModelVersionList({
-        items: modelVersions,
-      }),
-    ),
+    mockModelVersionList({
+      items: modelVersions,
+    }),
   );
 
   cy.interceptApi(
@@ -99,7 +97,7 @@ const initIntercepts = ({
         registeredModelId: 1,
       },
     },
-    mockBFFResponse(mockRegisteredModel({ name: 'test-1' })),
+    mockRegisteredModel({ name: 'test-1' }),
   );
 
   cy.interceptApi(
@@ -111,9 +109,7 @@ const initIntercepts = ({
         modelVersionId: 2,
       },
     },
-    mockBFFResponse(
-      mockModelVersion({ id: '2', name: 'model version 2', state: ModelState.ARCHIVED }),
-    ),
+    mockModelVersion({ id: '2', name: 'model version 2', state: ModelState.ARCHIVED }),
   );
 
   cy.interceptApi(
@@ -125,7 +121,7 @@ const initIntercepts = ({
         modelVersionId: 3,
       },
     },
-    mockBFFResponse(mockModelVersion({ id: '3', name: 'model version 3', state: ModelState.LIVE })),
+    mockModelVersion({ id: '3', name: 'model version 3', state: ModelState.LIVE }),
   );
 };
 
@@ -133,7 +129,7 @@ describe('Model version archive list', () => {
   it('No archive versions in the selected registered model', () => {
     initIntercepts({ modelVersions: [mockModelVersion({ id: '3', name: 'model version 2' })] });
     modelVersionArchive.visitModelVersionList();
-    verifyRelativeURL('/modelRegistry/modelregistry-sample/registeredModels/1/versions');
+    verifyRelativeURL('/model-registry/modelregistry-sample/registeredModels/1/versions');
     modelVersionArchive
       .findModelVersionsTableKebab()
       .findDropdownItem('View archived versions')
@@ -144,15 +140,15 @@ describe('Model version archive list', () => {
   it('Archived version details browser back button should lead to archived versions table', () => {
     initIntercepts({});
     modelVersionArchive.visit();
-    verifyRelativeURL('/modelRegistry/modelregistry-sample/registeredModels/1/versions/archive');
+    verifyRelativeURL('/model-registry/modelregistry-sample/registeredModels/1/versions/archive');
     modelVersionArchive.findArchiveVersionBreadcrumbItem().contains('Archived version');
     const archiveVersionRow = modelVersionArchive.getRow('model version 2');
     archiveVersionRow.findName().contains('model version 2').click();
     verifyRelativeURL(
-      '/modelRegistry/modelregistry-sample/registeredModels/1/versions/archive/2/details',
+      '/model-registry/modelregistry-sample/registeredModels/1/versions/archive/2/details',
     );
     cy.go('back');
-    verifyRelativeURL('/modelRegistry/modelregistry-sample/registeredModels/1/versions/archive');
+    verifyRelativeURL('/model-registry/modelregistry-sample/registeredModels/1/versions/archive');
     modelVersionArchive.findArchiveVersionBreadcrumbItem().contains('Archived version');
     archiveVersionRow.findName().contains('model version 2').should('exist');
   });
@@ -160,7 +156,7 @@ describe('Model version archive list', () => {
   it('Archive version list', () => {
     initIntercepts({});
     modelVersionArchive.visit();
-    verifyRelativeURL('/modelRegistry/modelregistry-sample/registeredModels/1/versions/archive');
+    verifyRelativeURL('/model-registry/modelregistry-sample/registeredModels/1/versions/archive');
 
     //breadcrumb
     modelVersionArchive.findArchiveVersionBreadcrumbItem().contains('Archived version');
@@ -199,7 +195,7 @@ describe('Restoring archive version', () => {
           modelVersionId: 2,
         },
       },
-      mockBFFResponse(mockModelVersion({})),
+      mockModelVersion({}),
     ).as('versionRestored');
 
     initIntercepts({});
@@ -228,7 +224,7 @@ describe('Restoring archive version', () => {
           modelVersionId: 2,
         },
       },
-      mockBFFResponse(mockModelVersion({})),
+      mockModelVersion({}),
     ).as('versionRestored');
 
     initIntercepts({});
@@ -257,7 +253,7 @@ describe('Archiving version', () => {
           modelVersionId: 3,
         },
       },
-      mockBFFResponse(mockModelVersion({})),
+      mockModelVersion({}),
     ).as('versionArchived');
 
     initIntercepts({});
@@ -287,7 +283,7 @@ describe('Archiving version', () => {
           modelVersionId: 3,
         },
       },
-      mockBFFResponse(mockModelVersion({})),
+      mockModelVersion({}),
     ).as('versionArchived');
 
     initIntercepts({});

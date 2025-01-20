@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router';
 import { Breadcrumb, BreadcrumbItem, Truncate } from '@patternfly/react-core';
 import { Link } from 'react-router-dom';
 import { ModelVersionsTab } from '~/app/pages/modelRegistry/screens/ModelVersions/const';
-import ApplicationsPage from '~/app/components/ApplicationsPage';
+import ApplicationsPage from '~/shared/components/ApplicationsPage';
 import useModelVersionsByRegisteredModel from '~/app/hooks/useModelVersionsByRegisteredModel';
 import useRegisteredModelById from '~/app/hooks/useRegisteredModelById';
 import { ModelRegistrySelectorContext } from '~/app/context/ModelRegistrySelectorContext';
@@ -42,7 +42,7 @@ const ModelVersions: React.FC<ModelVersionsProps> = ({ tab, ...pageProps }) => {
         <Breadcrumb>
           <BreadcrumbItem
             render={() => (
-              <Link to="/modelRegistry">Model registry - {preferredModelRegistry?.name}</Link>
+              <Link to="/model-registry">Model registry - {preferredModelRegistry?.name}</Link>
             )}
           />
           <BreadcrumbItem data-testid="breadcrumb-model" isActive>

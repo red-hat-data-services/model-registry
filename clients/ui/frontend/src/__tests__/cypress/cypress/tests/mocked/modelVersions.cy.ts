@@ -8,7 +8,6 @@ import type { ModelRegistry, ModelVersion } from '~/app/types';
 import { verifyRelativeURL } from '~/__tests__/cypress/cypress/utils/url';
 import { mockModelRegistry } from '~/__mocks__/mockModelRegistry';
 import { mockModelVersion } from '~/__mocks__/mockModelVersion';
-import { mockBFFResponse } from '~/__mocks__/utils';
 import { MODEL_REGISTRY_API_VERSION } from '~/__tests__/cypress/cypress/support/commands/api';
 
 type HandlersProps = {
@@ -54,7 +53,7 @@ const initIntercepts = ({
     {
       path: { apiVersion: MODEL_REGISTRY_API_VERSION },
     },
-    mockBFFResponse(modelRegistries),
+    modelRegistries,
   );
 
   cy.interceptApi(
@@ -62,7 +61,7 @@ const initIntercepts = ({
     {
       path: { modelRegistryName: 'modelregistry-sample', apiVersion: MODEL_REGISTRY_API_VERSION },
     },
-    mockBFFResponse(mockRegisteredModelList({ size: registeredModelsSize })),
+    mockRegisteredModelList({ size: registeredModelsSize }),
   );
 
   cy.interceptApi(
@@ -74,7 +73,7 @@ const initIntercepts = ({
         registeredModelId: 1,
       },
     },
-    mockBFFResponse(mockModelVersionList({ items: modelVersions })),
+    mockModelVersionList({ items: modelVersions }),
   );
 
   cy.interceptApi(
@@ -86,7 +85,7 @@ const initIntercepts = ({
         registeredModelId: 1,
       },
     },
-    mockBFFResponse(mockRegisteredModel({})),
+    mockRegisteredModel({}),
   );
 
   cy.interceptApi(
@@ -98,7 +97,7 @@ const initIntercepts = ({
         modelVersionId: 1,
       },
     },
-    mockBFFResponse(mockModelVersion({ id: '1', name: 'model version' })),
+    mockModelVersion({ id: '1', name: 'model version' }),
   );
 };
 
@@ -111,7 +110,7 @@ describe('Model Versions', () => {
     modelRegistry.visit();
     const registeredModelRow = modelRegistry.getRow('Fraud detection model');
     registeredModelRow.findName().contains('Fraud detection model').click();
-    verifyRelativeURL(`/modelRegistry/modelregistry-sample/registeredModels/1/versions`);
+    verifyRelativeURL(`/model-registry/modelregistry-sample/registeredModels/1/versions`);
     modelRegistry.shouldmodelVersionsEmpty();
   });
 
@@ -123,14 +122,14 @@ describe('Model Versions', () => {
     modelRegistry.visit();
     const registeredModelRow = modelRegistry.getRow('Fraud detection model');
     registeredModelRow.findName().contains('Fraud detection model').click();
-    verifyRelativeURL(`/modelRegistry/modelregistry-sample/registeredModels/1/versions`);
+    verifyRelativeURL(`/model-registry/modelregistry-sample/registeredModels/1/versions`);
     cy.go('back');
-    verifyRelativeURL(`/modelRegistry/modelregistry-sample`);
+    verifyRelativeURL(`/model-registry/modelregistry-sample`);
     registeredModelRow.findName().contains('Fraud detection model').should('exist');
   });
 
   it('Model versions table', () => {
-    // TODO: Uncomment when we fix finding listbox items
+    // TODO: [Testing] Uncomment when we fix finding listbox items
 
     initIntercepts({
       modelRegistries: [
@@ -144,7 +143,7 @@ describe('Model Versions', () => {
     //cy.reload();
     const registeredModelRow = modelRegistry.getRow('Fraud detection model');
     registeredModelRow.findName().contains('Fraud detection model').click();
-    verifyRelativeURL(`/modelRegistry/modelregistry-sample/registeredModels/1/versions`);
+    verifyRelativeURL(`/model-registry/modelregistry-sample/registeredModels/1/versions`);
     modelRegistry.findModelBreadcrumbItem().contains('test');
     //modelRegistry.findModelVersionsTableKebab().findDropdownItem('View archived versions');
     //modelRegistry.findModelVersionsHeaderAction().findDropdownItem('Archive model');
@@ -210,10 +209,10 @@ describe('Model Versions', () => {
     registeredModelRow.findName().contains('Fraud detection model').click();
     const modelVersionRow = modelRegistry.getModelVersionRow('model version');
     modelVersionRow.findModelVersionName().contains('model version').click();
-    verifyRelativeURL('/modelRegistry/modelregistry-sample/registeredModels/1/versions/1/details');
+    verifyRelativeURL('/model-registry/modelregistry-sample/registeredModels/1/versions/1/details');
     cy.findByTestId('app-page-title').should('have.text', 'model version');
     cy.findByTestId('breadcrumb-version-name').should('have.text', 'model version');
     cy.go('back');
-    verifyRelativeURL('/modelRegistry/modelregistry-sample/registeredModels/1/versions');
+    verifyRelativeURL('/model-registry/modelregistry-sample/registeredModels/1/versions');
   });
 });
