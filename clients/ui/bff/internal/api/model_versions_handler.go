@@ -18,8 +18,32 @@ type ModelVersionUpdateEnvelope Envelope[*openapi.ModelVersionUpdate, None]
 type ModelArtifactListEnvelope Envelope[*openapi.ModelArtifactList, None]
 type ModelArtifactEnvelope Envelope[*openapi.ModelArtifact, None]
 
+func (app *App) GetAllModelVersionHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	client, ok := r.Context().Value(ModelRegistryHttpClientKey).(integrations.HTTPClientInterface)
+	if !ok {
+		app.serverErrorResponse(w, r, errors.New("REST client not found"))
+		return
+	}
+
+	versionList, err := app.repositories.ModelRegistryClient.GetAllModelVersions(client)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	responseBody := ModelVersionListEnvelope{
+		Data: versionList,
+	}
+
+	err = app.WriteJSON(w, http.StatusOK, responseBody, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
+
+}
+
 func (app *App) GetModelVersionHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	client, ok := r.Context().Value(httpClientKey).(integrations.HTTPClientInterface)
+	client, ok := r.Context().Value(ModelRegistryHttpClientKey).(integrations.HTTPClientInterface)
 	if !ok {
 		app.serverErrorResponse(w, r, errors.New("REST client not found"))
 		return
@@ -47,7 +71,7 @@ func (app *App) GetModelVersionHandler(w http.ResponseWriter, r *http.Request, p
 }
 
 func (app *App) CreateModelVersionHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	client, ok := r.Context().Value(httpClientKey).(integrations.HTTPClientInterface)
+	client, ok := r.Context().Value(ModelRegistryHttpClientKey).(integrations.HTTPClientInterface)
 	if !ok {
 		app.serverErrorResponse(w, r, errors.New("REST client not found"))
 		return
@@ -101,7 +125,7 @@ func (app *App) CreateModelVersionHandler(w http.ResponseWriter, r *http.Request
 }
 
 func (app *App) UpdateModelVersionHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	client, ok := r.Context().Value(httpClientKey).(integrations.HTTPClientInterface)
+	client, ok := r.Context().Value(ModelRegistryHttpClientKey).(integrations.HTTPClientInterface)
 	if !ok {
 		app.serverErrorResponse(w, r, errors.New("REST client not found"))
 		return
@@ -151,7 +175,7 @@ func (app *App) UpdateModelVersionHandler(w http.ResponseWriter, r *http.Request
 }
 
 func (app *App) GetAllModelArtifactsByModelVersionHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	client, ok := r.Context().Value(httpClientKey).(integrations.HTTPClientInterface)
+	client, ok := r.Context().Value(ModelRegistryHttpClientKey).(integrations.HTTPClientInterface)
 	if !ok {
 		app.serverErrorResponse(w, r, errors.New("REST client not found"))
 		return
@@ -174,7 +198,7 @@ func (app *App) GetAllModelArtifactsByModelVersionHandler(w http.ResponseWriter,
 }
 
 func (app *App) CreateModelArtifactByModelVersionHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	client, ok := r.Context().Value(httpClientKey).(integrations.HTTPClientInterface)
+	client, ok := r.Context().Value(ModelRegistryHttpClientKey).(integrations.HTTPClientInterface)
 	if !ok {
 		app.serverErrorResponse(w, r, errors.New("REST client not found"))
 		return

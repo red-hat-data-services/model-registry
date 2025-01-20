@@ -8,20 +8,24 @@ import (
 	"github.com/kubeflow/model-registry/ui/bff/internal/repositories"
 	"log/slog"
 	"net/http"
+	"path"
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/kubeflow/model-registry/ui/bff/internal/mocks"
 )
 
 const (
-	Version                      = "1.0.0"
+	Version = "1.0.0"
+
 	PathPrefix                   = "/api/v1"
 	ModelRegistryId              = "model_registry_id"
 	RegisteredModelId            = "registered_model_id"
 	ModelVersionId               = "model_version_id"
 	ModelArtifactId              = "model_artifact_id"
 	HealthCheckPath              = PathPrefix + "/healthcheck"
+	UserPath                     = PathPrefix + "/user"
 	ModelRegistryListPath        = PathPrefix + "/model_registry"
+	NamespaceListPath            = PathPrefix + "/namespaces"
 	ModelRegistryPath            = ModelRegistryListPath + "/:" + ModelRegistryId
 	RegisteredModelListPath      = ModelRegistryPath + "/registered_models"
 	RegisteredModelPath          = RegisteredModelListPath + "/:" + RegisteredModelId
@@ -82,29 +86,57 @@ func (app *App) Shutdown(ctx context.Context, logger *slog.Logger) error {
 }
 
 func (app *App) Routes() http.Handler {
-	router := httprouter.New()
+	// Router for /api/v1/*
+	apiRouter := httprouter.New()
 
-	router.NotFound = http.HandlerFunc(app.notFoundResponse)
-	router.MethodNotAllowed = http.HandlerFunc(app.methodNotAllowedResponse)
+	apiRouter.NotFound = http.HandlerFunc(app.notFoundResponse)
+	apiRouter.MethodNotAllowed = http.HandlerFunc(app.methodNotAllowedResponse)
 
-	// HTTP client routes
-	router.GET(HealthCheckPath, app.HealthcheckHandler)
-	router.GET(RegisteredModelListPath, app.AttachRESTClient(app.GetAllRegisteredModelsHandler))
-	router.GET(RegisteredModelPath, app.AttachRESTClient(app.GetRegisteredModelHandler))
-	router.POST(RegisteredModelListPath, app.AttachRESTClient(app.CreateRegisteredModelHandler))
-	router.PATCH(RegisteredModelPath, app.AttachRESTClient(app.UpdateRegisteredModelHandler))
-	router.GET(RegisteredModelVersionsPath, app.AttachRESTClient(app.GetAllModelVersionsForRegisteredModelHandler))
-	router.POST(RegisteredModelVersionsPath, app.AttachRESTClient(app.CreateModelVersionForRegisteredModelHandler))
+	// HTTP client routes (requests that we forward to Model Registry API)
+	// on those, we perform SAR on Specific Service on a given namespace
+	apiRouter.GET(HealthCheckPath, app.HealthcheckHandler)
+	apiRouter.GET(RegisteredModelListPath, app.AttachNamespace(app.PerformSARonSpecificService(app.AttachRESTClient(app.GetAllRegisteredModelsHandler))))
+	apiRouter.GET(RegisteredModelPath, app.AttachNamespace(app.PerformSARonSpecificService(app.AttachRESTClient(app.GetRegisteredModelHandler))))
+	apiRouter.POST(RegisteredModelListPath, app.AttachNamespace(app.PerformSARonSpecificService(app.AttachRESTClient(app.CreateRegisteredModelHandler))))
+	apiRouter.PATCH(RegisteredModelPath, app.AttachNamespace(app.PerformSARonSpecificService(app.AttachRESTClient(app.UpdateRegisteredModelHandler))))
+	apiRouter.GET(RegisteredModelVersionsPath, app.AttachNamespace(app.PerformSARonSpecificService(app.AttachRESTClient(app.GetAllModelVersionsForRegisteredModelHandler))))
+	apiRouter.POST(RegisteredModelVersionsPath, app.AttachNamespace(app.PerformSARonSpecificService(app.AttachRESTClient(app.CreateModelVersionForRegisteredModelHandler))))
+	apiRouter.POST(ModelVersionListPath, app.AttachNamespace(app.PerformSARonSpecificService(app.AttachRESTClient(app.CreateModelVersionHandler))))
+	apiRouter.GET(ModelVersionListPath, app.AttachNamespace(app.PerformSARonSpecificService(app.AttachRESTClient(app.GetAllModelVersionHandler))))
+	apiRouter.GET(ModelVersionPath, app.AttachNamespace(app.PerformSARonSpecificService(app.AttachRESTClient(app.GetModelVersionHandler))))
+	apiRouter.PATCH(ModelVersionPath, app.AttachNamespace(app.PerformSARonSpecificService(app.AttachRESTClient(app.UpdateModelVersionHandler))))
+	apiRouter.GET(ModelVersionArtifactListPath, app.AttachNamespace(app.PerformSARonSpecificService(app.AttachRESTClient(app.GetAllModelArtifactsByModelVersionHandler))))
+	apiRouter.POST(ModelVersionArtifactListPath, app.AttachNamespace(app.PerformSARonSpecificService(app.AttachRESTClient(app.CreateModelArtifactByModelVersionHandler))))
+	apiRouter.PATCH(ModelRegistryPath, app.AttachNamespace(app.PerformSARonSpecificService(app.AttachRESTClient(app.UpdateModelVersionHandler))))
 
-	router.GET(ModelVersionPath, app.AttachRESTClient(app.GetModelVersionHandler))
-	router.POST(ModelVersionListPath, app.AttachRESTClient(app.CreateModelVersionHandler))
-	router.PATCH(ModelVersionPath, app.AttachRESTClient(app.UpdateModelVersionHandler))
-	router.GET(ModelVersionArtifactListPath, app.AttachRESTClient(app.GetAllModelArtifactsByModelVersionHandler))
-	router.POST(ModelVersionArtifactListPath, app.AttachRESTClient(app.CreateModelArtifactByModelVersionHandler))
+	// Kubernetes routes
+	apiRouter.GET(UserPath, app.UserHandler)
+	// Perform SAR to Get List Services by Namspace
+	apiRouter.GET(ModelRegistryListPath, app.AttachNamespace(app.PerformSARonGetListServicesByNamespace(app.ModelRegistryHandler)))
+	if app.config.StandaloneMode {
+		apiRouter.GET(NamespaceListPath, app.GetNamespacesHandler)
+	}
 
-	// Kubernetes client routes
-	router.GET(ModelRegistryListPath, app.ModelRegistryHandler)
-	router.PATCH(ModelRegistryPath, app.AttachRESTClient(app.UpdateModelVersionHandler))
+	// App Router
+	appMux := http.NewServeMux()
 
-	return app.RecoverPanic(app.enableCORS(router))
+	// handler for api calls
+	appMux.Handle("/api/v1/", apiRouter)
+
+	// file server for the frontend file and SPA routes
+	staticDir := http.Dir(app.config.StaticAssetsDir)
+	fileServer := http.FileServer(staticDir)
+	appMux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		// Check if the requested file exists
+		if _, err := staticDir.Open(r.URL.Path); err == nil {
+			// Serve the file if it exists
+			fileServer.ServeHTTP(w, r)
+			return
+		}
+
+		// Fallback to index.html for SPA routes
+		http.ServeFile(w, r, path.Join(app.config.StaticAssetsDir, "index.html"))
+	})
+
+	return app.RecoverPanic(app.enableCORS(app.InjectUserHeaders(appMux)))
 }

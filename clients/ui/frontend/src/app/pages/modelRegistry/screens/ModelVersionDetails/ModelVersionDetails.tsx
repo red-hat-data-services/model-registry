@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { Breadcrumb, BreadcrumbItem, Flex, FlexItem, Truncate } from '@patternfly/react-core';
 import { Link } from 'react-router-dom';
-import ApplicationsPage from '~/app/components/ApplicationsPage';
+import ApplicationsPage from '~/shared/components/ApplicationsPage';
 import { ModelRegistrySelectorContext } from '~/app/context/ModelRegistrySelectorContext';
 import useRegisteredModelById from '~/app/hooks/useRegisteredModelById';
 import useModelVersionById from '~/app/hooks/useModelVersionById';
@@ -57,7 +57,7 @@ const ModelVersionsDetails: React.FC<ModelVersionsDetailProps> = ({ tab, ...page
         <Breadcrumb>
           <BreadcrumbItem
             render={() => (
-              <Link to="/modelRegistry">Model registry - {preferredModelRegistry?.name}</Link>
+              <Link to="/model-registry">Model registry - {preferredModelRegistry?.name}</Link>
             )}
           />
           <BreadcrumbItem
@@ -90,7 +90,7 @@ const ModelVersionsDetails: React.FC<ModelVersionsDetailProps> = ({ tab, ...page
               />
             </FlexItem>
             <FlexItem>
-              <ModelVersionsDetailsHeaderActions mv={mv} refresh={refresh} />
+              <ModelVersionsDetailsHeaderActions mv={mv} />
             </FlexItem>
           </Flex>
         )

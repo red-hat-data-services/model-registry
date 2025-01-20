@@ -1,5 +1,6 @@
 import * as React from 'react';
 import {
+  SearchInput,
   TextInput,
   ToolbarContent,
   ToolbarFilter,
@@ -9,12 +10,13 @@ import {
 } from '@patternfly/react-core';
 import { FilterIcon } from '@patternfly/react-icons';
 import { RegisteredModel } from '~/app/types';
-import { SearchType } from '~/app/components/DashboardSearchField';
+import { SearchType } from '~/shared/components/DashboardSearchField';
 import { filterRegisteredModels } from '~/app/pages/modelRegistry/screens/utils';
 import EmptyModelRegistryState from '~/app/pages/modelRegistry/screens/components/EmptyModelRegistryState';
-import SimpleSelect from '~/app/components/SimpleSelect';
+import SimpleSelect from '~/shared/components/SimpleSelect';
 import { asEnumMember } from '~/app/utils';
 import FormFieldset from '~/app/pages/modelRegistry/screens/components/FormFieldset';
+import { isMUITheme } from '~/shared/utilities/const';
 import RegisteredModelsArchiveTable from './RegisteredModelsArchiveTable';
 
 type RegisteredModelsArchiveListViewProps = {
@@ -79,22 +81,35 @@ const RegisteredModelsArchiveListView: React.FC<RegisteredModelsArchiveListViewP
                 />
               </ToolbarFilter>
               <ToolbarItem>
-                <FormFieldset
-                  className="toolbar-fieldset-wrapper"
-                  component={
-                    <TextInput
-                      value={search}
-                      type="text"
-                      onChange={(_, searchValue) => {
-                        setSearch(searchValue);
-                      }}
-                      style={{ minWidth: '200px' }}
-                      data-testid="registered-models-archive-table-search"
-                      aria-label="Search"
-                    />
-                  }
-                  field={`Find by ${searchType.toLowerCase()}`}
-                />
+                {isMUITheme() ? (
+                  <FormFieldset
+                    className="toolbar-fieldset-wrapper"
+                    component={
+                      <TextInput
+                        value={search}
+                        type="text"
+                        onChange={(_, searchValue) => {
+                          setSearch(searchValue);
+                        }}
+                        style={{ minWidth: '200px' }}
+                        data-testid="registered-models-archive-table-search"
+                        aria-label="Search"
+                      />
+                    }
+                    field={`Find by ${searchType.toLowerCase()}`}
+                  />
+                ) : (
+                  <SearchInput
+                    placeholder={`Find by ${searchType.toLowerCase()}`}
+                    value={search}
+                    onChange={(_, searchValue) => {
+                      setSearch(searchValue);
+                    }}
+                    onClear={() => setSearch('')}
+                    style={{ minWidth: '200px' }}
+                    data-testid="registered-models-archive-table-search"
+                  />
+                )}
               </ToolbarItem>
             </ToolbarGroup>
           </ToolbarToggleGroup>

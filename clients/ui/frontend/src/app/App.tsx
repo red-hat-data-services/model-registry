@@ -3,28 +3,25 @@ import '@patternfly/react-core/dist/styles/base.css';
 import './app.css';
 import {
   Alert,
-  Brand,
   Bullseye,
   Button,
-  Masthead,
-  MastheadBrand,
-  MastheadContent,
-  MastheadMain,
-  MastheadToggle,
   Page,
   PageSection,
-  PageToggleButton,
+  PageSidebar,
   Spinner,
   Stack,
   StackItem,
 } from '@patternfly/react-core';
-import { BarsIcon } from '@patternfly/react-icons';
-import ToastNotifications from '~/components/ToastNotifications';
+import ToastNotifications from '~/shared/components/ToastNotifications';
+import { useSettings } from '~/shared/hooks/useSettings';
+import { isMUITheme, Theme, AUTH_HEADER, MOCK_AUTH, isStandalone } from '~/shared/utilities/const';
+import { logout } from '~/shared/utilities/appUtils';
+import { NamespaceSelectorContext } from '~/shared/context/NamespaceSelectorContext';
 import NavSidebar from './NavSidebar';
 import AppRoutes from './AppRoutes';
 import { AppContext } from './AppContext';
-import { useSettings } from './useSettings';
 import { ModelRegistrySelectorContextProvider } from './context/ModelRegistrySelectorContext';
+import NavBar from './NavBar';
 
 const App: React.FC = () => {
   const {
@@ -33,6 +30,27 @@ const App: React.FC = () => {
     loaded: configLoaded,
     loadError: configError,
   } = useSettings();
+
+  const { namespacesLoaded, namespacesLoadError } = React.useContext(NamespaceSelectorContext);
+
+  const username = userSettings?.userId;
+
+  React.useEffect(() => {
+    // Apply the theme based on the value of STYLE_THEME
+    if (isMUITheme()) {
+      document.documentElement.classList.add(Theme.MUI);
+    } else {
+      document.documentElement.classList.remove(Theme.MUI);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    if (MOCK_AUTH && username) {
+      localStorage.setItem(AUTH_HEADER, username);
+    } else {
+      localStorage.removeItem(AUTH_HEADER);
+    }
+  }, [username]);
 
   const contextValue = React.useMemo(
     () =>
@@ -45,8 +63,10 @@ const App: React.FC = () => {
     [configSettings, userSettings],
   );
 
+  const error = configError || namespacesLoadError;
+
   // We lack the critical data to startup the app
-  if (configError) {
+  if (error) {
     // There was an error fetching critical data
     return (
       <Page>
@@ -54,16 +74,18 @@ const App: React.FC = () => {
           <Stack hasGutter>
             <StackItem>
               <Alert variant="danger" isInline title="General loading error">
-                <p>{configError.message || 'Unknown error occurred during startup.'}</p>
-                <p>Logging out and logging back in may solve the issue.</p>
+                <p>
+                  {configError?.message ||
+                    namespacesLoadError?.message ||
+                    'Unknown error occurred during startup'}
+                </p>
+                <p>Logging out and logging back in may solve the issue</p>
               </Alert>
             </StackItem>
             <StackItem>
               <Button
                 variant="secondary"
-                onClick={() => {
-                  // TODO: logout
-                }}
+                onClick={() => logout().then(() => window.location.reload())}
               >
                 Logout
               </Button>
@@ -74,29 +96,11 @@ const App: React.FC = () => {
     );
   }
 
+  const sidebar = <PageSidebar isSidebarOpen={false} />;
+
   // Waiting on the API to finish
-  const loading = !configLoaded || !userSettings || !configSettings || !contextValue;
-
-  const masthead = (
-    <Masthead>
-      <MastheadMain>
-        <MastheadToggle>
-          <PageToggleButton id="page-nav-toggle" variant="plain" aria-label="Dashboard navigation">
-            <BarsIcon />
-          </PageToggleButton>
-        </MastheadToggle>
-        <MastheadBrand>
-          <Brand
-            className="kubeflow_brand"
-            src={`${window.location.origin}/images/logo.svg`}
-            alt="Kubeflow Logo"
-          />
-        </MastheadBrand>
-      </MastheadMain>
-
-      <MastheadContent>{/* TODO: Change this into a component for Header Tools */}</MastheadContent>
-    </Masthead>
-  );
+  const loading =
+    !configLoaded || !userSettings || !configSettings || !contextValue || !namespacesLoaded;
 
   return loading ? (
     <Bullseye>
@@ -106,9 +110,20 @@ const App: React.FC = () => {
     <AppContext.Provider value={contextValue}>
       <Page
         mainContainerId="primary-app-container"
-        masthead={masthead}
-        isManagedSidebar
-        sidebar={<NavSidebar />}
+        masthead={
+          isStandalone() ? (
+            <NavBar
+              username={username}
+              onLogout={() => {
+                logout().then(() => window.location.reload());
+              }}
+            />
+          ) : (
+            ''
+          )
+        }
+        isManagedSidebar={isStandalone()}
+        sidebar={isStandalone() ? <NavSidebar /> : sidebar}
       >
         <ModelRegistrySelectorContextProvider>
           <AppRoutes />
