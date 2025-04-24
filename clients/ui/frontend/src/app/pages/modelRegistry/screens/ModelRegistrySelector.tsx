@@ -21,8 +21,8 @@ import { ModelRegistrySelectorContext } from '~/app/context/ModelRegistrySelecto
 import { ModelRegistry } from '~/app/types';
 import SimpleSelect, { SimpleSelectOption } from '~/shared/components/SimpleSelect';
 import WhosMyAdministrator from '~/shared/components/WhosMyAdministrator';
-import { isMUITheme } from '~/shared/utilities/const';
 import KubeflowDocs from '~/shared/components/KubeflowDocs';
+import { useThemeContext } from '~/app/ThemeContext';
 
 const MODEL_REGISTRY_FAVORITE_STORAGE_KEY = 'kubeflow.dashboard.model.registry.favorite';
 
@@ -30,16 +30,19 @@ type ModelRegistrySelectorProps = {
   modelRegistry: string;
   onSelection: (modelRegistry: string) => void;
   primary?: boolean;
+  isFullWidth?: boolean;
 };
 
 const ModelRegistrySelector: React.FC<ModelRegistrySelectorProps> = ({
   modelRegistry,
   onSelection,
   primary,
+  isFullWidth,
 }) => {
   const { modelRegistries, updatePreferredModelRegistry } = React.useContext(
     ModelRegistrySelectorContext,
   );
+  const { isMUITheme } = useThemeContext();
 
   const selection = modelRegistries.find((mr) => mr.name === modelRegistry);
   const [favorites, setFavorites] = useBrowserStorage<string[]>(
@@ -87,6 +90,7 @@ const ModelRegistrySelector: React.FC<ModelRegistrySelectorProps> = ({
   const selector = (
     <SimpleSelect
       isScrollable
+      placeholder="Select a model registry"
       dataTestId="model-registry-selector-dropdown"
       toggleProps={{ id: 'download-steps-logs-toggle' }}
       toggleLabel={toggleLabel}
@@ -96,6 +100,7 @@ const ModelRegistrySelector: React.FC<ModelRegistrySelectorProps> = ({
         updatePreferredModelRegistry(modelRegistries.find((obj) => obj.name === key));
         onSelection(key);
       }}
+      isFullWidth={isFullWidth}
       maxMenuHeight="300px"
       popperProps={{ maxWidth: '400px' }}
       value={selection?.name}
@@ -171,7 +176,7 @@ const ModelRegistrySelector: React.FC<ModelRegistrySelectorProps> = ({
         </FlexItem>
       )}
       <FlexItem align={{ default: 'alignRight' }}>
-        {isMUITheme() ? (
+        {isMUITheme ? (
           <KubeflowDocs
             buttonLabel="Need another registry?"
             linkTestId="model-registry-help-button"

@@ -38,6 +38,16 @@ This step is not required if you already installed the additional dependencies a
 ```
 pip install huggingface-hub
 ```
+#### Extras that can be installed
+```
+pip install model-registry[hf]
+```
+```
+pip install model-registry[s3]
+```
+```
+pip install model_registry[olot]
+```
 
 ## Basic usage
 
@@ -192,13 +202,13 @@ Common S3 env vars will be automatically read, such ass the access_key_id, etc. 
 
 ```python
 s3_upload_params = S3Params(
-    bucket="my-bucket",
+    bucket_name="my-bucket",
     s3_prefix="models/my_fraud_model",
 )
 
 registered_model = client.upload_artifact_and_register_model(
     name="hello_world_model",
-    model_fiels_path="/home/user-01/models/model_training_01"
+    model_files_path="/home/user-01/models/model_training_01",
     # If the model consists of a single file, such as a .onnx file, you can specify that as well
     # model_fiels_path="/home/user-01/models/model_training_01.onnx"
     author="Mr. Trainer",
@@ -208,7 +218,8 @@ registered_model = client.upload_artifact_and_register_model(
 ```
 
 #### OCI-registry based storage
-
+First, you must ensure you are logged in the to appropriate OCI registry using
+`skopeo login`, `podman login`, or using another way of authenticating or subsequent lines below will fail.
 ```python
 oci_upload_params = OCIParams(
     base_image="busybox",
@@ -217,7 +228,7 @@ oci_upload_params = OCIParams(
 
 registered_model = client.upload_artifact_and_register_model(
     name="hello_world_model",
-    model_fiels_path="/home/user-01/models/model_training_01"
+    model_files_path="/home/user-01/models/model_training_01",
     # If the model consists of a single file, such as a .onnx file, you can specify that as well
     # model_fiels_path="/home/user-01/models/model_training_01.onnx"
     author="Mr. Trainer",
@@ -226,7 +237,7 @@ registered_model = client.upload_artifact_and_register_model(
 )
 ```
 
-Additionally, OCI-based storage supports multiple CLI clients to perform the upload. However, one of these clients must be available in the hosts PATH. **Ensure your host has either [skopeo](https://github.com/containers/skopeo) or [oras](https://github.com/oras-project/oras) installed and available.** 
+Additionally, OCI-based storage supports multiple CLI clients to perform the upload. However, one of these clients must be available in the hosts `$PATH`. **Ensure your host has either [skopeo](https://github.com/containers/skopeo) or [oras](https://github.com/oras-project/oras) installed and available.** 
 
 By default, `skopeo` is used to perform the OCI image download/upload.
 
@@ -321,12 +332,9 @@ To run the e2e tests you will need [kind](https://kind.sigs.k8s.io/) to be insta
 
 Check out our [recommendations on setting up your docker engine](https://github.com/kubeflow/model-registry/blob/main/CONTRIBUTING.md#docker-engine) on an ARM processor.
 
-### Extras
 
-Depending on your development flow, you need to install extra dependencies:
+### Troubleshooting
 
-```
-poetry install -E "olot"
-```
+- On running `make test test-e2e` if you see a similar problem `unknown flag: --load`, install [buildx](https://formulae.brew.sh/formula/docker-buildx)
 
 <!-- github-only -->
