@@ -9,12 +9,14 @@ import {
   HelperText,
   HelperTextItem,
   TextInput,
+  Truncate,
 } from '@patternfly/react-core';
-import { CheckIcon, TimesIcon } from '@patternfly/react-icons';
+import { CheckIcon, ExternalLinkAltIcon, TimesIcon } from '@patternfly/react-icons';
 import { KeyValuePair } from '~/shared/types';
 import { EitherNotBoth } from '~/shared/typeHelpers';
 import FormFieldset from '~/app/pages/modelRegistry/screens/components/FormFieldset';
-import { isMUITheme } from '~/shared/utilities/const';
+import { useThemeContext } from '~/app/ThemeContext';
+import { isValidHttpUrl } from './utils';
 
 type ModelPropertiesTableRowProps = {
   allExistingKeys: string[];
@@ -45,6 +47,8 @@ const ModelPropertiesTableRow: React.FC<ModelPropertiesTableRowProps> = ({
   saveEditedProperty,
 }) => {
   const { key, value } = keyValuePair;
+  const { isMUITheme } = useThemeContext();
+
   const [unsavedKey, setUnsavedKey] = React.useState(key);
   const [unsavedValue, setUnsavedValue] = React.useState(value);
 
@@ -126,7 +130,7 @@ const ModelPropertiesTableRow: React.FC<ModelPropertiesTableRowProps> = ({
       <Td dataLabel="Key" width={45} modifier="breakWord">
         {isEditing ? (
           <>
-            {isMUITheme() ? (
+            {isMUITheme ? (
               <FormFieldset className="tr-fieldset-wrapper" component={propertyKeyInput} />
             ) : (
               propertyKeyInput
@@ -146,7 +150,7 @@ const ModelPropertiesTableRow: React.FC<ModelPropertiesTableRowProps> = ({
       </Td>
       <Td dataLabel="Value" width={45} modifier="breakWord">
         {isEditing ? (
-          isMUITheme() ? (
+          isMUITheme ? (
             <FormFieldset className="tr-fieldset-wrapper" component={propertyValueInput} />
           ) : (
             propertyValueInput
@@ -159,7 +163,21 @@ const ModelPropertiesTableRow: React.FC<ModelPropertiesTableRowProps> = ({
             onToggle={(_event, isExpanded) => setIsValueExpanded(isExpanded)}
             isExpanded={isValueExpanded}
           >
-            {value}
+            {isValidHttpUrl(value) ? (
+              <Button
+                variant="link"
+                icon={<ExternalLinkAltIcon />}
+                iconPosition="end"
+                component="a"
+                href={value}
+                target="_blank"
+                isInline
+              >
+                <Truncate content={value} />
+              </Button>
+            ) : (
+              value
+            )}
           </ExpandableSection>
         )}
       </Td>
