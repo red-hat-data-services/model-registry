@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { USERNAME, POLL_INTERVAL, AUTH_HEADER, MOCK_AUTH } from '~/shared/utilities/const';
+import { KUBEFLOW_USERNAME, POLL_INTERVAL, AUTH_HEADER, MOCK_AUTH } from '~/shared/utilities/const';
 import { useDeepCompareMemoize } from '~/shared/utilities/useDeepCompareMemoize';
 import { ConfigSettings, UserSettings } from '~/shared/types';
 import useTimeBasedRefresh from '~/shared/hooks/useTimeBasedRefresh';
-import { getNamespaces, getUser } from '~/shared/api/k8s';
+import { getNamespaces, getUser } from '~/app/api/k8s';
 
 export const useSettings = (): {
   configSettings: ConfigSettings | null;
@@ -23,7 +23,7 @@ export const useSettings = (): {
     let watchHandle: ReturnType<typeof setTimeout>;
     let cancelled = false;
     const watchConfig = () => {
-      const headers = MOCK_AUTH ? { [AUTH_HEADER]: USERNAME } : undefined;
+      const headers = MOCK_AUTH ? { [AUTH_HEADER]: KUBEFLOW_USERNAME } : undefined;
       Promise.all([fetchConfig(), userRest({ headers })])
         .then(([fetchedConfig, fetchedUser]) => {
           if (cancelled) {

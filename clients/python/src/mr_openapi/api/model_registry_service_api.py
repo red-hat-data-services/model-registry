@@ -111,6 +111,7 @@ class ModelRegistryServiceApi:
             "201": "Artifact",
             "400": "Error",
             "401": "Error",
+            "409": "Error",
             "500": "Error",
             "503": "Error",
         }
@@ -174,6 +175,7 @@ class ModelRegistryServiceApi:
             "201": "Artifact",
             "400": "Error",
             "401": "Error",
+            "409": "Error",
             "500": "Error",
             "503": "Error",
         }
@@ -237,6 +239,7 @@ class ModelRegistryServiceApi:
             "201": "Artifact",
             "400": "Error",
             "401": "Error",
+            "409": "Error",
             "500": "Error",
             "503": "Error",
         }
@@ -362,6 +365,7 @@ class ModelRegistryServiceApi:
             "400": "Error",
             "401": "Error",
             "404": "Error",
+            "409": "Error",
             "500": "Error",
             "503": "Error",
         }
@@ -434,6 +438,7 @@ class ModelRegistryServiceApi:
             "400": "Error",
             "401": "Error",
             "404": "Error",
+            "409": "Error",
             "500": "Error",
             "503": "Error",
         }
@@ -506,6 +511,7 @@ class ModelRegistryServiceApi:
             "400": "Error",
             "401": "Error",
             "404": "Error",
+            "409": "Error",
             "500": "Error",
             "503": "Error",
         }
@@ -1147,6 +1153,7 @@ class ModelRegistryServiceApi:
             "201": "ModelArtifact",
             "400": "Error",
             "401": "Error",
+            "409": "Error",
             "500": "Error",
             "503": "Error",
         }
@@ -1212,6 +1219,7 @@ class ModelRegistryServiceApi:
             "201": "ModelArtifact",
             "400": "Error",
             "401": "Error",
+            "409": "Error",
             "500": "Error",
             "503": "Error",
         }
@@ -1277,6 +1285,7 @@ class ModelRegistryServiceApi:
             "201": "ModelArtifact",
             "400": "Error",
             "401": "Error",
+            "409": "Error",
             "500": "Error",
             "503": "Error",
         }
@@ -1394,6 +1403,7 @@ class ModelRegistryServiceApi:
             "400": "Error",
             "401": "Error",
             "409": "Error",
+            "422": "Error",
             "500": "Error",
             "503": "Error",
         }
@@ -1458,6 +1468,7 @@ class ModelRegistryServiceApi:
             "400": "Error",
             "401": "Error",
             "409": "Error",
+            "422": "Error",
             "500": "Error",
             "503": "Error",
         }
@@ -1522,6 +1533,7 @@ class ModelRegistryServiceApi:
             "400": "Error",
             "401": "Error",
             "409": "Error",
+            "422": "Error",
             "500": "Error",
             "503": "Error",
         }
@@ -1894,6 +1906,7 @@ class ModelRegistryServiceApi:
             "400": "Error",
             "401": "Error",
             "404": "Error",
+            "409": "Error",
             "500": "Error",
             "503": "Error",
         }
@@ -1962,6 +1975,7 @@ class ModelRegistryServiceApi:
             "400": "Error",
             "401": "Error",
             "404": "Error",
+            "409": "Error",
             "500": "Error",
             "503": "Error",
         }
@@ -2030,6 +2044,7 @@ class ModelRegistryServiceApi:
             "400": "Error",
             "401": "Error",
             "404": "Error",
+            "409": "Error",
             "500": "Error",
             "503": "Error",
         }
@@ -4016,6 +4031,7 @@ class ModelRegistryServiceApi:
 
         _response_types_map: dict[str, Optional[str]] = {
             "200": "Artifact",
+            "400": "Error",
             "401": "Error",
             "404": "Error",
             "500": "Error",
@@ -4075,6 +4091,7 @@ class ModelRegistryServiceApi:
 
         _response_types_map: dict[str, Optional[str]] = {
             "200": "Artifact",
+            "400": "Error",
             "401": "Error",
             "404": "Error",
             "500": "Error",
@@ -4134,6 +4151,7 @@ class ModelRegistryServiceApi:
 
         _response_types_map: dict[str, Optional[str]] = {
             "200": "Artifact",
+            "400": "Error",
             "401": "Error",
             "404": "Error",
             "500": "Error",
