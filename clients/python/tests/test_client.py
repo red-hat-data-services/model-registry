@@ -7,7 +7,6 @@ import requests
 from model_registry import ModelRegistry, utils
 from model_registry.exceptions import StoreError
 from model_registry.types import ModelArtifact
-from tests.test_utils import get_skopeo_backend_for_local_e2e_testing
 
 from .extras.async_task_runner import AsyncTaskRunner
 
@@ -844,8 +843,7 @@ async def test_custom_async_runner_with_ray(
     client_attrs: dict[str, any], client: ModelRegistry
 ):
     import asyncio
-
-    import ray
+    ray = pytest.importorskip("ray")
     import uvloop
 
     # Check to make sure the uvloop event loop is running
@@ -889,11 +887,12 @@ def test_upload_artifact_and_register_model_with_default_oci(
     oci_ref = "localhost:5001/foo/bar:latest"
 
     model_dir, _ = get_temp_dir_with_models
-
     upload_params = utils.OCIParams(
         "quay.io/mmortari/hello-world-wait:latest",
         oci_ref,
-        custom_oci_backend=get_skopeo_backend_for_local_e2e_testing(),
+        custom_oci_backend=utils._get_skopeo_backend(
+            push_args=["--dest-tls-verify=false"]
+        ),
     )
 
     assert client.upload_artifact_and_register_model(
@@ -979,3 +978,72 @@ def test_upload_artifact_and_register_model_missing_upload_params(client):
         'Param "upload_params" is required to perform an upload. Please ensure the value provided is valid'
         in str(e.value)
     )
+
+
+@pytest.mark.e2e
+async  def test_register_model_with_owner(client):
+    model_params = {
+        "name": "test_model",
+        "uri": "s3",
+        "model_format_name": "test_format",
+        "model_format_version": "test_version",
+        "version": "1.0.0",
+        "owner": "test owner",
+    }
+    rm = client.register_model(
+       **model_params,
+    )
+    assert rm.id
+    assert rm.owner == model_params["owner"]
+    assert (_get_rm := client.get_registered_model(name=model_params["name"]))
+    assert _get_rm.owner == model_params["owner"]
+
+
+@pytest.mark.e2e
+async def test_register_model_with_s3_data_connection(client: ModelRegistry):
+    """As a MLOps engineer I want to track a Model from an S3 bucket Data Connection"""
+    data_connection_name = "aws-connection-my-data-connection"
+    s3_bucket = "my-bucket"
+    s3_path = "my-path"
+    s3_endpoint = "https://minio-api.acme.org"
+    s3_region = "us-east-1"
+
+    # Create the S3 URI using the utility function
+    uri = utils.s3_uri_from(
+        path=s3_path,
+        bucket=s3_bucket,
+        endpoint=s3_endpoint,
+        region=s3_region
+    )
+
+    model_params = {
+        "name": "test_model",
+        "uri": uri,
+        "model_format_name": "onnx",
+        "model_format_version": "1",
+        "version": "v1.0",
+        "description": "The Model",  # This will be set on the model version
+        "storage_key": data_connection_name,
+        "storage_path": s3_path
+    }
+
+    # Register the model with S3 connection details
+    rm = client.register_model(**model_params)
+    assert rm.id
+
+    # Get and verify the registered model
+    rm_by_name = client.get_registered_model(model_params["name"])
+    assert rm_by_name.id == rm.id
+
+    # Get and verify the model version
+    mv = client.get_model_version(model_params["name"], model_params["version"])
+    assert mv.description == "The Model"
+    assert mv.name == "v1.0"
+
+    # Get and verify the model artifact
+    ma = client.get_model_artifact(model_params["name"], model_params["version"])
+    assert ma.uri == uri
+    assert ma.model_format_name == "onnx"
+    assert ma.model_format_version == "1"
+    assert ma.storage_key == data_connection_name
+    assert ma.storage_path == s3_path
