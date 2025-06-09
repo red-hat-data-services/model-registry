@@ -1,7 +1,8 @@
 all: install tidy
 
 IMG_REGISTRY ?= quay.io
-IMG_VERSION ?= latest 
+IMG_VERSION ?= latest
+include odh_rules.mk
 
 .PHONY: install
 install:
@@ -52,6 +53,16 @@ test-e2e-cleanup:
 		kill $$(cat .port-forwards.pid) || true; \
 		rm -f .port-forwards.pid; \
 	fi
+
+.PHONY: undeploy-minio
+undeploy-minio:
+	@echo "Undeploy Minio..."
+	cd ../../ && ./scripts/undeploy_minio.sh
+
+.PHONY: undeploy-local-kind-registry
+undeploy-local-kind-registry:
+	@echo "Undeploy Local Kind Registry..."
+	cd ../../ && ./scripts/undeploy_local_registry.sh
 
 .PHONY: test
 test:
