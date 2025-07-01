@@ -110,14 +110,16 @@ openapi/validate: bin/openapi-generator-cli bin/yq
 
 # generate the openapi server implementation
 .PHONY: gen/openapi-server
-gen/openapi-server: bin/openapi-generator-cli openapi/validate internal/server/openapi/api_model_registry_service.go
+gen/openapi-server: bin/openapi-generator-cli api/openapi/model-registry.yaml api/openapi/catalog.yaml openapi/validate internal/server/openapi/api_model_registry_service.go
+	make -C catalog $@
 
 internal/server/openapi/api_model_registry_service.go: bin/openapi-generator-cli api/openapi/model-registry.yaml
-	ROOT_FOLDER=${PROJECT_PATH} ./scripts/gen_openapi_server.sh
+	./scripts/gen_openapi_server.sh
 
 # generate the openapi schema model and client
 .PHONY: gen/openapi
-gen/openapi: api/openapi/model-registry.yaml bin/openapi-generator-cli openapi/validate pkg/openapi/client.go
+gen/openapi: bin/openapi-generator-cli api/openapi/model-registry.yaml api/openapi/catalog.yaml openapi/validate pkg/openapi/client.go
+	make -C catalog $@
 
 pkg/openapi/client.go: bin/openapi-generator-cli api/openapi/model-registry.yaml clean-pkg-openapi
 	${OPENAPI_GENERATOR} generate \
@@ -137,10 +139,10 @@ stop/mysql:
 
 # generate the gorm structs
 .PHONY: gen/gorm
-gen/gorm: bin/gorm-gen bin/golang-migrate start/mysql
-	@(trap '$(MAKE) stop/mysql' EXIT; \
+gen/gorm: bin/golang-migrate start/mysql
+	@(trap 'cd $(CURDIR) && $(MAKE) stop/mysql' EXIT; \
 	$(GOLANG_MIGRATE) -path './internal/datastore/embedmd/mysql/migrations' -database 'mysql://root:root@tcp(localhost:3306)/model-registry' up && \
-	$(GORM_GEN) --dsn 'root:root@tcp(localhost:3306)/model-registry' --db mysql --onlyModel --outPath ./internal/db/schema --modelPkgName schema)
+	cd gorm-gen && go run main.go --db-type mysql --dsn 'root:root@tcp(localhost:3306)/model-registry?charset=utf8mb4&parseTime=True&loc=Local')
 
 .PHONY: vet
 vet:
@@ -153,10 +155,12 @@ clean/csi:
 .PHONY: clean-pkg-openapi
 clean-pkg-openapi:
 	while IFS= read -r file; do rm -f "pkg/openapi/$$file"; done < pkg/openapi/.openapi-generator/FILES
+	make -C catalog $@
 
 .PHONY: clean-internal-server-openapi
 clean-internal-server-openapi:
 	while IFS= read -r file; do rm -f "internal/server/openapi/$$file"; done < internal/server/openapi/.openapi-generator/FILES
+	make -C catalog $@
 
 .PHONY: clean
 clean: clean-pkg-openapi clean-internal-server-openapi clean/csi
@@ -192,10 +196,6 @@ bin/goverter:
 YQ ?= ${PROJECT_BIN}/yq
 bin/yq:
 	GOBIN=$(PROJECT_PATH)/bin ${GO} install github.com/mikefarah/yq/v4@v4.45.1
-
-GORM_GEN ?= ${PROJECT_BIN}/gentool
-bin/gorm-gen:
-	GOBIN=$(PROJECT_PATH)/bin ${GO} install gorm.io/gen/tools/gentool@v0.0.1
 
 GOLANG_MIGRATE ?= ${PROJECT_BIN}/migrate
 bin/golang-migrate:

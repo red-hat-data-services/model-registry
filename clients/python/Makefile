@@ -2,6 +2,7 @@ all: install tidy
 
 IMG_REGISTRY ?= quay.io
 IMG_VERSION ?= latest
+IMG ?= quay.io/opendatahub/model-registry:${IMG_VERSION}
 include odh_rules.mk
 
 .PHONY: install
@@ -17,7 +18,7 @@ clean:
 
 .PHONY: deploy-latest-mr
 deploy-latest-mr:
-	cd ../../ && IMG_VERSION=${IMG_VERSION} make image/build ARGS="--load$(if ${DEV_BUILD}, --target dev-build)"  && LOCAL=1 ./scripts/deploy_on_kind.sh
+	cd ../../ && IMG_VERSION=${IMG_VERSION} IMG=${IMG} make image/build ARGS="--load$(if ${DEV_BUILD}, --target dev-build)"  && LOCAL=1 ./scripts/deploy_on_kind.sh
 	kubectl port-forward -n kubeflow services/model-registry-service 8080:8080 & echo $$! >> .port-forwards.pid
 
 .PHONY: deploy-test-minio
@@ -43,7 +44,7 @@ test-e2e-run:
 	poetry install --all-extras
 	@echo "Running tests..."
 	@set -a; . ../../scripts/manifests/minio/.env; set +a; \
-	poetry run pytest --e2e -s -rA
+	poetry run pytest --e2e -s -rA --html=report.html --self-contained-html
 	@rm -f ../../scripts/manifests/minio/.env
 
 .PHONY: test-e2e-cleanup

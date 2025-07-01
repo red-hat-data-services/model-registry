@@ -3,13 +3,15 @@ package cmd
 import (
 	"fmt"
 	"net/http"
+	"strings"
 	"sync"
 
 	"github.com/golang/glog"
-
 	"github.com/kubeflow/model-registry/internal/datastore"
+	"github.com/kubeflow/model-registry/internal/datastore/embedmd"
 	"github.com/kubeflow/model-registry/internal/proxy"
 	"github.com/kubeflow/model-registry/internal/server/openapi"
+	"github.com/kubeflow/model-registry/internal/tls"
 	"github.com/spf13/cobra"
 )
 
@@ -25,7 +27,10 @@ const (
 var (
 	proxyCfg = ProxyConfig{
 		Datastore: datastore.Datastore{
-			Type: "mlmd",
+			Type: "embedmd",
+			EmbedMD: embedmd.EmbedMDConfig{
+				TLSConfig: &tls.TLSConfig{},
+			},
 		},
 	}
 
@@ -52,6 +57,20 @@ func runProxyServer(cmd *cobra.Command, args []string) error {
 	router.SetRouter(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, datastoreUnavailableMessage, http.StatusServiceUnavailable)
 	}))
+
+	// readiness probe requires schema_migrations.dirty to be false before allowing traffic
+	readinessHandler := proxy.ReadinessHandler(proxyCfg.Datastore)
+
+	// route /readyz/isDirty to readinessHandler, all other paths to the dynamic router
+	mainHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		if strings.HasSuffix(r.URL.Path, "/readyz/isDirty") {
+			readinessHandler.ServeHTTP(w, r)
+			return
+		}
+
+		router.ServeHTTP(w, r)
+	})
 
 	errChan := make(chan error, 1)
 
@@ -80,7 +99,8 @@ func runProxyServer(cmd *cobra.Command, args []string) error {
 
 		conn, err := ds.Connect()
 		if err != nil {
-			errChan <- fmt.Errorf("error connecting to datastore: %w", err)
+			// {{ALERT}} is used to identify this error in pod logs, DO NOT REMOVE
+			errChan <- fmt.Errorf("{{ALERT}} error connecting to datastore: %w", err)
 			return
 		}
 
@@ -97,7 +117,7 @@ func runProxyServer(cmd *cobra.Command, args []string) error {
 
 		glog.Infof("Proxy server started at %s:%v", cfg.Hostname, cfg.Port)
 
-		err := http.ListenAndServe(fmt.Sprintf("%s:%d", cfg.Hostname, cfg.Port), router)
+		err := http.ListenAndServe(fmt.Sprintf("%s:%d", cfg.Hostname, cfg.Port), mainHandler)
 		if err != nil {
 			errChan <- fmt.Errorf("error starting proxy server: %w", err)
 		}
@@ -114,6 +134,7 @@ func runProxyServer(cmd *cobra.Command, args []string) error {
 	// or for both to finish successfully.
 	return <-errChan
 }
+
 func init() {
 	rootCmd.AddCommand(proxyCmd)
 
@@ -125,6 +146,12 @@ func init() {
 
 	proxyCmd.Flags().StringVar(&proxyCfg.Datastore.EmbedMD.DatabaseType, "embedmd-database-type", "mysql", "EmbedMD database type")
 	proxyCmd.Flags().StringVar(&proxyCfg.Datastore.EmbedMD.DatabaseDSN, "embedmd-database-dsn", "", "EmbedMD database DSN")
+	proxyCmd.Flags().StringVar(&proxyCfg.Datastore.EmbedMD.TLSConfig.CertPath, "embedmd-database-ssl-cert", "", "EmbedMD SSL cert path")
+	proxyCmd.Flags().StringVar(&proxyCfg.Datastore.EmbedMD.TLSConfig.KeyPath, "embedmd-database-ssl-key", "", "EmbedMD SSL key path")
+	proxyCmd.Flags().StringVar(&proxyCfg.Datastore.EmbedMD.TLSConfig.RootCertPath, "embedmd-database-ssl-root-cert", "", "EmbedMD SSL root cert path")
+	proxyCmd.Flags().StringVar(&proxyCfg.Datastore.EmbedMD.TLSConfig.CAPath, "embedmd-database-ssl-ca", "", "EmbedMD SSL CA path")
+	proxyCmd.Flags().StringVar(&proxyCfg.Datastore.EmbedMD.TLSConfig.Cipher, "embedmd-database-ssl-cipher", "", "Colon-separated list of allowed TLS ciphers for the EmbedMD database connection. Values are from the list at https://pkg.go.dev/crypto/tls#pkg-constants e.g. 'TLS_AES_128_GCM_SHA256:TLS_CHACHA20_POLY1305_SHA256'")
+	proxyCmd.Flags().BoolVar(&proxyCfg.Datastore.EmbedMD.TLSConfig.VerifyServerCert, "embedmd-database-ssl-verify-server-cert", false, "EmbedMD SSL verify server cert")
 
 	proxyCmd.Flags().StringVar(&proxyCfg.Datastore.Type, "datastore-type", proxyCfg.Datastore.Type, "Datastore type")
 }
