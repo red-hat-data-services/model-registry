@@ -2,34 +2,54 @@
 #  Asynchronous Model-Sync Job image for Kubeflow Model Registry (https://github.com/kubeflow/model-registry/issues/1108)
 ###############################################################################
 
-FROM ubi10/python-312-minimal AS base
+FROM registry.access.redhat.com/ubi9/python-312-minimal AS base
+
+USER 0
+
+# Install skopeo for Push/Pull of container images to integrate with Model Registry py client and Olot.
+RUN microdnf update -y && \
+    microdnf install -y skopeo && \
+    microdnf clean all
 
 # security/env hardening
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
+    POETRY_VERSION=2.1.3 \
+    POETRY_HOME="/opt/poetry" \
     PIP_NO_CACHE_DIR=off \
     PIP_DISABLE_PIP_VERSION_CHECK=on
 
-# Create an unprivileged user
-RUN addgroup --system --gid 1000 app \
-    && adduser  --system --uid 1000 --ingroup app --home /app app
+RUN python -m pip install pipx
+RUN pipx install poetry
+ENV PATH="/root/.local/bin:$PATH"
+RUN poetry --version
 
 WORKDIR /app
+COPY ./poetry.lock ./pyproject.toml ./
 
-# Copy Python dependencies first to leverage layer caching
-COPY requirements.txt .
-RUN --mount=type=cache,target=/root/.cache \
-    apt-get update && apt-get install -y --no-install-recommends ca-certificates \
-    && pip install --no-cache-dir -r requirements.txt \
-    && apt-get purge -y --auto-remove && rm -rf /var/lib/apt/lists/*
+RUN poetry self add poetry-plugin-export \
+    && poetry export --format requirements.txt --output requirements.txt --without-hashes \
+    && python -m pip install -r requirements.txt \
+    && echo "Installation completed" \
+    && echo "Python path:" && python -c "import sys; print('\\n'.join(sys.path))" \
+    && echo "Installed packages:" \
+    && python -m pip list 
 
 # Copy application source
 COPY . .
+RUN ls -l /app
 
-# Switch to the non-root user for the final image layer
-USER 1000:1000
+# Switch to USER 1000
+RUN chown -R 1000:1000 /app
+USER 1000
+ENV PATH="/home/1000/.local/bin:$PATH"
+RUN ls -l /app
 
-# Add an explicit health-check (K8s will surface this in Pod.status)
+# Sanity checks model_registry module import
+RUN echo "Testing model_registry import..." \
+&& python -c "import model_registry; print('model_registry package found')"
+
+# TODO: unavailble in OCI format: Add an explicit health-check (K8s will surface this in Pod.status)
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
     CMD python -m job.healthcheck
 
