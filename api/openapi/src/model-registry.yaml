@@ -1520,6 +1520,35 @@ paths:
           type: string
         in: path
         required: true
+  "/api/model_registry/v1alpha3/experiment_runs/metric_history":
+    summary: Path used to get metric history for multiple experiment runs.
+    description: >-
+      The REST endpoint/path used to get metric history for multiple `ExperimentRun` entities. This path contains a `GET` operation to retrieve metrics with optional filtering.
+    get:
+      tags:
+        - ModelRegistryService
+      parameters:
+        - $ref: "#/components/parameters/filterQuery"
+        - $ref: "#/components/parameters/name"
+        - $ref: "#/components/parameters/stepIds"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/orderBy"
+        - $ref: "#/components/parameters/sortOrder"
+        - $ref: "#/components/parameters/nextPageToken"
+      responses:
+        "200":
+          $ref: "#/components/responses/MetricListResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+      operationId: getExperimentRunsMetricHistory
+      summary: Get metric history for multiple ExperimentRuns
+      description: Gets the metric history for multiple `ExperimentRun` entities with optional filtering by metric name, step IDs, and experiment run IDs.
   "/api/model_registry/v1alpha3/experiment_runs/{experimentrunId}/metric_history":
     summary: Path used to get metric history for an experiment run.
     description: >-
@@ -1716,10 +1745,24 @@ components:
             The external id that come from the clients’ system. This field is optional.
             If set, it must be unique among all resources within a database instance.
           type: string
+    BaseArtifact:
+      description: Base schema for all artifact types with common server generated properties.
+      allOf:
+        - $ref: "#/components/schemas/BaseResource"
+        - type: object
+          properties:
+            experimentId:
+              description: |-
+                Optional id of the experiment that produced this artifact.
+              type: string
+            experimentRunId:
+              description: |-
+                Optional id of the experiment run that produced this artifact.
+              type: string
     DocArtifact:
       description: A document.
       allOf:
-        - $ref: "#/components/schemas/BaseResource"
+        - $ref: "#/components/schemas/BaseArtifact"
         - $ref: "#/components/schemas/DocArtifactCreate"
         - type: object
           properties:
@@ -1755,7 +1798,7 @@ components:
     DataSet:
       description: A dataset artifact representing training or test data.
       allOf:
-        - $ref: "#/components/schemas/BaseResource"
+        - $ref: "#/components/schemas/BaseArtifact"
         - $ref: "#/components/schemas/DataSetCreate"
         - type: object
           properties:
@@ -1806,7 +1849,7 @@ components:
     Metric:
       description: A metric representing a numerical measurement from model training or evaluation.
       allOf:
-        - $ref: "#/components/schemas/BaseResource"
+        - $ref: "#/components/schemas/BaseArtifact"
         - $ref: "#/components/schemas/MetricCreate"
         - type: object
           properties:
@@ -1852,7 +1895,7 @@ components:
     Parameter:
       description: A parameter representing a configuration parameter used in model training or execution.
       allOf:
-        - $ref: "#/components/schemas/BaseResource"
+        - $ref: "#/components/schemas/BaseArtifact"
         - $ref: "#/components/schemas/ParameterCreate"
         - type: object
           properties:
@@ -1984,7 +2027,7 @@ components:
     ModelArtifact:
       description: An ML model artifact.
       allOf:
-        - $ref: "#/components/schemas/BaseResource"
+        - $ref: "#/components/schemas/BaseArtifact"
         - $ref: "#/components/schemas/ModelArtifactCreate"
         - type: object
           properties:

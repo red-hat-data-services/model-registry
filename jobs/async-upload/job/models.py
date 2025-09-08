@@ -29,11 +29,11 @@ class BaseStorageConfig(BaseModel):
 class S3Config(BaseModel):
     """Basic S3 storage configuration. To be used as an intermediary model for the S3StorageConfig, allowing for additional values to be overlaid until the final config is created and validated via the S3StorageConfig model."""
     bucket: str | None = None
-    key: str | None = None
+    key: str | None = None # 'path' in bucket
     region: str | None = None
     access_key_id: str | None = None
     secret_access_key: str | None = None
-    endpoint_url: str | None = None
+    endpoint: str | None = None
 
 
 class OCIConfig(BaseModel):
@@ -76,20 +76,24 @@ class OCIStorageConfig(BaseStorageConfig, OCIConfig):
         return self
 
 
-class URISourceConfig(BaseStorageConfig):
-    """URI source configuration - only used for sources, not destinations."""
-    uri: str
+class URISourceConfig(BaseModel):
+    """Basic URI source configuration. To be used as an intermediary model for the URISourceStorageConfig, allowing for additional values to be overlaid until the final config is created and validated via the URISourceStorageConfig model."""
+    uri: str | None = None
+
+
+class URISourceStorageConfig(BaseStorageConfig, URISourceConfig):
+    """URI source storage configuration with validation - only used for sources, not destinations."""
     
     @model_validator(mode='after')
-    def validate_uri_source(self) -> 'URISourceConfig':
-        """Validate that URI is present."""
+    def validate_uri_storage(self) -> 'URISourceStorageConfig':
+        """Validate that required URI field is present."""
         if not self.uri:
             raise ValueError("URI must be set for URI type sources")
         return self
 
 
 # Union types for source and destination configurations - this enables isinstance() checks
-SourceConfig = Union[S3StorageConfig, OCIStorageConfig, URISourceConfig]
+SourceConfig = Union[S3StorageConfig, OCIStorageConfig, URISourceStorageConfig]
 DestinationConfig = Union[S3StorageConfig, OCIStorageConfig]
 
 
