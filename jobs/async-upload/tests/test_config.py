@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 from job.config import get_config
 
-from job.models import S3StorageConfig, OCIStorageConfig
+from job.models import S3StorageConfig, OCIStorageConfig, URISourceStorageConfig
 
 MR_PREFIX = "MODEL_SYNC"
 MR_SOURCE_PREFIX = "MODEL_SYNC_SOURCE"
@@ -99,7 +99,7 @@ def s3_credentials_folder():
             "secret_access_key": f"file_secret_{random.randint(1000, 9999)}",
             "region": f"eu-west-1_{random.randint(1000, 9999)}",
             "bucket": f"file-bucket_{random.randint(1000, 9999)}",
-            "key": f"file-key_{random.randint(1000, 9999)}",
+            "endpoint": f"file-endpoint_{random.randint(1000, 9999)}",
         }
 
         # Write the credentials to files
@@ -109,15 +109,30 @@ def s3_credentials_folder():
             f.write(credentials["secret_access_key"])
         with open(os.path.join(temp_dir, "AWS_REGION"), "w") as f:
             f.write(credentials["region"])
-        with open(os.path.join(temp_dir, "AWS_BUCKET"), "w") as f:
+        with open(os.path.join(temp_dir, "AWS_S3_BUCKET"), "w") as f:
             f.write(credentials["bucket"])
-        with open(os.path.join(temp_dir, "AWS_KEY"), "w") as f:
-            f.write(credentials["key"])
+        with open(os.path.join(temp_dir, "AWS_S3_ENDPOINT"), "w") as f:
+            f.write(credentials["endpoint"])
 
         yield Path(temp_dir), credentials
 
         # Clean up temporary folder
         shutil.rmtree(temp_dir)
+
+
+@pytest.fixture
+def uri_credentials_folder(tmp_path):
+    """
+    Fixture to create temporary URI credentials files for testing
+    """
+    # Create the URI credential file and store its content
+    uri_value = f"hf://test/model/{random.randint(1000, 9999)}"
+
+    # Write the URI to file
+    uri_file = tmp_path / "URI"
+    uri_file.write_text(uri_value)
+
+    return tmp_path, {"uri": uri_value}
 
 
 def test_s3_file_to_oci_env_config(
@@ -133,6 +148,8 @@ def test_s3_file_to_oci_env_config(
             "s3",
             "--source-s3-credentials-path",
             str(folder_location),
+            "--source-aws-key",
+            "my-key", # see samples/sample_job_s3_to_oci.yaml, as 'key' is not provided in the Secret (#1256)
             "--registry-server-address",
             "https://registry.example.com",
         ]
@@ -144,6 +161,8 @@ def test_s3_file_to_oci_env_config(
     assert config.source.secret_access_key == expected_credentials["secret_access_key"]
     assert config.source.region == expected_credentials["region"]
     assert config.source.bucket == expected_credentials["bucket"]
+    assert config.source.endpoint == expected_credentials["endpoint"]
+    assert config.source.key == "my-key" # see samples/sample_job_s3_to_oci.yaml, as 'key' is not provided in the Secret (#1256)
 
     assert isinstance(config.destination, OCIStorageConfig)
     assert config.destination.uri == destination_oci_env_vars["oci_uri"]
@@ -258,3 +277,133 @@ def test_params_will_override_env_config(
     assert config.source.secret_access_key == override_vars["aws_secret_access_key"]
     assert config.source.region == override_vars["aws_region"]
     assert config.source.bucket == override_vars["aws_bucket"]
+
+
+def test_uri_file_to_oci_env_config(uri_credentials_folder, destination_oci_env_vars, model_env_vars):
+    """Tests a configuration where the source is URI, using a credentials path, to a destination with OCI env vars"""
+    folder_location, expected_credentials = uri_credentials_folder
+
+    config = get_config(
+        [
+            "--source-type",
+            "uri",
+            "--source-uri-credentials-path",
+            str(folder_location),
+            "--registry-server-address",
+            "https://registry.example.com",
+        ]
+    )
+
+    # Source credentials were loaded from file
+    assert isinstance(config.source, URISourceStorageConfig)
+    assert config.source.uri == expected_credentials["uri"]
+    assert config.source.credentials_path == str(folder_location)
+
+    assert isinstance(config.destination, OCIStorageConfig)
+    assert config.destination.uri == destination_oci_env_vars["oci_uri"]
+    assert config.destination.username == destination_oci_env_vars["oci_username"]
+    assert config.destination.password == destination_oci_env_vars["oci_password"]
+
+
+def test_uri_params_to_oci_config(model_env_vars, destination_oci_env_vars):
+    """Test URI source configuration using CLI parameters"""
+    uri_value = "hf://test/model/params"
+
+    config = get_config(
+        [
+            "--source-type",
+            "uri",
+            "--source-uri",
+            uri_value,
+            "--registry-server-address",
+            "https://registry.example.com",
+        ]
+    )
+
+    assert isinstance(config.source, URISourceStorageConfig)
+    assert config.source.uri == uri_value
+    assert config.source.credentials_path is None
+
+    assert isinstance(config.destination, OCIStorageConfig)
+    assert config.destination.uri == destination_oci_env_vars["oci_uri"]
+
+
+def test_uri_credentials_override_params(uri_credentials_folder, destination_oci_env_vars, model_env_vars):
+    """Test that URI credentials from file override CLI parameters"""
+    folder_location, expected_credentials = uri_credentials_folder
+    cli_uri = "hf://cli/model/override"
+
+    config = get_config(
+        [
+            "--source-type",
+            "uri",
+            "--source-uri",
+            cli_uri,
+            "--source-uri-credentials-path",
+            str(folder_location),
+            "--registry-server-address",
+            "https://registry.example.com",
+        ]
+    )
+
+    # Credentials from file should override CLI parameter
+    assert isinstance(config.source, URISourceStorageConfig)
+    assert config.source.uri == expected_credentials["uri"]  # From file, not CLI
+    assert config.source.credentials_path == str(folder_location)
+
+
+def test_uri_credentials_missing_folder_error(model_env_vars, destination_oci_env_vars):
+    """Test that missing credentials folder raises appropriate error"""
+    with pytest.raises(FileNotFoundError, match="credentials folder not found"):
+        get_config(
+            [
+                "--source-type",
+                "uri",
+                "--source-uri-credentials-path",
+                "/non/existent/path",
+                "--registry-server-address",
+                "https://registry.example.com",
+            ]
+        )
+
+
+def test_uri_credentials_missing_uri_file_error(model_env_vars, destination_oci_env_vars, tmp_path):
+    """Test that missing URI file in credentials folder raises appropriate error"""
+    # Create empty directory without URI file
+    with pytest.raises(FileNotFoundError, match="URI credential file not found"):
+        get_config(
+            [
+                "--source-type",
+                "uri",
+                "--source-uri-credentials-path",
+                str(tmp_path),
+                "--registry-server-address",
+                "https://registry.example.com",
+            ]
+        )
+
+
+def test_uri_credentials_env_var_support(uri_credentials_folder, model_env_vars, destination_oci_env_vars, tmp_path, monkeypatch):
+    """Test that URI credentials path can be set via environment variable"""
+    # Create URI credential file
+    folder_location, expected_credentials = uri_credentials_folder
+
+    with monkeypatch.context() as mp:
+        # Set environment variable
+        mp.setenv("MODEL_SYNC_SOURCE_URI_CREDENTIALS_PATH", str(folder_location))
+
+        config = get_config(
+            [
+                "--source-type",
+                "uri",
+                "--registry-server-address",
+                "https://registry.example.com",
+            ]
+        )
+
+    # Credentials should be loaded from environment variable path
+    assert isinstance(config.source, URISourceStorageConfig)
+    assert config.source.uri == expected_credentials["uri"]
+    assert config.source.credentials_path == str(tmp_path)
+
+

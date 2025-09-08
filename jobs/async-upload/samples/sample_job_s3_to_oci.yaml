@@ -7,9 +7,9 @@ metadata:
 stringData:
   AWS_ACCESS_KEY_ID: minioadmin
   AWS_SECRET_ACCESS_KEY: minioadmin
-  AWS_BUCKET: default
-  AWS_REGION: us-east-1
-  AWS_ENDPOINT_URL: http://minio.minio.svc.cluster.local:9000
+  AWS_DEFAULT_REGION: us-east-1
+  AWS_S3_ENDPOINT: http://minio.minio.svc.cluster.local:9000
+  AWS_S3_BUCKET: default
 ---
 apiVersion: v1
 kind: Secret
@@ -51,6 +51,8 @@ spec:
         modelregistry.kubeflow.org/model-sync-model-version-id: "3"
         modelregistry.kubeflow.org/model-sync-model-artifact-id: "6"
     spec:
+      securityContext:
+        runAsNonRoot: true
       volumes:
         - name: source-credentials
           secret:
@@ -65,6 +67,19 @@ spec:
       containers:
         - name: async-upload
           image: quay.io/opendatahub/model-registry-job-async-upload
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop: ["ALL"]
+            seccompProfile:
+              type: RuntimeDefault
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              memory: "512Mi"
           volumeMounts:
             - name: source-credentials
               readOnly: true
