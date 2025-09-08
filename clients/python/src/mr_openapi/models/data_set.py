@@ -51,6 +51,14 @@ class DataSet(BaseModel):
         description="Output only. Last update time of the resource since epoch in millisecond since epoch.",
         alias="lastUpdateTimeSinceEpoch",
     )
+    experiment_id: StrictStr | None = Field(
+        default=None, description="Optional id of the experiment that produced this artifact.", alias="experimentId"
+    )
+    experiment_run_id: StrictStr | None = Field(
+        default=None,
+        description="Optional id of the experiment run that produced this artifact.",
+        alias="experimentRunId",
+    )
     artifact_type: StrictStr | None = Field(default="dataset-artifact", alias="artifactType")
     digest: StrictStr | None = Field(default=None, description="A unique hash or identifier for the dataset content.")
     source_type: StrictStr | None = Field(
@@ -78,6 +86,8 @@ class DataSet(BaseModel):
         "id",
         "createTimeSinceEpoch",
         "lastUpdateTimeSinceEpoch",
+        "experimentId",
+        "experimentRunId",
         "artifactType",
         "digest",
         "sourceType",
@@ -161,6 +171,8 @@ class DataSet(BaseModel):
                 "id": obj.get("id"),
                 "createTimeSinceEpoch": obj.get("createTimeSinceEpoch"),
                 "lastUpdateTimeSinceEpoch": obj.get("lastUpdateTimeSinceEpoch"),
+                "experimentId": obj.get("experimentId"),
+                "experimentRunId": obj.get("experimentRunId"),
                 "artifactType": obj.get("artifactType") if obj.get("artifactType") is not None else "dataset-artifact",
                 "digest": obj.get("digest"),
                 "sourceType": obj.get("sourceType"),
