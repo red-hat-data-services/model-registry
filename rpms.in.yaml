@@ -6,3 +6,4 @@ packages:
   - gcc
   - make
   - python3.12-devel
+  - cargo
