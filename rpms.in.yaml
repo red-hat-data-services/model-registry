@@ -3,3 +3,4 @@ contentOrigin:
     - "./ubi.repo"
 packages:
   - skopeo
+  - gcc
