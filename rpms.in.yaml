@@ -4,3 +4,4 @@ contentOrigin:
 packages:
   - skopeo
   - gcc
+  - python3-devel
