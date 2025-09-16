@@ -4,6 +4,13 @@ lockfileVendor: redhat
 arches:
 - arch: x86_64
   packages:
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/c/cargo-1.84.1-1.el9.x86_64.rpm
+    repoid: ubi-9-appstream-rpms
+    size: 8292467
+    checksum: sha256:7dd011cd79a635654ade4e3186c5f7545d692de81157d1ce1d42656eaa6993b2
+    name: cargo
+    evr: 1.84.1-1.el9
+    sourcerpm: rust-1.84.1-1.el9.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/c/containers-common-1-117.el9_6.x86_64.rpm
     repoid: ubi-9-appstream-rpms
     size: 158417
@@ -116,6 +123,13 @@ arches:
     name: libxcrypt-devel
     evr: 4.4.18-3.el9
     sourcerpm: libxcrypt-4.4.18-3.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/l/llvm-libs-19.1.7-2.el9.x86_64.rpm
+    repoid: ubi-9-appstream-rpms
+    size: 30399454
+    checksum: sha256:168c8d2d7ed92d3a77c2d8ba898b3506a483a623674072d057606cb29d2e3b87
+    name: llvm-libs
+    evr: 19.1.7-2.el9
+    sourcerpm: llvm-19.1.7-2.el9.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/p/python3.12-3.12.9-1.el9_6.2.x86_64.rpm
     repoid: ubi-9-appstream-rpms
     size: 27351
@@ -137,6 +151,20 @@ arches:
     name: python3.12-libs
     evr: 3.12.9-1.el9_6.2
     sourcerpm: python3.12-3.12.9-1.el9_6.2.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/r/rust-1.84.1-1.el9.x86_64.rpm
+    repoid: ubi-9-appstream-rpms
+    size: 28050444
+    checksum: sha256:9ba3c53fd811af2f294e31360d75e33e4cb89893130c7b3fe0c6191e20a09f3e
+    name: rust
+    evr: 1.84.1-1.el9
+    sourcerpm: rust-1.84.1-1.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/r/rust-std-static-1.84.1-1.el9.x86_64.rpm
+    repoid: ubi-9-appstream-rpms
+    size: 41211472
+    checksum: sha256:73bb90884432e2b43758f1043f107a570b5d54b38f17d5d0af51bac103ceb4f5
+    name: rust-std-static
+    evr: 1.84.1-1.el9
+    sourcerpm: rust-1.84.1-1.el9.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/s/skopeo-1.18.1-2.el9_6.x86_64.rpm
     repoid: ubi-9-appstream-rpms
     size: 9530108
@@ -214,6 +242,13 @@ arches:
     name: kmod
     evr: 28-10.el9
     sourcerpm: kmod-28-10.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/baseos/os/Packages/l/libedit-3.1-38.20210216cvs.el9.x86_64.rpm
+    repoid: ubi-9-baseos-rpms
+    size: 109330
+    checksum: sha256:9e41ff5754a5dca1308adf9617828934d56cb60d8d08f128f80e4328f69bc78c
+    name: libedit
+    evr: 3.1-38.20210216cvs.el9
+    sourcerpm: libedit-3.1-38.20210216cvs.el9.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/baseos/os/Packages/l/libgomp-11.5.0-5.el9_5.x86_64.rpm
     repoid: ubi-9-baseos-rpms
     size: 269396
