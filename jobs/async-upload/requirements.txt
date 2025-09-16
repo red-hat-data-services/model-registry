@@ -38,3 +38,5 @@ typing-extensions==4.13.2 ; python_version >= "3.11" and python_version < "4.0"
 typing-inspection==0.4.1 ; python_version >= "3.11" and python_version < "4.0"
 urllib3==2.5.0 ; python_version >= "3.11" and python_version < "4.0"
 yarl==1.20.1 ; python_version >= "3.11" and python_version < "4.0"
+puccinialin>=0.1,<0.2 ; python_version >= "3.11" and python_version < "4.0"
+
