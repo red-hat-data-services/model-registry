@@ -74,6 +74,13 @@ arches:
     name: gcc
     evr: 11.5.0-5.el9_5
     sourcerpm: gcc-11.5.0-5.el9_5.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/g/gcc-c++-11.5.0-5.el9_5.x86_64.rpm
+    repoid: ubi-9-appstream-rpms
+    size: 13479598
+    checksum: sha256:b8392274e302d665bc132aee4ed023f8a777d9c446531679ede18150d7867189
+    name: gcc-c++
+    evr: 11.5.0-5.el9_5
+    sourcerpm: gcc-11.5.0-5.el9_5.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/g/glibc-devel-2.34-168.el9_6.23.x86_64.rpm
     repoid: ubi-9-appstream-rpms
     size: 34295
@@ -116,6 +123,13 @@ arches:
     name: libslirp
     evr: 4.4.0-8.el9
     sourcerpm: libslirp-4.4.0-8.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/l/libstdc++-devel-11.5.0-5.el9_5.x86_64.rpm
+    repoid: ubi-9-appstream-rpms
+    size: 2531717
+    checksum: sha256:84695eeeb1daa8ff74baf7efd9fc57fb136bec7e8a2ca56c105be6d83ec22d07
+    name: libstdc++-devel
+    evr: 11.5.0-5.el9_5
+    sourcerpm: gcc-11.5.0-5.el9_5.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/l/libxcrypt-devel-4.4.18-3.el9.x86_64.rpm
     repoid: ubi-9-appstream-rpms
     size: 33101
