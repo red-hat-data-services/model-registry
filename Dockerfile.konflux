@@ -15,6 +15,7 @@ COPY go.sum go.sum
 COPY go.work go.work
 COPY go.work.sum go.work.sum
 COPY pkg/openapi/go.mod pkg/openapi/go.mod
+COPY catalog/pkg/openapi/go.mod catalog/pkg/openapi/go.mod
 
 RUN go mod download
 
