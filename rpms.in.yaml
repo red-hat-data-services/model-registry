@@ -3,3 +3,8 @@ contentOrigin:
     - "./ubi.repo"
 packages:
   - skopeo
+  - gcc
+  - make
+  - python3.12-devel
+  - cargo
+  - g++
