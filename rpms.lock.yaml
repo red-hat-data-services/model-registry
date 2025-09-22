@@ -39,13 +39,13 @@ arches:
     name: criu-libs
     evr: 3.19-1.el9
     sourcerpm: criu-3.19-1.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/c/crun-1.22-1.el9_6.aarch64.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/c/crun-1.23.1-2.el9_6.aarch64.rpm
     repoid: ubi-9-appstream-rpms
-    size: 232231
-    checksum: sha256:01c0bd3b37c7b48463fb9bb33902bf6712f2b2ccb03f230a9d0204eaba69d88c
+    size: 234252
+    checksum: sha256:75ae137f0fa28ada6d53664da56f578ef610281475e5b9d8934a450d90b1e79b
     name: crun
-    evr: 1.22-1.el9_6
-    sourcerpm: crun-1.22-1.el9_6.src.rpm
+    evr: 1.23.1-2.el9_6
+    sourcerpm: crun-1.23.1-2.el9_6.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/f/fuse-overlayfs-1.14-1.el9.aarch64.rpm
     repoid: ubi-9-appstream-rpms
     size: 66963
@@ -1090,13 +1090,13 @@ arches:
     name: criu-libs
     evr: 3.19-1.el9
     sourcerpm: criu-3.19-1.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/c/crun-1.22-1.el9_6.s390x.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/c/crun-1.23.1-2.el9_6.s390x.rpm
     repoid: ubi-9-appstream-rpms
-    size: 229965
-    checksum: sha256:109e5b867b36e6dd01208fad047cb5b66ef24eef7f8ad350fe7859e805575a04
+    size: 231679
+    checksum: sha256:09f8995e4ad877a3db891c0bcb3f8405cca630710fe8b5dd6fd2802835bb3cfc
     name: crun
-    evr: 1.22-1.el9_6
-    sourcerpm: crun-1.22-1.el9_6.src.rpm
+    evr: 1.23.1-2.el9_6
+    sourcerpm: crun-1.23.1-2.el9_6.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/f/fuse-overlayfs-1.14-1.el9.s390x.rpm
     repoid: ubi-9-appstream-rpms
     size: 67551
