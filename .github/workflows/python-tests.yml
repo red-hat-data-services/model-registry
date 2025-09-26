@@ -14,7 +14,7 @@ on:
       - ".github/dependabot.yml"
       - "docs/**"
 
-permissions:
+permissions: # set contents: read at top-level, per OpenSSF ScoreCard rule TokenPermissionsID
   contents: read
 
 jobs:
@@ -31,9 +31,9 @@ jobs:
       FORCE_COLOR: "1"
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v5.0.0
       - name: Set up Python ${{ matrix.python }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python }}
       - name: Upgrade pip
@@ -78,11 +78,11 @@ jobs:
         nodejs: ["20"]
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v5.0.0
         with:
           fetch-depth: 0
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python }}
       - name: Set up Node.js
@@ -116,7 +116,7 @@ jobs:
           fi
 
   test:
-    name: Test against Py ${{ matrix.python }} and K8s ${{ matrix.kubernetes-version }}
+    name: E2E Py ${{ matrix.python }} K8s ${{ matrix.kubernetes-version }} DB ${{ matrix.manifest-db }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -124,6 +124,7 @@ jobs:
         python: ["3.12"] # see below for versions 3.9-3.11
         kubernetes-version:
           ["v1.27.11", "v1.28.7", "v1.29.2", "v1.30.6", "v1.31.0"]
+        manifest-db: ["db", "postgres"] # subdirectory of manifests/kustomize/overlays to select which database: 'db' (MySQL) or 'postgres'
         exclude: # on main merges (not PRs), use also different K8s versions for E2E testing
           - kubernetes-version: ${{ github.event_name != 'push' && 'v1.28.7' }}
           - kubernetes-version: ${{ github.event_name != 'push' && 'v1.29.2' }}
@@ -132,21 +133,25 @@ jobs:
         include: # test Py versions only with a reference K8s version, designated currently to kubernetes-version: v1.27.11
           - python: "3.11"
             kubernetes-version: "v1.27.11"
+            manifest-db: "db"
           - python: "3.10"
             kubernetes-version: "v1.27.11"
+            manifest-db: "db"
           - python: "3.9"
             kubernetes-version: "v1.27.11"
+            manifest-db: "db"
     env:
       FORCE_COLOR: "1"
       IMG_REGISTRY: quay.io
       IMG_ORG: opendatahub
       IMG_REPO: model-registry
       MR_NAMESPACE: kubeflow # used for kind testing, align to /manifest
+      DEPLOY_MANIFEST_DB: "${{ matrix.manifest-db }}"
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v5.0.0
       - name: Set up Python ${{ matrix.python }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python }}
       - name: Upgrade pip
@@ -233,7 +238,7 @@ jobs:
           fail_ci_if_error: true
           token: ${{ secrets.CODECOV_TOKEN }}
       - name: Nox test fuzz (main only)
-        if: github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         working-directory: clients/python
         run: |
           kubectl port-forward -n ${{ env.MR_NAMESPACE }} service/model-registry-service 8080:8080 &
@@ -255,9 +260,9 @@ jobs:
       FORCE_COLOR: "1"
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v5.0.0
       - name: Set up Python ${{ matrix.python }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python }}
       - name: Upgrade pip
