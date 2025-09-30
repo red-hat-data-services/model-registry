@@ -39,7 +39,8 @@ EXPOSE 8080
 CMD /model-registry proxy -logtostderr=true
  
 LABEL com.redhat.component="odh-model-registry-container" \
-      name="managed-open-data-hub/odh-model-registry-rhel8" \
+      name="rhoai/odh-model-registry-rhel8" \
+      cpe="cpe:/a:redhat:openshift_ai:2.20::el8" \
       description="Container that provides a central repository for model developers to store and manage models, versions, and artifacts metadata." \
       summary="odh-model-registry" \
       maintainer="['managed-open-data-hub@redhat.com']" \
