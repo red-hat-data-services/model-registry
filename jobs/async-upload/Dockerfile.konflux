@@ -44,18 +44,12 @@ RUN echo "Testing model_registry import..." \
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
     CMD python -m job.healthcheck
 
-# OCI-recommended labels
-ARG VCS_REF=unknown
-ARG BUILD_DATE
-LABEL org.opencontainers.image.created=$BUILD_DATE \
-    org.opencontainers.image.revision=$VCS_REF \
-    org.opencontainers.image.title="Kubeflow Model Registry Async-Upload Job" \
-    org.opencontainers.image.description="K8s Job image that copies a model between storage back-ends and registers it in Kubeflow Model Registry." \
-    org.opencontainers.image.url="https://github.com/kubeflow/model-registry" \
-    org.opencontainers.image.source="https://github.com/kubeflow/model-registry/tree/main/jobs/async-upload" \
-    org.opencontainers.image.version="0.1.0" \
-    org.opencontainers.image.licenses="Apache-2.0" \
-    org.opencontainers.image.authors="Kubeflow Model Registry maintainers"
-
 # The Job controller will pass CLI flags/ENV-vars described in issue #1108.
 ENTRYPOINT ["python", "-m", "job.entrypoint"]
+
+LABEL com.redhat.component="odh-model-registry-job-async-upload-rhel9" \
+      name="rhoai/odh-model-registry-job-async-upload-rhel9" \
+      description="K8s Job image that copies a model between storage back-ends and registers it in Kubeflow Model Registry." \
+      summary="K8s Job image that copies a model between storage back-ends and registers it in Kubeflow Model Registry." \
+      io.k8s.display-name="Model Registry Async-Upload Job" \
+      io.k8s.description="odh-kserve-localmodel-rhel9"
