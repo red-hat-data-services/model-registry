@@ -8,7 +8,7 @@ USER 0
 
 # Install skopeo for Push/Pull of container images to integrate with Model Registry py client and Olot.
 RUN . /cachi2/cachi2.env && \
-     microdnf install -y skopeo gcc make python3.12-devel cargo g++ && \
+    microdnf install -y skopeo gcc make python3.12-devel cargo g++ && \
     microdnf clean all
 
 # security/env hardening
