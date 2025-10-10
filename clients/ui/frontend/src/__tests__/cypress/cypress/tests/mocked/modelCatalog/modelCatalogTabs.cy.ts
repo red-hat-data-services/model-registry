@@ -10,6 +10,7 @@ import { mockModelRegistry } from '~/__mocks__/mockModelRegistry';
 import type { CatalogSource } from '~/app/modelCatalogTypes';
 import { MODEL_CATALOG_API_VERSION } from '~/__tests__/cypress/cypress/support/commands/api';
 import { ModelRegistryMetadataType } from '~/app/types';
+import { mockCatalogFilterOptionsList } from '~/__mocks__/mockCatalogFilterOptionsList';
 
 // Mock models for testing
 const mockValidatedModel = mockCatalogModel({
@@ -84,6 +85,15 @@ const initIntercepts = ({
     },
     mockCatalogModelArtifactList({}),
   );
+
+  cy.interceptApi(
+    `GET /api/:apiVersion/model_catalog/models/filter_options`,
+    {
+      path: { apiVersion: MODEL_CATALOG_API_VERSION },
+      query: { namespace: 'kubeflow' },
+    },
+    mockCatalogFilterOptionsList(),
+  );
 };
 
 describe('Model Catalog Details Tabs', () => {
@@ -147,15 +157,17 @@ describe('Model Catalog Details Tabs', () => {
     });
 
     describe('Tab Content', () => {
-      it('should display placeholder content in Performance Insights tab', () => {
+      it('should display Hardware Configuration content in Performance Insights tab', () => {
         modelCatalog.findModelCatalogDetailLink().first().click();
 
         // Switch to Performance Insights tab
         modelCatalog.clickPerformanceInsightsTab();
 
-        // Verify placeholder content
+        // Verify Hardware Configuration content is displayed
         modelCatalog.findPerformanceInsightsTabContent().should('be.visible');
-        cy.contains('Performance Insights - Coming Soon').should('be.visible');
+        modelCatalog.findHardwareConfigurationTitle().should('be.visible');
+        modelCatalog.findHardwareConfigurationDescription().should('be.visible');
+        modelCatalog.findHardwareConfigurationTable().should('be.visible');
       });
     });
 
