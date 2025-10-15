@@ -5,6 +5,7 @@ import {
   mockCatalogSource,
   mockCatalogSourceList,
 } from '~/__mocks__';
+import { mockCatalogPerformanceMetricsArtifactList } from '~/__mocks__/mockCatalogModelArtifactList';
 import { modelCatalog } from '~/__tests__/cypress/cypress/pages/modelCatalog';
 import { mockModelRegistry } from '~/__mocks__/mockModelRegistry';
 import type { CatalogSource } from '~/app/modelCatalogTypes';
@@ -35,14 +36,20 @@ type HandlersProps = {
   sources?: CatalogSource[];
   useValidatedModel?: boolean;
   modelsPerCategory?: number;
+  hasPerformanceArtifacts?: boolean;
 };
 
 const initIntercepts = ({
   sources = [mockCatalogSource({}), mockCatalogSource({ id: 'source-2', name: 'source 2' })],
   useValidatedModel = true,
   modelsPerCategory = 4,
+  hasPerformanceArtifacts = true,
 }: HandlersProps) => {
   const testModel = useValidatedModel ? mockValidatedModel : mockNonValidatedModel;
+
+  const testArtifacts = hasPerformanceArtifacts
+    ? mockCatalogPerformanceMetricsArtifactList({})
+    : mockCatalogModelArtifactList({});
 
   cy.interceptApi(
     `GET /api/:apiVersion/model_catalog/sources`,
@@ -112,7 +119,7 @@ const initIntercepts = ({
         modelName: testModel.name.replace('/', '%2F'),
       },
     },
-    mockCatalogModelArtifactList({}),
+    testArtifacts,
   );
 
   cy.interceptApi(
@@ -126,14 +133,14 @@ const initIntercepts = ({
 };
 
 describe('Model Catalog Details Tabs', () => {
-  describe('Validated Models (with tabs)', () => {
+  describe('Validated Models with performance artifacts (with tabs)', () => {
     beforeEach(() => {
       // Mock model registries for register button functionality
       cy.intercept('GET', '/model-registry/api/v1/model_registry*', [
         mockModelRegistry({ name: 'modelregistry-sample' }),
       ]).as('getModelRegistries');
 
-      initIntercepts({ useValidatedModel: true });
+      initIntercepts({ useValidatedModel: true, hasPerformanceArtifacts: true });
       modelCatalog.visit();
     });
 
@@ -142,8 +149,8 @@ describe('Model Catalog Details Tabs', () => {
         modelCatalog.findLoadingState().should('not.exist');
         modelCatalog.findModelCatalogDetailLink().first().click();
 
-        // Verify tabs are present
-        modelCatalog.findModelDetailsTabs().should('be.visible');
+        // Tabs need scrollIntoView
+        modelCatalog.findModelDetailsTabs().scrollIntoView().should('be.visible');
         modelCatalog.findOverviewTab().should('be.visible');
         modelCatalog.findPerformanceInsightsTab().should('be.visible');
       });
@@ -153,13 +160,16 @@ describe('Model Catalog Details Tabs', () => {
 
         // Overview tab should be active and content should be visible
         modelCatalog.findOverviewTab().should('have.attr', 'aria-selected', 'true');
-        modelCatalog.findOverviewTabContent().should('be.visible');
+        // Overview content needs scrollIntoView
+        modelCatalog.findOverviewTabContent().scrollIntoView().should('be.visible');
         modelCatalog.findDetailsDescription().should('be.visible');
         cy.url().should('include', '/model-catalog/source-2/validated-model/overview');
       });
 
       it('should switch to Performance Insights tab when clicked', () => {
         modelCatalog.findModelCatalogDetailLink().first().click();
+
+        cy.url().should('include', '/model-catalog/source-2/validated-model/overview');
 
         // Click Performance Insights tab
         modelCatalog.clickPerformanceInsightsTab();
@@ -173,6 +183,8 @@ describe('Model Catalog Details Tabs', () => {
 
       it('should switch back to Overview tab when clicked', () => {
         modelCatalog.findModelCatalogDetailLink().first().click();
+
+        cy.url().should('include', '/model-catalog/source-2/validated-model/overview');
 
         // First switch to Performance Insights
         modelCatalog.clickPerformanceInsightsTab();
@@ -224,6 +236,8 @@ describe('Model Catalog Details Tabs', () => {
       it('should maintain tab state when switching between tabs', () => {
         modelCatalog.findModelCatalogDetailLink().first().click();
 
+        cy.url().should('include', '/model-catalog/source-2/validated-model/overview');
+
         // Switch to Performance Insights
         modelCatalog.clickPerformanceInsightsTab();
         modelCatalog.findPerformanceInsightsTab().should('have.attr', 'aria-selected', 'true');
@@ -239,6 +253,28 @@ describe('Model Catalog Details Tabs', () => {
     });
   });
 
+  describe('Validated Models without performance artifacts (without tabs)', () => {
+    beforeEach(() => {
+      cy.intercept('GET', '/model-registry/api/v1/model_registry*', [
+        mockModelRegistry({ name: 'modelregistry-sample' }),
+      ]).as('getModelRegistries');
+
+      initIntercepts({ useValidatedModel: true, hasPerformanceArtifacts: false });
+      modelCatalog.visit();
+    });
+
+    it('should not display tabs for validated models without performance artifacts', () => {
+      modelCatalog.findLoadingState().should('not.exist');
+      modelCatalog.findModelCatalogDetailLink().first().click();
+      modelCatalog.findModelDetailsTabs().should('not.exist');
+      modelCatalog.findOverviewTab().should('not.exist');
+      modelCatalog.findPerformanceInsightsTab().should('not.exist');
+
+      modelCatalog.findOverviewTabContent().should('be.visible');
+      modelCatalog.findDetailsDescription().should('be.visible');
+    });
+  });
+
   describe('Non-Validated Models (without tabs)', () => {
     beforeEach(() => {
       // Mock model registries for register button functionality
@@ -246,7 +282,7 @@ describe('Model Catalog Details Tabs', () => {
         mockModelRegistry({ name: 'modelregistry-sample' }),
       ]).as('getModelRegistries');
 
-      initIntercepts({ useValidatedModel: false });
+      initIntercepts({ useValidatedModel: false, hasPerformanceArtifacts: false });
       modelCatalog.visit();
     });
 
@@ -259,8 +295,8 @@ describe('Model Catalog Details Tabs', () => {
       modelCatalog.findOverviewTab().should('not.exist');
       modelCatalog.findPerformanceInsightsTab().should('not.exist');
 
-      // But overview content should still be visible
-      modelCatalog.findOverviewTabContent().should('be.visible');
+      // Overview content needs scrollIntoView
+      modelCatalog.findOverviewTabContent().scrollIntoView().should('be.visible');
       modelCatalog.findDetailsDescription().should('be.visible');
     });
   });
