@@ -1,7 +1,10 @@
 import { modelCatalog } from '~/__tests__/cypress/cypress/pages/modelCatalog';
 import {
+  mockCatalogAccuracyMetricsArtifact,
   mockCatalogModel,
+  mockCatalogModelArtifact,
   mockCatalogModelList,
+  mockCatalogPerformanceMetricsArtifact,
   mockCatalogSource,
   mockCatalogSourceList,
 } from '~/__mocks__';
@@ -60,12 +63,21 @@ const initIntercepts = ({
   );
 
   cy.interceptApi(
-    `GET /api/:apiVersion/model_catalog/models/filter_options`,
+    `GET /api/:apiVersion/model_catalog/sources/:sourceId/artifacts/:modelName`,
     {
-      path: { apiVersion: MODEL_CATALOG_API_VERSION },
-      query: { namespace: 'kubeflow' },
+      path: {
+        apiVersion: MODEL_CATALOG_API_VERSION,
+        sourceId: 'sample-source',
+        modelName: 'repo1/model1',
+      },
     },
-    mockCatalogFilterOptionsList(),
+    {
+      items: [
+        mockCatalogPerformanceMetricsArtifact({}),
+        mockCatalogAccuracyMetricsArtifact({}),
+        mockCatalogModelArtifact({}),
+      ],
+    },
   );
 };
 
@@ -101,16 +113,23 @@ describe('Model Catalog Page', () => {
     modelCatalog.findFilter('Language').should('be.visible');
   });
 
+  // Filter checkboxes need scrollIntoView
   it('filters show more and show less button should work', () => {
     initIntercepts({});
     modelCatalog.visit();
     modelCatalog.findFilterShowMoreButton('Task').click();
-    modelCatalog.findFilterCheckbox('Task', 'text-generation').should('be.visible');
-    modelCatalog.findFilterCheckbox('Task', 'text-to-text').should('be.visible');
-    modelCatalog.findFilterCheckbox('Task', 'image-to-text').should('be.visible');
-    modelCatalog.findFilterCheckbox('Task', 'image-text-to-text').should('be.visible');
-    modelCatalog.findFilterCheckbox('Task', 'audio-to-text').should('be.visible');
-    modelCatalog.findFilterCheckbox('Task', 'video-to-text').should('be.visible');
+    modelCatalog
+      .findFilterCheckbox('Task', 'text-generation')
+      .scrollIntoView()
+      .should('be.visible');
+    modelCatalog.findFilterCheckbox('Task', 'text-to-text').scrollIntoView().should('be.visible');
+    modelCatalog.findFilterCheckbox('Task', 'image-to-text').scrollIntoView().should('be.visible');
+    modelCatalog
+      .findFilterCheckbox('Task', 'image-text-to-text')
+      .scrollIntoView()
+      .should('be.visible');
+    modelCatalog.findFilterCheckbox('Task', 'audio-to-text').scrollIntoView().should('be.visible');
+    modelCatalog.findFilterCheckbox('Task', 'video-to-text').scrollIntoView().should('be.visible');
     modelCatalog.findFilterShowLessButton('Task').click();
     modelCatalog.findFilterCheckbox('Task', 'audio-to-text').should('not.exist');
   });
