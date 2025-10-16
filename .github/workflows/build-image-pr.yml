@@ -63,10 +63,13 @@ jobs:
         if: always()
         run: |
           kubectl get deployments -n model-registry-operator-system -o wide
-          kubectl get pods -n model-registry-operator-system -o wide
+          kubectl get pods -n model-registry-operator-system -o wide --show-labels
           kubectl events -A
           kubectl describe -n model-registry-operator-system deployment/model-registry-operator-controller-manager
-          kubectl logs -n model-registry-operator-system deployment/model-registry-operator-controller-manager
+          for p in $(kubectl get pods -n model-registry-operator-system -o name); do
+            echo "===== Logs for $p ====="
+            kubectl logs -n model-registry-operator-system $p
+          done
       - name: Create Test Registry
         run: |
           kubectl apply -k "https://github.com/opendatahub-io/model-registry-operator.git/config/samples/mysql?ref=${BRANCH}"
