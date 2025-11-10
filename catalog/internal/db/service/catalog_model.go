@@ -3,15 +3,17 @@ package service
 import (
 	"errors"
 	"fmt"
-	"math"
 	"strings"
 
+	"github.com/golang/glog"
 	"github.com/kubeflow/model-registry/catalog/internal/db/filter"
 	"github.com/kubeflow/model-registry/catalog/internal/db/models"
 	dbmodels "github.com/kubeflow/model-registry/internal/db/models"
 	"github.com/kubeflow/model-registry/internal/db/schema"
+	"github.com/kubeflow/model-registry/internal/db/scopes"
 	"github.com/kubeflow/model-registry/internal/db/service"
 	"github.com/kubeflow/model-registry/internal/db/utils"
+	"github.com/lib/pq"
 	"gorm.io/gorm"
 )
 
@@ -21,22 +23,24 @@ type CatalogModelRepositoryImpl struct {
 	*service.GenericRepository[models.CatalogModel, schema.Context, schema.ContextProperty, *models.CatalogModelListOptions]
 }
 
-func NewCatalogModelRepository(db *gorm.DB, typeID int64) models.CatalogModelRepository {
+func NewCatalogModelRepository(db *gorm.DB, typeID int32) models.CatalogModelRepository {
 	r := &CatalogModelRepositoryImpl{}
 
 	r.GenericRepository = service.NewGenericRepository(service.GenericRepositoryConfig[models.CatalogModel, schema.Context, schema.ContextProperty, *models.CatalogModelListOptions]{
-		DB:                  db,
-		TypeID:              typeID,
-		EntityToSchema:      mapCatalogModelToContext,
-		SchemaToEntity:      mapDataLayerToCatalogModel,
-		EntityToProperties:  mapCatalogModelToContextProperties,
-		NotFoundError:       ErrCatalogModelNotFound,
-		EntityName:          "catalog model",
-		PropertyFieldName:   "context_id",
-		ApplyListFilters:    applyCatalogModelListFilters,
-		IsNewEntity:         func(entity models.CatalogModel) bool { return entity.GetID() == nil },
-		HasCustomProperties: func(entity models.CatalogModel) bool { return entity.GetCustomProperties() != nil },
-		EntityMappingFuncs:  filter.NewCatalogEntityMappings(),
+		DB:                    db,
+		TypeID:                typeID,
+		EntityToSchema:        mapCatalogModelToContext,
+		SchemaToEntity:        mapDataLayerToCatalogModel,
+		EntityToProperties:    mapCatalogModelToContextProperties,
+		NotFoundError:         ErrCatalogModelNotFound,
+		EntityName:            "catalog model",
+		PropertyFieldName:     "context_id",
+		ApplyListFilters:      applyCatalogModelListFilters,
+		CreatePaginationToken: r.createPaginationToken,
+		ApplyCustomOrdering:   r.applyCustomOrdering,
+		IsNewEntity:           func(entity models.CatalogModel) bool { return entity.GetID() == nil },
+		HasCustomProperties:   func(entity models.CatalogModel) bool { return entity.GetCustomProperties() != nil },
+		EntityMappingFuncs:    filter.NewCatalogEntityMappings(),
 	})
 
 	return r
@@ -45,8 +49,8 @@ func NewCatalogModelRepository(db *gorm.DB, typeID int64) models.CatalogModelRep
 func (r *CatalogModelRepositoryImpl) Save(model models.CatalogModel) (models.CatalogModel, error) {
 	config := r.GetConfig()
 	if model.GetTypeID() == nil {
-		if config.TypeID > 0 && config.TypeID < math.MaxInt32 {
-			model.SetTypeID(int32(config.TypeID))
+		if config.TypeID > 0 {
+			model.SetTypeID(config.TypeID)
 		}
 	}
 
@@ -63,6 +67,24 @@ func (r *CatalogModelRepositoryImpl) Save(model models.CatalogModel) (models.Cat
 	}
 
 	return r.GenericRepository.Save(model, nil)
+}
+
+// ApplyStandardPagination overrides the base implementation to use catalog-specific allowed columns
+func (r *CatalogModelRepositoryImpl) ApplyStandardPagination(query *gorm.DB, listOptions *models.CatalogModelListOptions, entities any) *gorm.DB {
+	pageSize := listOptions.GetPageSize()
+	orderBy := listOptions.GetOrderBy()
+	sortOrder := listOptions.GetSortOrder()
+	nextPageToken := listOptions.GetNextPageToken()
+
+	pagination := &dbmodels.Pagination{
+		PageSize:      &pageSize,
+		OrderBy:       &orderBy,
+		SortOrder:     &sortOrder,
+		NextPageToken: &nextPageToken,
+	}
+
+	// Use catalog-specific allowed columns (includes NAME)
+	return query.Scopes(scopes.PaginateWithOptions(entities, pagination, r.GetConfig().DB, "Context", CatalogOrderByColumns))
 }
 
 func (r *CatalogModelRepositoryImpl) List(listOptions models.CatalogModelListOptions) (*dbmodels.ListWrapper[models.CatalogModel], error) {
@@ -237,50 +259,226 @@ func mapDataLayerToCatalogModel(modelCtx schema.Context, propertiesCtx []schema.
 func (r *CatalogModelRepositoryImpl) GetFilterableProperties(maxLength int) (map[string][]string, error) {
 	config := r.GetConfig()
 
+	if config.DB.Name() != "postgres" {
+		return nil, fmt.Errorf("GetFilterableProperties is only supported on PostgreSQL")
+	}
+
+	db, err := config.DB.DB()
+	if err != nil {
+		return nil, err
+	}
+
 	// Get table names using GORM utilities for database compatibility
 	contextTable := utils.GetTableName(config.DB, &schema.Context{})
 	propertyTable := utils.GetTableName(config.DB, &schema.ContextProperty{})
 
-	// Simplified query: get distinct property name/value pairs
 	query := fmt.Sprintf(`
-		SELECT DISTINCT cp.name, cp.string_value
-		FROM %s cp
-		WHERE cp.context_id IN (
-			SELECT id FROM %s WHERE type_id = ?
-		)
-		AND cp.name IN (
-			SELECT name FROM (
-				SELECT name, MAX(CHAR_LENGTH(string_value)) as max_len
-				FROM %s
-				WHERE context_id IN (
-					SELECT id FROM %s WHERE type_id = ?
+		SELECT name, array_agg(string_value) FROM (
+			SELECT
+				name,
+				string_value
+			FROM %s WHERE
+				context_id IN (
+					SELECT id FROM %s WHERE type_id=$1
 				)
 				AND string_value IS NOT NULL
 				AND string_value != ''
-				GROUP BY name
-			) AS field_lengths
-			WHERE max_len <= ?
+				AND string_value IS NOT JSON ARRAY
+
+			UNION
+
+			SELECT
+				name,
+				json_array_elements_text(string_value::json) AS string_value
+			FROM %s WHERE
+				context_id IN (
+					SELECT id FROM %s WHERE type_id=$1
+				)
+				AND string_value IS JSON ARRAY
 		)
-		AND cp.string_value IS NOT NULL
-		AND cp.string_value != ''
-		ORDER BY cp.name, cp.string_value
+		GROUP BY name HAVING MAX(CHAR_LENGTH(string_value)) <= $2
 	`, propertyTable, contextTable, propertyTable, contextTable)
 
-	type propertyRow struct {
-		Name        string
-		StringValue string
-	}
-
-	var rows []propertyRow
-	if err := config.DB.Raw(query, config.TypeID, config.TypeID, maxLength).Scan(&rows).Error; err != nil {
+	rows, err := db.Query(query, config.TypeID, maxLength)
+	if err != nil {
 		return nil, fmt.Errorf("error querying filterable properties: %w", err)
 	}
+	defer rows.Close()
 
-	// Aggregate values by property name in Go
-	result := make(map[string][]string)
-	for _, row := range rows {
-		result[row.Name] = append(result[row.Name], row.StringValue)
+	result := map[string][]string{}
+	for rows.Next() {
+		var name string
+		var values pq.StringArray
+
+		err = rows.Scan(&name, &values)
+		if err != nil {
+			return nil, fmt.Errorf("error scanning filterable property row: %w", err)
+		}
+
+		result[name] = []string(values)
 	}
 
 	return result, nil
+}
+
+// applyCustomOrdering applies custom ordering logic for non-standard orderBy field
+func (r *CatalogModelRepositoryImpl) applyCustomOrdering(query *gorm.DB, listOptions *models.CatalogModelListOptions) *gorm.DB {
+
+	db := r.GetConfig().DB
+	contextTable := utils.GetTableName(db, &schema.Context{})
+	orderBy := listOptions.GetOrderBy()
+
+	// Handle NAME ordering specially (catalog-specific)
+	if orderBy == "NAME" {
+		return ApplyNameOrdering(query, contextTable, listOptions.GetSortOrder(), listOptions.GetNextPageToken(), listOptions.GetPageSize())
+	}
+
+	subquery, sortColumn := r.sortValueQuery(listOptions, contextTable+".id")
+	if subquery == nil {
+		// Fall back to standard pagination with catalog-specific allowed columns
+		return r.ApplyStandardPagination(query, listOptions, []models.CatalogModel{})
+	}
+	subquery = subquery.Group(contextTable + ".id")
+
+	// Join the main query with the subquery
+	query = query.
+		Joins(fmt.Sprintf("LEFT JOIN (?) sort_value ON %s.id=sort_value.id", contextTable), subquery)
+
+	// Apply sorting order
+	sortOrder := listOptions.GetSortOrder()
+	if sortOrder != "ASC" {
+		sortOrder = "DESC"
+	}
+	query = query.Order(fmt.Sprintf("sort_value.%s %s NULLS LAST, %s.id", sortColumn, sortOrder, contextTable))
+
+	// Handle cursor-based pagination with nextPageToken
+	nextPageToken := listOptions.GetNextPageToken()
+	if nextPageToken != "" {
+		// Parse the cursor from the token
+		if cursor, err := scopes.DecodeCursor(nextPageToken); err == nil {
+			// Apply WHERE clause for cursor-based pagination with ACCURACY
+			query = r.applyCursorPagination(query, cursor, sortColumn, sortOrder)
+		}
+		// If token parsing fails, fall back to no cursor (first page)
+	}
+
+	// Apply pagination limit
+	pageSize := listOptions.GetPageSize()
+	if pageSize > 0 {
+		query = query.Limit(int(pageSize) + 1) // +1 to detect if there are more pages
+	}
+
+	return query
+}
+
+// applyCursorPagination applies WHERE clause for cursor-based pagination with ACCURACY sorting
+func (r *CatalogModelRepositoryImpl) applyCursorPagination(query *gorm.DB, cursor *scopes.Cursor, sortColumn, sortOrder string) *gorm.DB {
+	contextTable := utils.GetTableName(query, &schema.Context{})
+
+	// Handle NULL values in cursor
+	if cursor.Value == "" {
+		// Items without the sort value will be sorted to the bottom, just use ID-based pagination.
+		return query.Where(fmt.Sprintf("sort_value.%s IS NULL AND %s.id > ?", sortColumn, contextTable), cursor.ID)
+	}
+
+	cmp := "<"
+	if sortOrder == "ASC" {
+		cmp = ">"
+	}
+
+	// Note that we sort ID ASCENDING as a tie-breaker, so ">" is correct below.
+	return query.Where(fmt.Sprintf("(sort_value.%s %s ? OR (sort_value.%s = ? AND %s.id > ?) OR sort_value.%s IS NULL)", sortColumn, cmp, sortColumn, contextTable, sortColumn),
+		cursor.Value, cursor.Value, cursor.ID)
+}
+
+func (r *CatalogModelRepositoryImpl) createPaginationToken(lastItem schema.Context, listOptions *models.CatalogModelListOptions) string {
+	// Handle NAME ordering (catalog-specific)
+	if listOptions.GetOrderBy() == "NAME" {
+		return CreateNamePaginationToken(lastItem.ID, &lastItem.Name)
+	}
+
+	sortValueQuery, column := r.sortValueQuery(listOptions)
+	if sortValueQuery != nil {
+		contextTable := utils.GetTableName(r.GetConfig().DB, &schema.Context{})
+		sortValueQuery = sortValueQuery.Where(contextTable+".id=?", lastItem.ID)
+
+		var result struct {
+			IntValue    *int64   `gorm:"int_value"`
+			DoubleValue *float64 `gorm:"double_value"`
+			StringValue *string  `gorm:"string_value"`
+		}
+		err := sortValueQuery.Scan(&result).Error
+		if err != nil {
+			glog.Warningf("Failed to get sort value: %v", err)
+		} else {
+			switch column {
+			case "int_value":
+				return scopes.CreateNextPageToken(lastItem.ID, result.IntValue)
+			case "double_value":
+				return scopes.CreateNextPageToken(lastItem.ID, result.DoubleValue)
+			case "string_value":
+				fallthrough
+			default:
+				return scopes.CreateNextPageToken(lastItem.ID, result.StringValue)
+			}
+		}
+	}
+
+	return r.CreateDefaultPaginationToken(lastItem, listOptions)
+}
+
+// sortValueQuery returns a query that will produce the value to sort on for
+// the List response. The returned string is the column name.
+//
+// If the sort does not require a subquery, sortValueQuery returns nil.
+func (r *CatalogModelRepositoryImpl) sortValueQuery(listOptions *models.CatalogModelListOptions, extraColumns ...any) (*gorm.DB, string) {
+	db := r.GetConfig().DB
+	contextTable := utils.GetTableName(db, &schema.Context{})
+
+	query := db.Table(contextTable).
+		Where(contextTable+".type_id=?", r.GetConfig().TypeID)
+
+	orderBy := strings.Split(listOptions.GetOrderBy(), ".")
+
+	var valueColumn string
+
+	switch {
+	case len(orderBy) == 3 && orderBy[0] == "artifacts":
+		// artifacts.<property>.<value_column> e.g. artifacts.ttft_p90.double_value
+
+		attributionTable := utils.GetTableName(db, &schema.Attribution{})
+		propertyTable := utils.GetTableName(db, &schema.ArtifactProperty{})
+
+		aggFn := "max"
+		if listOptions.GetSortOrder() == "ASC" {
+			aggFn = "min"
+		}
+		valueColumn = orderBy[2]
+
+		query = query.
+			Select(fmt.Sprintf("%s(%s.%s) AS %s", aggFn, propertyTable, valueColumn, valueColumn), extraColumns...).
+			Joins(fmt.Sprintf("LEFT JOIN %s ON %s.id=%s.context_id", attributionTable, contextTable, attributionTable)).
+			Joins(fmt.Sprintf("LEFT JOIN %s ON %s.artifact_id=%s.artifact_id AND %s.name=?", propertyTable, attributionTable, propertyTable, propertyTable), orderBy[1])
+	case len(orderBy) == 2:
+		// <property>.<value_column> e.g. provider.string_value
+		propertyTable := utils.GetTableName(db, &schema.ContextProperty{})
+		valueColumn = orderBy[1]
+		query = query.
+			Select(fmt.Sprintf("max(%s.%s) AS %s", propertyTable, valueColumn, valueColumn), extraColumns...).
+			Joins(fmt.Sprintf("LEFT JOIN %s ON %s.id=%s.context_id AND %s.name=?", propertyTable, contextTable, propertyTable, propertyTable), orderBy[0])
+	default:
+		// Standard sort will work
+		return nil, ""
+	}
+
+	// The query is built, but verify that the value column is valid before
+	// returning it.
+	switch valueColumn {
+	case "int_value", "double_value", "string_value":
+		// OK
+	default:
+		return nil, ""
+	}
+
+	return query, valueColumn
 }
