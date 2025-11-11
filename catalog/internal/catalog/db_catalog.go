@@ -55,14 +55,16 @@ func (d *dbCatalogImpl) GetModel(ctx context.Context, modelName string, sourceID
 
 func (d *dbCatalogImpl) ListModels(ctx context.Context, params ListModelsParams) (apimodels.CatalogModelList, error) {
 	pageSize := int32(params.PageSize)
+	orderBy := string(params.OrderBy)
+	sortOrder := string(params.SortOrder)
 
 	// Use consistent defaults to match pagination logic
-	orderBy := string(params.OrderBy)
 	if orderBy == "" {
 		orderBy = mrmodels.DefaultOrderBy
+	} else if orderBy == "ACCURACY" {
+		orderBy = "artifacts.overall_average.double_value"
 	}
 
-	sortOrder := string(params.SortOrder)
 	if sortOrder == "" {
 		sortOrder = mrmodels.DefaultSortOrder
 	}
@@ -153,8 +155,8 @@ func (d *dbCatalogImpl) GetArtifacts(ctx context.Context, modelName string, sour
 	parentResourceID32 := int32(parentResourceID)
 
 	artifactsList, err := d.catalogArtifactRepository.List(dbmodels.CatalogArtifactListOptions{
-		ParentResourceID: &parentResourceID32,
-		ArtifactType:     params.ArtifactType,
+		ParentResourceID:    &parentResourceID32,
+		ArtifactTypesFilter: params.ArtifactTypesFilter,
 		Pagination: mrmodels.Pagination{
 			PageSize:      &pageSize,
 			OrderBy:       &orderBy,
@@ -205,40 +207,25 @@ func (d *dbCatalogImpl) GetFilterOptions(ctx context.Context) (*apimodels.Filter
 			continue
 		}
 
-		// Deduplicate values
-		uniqueValues := make(map[string]bool)
-
-		// Parse JSON arrays for fields like language and tasks
-		for _, value := range values {
-			var arrayValues []string
-			if err := json.Unmarshal([]byte(value), &arrayValues); err == nil {
-				// Successfully parsed as array, add individual values
-				for _, v := range arrayValues {
-					uniqueValues[v] = true
-				}
-			} else {
-				// Not a JSON array
-				uniqueValues[value] = true
-			}
+		if len(values) == 0 {
+			continue
 		}
 
-		if len(uniqueValues) > 0 {
-			sortedValues := make([]string, 0, len(uniqueValues))
-			for v := range uniqueValues {
-				sortedValues = append(sortedValues, v)
-			}
-			sort.Strings(sortedValues)
+		sortedValues := make([]string, 0, len(values))
+		for _, v := range values {
+			sortedValues = append(sortedValues, v)
+		}
+		sort.Strings(sortedValues)
 
-			// Convert to []interface{} (supports future non-string filter types)
-			expandedValues := make([]interface{}, len(sortedValues))
-			for i, v := range sortedValues {
-				expandedValues[i] = v
-			}
+		// Convert to []any (supports future non-string filter types)
+		expandedValues := make([]any, len(sortedValues))
+		for i, v := range sortedValues {
+			expandedValues[i] = v
+		}
 
-			options[fieldName] = apimodels.FilterOption{
-				Type:   "string",
-				Values: expandedValues,
-			}
+		options[fieldName] = apimodels.FilterOption{
+			Type:   "string",
+			Values: expandedValues,
 		}
 	}
 
@@ -335,7 +322,7 @@ func mapDBModelToAPIModel(m dbmodels.CatalogModel) apimodels.CatalogModel {
 			}
 		}
 		if len(customProps) > 0 {
-			res.CustomProperties = &customProps
+			res.CustomProperties = customProps
 		}
 	}
 
@@ -407,7 +394,7 @@ func mapToModelArtifact(a dbmodels.CatalogModelArtifact) (apimodels.CatalogArtif
 		}
 
 		catalogCustomProps := convertMetadataValueMap(customPropsMap)
-		catalogModelArtifact.CustomProperties = &catalogCustomProps
+		catalogModelArtifact.CustomProperties = catalogCustomProps
 	}
 
 	return apimodels.CatalogArtifact{
@@ -462,7 +449,7 @@ func mapToMetricsArtifact(a dbmodels.CatalogMetricsArtifact, metricsType string)
 		}
 
 		catalogCustomProps := convertMetadataValueMap(customPropsMap)
-		catalogMetricsArtifact.CustomProperties = &catalogCustomProps
+		catalogMetricsArtifact.CustomProperties = catalogCustomProps
 
 	}
 

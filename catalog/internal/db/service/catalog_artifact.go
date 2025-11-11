@@ -10,6 +10,7 @@ import (
 	"github.com/kubeflow/model-registry/internal/db/schema"
 	"github.com/kubeflow/model-registry/internal/db/scopes"
 	"github.com/kubeflow/model-registry/internal/db/utils"
+	"github.com/kubeflow/model-registry/pkg/api"
 	"gorm.io/gorm"
 )
 
@@ -17,12 +18,12 @@ var ErrCatalogArtifactNotFound = errors.New("catalog artifact by id not found")
 
 type CatalogArtifactRepositoryImpl struct {
 	db       *gorm.DB
-	idToName map[int64]string
+	idToName map[int32]string
 	nameToID datastore.ArtifactTypeMap
 }
 
 func NewCatalogArtifactRepository(db *gorm.DB, artifactTypes datastore.ArtifactTypeMap) models.CatalogArtifactRepository {
-	idToName := make(map[int64]string, len(artifactTypes))
+	idToName := make(map[int32]string, len(artifactTypes))
 	for name, id := range artifactTypes {
 		idToName[id] = name
 	}
@@ -77,8 +78,28 @@ func (r *CatalogArtifactRepositoryImpl) List(listOptions models.CatalogArtifactL
 		query = query.Where("external_id = ?", listOptions.ExternalID)
 	}
 
-	// Filter by artifact type if specified
-	if listOptions.ArtifactType != nil && *listOptions.ArtifactType != "" {
+	// Filter by artifact type(s) if specified
+	if len(listOptions.ArtifactTypesFilter) > 0 {
+		// Handle multiple artifact types
+		typeIDs := []int32{}
+		for _, artifactType := range listOptions.ArtifactTypesFilter {
+			// Handle "null" string as invalid artifact type
+			if artifactType == "null" || artifactType == "" {
+				return nil, fmt.Errorf("invalid artifact type: empty or null value provided: %w", api.ErrBadRequest)
+			}
+			typeID, err := r.getTypeIDFromArtifactType(artifactType)
+			if err != nil {
+				return nil, fmt.Errorf("invalid catalog artifact type %s: %w", artifactType, err)
+			}
+			typeIDs = append(typeIDs, typeID)
+		}
+		query = query.Where("type_id IN ?", typeIDs)
+	} else if listOptions.ArtifactType != nil {
+		// Handle single artifact type for backward compatibility
+		// Handle "null" string as invalid artifact type
+		if *listOptions.ArtifactType == "null" || *listOptions.ArtifactType == "" {
+			return nil, fmt.Errorf("invalid artifact type: empty or null value provided: %w", api.ErrBadRequest)
+		}
 		typeID, err := r.getTypeIDFromArtifactType(*listOptions.ArtifactType)
 		if err != nil {
 			return nil, fmt.Errorf("invalid catalog artifact type %s: %w", *listOptions.ArtifactType, err)
@@ -86,7 +107,7 @@ func (r *CatalogArtifactRepositoryImpl) List(listOptions models.CatalogArtifactL
 		query = query.Where("type_id = ?", typeID)
 	} else {
 		// Only include catalog artifact types
-		catalogTypeIDs := []int64{}
+		catalogTypeIDs := []int32{}
 		for _, typeID := range r.nameToID {
 			catalogTypeIDs = append(catalogTypeIDs, typeID)
 		}
@@ -106,14 +127,22 @@ func (r *CatalogArtifactRepositoryImpl) List(listOptions models.CatalogArtifactL
 	nextPageToken := listOptions.GetNextPageToken()
 	pageSize := listOptions.GetPageSize()
 
-	pagination := &dbmodels.Pagination{
-		PageSize:      &pageSize,
-		OrderBy:       &orderBy,
-		SortOrder:     &sortOrder,
-		NextPageToken: &nextPageToken,
-	}
+	// Handle NAME ordering specially (catalog-specific) to avoid string-to-integer cast issues
+	if orderBy == "NAME" {
+		artifactTable := utils.GetTableName(query, &schema.Artifact{})
+		query = ApplyNameOrdering(query, artifactTable, sortOrder, nextPageToken, pageSize)
+	} else {
+		// For non-NAME ordering, use standard pagination
+		pagination := &dbmodels.Pagination{
+			PageSize:      &pageSize,
+			OrderBy:       &orderBy,
+			SortOrder:     &sortOrder,
+			NextPageToken: &nextPageToken,
+		}
 
-	query = query.Scopes(scopes.PaginateWithTablePrefix(artifactsArt, pagination, r.db, "Artifact"))
+		// Use catalog-specific allowed columns (includes NAME)
+		query = query.Scopes(scopes.PaginateWithOptions(artifactsArt, pagination, r.db, "Artifact", CatalogOrderByColumns))
+	}
 
 	if err := query.Find(&artifactsArt).Error; err != nil {
 		return nil, fmt.Errorf("error listing catalog artifacts: %w", err)
@@ -159,7 +188,7 @@ func (r *CatalogArtifactRepositoryImpl) List(listOptions models.CatalogArtifactL
 }
 
 // getTypeIDFromArtifactType maps catalog artifact type strings to their corresponding type IDs
-func (r *CatalogArtifactRepositoryImpl) getTypeIDFromArtifactType(artifactType string) (int64, error) {
+func (r *CatalogArtifactRepositoryImpl) getTypeIDFromArtifactType(artifactType string) (int32, error) {
 	switch artifactType {
 	case "model-artifact":
 		return r.nameToID[CatalogModelArtifactTypeName], nil
@@ -173,7 +202,7 @@ func (r *CatalogArtifactRepositoryImpl) getTypeIDFromArtifactType(artifactType s
 func (r *CatalogArtifactRepositoryImpl) mapDataLayerToCatalogArtifact(artifact schema.Artifact, properties []schema.ArtifactProperty) (models.CatalogArtifact, error) {
 	artToReturn := models.CatalogArtifact{}
 
-	typeName := r.idToName[int64(artifact.TypeID)]
+	typeName := r.idToName[artifact.TypeID]
 
 	switch typeName {
 	case CatalogModelArtifactTypeName:
@@ -201,11 +230,7 @@ func (r *CatalogArtifactRepositoryImpl) createPaginationToken(artifact schema.Ar
 	case "LAST_UPDATE_TIME":
 		value = fmt.Sprintf("%d", artifact.LastUpdateTimeSinceEpoch)
 	case "NAME":
-		if artifact.Name != nil {
-			value = *artifact.Name
-		} else {
-			value = fmt.Sprintf("%d", artifact.ID) // Fallback to ID if name is nil
-		}
+		return CreateNamePaginationToken(artifact.ID, artifact.Name)
 	default:
 		// Default to ID ordering
 		value = fmt.Sprintf("%d", artifact.ID)
