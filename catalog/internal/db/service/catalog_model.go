@@ -8,12 +8,12 @@ import (
 	"github.com/golang/glog"
 	"github.com/kubeflow/model-registry/catalog/internal/db/filter"
 	"github.com/kubeflow/model-registry/catalog/internal/db/models"
+	"github.com/kubeflow/model-registry/internal/db/dbutil"
 	dbmodels "github.com/kubeflow/model-registry/internal/db/models"
 	"github.com/kubeflow/model-registry/internal/db/schema"
 	"github.com/kubeflow/model-registry/internal/db/scopes"
 	"github.com/kubeflow/model-registry/internal/db/service"
 	"github.com/kubeflow/model-registry/internal/db/utils"
-	"github.com/lib/pq"
 	"gorm.io/gorm"
 )
 
@@ -27,20 +27,21 @@ func NewCatalogModelRepository(db *gorm.DB, typeID int32) models.CatalogModelRep
 	r := &CatalogModelRepositoryImpl{}
 
 	r.GenericRepository = service.NewGenericRepository(service.GenericRepositoryConfig[models.CatalogModel, schema.Context, schema.ContextProperty, *models.CatalogModelListOptions]{
-		DB:                    db,
-		TypeID:                typeID,
-		EntityToSchema:        mapCatalogModelToContext,
-		SchemaToEntity:        mapDataLayerToCatalogModel,
-		EntityToProperties:    mapCatalogModelToContextProperties,
-		NotFoundError:         ErrCatalogModelNotFound,
-		EntityName:            "catalog model",
-		PropertyFieldName:     "context_id",
-		ApplyListFilters:      applyCatalogModelListFilters,
-		CreatePaginationToken: r.createPaginationToken,
-		ApplyCustomOrdering:   r.applyCustomOrdering,
-		IsNewEntity:           func(entity models.CatalogModel) bool { return entity.GetID() == nil },
-		HasCustomProperties:   func(entity models.CatalogModel) bool { return entity.GetCustomProperties() != nil },
-		EntityMappingFuncs:    filter.NewCatalogEntityMappings(),
+		DB:                      db,
+		TypeID:                  typeID,
+		EntityToSchema:          mapCatalogModelToContext,
+		SchemaToEntity:          mapDataLayerToCatalogModel,
+		EntityToProperties:      mapCatalogModelToContextProperties,
+		NotFoundError:           ErrCatalogModelNotFound,
+		EntityName:              "catalog model",
+		PropertyFieldName:       "context_id",
+		ApplyListFilters:        applyCatalogModelListFilters,
+		CreatePaginationToken:   r.createPaginationToken,
+		ApplyCustomOrdering:     r.applyCustomOrdering,
+		IsNewEntity:             func(entity models.CatalogModel) bool { return entity.GetID() == nil },
+		HasCustomProperties:     func(entity models.CatalogModel) bool { return entity.GetCustomProperties() != nil },
+		EntityMappingFuncs:      filter.NewCatalogEntityMappings(),
+		PreserveHistoricalTimes: true, // Catalog preserves timestamps from YAML source data
 	})
 
 	return r
@@ -103,6 +104,8 @@ func (r *CatalogModelRepositoryImpl) GetByName(name string) (models.CatalogModel
 	// Query properties
 	var properties []schema.ContextProperty
 	if err := config.DB.Where(config.PropertyFieldName+" = ?", entity.ID).Find(&properties).Error; err != nil {
+		// Sanitize database errors to avoid exposing internal details to users
+		err = dbutil.SanitizeDatabaseError(err)
 		return zeroEntity, fmt.Errorf("error getting properties by %s id: %w", config.EntityName, err)
 	}
 
@@ -119,6 +122,8 @@ func (r *CatalogModelRepositoryImpl) lookupModelByName(name string) (*schema.Con
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, fmt.Errorf("%w: %v", config.NotFoundError, err)
 		}
+		// Sanitize database errors to avoid exposing internal details to users
+		err = dbutil.SanitizeDatabaseError(err)
 		return nil, fmt.Errorf("error getting %s by name: %w", config.EntityName, err)
 	}
 
@@ -252,73 +257,6 @@ func mapDataLayerToCatalogModel(modelCtx schema.Context, propertiesCtx []schema.
 	catalogModel.CustomProperties = &customProperties
 
 	return catalogModel
-}
-
-// GetFilterableProperties returns property names and their unique values
-// Only includes properties where ALL values are shorter than maxLength
-func (r *CatalogModelRepositoryImpl) GetFilterableProperties(maxLength int) (map[string][]string, error) {
-	config := r.GetConfig()
-
-	if config.DB.Name() != "postgres" {
-		return nil, fmt.Errorf("GetFilterableProperties is only supported on PostgreSQL")
-	}
-
-	db, err := config.DB.DB()
-	if err != nil {
-		return nil, err
-	}
-
-	// Get table names using GORM utilities for database compatibility
-	contextTable := utils.GetTableName(config.DB, &schema.Context{})
-	propertyTable := utils.GetTableName(config.DB, &schema.ContextProperty{})
-
-	query := fmt.Sprintf(`
-		SELECT name, array_agg(string_value) FROM (
-			SELECT
-				name,
-				string_value
-			FROM %s WHERE
-				context_id IN (
-					SELECT id FROM %s WHERE type_id=$1
-				)
-				AND string_value IS NOT NULL
-				AND string_value != ''
-				AND string_value IS NOT JSON ARRAY
-
-			UNION
-
-			SELECT
-				name,
-				json_array_elements_text(string_value::json) AS string_value
-			FROM %s WHERE
-				context_id IN (
-					SELECT id FROM %s WHERE type_id=$1
-				)
-				AND string_value IS JSON ARRAY
-		)
-		GROUP BY name HAVING MAX(CHAR_LENGTH(string_value)) <= $2
-	`, propertyTable, contextTable, propertyTable, contextTable)
-
-	rows, err := db.Query(query, config.TypeID, maxLength)
-	if err != nil {
-		return nil, fmt.Errorf("error querying filterable properties: %w", err)
-	}
-	defer rows.Close()
-
-	result := map[string][]string{}
-	for rows.Next() {
-		var name string
-		var values pq.StringArray
-
-		err = rows.Scan(&name, &values)
-		if err != nil {
-			return nil, fmt.Errorf("error scanning filterable property row: %w", err)
-		}
-
-		result[name] = []string(values)
-	}
-
-	return result, nil
 }
 
 // applyCustomOrdering applies custom ordering logic for non-standard orderBy field

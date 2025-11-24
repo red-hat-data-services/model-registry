@@ -26,7 +26,7 @@ type ModelCatalogServiceAPIService struct {
 }
 
 // GetAllModelArtifacts retrieves all model artifacts for a given model from the specified source.
-func (m *ModelCatalogServiceAPIService) GetAllModelArtifacts(ctx context.Context, sourceID string, modelName string, artifactType []model.ArtifactTypeQueryParam, artifactType2 []model.ArtifactTypeQueryParam, pageSize string, orderBy model.OrderByField, sortOrder model.SortOrder, nextPageToken string) (ImplResponse, error) {
+func (m *ModelCatalogServiceAPIService) GetAllModelArtifacts(ctx context.Context, sourceID string, modelName string, artifactType []model.ArtifactTypeQueryParam, artifactType2 []model.ArtifactTypeQueryParam, filterQuery string, pageSize string, orderBy string, sortOrder model.SortOrder, nextPageToken string) (ImplResponse, error) {
 	// Handle multiple artifact_type parameters (snake case - deprecated, will be removed in future)
 	for _, v := range artifactType2 {
 		if v != "" {
@@ -61,6 +61,7 @@ func (m *ModelCatalogServiceAPIService) GetAllModelArtifacts(ctx context.Context
 	}
 
 	artifacts, err := m.provider.GetArtifacts(ctx, modelName, sourceID, catalog.ListArtifactsParams{
+		FilterQuery:         filterQuery,
 		ArtifactTypesFilter: artifactTypesFilter,
 		PageSize:            pageSizeInt,
 		OrderBy:             orderBy,
@@ -71,7 +72,8 @@ func (m *ModelCatalogServiceAPIService) GetAllModelArtifacts(ctx context.Context
 		statusCode := api.ErrToStatus(err)
 		var errorMsg string
 		if errors.Is(err, api.ErrBadRequest) {
-			errorMsg = fmt.Sprintf("Invalid model name '%s' for source '%s'", modelName, sourceID)
+			// Use the original error message which should be more specific
+			errorMsg = err.Error()
 		} else if errors.Is(err, api.ErrNotFound) {
 			errorMsg = fmt.Sprintf("No model found '%s' in source '%s'", modelName, sourceID)
 		} else {
@@ -123,11 +125,16 @@ func (m *ModelCatalogServiceAPIService) FindLabels(ctx context.Context, pageSize
 			return ErrorResponse(http.StatusInternalServerError, err), err
 		}
 
-		// Create CatalogLabel with name
-		label := model.NewCatalogLabel(name)
+		// Create CatalogLabel with name (which may be null)
+		var label *model.CatalogLabel
+		if nameStr, ok := name.(string); ok {
+			label = model.NewCatalogLabel(*model.NewNullableString(&nameStr))
+		} else {
+			label = model.NewCatalogLabel(*model.NewNullableString(nil))
+		}
 
 		// Add all other properties to AdditionalProperties
-		label.AdditionalProperties = make(map[string]interface{})
+		label.AdditionalProperties = make(map[string]any)
 		for key, value := range sl.data {
 			if key != "name" {
 				label.AdditionalProperties[key] = value
@@ -295,7 +302,7 @@ func generateLabelID(index int) string {
 
 // sortableLabel wraps a label map to make it sortable
 type sortableLabel struct {
-	data  map[string]string
+	data  map[string]any
 	index int    // Original position for stable sort when key is missing
 	id    string // Stable ID for pagination
 }
@@ -333,8 +340,17 @@ func genLabelCmpFunc(orderByKey string, sortOrder model.SortOrder) func(sortable
 		}
 
 		// Get values for the orderBy key
-		aVal, aHasKey := a.data[orderByKey]
-		bVal, bHasKey := b.data[orderByKey]
+		aValRaw, aHasKey := a.data[orderByKey]
+		bValRaw, bHasKey := b.data[orderByKey]
+
+		var aVal string
+		if aHasKey {
+			aVal, aHasKey = aValRaw.(string)
+		}
+		var bVal string
+		if bHasKey {
+			bVal, bHasKey = bValRaw.(string)
+		}
 
 		// If both have the key, compare their values
 		if aHasKey && bHasKey {
