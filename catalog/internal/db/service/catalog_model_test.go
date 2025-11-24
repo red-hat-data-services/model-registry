@@ -340,84 +340,6 @@ func TestCatalogModelRepository(t *testing.T) {
 		assert.Len(t, *retrieved.GetCustomProperties(), 2)
 	})
 
-	t.Run("TestGetFilterableProperties", func(t *testing.T) {
-		// Create models with various property lengths
-		shortValueModel := &models.CatalogModelImpl{
-			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("short-value-model"),
-				ExternalID: apiutils.Of("short-ext"),
-			},
-			Properties: &[]dbmodels.Properties{
-				{Name: "license", StringValue: apiutils.Of("MIT")},
-				{Name: "provider", StringValue: apiutils.Of("HuggingFace")},
-				{Name: "maturity", StringValue: apiutils.Of("stable")},
-			},
-		}
-
-		longValueModel := &models.CatalogModelImpl{
-			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("long-value-model"),
-				ExternalID: apiutils.Of("long-ext"),
-			},
-			Properties: &[]dbmodels.Properties{
-				{Name: "license", StringValue: apiutils.Of("Apache-2.0")},
-				{Name: "readme", StringValue: apiutils.Of("This is a very long readme that should be excluded from filterable properties because it exceeds the maximum length threshold of 100 characters. It contains detailed information about the model.")},
-				{Name: "description", StringValue: apiutils.Of("This is also a very long description that should be excluded from filterable properties because it exceeds 100 chars")},
-			},
-		}
-
-		jsonArrayModel := &models.CatalogModelImpl{
-			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("json-array-model"),
-				ExternalID: apiutils.Of("json-ext"),
-			},
-			Properties: &[]dbmodels.Properties{
-				{Name: "language", StringValue: apiutils.Of(`["python", "go"]`)},
-				{Name: "tasks", StringValue: apiutils.Of(`["text-classification", "question-answering"]`)},
-			},
-		}
-
-		_, err := repo.Save(shortValueModel)
-		require.NoError(t, err)
-		_, err = repo.Save(longValueModel)
-		require.NoError(t, err)
-		_, err = repo.Save(jsonArrayModel)
-		require.NoError(t, err)
-
-		// Test with max length of 100
-		result, err := repo.GetFilterableProperties(100)
-		require.NoError(t, err)
-		require.NotNil(t, result)
-
-		// Should include short properties
-		assert.Contains(t, result, "license")
-		assert.Contains(t, result, "provider")
-		assert.Contains(t, result, "maturity")
-		assert.Contains(t, result, "language")
-		assert.Contains(t, result, "tasks")
-
-		// Should exclude long properties
-		assert.NotContains(t, result, "readme")
-		assert.NotContains(t, result, "description")
-
-		// Verify license has both values
-		licenseValues := result["license"]
-		assert.GreaterOrEqual(t, len(licenseValues), 2)
-		assert.Contains(t, licenseValues, "MIT")
-		assert.Contains(t, licenseValues, "Apache-2.0")
-
-		// Test with smaller max length
-		result, err = repo.GetFilterableProperties(10)
-		require.NoError(t, err)
-		require.NotNil(t, result)
-
-		// Should include only very short properties
-		assert.Contains(t, result, "license")
-		// Should exclude longer properties
-		assert.NotContains(t, result, "provider") // "HuggingFace" is > 10 chars
-		assert.NotContains(t, result, "tasks")
-	})
-
 	t.Run("TestAccuracySorting", func(t *testing.T) {
 		// Get the CatalogMetricsArtifact type ID for creating accuracy metrics
 		metricsTypeID := getCatalogMetricsArtifactTypeID(t, sharedDB)
@@ -939,4 +861,122 @@ func findIndex(slice []string, target string) int {
 		}
 	}
 	return -1
+}
+
+func TestCatalogModelRepository_TimestampPreservation(t *testing.T) {
+	sharedDB, cleanup := testutils.SetupPostgresWithMigrations(t, service.DatastoreSpec())
+	defer cleanup()
+
+	typeID := getCatalogModelTypeID(t, sharedDB)
+	repo := service.NewCatalogModelRepository(sharedDB, typeID)
+
+	t.Run("Preserve historical timestamps from YAML catalog", func(t *testing.T) {
+		// Simulate loading a model from YAML with historical timestamps
+		historicalCreateTime := int64(1739776988000)  // From YAML example
+		historicalUpdateTime := int64(1746720264000)  // From YAML example
+
+		catalogModel := &models.CatalogModelImpl{
+			Attributes: &models.CatalogModelAttributes{
+				Name:                     apiutils.Of("yaml-loaded-model"),
+				ExternalID:               apiutils.Of("yaml-model-123"),
+				CreateTimeSinceEpoch:     &historicalCreateTime,
+				LastUpdateTimeSinceEpoch: &historicalUpdateTime,
+			},
+			Properties: &[]dbmodels.Properties{
+				{
+					Name:        "description",
+					StringValue: apiutils.Of("Model loaded from YAML"),
+				},
+			},
+		}
+
+		// Save the model - timestamps should be preserved
+		saved, err := repo.Save(catalogModel)
+		require.NoError(t, err)
+		require.NotNil(t, saved)
+		require.NotNil(t, saved.GetID())
+
+		// Verify historical timestamps were preserved
+		savedAttrs := saved.GetAttributes()
+		require.NotNil(t, savedAttrs.CreateTimeSinceEpoch)
+		require.NotNil(t, savedAttrs.LastUpdateTimeSinceEpoch)
+		assert.Equal(t, historicalCreateTime, *savedAttrs.CreateTimeSinceEpoch,
+			"CreateTimeSinceEpoch should be preserved from YAML")
+		assert.Equal(t, historicalUpdateTime, *savedAttrs.LastUpdateTimeSinceEpoch,
+			"LastUpdateTimeSinceEpoch should be preserved from YAML")
+
+		// Reload from database to verify persistence
+		retrieved, err := repo.GetByID(*saved.GetID())
+		require.NoError(t, err)
+		retrievedAttrs := retrieved.GetAttributes()
+		assert.Equal(t, historicalCreateTime, *retrievedAttrs.CreateTimeSinceEpoch,
+			"CreateTimeSinceEpoch should persist in database")
+		assert.Equal(t, historicalUpdateTime, *retrievedAttrs.LastUpdateTimeSinceEpoch,
+			"LastUpdateTimeSinceEpoch should persist in database")
+	})
+
+	t.Run("Auto-generate timestamps for API-created models", func(t *testing.T) {
+		// Model created via API without timestamps
+		catalogModel := &models.CatalogModelImpl{
+			Attributes: &models.CatalogModelAttributes{
+				Name:       apiutils.Of("api-created-model"),
+				ExternalID: apiutils.Of("api-model-456"),
+				// No timestamps set - should be auto-generated
+			},
+			Properties: &[]dbmodels.Properties{
+				{
+					Name:        "description",
+					StringValue: apiutils.Of("Model created via API"),
+				},
+			},
+		}
+
+		// Save the model - timestamps should be auto-generated
+		saved, err := repo.Save(catalogModel)
+		require.NoError(t, err)
+		require.NotNil(t, saved)
+
+		// Verify timestamps were auto-generated (non-zero)
+		savedAttrs := saved.GetAttributes()
+		require.NotNil(t, savedAttrs.CreateTimeSinceEpoch)
+		require.NotNil(t, savedAttrs.LastUpdateTimeSinceEpoch)
+		assert.Greater(t, *savedAttrs.CreateTimeSinceEpoch, int64(0),
+			"CreateTimeSinceEpoch should be auto-generated")
+		assert.Greater(t, *savedAttrs.LastUpdateTimeSinceEpoch, int64(0),
+			"LastUpdateTimeSinceEpoch should be auto-generated")
+	})
+
+	t.Run("Update existing model from YAML preserves CreateTime", func(t *testing.T) {
+		// First save: Create model with historical timestamps
+		historicalCreateTime := int64(1739776988000)
+		firstUpdateTime := int64(1746720264000)
+
+		catalogModel := &models.CatalogModelImpl{
+			Attributes: &models.CatalogModelAttributes{
+				Name:                     apiutils.Of("yaml-updated-model"),
+				ExternalID:               apiutils.Of("yaml-updated-123"),
+				CreateTimeSinceEpoch:     &historicalCreateTime,
+				LastUpdateTimeSinceEpoch: &firstUpdateTime,
+			},
+		}
+
+		saved, err := repo.Save(catalogModel)
+		require.NoError(t, err)
+		savedID := saved.GetID()
+
+		// Second save: Update the model with new LastUpdateTime (simulating catalog reload)
+		newerUpdateTime := int64(1750000000000)
+		catalogModel.ID = savedID
+		catalogModel.GetAttributes().LastUpdateTimeSinceEpoch = &newerUpdateTime
+
+		updated, err := repo.Save(catalogModel)
+		require.NoError(t, err)
+
+		// Verify CreateTime is preserved but LastUpdateTime is updated
+		updatedAttrs := updated.GetAttributes()
+		assert.Equal(t, historicalCreateTime, *updatedAttrs.CreateTimeSinceEpoch,
+			"CreateTimeSinceEpoch should be preserved on update")
+		assert.Equal(t, newerUpdateTime, *updatedAttrs.LastUpdateTimeSinceEpoch,
+			"LastUpdateTimeSinceEpoch should be updated")
+	})
 }

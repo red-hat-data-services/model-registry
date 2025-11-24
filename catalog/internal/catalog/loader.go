@@ -44,8 +44,8 @@ type LoaderEventHandler func(ctx context.Context, record ModelProviderRecord) er
 
 // sourceConfig is the structure for the catalog sources YAML file.
 type sourceConfig struct {
-	Catalogs []Source            `json:"catalogs"`
-	Labels   []map[string]string `json:"labels,omitempty"`
+	Catalogs []Source         `json:"catalogs"`
+	Labels   []map[string]any `json:"labels,omitempty"`
 }
 
 // Source is a single entry from the catalog sources YAML file.
@@ -85,6 +85,8 @@ func NewLoader(services service.Services, paths []string) *Loader {
 
 // RegisterEventHandler adds a function that will be called for every
 // successfully processed record. This should be called before Start.
+//
+// Handlers are called in the order they are registered.
 func (l *Loader) RegisterEventHandler(fn LoaderEventHandler) {
 	l.handlers = append(l.handlers, fn)
 }
@@ -192,6 +194,11 @@ func (l *Loader) updateSources(path string, config *sourceConfig) error {
 			return fmt.Errorf("invalid source: duplicate id %s", id)
 		}
 
+		// Validate includedModels/excludedModels patterns early
+		if err := ValidateSourceFilters(source.IncludedModels, source.ExcludedModels); err != nil {
+			return fmt.Errorf("invalid source %s: %w", id, err)
+		}
+
 		sources[id] = source.CatalogSource
 
 		glog.Infof("loaded source %s of type %s", id, source.Type)
@@ -204,7 +211,7 @@ func (l *Loader) updateLabels(path string, config *sourceConfig) error {
 	// Merge labels from config into the label collection
 	if config.Labels == nil {
 		// No labels in config, but we still need to clear any previous labels from this origin
-		return l.Labels.Merge(path, []map[string]string{})
+		return l.Labels.Merge(path, []map[string]any{})
 	}
 
 	// Validate that each label has a required "name" field
@@ -250,10 +257,12 @@ func (l *Loader) updateDatabase(ctx context.Context, path string, config *source
 				continue
 			}
 
-			// Remove any catalog model artifacts that existed
-			// before. Any other artifact types will be added to
-			// what's there.
+			// Remove artifacts that existed before.
 			err = l.services.CatalogArtifactRepository.DeleteByParentID(service.CatalogModelArtifactTypeName, *modelID)
+			if err != nil {
+				glog.Errorf("%s: unable to remove old catalog model artifacts: %v", err)
+			}
+			err = l.services.CatalogArtifactRepository.DeleteByParentID(service.CatalogMetricsArtifactTypeName, *modelID)
 			if err != nil {
 				glog.Errorf("%s: unable to remove old catalog model artifacts: %v", err)
 			}

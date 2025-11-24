@@ -1,16 +1,7 @@
 diff --git a/catalog/internal/server/openapi/api_model_catalog_service.go b/catalog/internal/server/openapi/api_model_catalog_service.go
-index 3409c7a2..c7f010f1 100644
+index c3845578..ad9ec467 100644
 --- a/catalog/internal/server/openapi/api_model_catalog_service.go
 +++ b/catalog/internal/server/openapi/api_model_catalog_service.go
-@@ -168,7 +168,7 @@ func (c *ModelCatalogServiceAPIController) FindLabels(w http.ResponseWriter, r *
- 		nextPageTokenParam = param
- 	} else {
- 	}
--	result, err := c.service.FindLabels(r.Context(), pageSizeParam, model.OrderByField(orderByParam), model.SortOrder(sortOrderParam), nextPageTokenParam)
-+	result, err := c.service.FindLabels(r.Context(), pageSizeParam, orderByParam, model.SortOrder(sortOrderParam), nextPageTokenParam)
- 	// If an error occurred, encode the error with the status code
- 	if err != nil {
- 		c.errorHandler(w, r, err, &result)
 @@ -321,6 +321,21 @@ func (c *ModelCatalogServiceAPIController) GetModel(w http.ResponseWriter, r *ht
  		c.errorHandler(w, r, &RequiredError{"*"}, nil)
  		return
