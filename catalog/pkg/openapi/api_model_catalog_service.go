@@ -773,8 +773,9 @@ type ApiGetAllModelArtifactsRequest struct {
 	modelName     string
 	artifactType  *[]ArtifactTypeQueryParam
 	artifactType2 *[]ArtifactTypeQueryParam
+	filterQuery   *string
 	pageSize      *string
-	orderBy       *OrderByField
+	orderBy       *string
 	sortOrder     *SortOrder
 	nextPageToken *string
 }
@@ -792,14 +793,20 @@ func (r ApiGetAllModelArtifactsRequest) ArtifactType2(artifactType2 []ArtifactTy
 	return r
 }
 
+// A SQL-like query string to filter catalog artifacts. The query supports rich filtering capabilities with automatic type inference.  **Supported Operators:** - Comparison: &#x60;&#x3D;&#x60;, &#x60;!&#x3D;&#x60;, &#x60;&lt;&gt;&#x60;, &#x60;&gt;&#x60;, &#x60;&lt;&#x60;, &#x60;&gt;&#x3D;&#x60;, &#x60;&lt;&#x3D;&#x60; - Pattern matching: &#x60;LIKE&#x60;, &#x60;ILIKE&#x60; (case-insensitive) - Set membership: &#x60;IN&#x60; - Logical: &#x60;AND&#x60;, &#x60;OR&#x60; - Grouping: &#x60;()&#x60; for complex expressions  **Data Types:** - Strings: &#x60;\&quot;value\&quot;&#x60; or &#x60;&#39;value&#39;&#x60; - Numbers: &#x60;42&#x60;, &#x60;3.14&#x60;, &#x60;1e-5&#x60; - Booleans: &#x60;true&#x60;, &#x60;false&#x60; (case-insensitive)  **Property Access (Artifacts):** - Standard properties: &#x60;name&#x60;, &#x60;id&#x60;, &#x60;uri&#x60;, &#x60;artifactType&#x60;, &#x60;createTimeSinceEpoch&#x60; - Custom properties: Any user-defined property name in &#x60;customProperties&#x60; - Escaped properties: Use backticks for special characters: &#x60;&#x60; &#x60;custom-property&#x60; &#x60;&#x60; - Type-specific access: &#x60;property.string_value&#x60;, &#x60;property.double_value&#x60;, &#x60;property.int_value&#x60;, &#x60;property.bool_value&#x60;  **Examples:** - Basic: &#x60;name &#x3D; \&quot;my-artifact\&quot;&#x60; - Comparison: &#x60;ttft_mean &gt; 90&#x60; - Pattern: &#x60;uri LIKE \&quot;%s3.amazonaws.com%\&quot;&#x60; - Complex: &#x60;(artifactType &#x3D; \&quot;model-artifact\&quot; OR artifactType &#x3D; \&quot;metrics-artifact\&quot;) AND name LIKE \&quot;%pytorch%\&quot;&#x60; - Custom property: &#x60;format.string_value &#x3D; \&quot;pytorch\&quot;&#x60; - Escaped property: &#x60;&#x60; &#x60;custom-key&#x60; &#x3D; \&quot;value\&quot; &#x60;&#x60;
+func (r ApiGetAllModelArtifactsRequest) FilterQuery(filterQuery string) ApiGetAllModelArtifactsRequest {
+	r.filterQuery = &filterQuery
+	return r
+}
+
 // Number of entities in each page.
 func (r ApiGetAllModelArtifactsRequest) PageSize(pageSize string) ApiGetAllModelArtifactsRequest {
 	r.pageSize = &pageSize
 	return r
 }
 
-// Specifies the order by criteria for listing entities.
-func (r ApiGetAllModelArtifactsRequest) OrderBy(orderBy OrderByField) ApiGetAllModelArtifactsRequest {
+// Specifies the order by criteria for listing artifacts.  **Standard Fields:** - &#x60;ID&#x60; - Order by artifact ID - &#x60;NAME&#x60; - Order by artifact name - &#x60;CREATE_TIME&#x60; - Order by creation timestamp - &#x60;LAST_UPDATE_TIME&#x60; - Order by last update timestamp  **Custom Property Ordering:**  Artifacts can be ordered by custom properties using the format: &#x60;&lt;property_name&gt;.&lt;value_type&gt;&#x60;  Supported value types: - &#x60;double_value&#x60; - For numeric (floating-point) properties - &#x60;int_value&#x60; - For integer properties - &#x60;string_value&#x60; - For string properties  Examples: - &#x60;mmlu.double_value&#x60; - Order by the &#39;mmlu&#39; benchmark score - &#x60;accuracy.double_value&#x60; - Order by accuracy metric - &#x60;framework_type.string_value&#x60; - Order by framework type - &#x60;hardware_count.int_value&#x60; - Order by hardware count - &#x60;ttft_mean.double_value&#x60; - Order by time-to-first-token mean  **Behavior:** - If an invalid value type is specified (e.g., &#x60;accuracy.invalid_type&#x60;), an error is returned - If an invalid format is used (e.g., &#x60;accuracy&#x60; without &#x60;.value_type&#x60;), it falls back to ID ordering - If a property doesn&#39;t exist, it falls back to ID ordering - Artifacts with the specified property are ordered first (by the property value), followed by artifacts without the property (ordered by ID) - Empty property names (e.g., &#x60;.double_value&#x60;) return an error
+func (r ApiGetAllModelArtifactsRequest) OrderBy(orderBy string) ApiGetAllModelArtifactsRequest {
 	r.orderBy = &orderBy
 	return r
 }
@@ -882,6 +889,9 @@ func (a *ModelCatalogServiceAPIService) GetAllModelArtifactsExecute(r ApiGetAllM
 		} else {
 			parameterAddToHeaderOrQuery(localVarQueryParams, "artifact_type", t, "form", "multi")
 		}
+	}
+	if r.filterQuery != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "filterQuery", r.filterQuery, "form", "")
 	}
 	if r.pageSize != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "pageSize", r.pageSize, "form", "")
