@@ -54,6 +54,8 @@ istio-*
 
 # VSCode files
 .vscode/
+# VSCode History extensions
+.history/
 
 # Python
 venv/
