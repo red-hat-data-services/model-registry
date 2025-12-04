@@ -25,7 +25,7 @@ export type CatalogSource = {
   error?: string;
 };
 
-export type CatalogSourceList = ModelCatalogListParams & { items: CatalogSource[] };
+export type CatalogSourceList = ModelCatalogListParams & { items?: CatalogSource[] };
 
 export type CatalogModel = {
   source_id?: string;
@@ -280,7 +280,7 @@ export type GetCatalogSourceConfig = (
 export type UpdateCatalogSourceConfig = (
   opts: APIOptions,
   sourceId: string,
-  data: CatalogSourceConfigPayload,
+  data: Partial<CatalogSourceConfigPayload>,
 ) => Promise<CatalogSourceConfig>;
 export type DeleteCatalogSourceConfig = (opts: APIOptions, sourceId: string) => Promise<void>;
 
