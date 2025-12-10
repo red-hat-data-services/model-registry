@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"sync"
 
+	mapset "github.com/deckarep/golang-set/v2"
 	"github.com/golang/glog"
 	dbmodels "github.com/kubeflow/model-registry/catalog/internal/db/models"
 	"github.com/kubeflow/model-registry/catalog/internal/db/service"
@@ -26,6 +27,9 @@ type ModelProviderRecord struct {
 // expected to spawn a goroutine and return immediately. The returned channel must
 // close when the goroutine ends. The goroutine should end when the context is
 // canceled, but may end sooner.
+//
+// The function may emit a record with a nil Model to indicate that the
+// complete set of models has been sent.
 type ModelProviderFunc func(ctx context.Context, source *Source, reldir string) (<-chan ModelProviderRecord, error)
 
 var registeredModelProviders = map[string]ModelProviderFunc{}
@@ -41,10 +45,17 @@ func RegisterModelProvider(name string, callback ModelProviderFunc) error {
 // LoaderEventHandler is the definition of a function called after a model is loaded.
 type LoaderEventHandler func(ctx context.Context, record ModelProviderRecord) error
 
+// FieldFilter represents a single field filter within a named query
+type FieldFilter struct {
+	Operator string `json:"operator" yaml:"operator"`
+	Value    any    `json:"value" yaml:"value"`
+}
+
 // sourceConfig is the structure for the catalog sources YAML file.
 type sourceConfig struct {
-	Catalogs []Source         `json:"catalogs"`
-	Labels   []map[string]any `json:"labels,omitempty"`
+	Catalogs     []Source                          `json:"catalogs"`
+	Labels       []map[string]any                  `json:"labels,omitempty"`
+	NamedQueries map[string]map[string]FieldFilter `json:"namedQueries,omitempty" yaml:"namedQueries,omitempty"`
 }
 
 // Source is a single entry from the catalog sources YAML file.
@@ -120,8 +131,14 @@ func (l *Loader) Start(ctx context.Context) error {
 		}
 	}
 
+	// Delete models from unknown or disabled sources
+	err := l.removeModelsFromMissingSources()
+	if err != nil {
+		return fmt.Errorf("faied to remove models from missing sources: %w", err)
+	}
+
 	// Phase 2: Load models from merged sources (once, after all merging is complete)
-	err := l.loadAllModels(ctx)
+	err = l.loadAllModels(ctx)
 	if err != nil {
 		return err
 	}
@@ -199,6 +216,13 @@ func (l *Loader) read(path string) (*sourceConfig, error) {
 		return nil, err
 	}
 
+	// Validate named queries if present
+	if config.NamedQueries != nil {
+		if err := ValidateNamedQueries(config.NamedQueries); err != nil {
+			return nil, fmt.Errorf("invalid named queries in %s: %w", path, err)
+		}
+	}
+
 	// Note: We intentionally do NOT filter disabled sources or apply defaults here.
 	// This allows field-level merging in SourceCollection to work correctly:
 	// - A base source with enabled=false can be enabled by a user override with just id + enabled=true
@@ -232,6 +256,10 @@ func (l *Loader) updateSources(path string, config *sourceConfig) error {
 		glog.Infof("loaded source %s of type %s", id, source.Type)
 	}
 
+	// Use MergeWithNamedQueries if named queries exist, otherwise use regular Merge
+	if config.NamedQueries != nil {
+		return l.Sources.MergeWithNamedQueries(path, sources, config.NamedQueries)
+	}
 	return l.Sources.Merge(path, sources)
 }
 
@@ -269,6 +297,9 @@ func (l *Loader) updateDatabase(ctx context.Context) error {
 
 	go func() {
 		for record := range records {
+			if record.Model == nil {
+				continue
+			}
 			attr := record.Model.GetAttributes()
 			if attr == nil || attr.Name == nil {
 				continue
@@ -377,7 +408,30 @@ func (l *Loader) readProviderRecords(ctx context.Context) <-chan ModelProviderRe
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
+
+			modelNames := []string{}
+
 			for r := range records {
+				if r.Model == nil {
+					glog.V(2).Infof("%s: trigger cleanup", source.Id)
+
+					// Copy the list of model names, then clear it.
+					modelNameSet := mapset.NewSet(modelNames...)
+					modelNames = modelNames[:0]
+
+					go func() {
+						err := l.removeOrphanedModelsFromSource(source.Id, modelNameSet)
+						if err != nil {
+							glog.Errorf("error removing orphaned models: %v", err)
+						}
+					}()
+					continue
+				}
+
+				if attr := r.Model.GetAttributes(); attr != nil && attr.Name != nil {
+					modelNames = append(modelNames, *attr.Name)
+				}
+
 				// Set source_id on every returned model.
 				l.setModelSourceID(r.Model, source.Id)
 
@@ -423,4 +477,58 @@ func (l *Loader) setModelSourceID(model dbmodels.CatalogModel, sourceID string) 
 	}
 
 	*props = append(*props, mrmodels.NewStringProperty("source_id", sourceID, false))
+}
+
+func (l *Loader) removeModelsFromMissingSources() error {
+	enabledSourceIDs := mapset.NewSet[string]()
+	for id, source := range l.Sources.AllSources() {
+		if source.Enabled == nil || *source.Enabled {
+			enabledSourceIDs.Add(id)
+		}
+	}
+
+	existingSourceIDs, err := l.services.CatalogModelRepository.GetDistinctSourceIDs()
+	if err != nil {
+		return fmt.Errorf("unable to retrieve existing source IDs: %w", err)
+	}
+
+	for oldSource := range mapset.NewSet(existingSourceIDs...).Difference(enabledSourceIDs).Iter() {
+		glog.Infof("Removing models from source %s", oldSource)
+
+		err = l.services.CatalogModelRepository.DeleteBySource(oldSource)
+		if err != nil {
+			return fmt.Errorf("unable to remove models from source %q: %w", oldSource, err)
+		}
+	}
+
+	return nil
+}
+
+func (l *Loader) removeOrphanedModelsFromSource(sourceID string, valid mapset.Set[string]) error {
+	list, err := l.services.CatalogModelRepository.List(dbmodels.CatalogModelListOptions{
+		SourceIDs: &[]string{sourceID},
+	})
+	if err != nil {
+		return fmt.Errorf("unable to list models from source %q: %w", sourceID, err)
+	}
+
+	for _, model := range list.Items {
+		attr := model.GetAttributes()
+		if attr == nil || attr.Name == nil || model.GetID() == nil {
+			continue
+		}
+
+		if valid.Contains(*attr.Name) {
+			continue
+		}
+
+		glog.Infof("Removing %s model %s", sourceID, *attr.Name)
+
+		err = l.services.CatalogModelRepository.DeleteByID(*model.GetID())
+		if err != nil {
+			return fmt.Errorf("unable to remove model %d (%s from source %s): %w", *model.GetID(), *attr.Name, sourceID, err)
+		}
+	}
+
+	return nil
 }
