@@ -13,6 +13,7 @@ import (
 	apimodels "github.com/kubeflow/model-registry/catalog/pkg/openapi"
 	"github.com/kubeflow/model-registry/internal/apiutils"
 	mrmodels "github.com/kubeflow/model-registry/internal/db/models"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestLoadCatalogSources(t *testing.T) {
@@ -28,8 +29,7 @@ func TestLoadCatalogSources(t *testing.T) {
 		{
 			name:    "test-catalog-sources",
 			args:    args{catalogsPath: "testdata/test-catalog-sources.yaml"},
-			want:    []string{"catalog1"},
-			wantErr: false,
+			want:    []string{"catalog1", "catalog2"},
 		},
 	}
 	for _, tt := range tests {
@@ -62,6 +62,7 @@ func TestLoadCatalogSources(t *testing.T) {
 
 func TestLoadCatalogSourcesEnabledDisabled(t *testing.T) {
 	trueValue := true
+	falseValue := false
 	type args struct {
 		catalogsPath string
 	}
@@ -79,6 +80,12 @@ func TestLoadCatalogSourcesEnabledDisabled(t *testing.T) {
 					Id:      "catalog1",
 					Name:    "Catalog 1",
 					Enabled: &trueValue,
+					Labels:  []string{},
+				},
+				"catalog2": {
+					Id:      "catalog2",
+					Name:    "Catalog 2",
+					Enabled: &falseValue,
 					Labels:  []string{},
 				},
 			},
@@ -469,6 +476,87 @@ func TestLoadCatalogSourcesWithRepositoryErrors(t *testing.T) {
 	}
 }
 
+func TestLoadCatalogSourcesWithNilEnabled(t *testing.T) {
+	// Test that nil Enabled field is treated as enabled (per OpenAPI spec default: true)
+	mockModelRepo := &MockCatalogModelRepository{}
+	mockArtifactRepo := &MockCatalogArtifactRepository{}
+	mockModelArtifactRepo := &MockCatalogModelArtifactRepository{}
+	mockMetricsArtifactRepo := &MockCatalogMetricsArtifactRepository{}
+
+	services := service.NewServices(
+		mockModelRepo,
+		mockArtifactRepo,
+		mockModelArtifactRepo,
+		mockMetricsArtifactRepo,
+		&MockPropertyOptionsRepository{},
+	)
+
+	// Register a test provider
+	testProviderName := "test-nil-enabled-provider"
+	RegisterModelProvider(testProviderName, func(ctx context.Context, source *Source, reldir string) (<-chan ModelProviderRecord, error) {
+		ch := make(chan ModelProviderRecord, 1)
+
+		modelName := "test-model-nil-enabled"
+		model := &dbmodels.CatalogModelImpl{
+			Attributes: &dbmodels.CatalogModelAttributes{
+				Name: &modelName,
+			},
+		}
+
+		ch <- ModelProviderRecord{
+			Model:     model,
+			Artifacts: []dbmodels.CatalogArtifact{},
+		}
+		close(ch)
+
+		return ch, nil
+	})
+
+	testConfig := &sourceConfig{
+		Catalogs: []Source{
+			{
+				CatalogSource: apimodels.CatalogSource{
+					Id:      "test-catalog-nil-enabled",
+					Name:    "Test Catalog Nil Enabled",
+					Enabled: nil, // Nil should be treated as enabled
+				},
+				Type: testProviderName,
+			},
+		},
+	}
+
+	l := NewLoader(services, []string{})
+	ctx := context.Background()
+
+	// First call updateSources to populate the SourceCollection
+	err := l.updateSources("test-path", testConfig)
+	if err != nil {
+		t.Fatalf("updateSources() error = %v", err)
+	}
+
+	err = l.updateDatabase(ctx)
+	if err != nil {
+		t.Fatalf("updateDatabase() error = %v", err)
+	}
+
+	// Wait for processing
+	time.Sleep(100 * time.Millisecond)
+
+	// Verify that the model WAS saved (because nil Enabled is treated as enabled)
+	if len(mockModelRepo.SavedModels) != 1 {
+		t.Errorf("Expected 1 model to be saved (nil Enabled should be treated as enabled), got %d", len(mockModelRepo.SavedModels))
+	}
+
+	if len(mockModelRepo.SavedModels) > 0 {
+		savedModel := mockModelRepo.SavedModels[0]
+		if savedModel.GetAttributes() == nil || savedModel.GetAttributes().Name == nil {
+			t.Error("Saved model should have attributes with name")
+		} else if *savedModel.GetAttributes().Name != "test-model-nil-enabled" {
+			t.Errorf("Expected model name 'test-model-nil-enabled', got '%s'", *savedModel.GetAttributes().Name)
+		}
+	}
+}
+
 func TestMockRepositoryBehavior(t *testing.T) {
 	mockRepo := &MockCatalogModelRepository{}
 
@@ -790,4 +878,60 @@ func (m *MockPropertyOptionsRepository) SetMockOptions(t dbmodels.PropertyOption
 		m.MockOptions[t] = make(map[int32][]dbmodels.PropertyOption)
 	}
 	m.MockOptions[t][typeID] = options
+}
+
+func TestAPIProviderGetPerformanceArtifacts(t *testing.T) {
+	// This test verifies that the APIProvider interface has GetPerformanceArtifacts method
+	// The actual implementation is tested in db_catalog_test.go
+
+	// Create a mock provider to verify interface compliance
+	services := service.NewServices(
+		&MockCatalogModelRepository{},
+		&MockCatalogArtifactRepository{},
+		&MockCatalogModelArtifactRepository{},
+		&MockCatalogMetricsArtifactRepository{},
+		&MockPropertyOptionsRepository{},
+	)
+	provider := NewDBCatalog(services, nil)
+
+	// Verify provider implements APIProvider interface with GetPerformanceArtifacts
+	var _ APIProvider = provider
+
+	// Basic test - should return error for non-existent model
+	ctx := context.Background()
+	_, err := provider.GetPerformanceArtifacts(ctx, "non-existent-model", "source-1", ListPerformanceArtifactsParams{
+		TargetRPS:       100,
+		Recommendations: true,
+		PageSize:        10,
+	})
+
+	// Should get an error since the model doesn't exist
+	assert.Error(t, err)
+}
+
+// TestAPIProviderInterface verifies that the APIProvider interface supports
+// all required fields in ListPerformanceArtifactsParams
+func TestAPIProviderInterface(t *testing.T) {
+	services := service.NewServices(
+		&MockCatalogModelRepository{},
+		&MockCatalogArtifactRepository{},
+		&MockCatalogModelArtifactRepository{},
+		&MockCatalogMetricsArtifactRepository{},
+		&MockPropertyOptionsRepository{},
+	)
+	var provider APIProvider = NewDBCatalog(services, nil)
+
+	params := ListPerformanceArtifactsParams{
+		TargetRPS:             100,
+		Recommendations:       true,
+		RPSProperty:           "custom_rps",
+		LatencyProperty:       "custom_latency",
+		HardwareCountProperty: "custom_hw_count",
+		HardwareTypeProperty:  "custom_hw_type",
+	}
+
+	// Should compile without errors and be callable
+	ctx := context.Background()
+	_, err := provider.GetPerformanceArtifacts(ctx, "test-model", "source-1", params)
+	assert.Error(t, err) // Expected error since model doesn't exist
 }
