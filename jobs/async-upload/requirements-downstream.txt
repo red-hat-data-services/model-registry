@@ -1,7 +1,6 @@
 # This file is for downstream, which requires `pip install "puccinialin==0.1.5"` in addition to upstream/midstream dependencies
 # so make use of requirements.txt _and_ the puccinialin==0.1.5
 -r requirements.txt
-anyio==4.10.0 ; python_version >= "3.11" and python_version < "4.0"
 h11==0.16.0 ; python_version >= "3.11" and python_version < "4.0"
 httpcore==1.0.9 ; python_version >= "3.11" and python_version < "4.0"
 httpx==0.28.1 ; python_version >= "3.11" and python_version < "4.0"
