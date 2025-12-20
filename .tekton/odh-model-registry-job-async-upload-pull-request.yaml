@@ -40,7 +40,7 @@ spec:
   - name: prefetch-input
     value: |
       [{"type": "rpm", "path": "jobs/async-upload"}, 
-      {"type": "pip", "path": "jobs/async-upload", "requirements_files": ["requirements.txt","requirements-downstream.txt"], "requirements_build_files": ["requirements-build.txt"],"allow_binary": "true"}]
+      {"type": "pip", "path": "jobs/async-upload", "requirements_files": ["requirements.txt","requirements-downstream.txt"], "requirements_build_files": ["requirements-build.txt"],"allow_binary": "false"}]
   - name: build-image-index
     value: true
   - name: build-platforms
