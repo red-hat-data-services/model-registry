@@ -8,7 +8,7 @@ USER 0
 
 # Install skopeo for Push/Pull of container images to integrate with Model Registry py client and Olot.
 RUN . /cachi2/cachi2.env && \
-    microdnf install -y skopeo gcc make python3.12-devel cargo g++ && \
+    ARCH=$(uname -m) && microdnf install -y skopeo gcc make python3.12-devel-3.12.11-2.el9.${ARCH} cargo g++ && \
     microdnf clean all
 
 # security/env hardening
@@ -20,7 +20,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 COPY ./poetry.lock ./pyproject.toml ./requirements.txt ./requirements-downstream.txt ./
 
-RUN python -m pip install -r requirements-downstream.txt \
+RUN python -m pip install -r requirements.txt --no-binary :all: \
     && echo "Installation completed" \
     && echo "Python path:" && python -c "import sys; print('\\n'.join(sys.path))" \
     && echo "Installed packages:" \
