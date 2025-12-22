@@ -33,6 +33,7 @@ nest_asyncio==1.6.0
 olot==0.1.8
 packaging==25.0
 propcache==0.3.2
+puccinialin==0.1.5
 pydantic==2.12.5
 pydantic_core==2.41.5
 Pygments==2.19.2
