@@ -69,6 +69,8 @@ poetry-core==2.2.0
     #   model-registry
     #   olot
     #   pkgconfig
+pyyaml==6.0.2
+
 semantic-version==2.10.0
     # via setuptools-rust
 setuptools-rust==1.12.0
