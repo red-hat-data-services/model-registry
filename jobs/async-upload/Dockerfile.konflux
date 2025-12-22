@@ -18,7 +18,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=on
 
 WORKDIR /app
-COPY ./poetry.lock ./pyproject.toml ./requirements-downstream.txt ./
+COPY ./poetry.lock ./pyproject.toml ./requirements.txt ./requirements-downstream.txt ./
 
 RUN python -m pip install -r requirements-downstream.txt \
     && echo "Installation completed" \
