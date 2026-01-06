@@ -903,12 +903,6 @@ func performanceMetricsCustomProperties(customProperties map[string]openapi.Meta
 				MetadataType: "MetadataStringValue",
 			},
 		},
-		"totalRPS": {
-			MetadataDoubleValue: &openapi.MetadataDoubleValue{
-				DoubleValue:  30,
-				MetadataType: "MetadataDoubleValue",
-			},
-		},
 		"ttft_mean": {
 			MetadataDoubleValue: &openapi.MetadataDoubleValue{
 				DoubleValue:  35.48818160947744,
@@ -1093,6 +1087,18 @@ func performanceMetricsCustomProperties(customProperties map[string]openapi.Meta
 				StringValue: "provider1-granite/granite-3.1-8b-instruct",
 			},
 		},
+		"replicas": {
+			MetadataIntValue: &openapi.MetadataIntValue{
+				IntValue:     "3",
+				MetadataType: "MetadataIntValue",
+			},
+		},
+		"total_requests_per_second": {
+			MetadataDoubleValue: &openapi.MetadataDoubleValue{
+				DoubleValue:  150.0,
+				MetadataType: "MetadataDoubleValue",
+			},
+		},
 	}
 	for key, value := range customProperties {
 		result[key] = value
@@ -1108,6 +1114,12 @@ func GetCatalogPerformanceMetricsArtifactMock(itemCount int32) []models.CatalogA
 			CreateTimeSinceEpoch:     stringToPointer("1693526400000"),
 			LastUpdateTimeSinceEpoch: stringToPointer("1704067200000"),
 			CustomProperties: performanceMetricsCustomProperties(map[string]openapi.MetadataValue{
+				"config_id": {
+					MetadataStringValue: &openapi.MetadataStringValue{
+						StringValue:  "config-001-chatbot-h100",
+						MetadataType: "MetadataStringValue",
+					},
+				},
 				"use_case": {
 					MetadataStringValue: &openapi.MetadataStringValue{
 						StringValue:  "chatbot",
@@ -1122,6 +1134,12 @@ func GetCatalogPerformanceMetricsArtifactMock(itemCount int32) []models.CatalogA
 			CreateTimeSinceEpoch:     stringToPointer("1693526400000"),
 			LastUpdateTimeSinceEpoch: stringToPointer("1704067200000"),
 			CustomProperties: performanceMetricsCustomProperties(map[string]openapi.MetadataValue{
+				"config_id": {
+					MetadataStringValue: &openapi.MetadataStringValue{
+						StringValue:  "config-002-rag-rtx4090",
+						MetadataType: "MetadataStringValue",
+					},
+				},
 				"hardware_type": {
 					MetadataStringValue: &openapi.MetadataStringValue{
 						StringValue:  "RTX 4090",
@@ -1160,6 +1178,12 @@ func GetCatalogPerformanceMetricsArtifactMock(itemCount int32) []models.CatalogA
 			CreateTimeSinceEpoch:     stringToPointer("1693526400000"),
 			LastUpdateTimeSinceEpoch: stringToPointer("1704067200000"),
 			CustomProperties: performanceMetricsCustomProperties(map[string]openapi.MetadataValue{
+				"config_id": {
+					MetadataStringValue: &openapi.MetadataStringValue{
+						StringValue:  "config-003-codefixing-a100",
+						MetadataType: "MetadataStringValue",
+					},
+				},
 				"hardware_type": {
 					MetadataStringValue: &openapi.MetadataStringValue{
 						StringValue:  "A100",
@@ -1198,6 +1222,12 @@ func GetCatalogPerformanceMetricsArtifactMock(itemCount int32) []models.CatalogA
 			CreateTimeSinceEpoch:     stringToPointer("1693526400000"),
 			LastUpdateTimeSinceEpoch: stringToPointer("1704067200000"),
 			CustomProperties: performanceMetricsCustomProperties(map[string]openapi.MetadataValue{
+				"config_id": {
+					MetadataStringValue: &openapi.MetadataStringValue{
+						StringValue:  "config-004-longrag-a100",
+						MetadataType: "MetadataStringValue",
+					},
+				},
 				"hardware_type": {
 					MetadataStringValue: &openapi.MetadataStringValue{
 						StringValue:  "A100",
@@ -1349,45 +1379,29 @@ func GetFilterOptionMocks() map[string]models.FilterOption {
 	return filterOptions
 }
 
-func GetFilterOptionsListMock() models.FilterOptionsList {
-	filterOptions := GetFilterOptionMocks()
-
-	return models.FilterOptionsList{
-		Filters: &filterOptions,
+func GetNamedQueriesMocks() map[string]map[string]models.FieldFilter {
+	namedQuries := make(map[string]map[string]models.FieldFilter)
+	namedQuries["validation-default"] = map[string]models.FieldFilter{
+		"ttft_p90": {
+			Operator: "<",
+			Value:    float64(70),
+		},
+		"workload_type": {
+			Operator: "=",
+			Value:    "Chat",
+		},
 	}
+	return namedQuries
 }
 
-func CreateSampleCatalogSource(id string, name string, catalogType string, enabled bool) models.CatalogSourceConfig {
-	defaultCatalog := id == "sample-source"
+func GetFilterOptionsListMock() models.FilterOptionsList {
+	filterOptions := GetFilterOptionMocks()
+	namedQueries := GetNamedQueriesMocks()
 
-	sourceConfig := models.CatalogSourceConfig{
-		Name:      name,
-		Id:        id,
-		Type:      catalogType,
-		Enabled:   &enabled,
-		Labels:    []string{"source-1"},
-		IsDefault: &defaultCatalog,
+	return models.FilterOptionsList{
+		Filters:      &filterOptions,
+		NamedQueries: &namedQueries,
 	}
-
-	if !defaultCatalog {
-		sourceConfig.IncludedModels = []string{"rhelai1/modelcar-granite-7b-starter"}
-		sourceConfig.ExcludedModels = []string{"model-a:1.0", "model-b:*"}
-	}
-
-	switch catalogType {
-	case "yaml":
-		sourceConfig.Yaml = stringToPointer("models:\n  - name: model1")
-	case "hf":
-		// Use different organizations for the failed sources
-		if id == "adminModel2" {
-			sourceConfig.AllowedOrganization = stringToPointer("invalid-org")
-		} else {
-			sourceConfig.AllowedOrganization = stringToPointer("org1")
-		}
-		sourceConfig.ApiKey = stringToPointer("apikey")
-	}
-
-	return sourceConfig
 }
 
 func BoolPtr(b bool) *bool {
