@@ -13,7 +13,7 @@ The catalog service operates as a **metadata aggregation layer** that:
 ### Supported Catalog Sources
 
 - **YAML Catalog** - Static YAML files containing model metadata
-- **HuggingFace Hub** - Discover models from HuggingFace's model repository
+- **Hugging Face Hub** - Discover models from Hugging Face's model repository
 
 ## REST API
 
@@ -274,20 +274,16 @@ catalogs:
       path: "./models"
 ```
 
-### HuggingFace Source Configuration
+### Hugging Face Source Configuration
 
-The HuggingFace catalog source allows you to discover and import models from the HuggingFace Hub. To configure a HuggingFace source:
+The Hugging Face catalog source allows you to discover and import models from the Hugging Face Hub. To configure a Hugging Face source:
 
 #### 1. Set Your API Key
 
 Setting a Hugging Face API key is optional. Hugging Face  requires an API key for authentication for full access to data of models that are private and/or gated. If an API key is NOT set, private models will be entirely unavailable and gated models will have limited metadata. By default, the service reads the API key from the `HF_API_KEY` environment variable:
 
-```bash
-export HF_API_KEY="your-huggingface-api-key-here"
-```
-
-**Getting a HuggingFace API Key:**
-1. Sign up or log in to [HuggingFace](https://huggingface.co)
+**Getting a Hugging Face API Key:**
+1. Sign up or log in to [Hugging Face](https://huggingface.co)
 2. Go to your [Settings > Access Tokens](https://huggingface.co/settings/tokens)
 3. Create a new token with "Read" permissions
 4. Copy the token and set it as an environment variable
@@ -297,52 +293,140 @@ export HF_API_KEY="your-huggingface-api-key-here"
 - Reference it in your deployment configuration
 - The catalog service will read it from the configured environment variable (defaults to `HF_API_KEY`)
 
+```bash
+kubectl create secret generic model-catalog-hf-api-key \
+  --from-literal=HF_API_KEY="your-api-key-here" \
+  --dry-run=client -o yaml | kubectl apply -f -
+
+kubectl rollout restart deployment model-catalog-server -n kubeflow
+```
+
 **Custom Environment Variable Name:**
 You can configure a custom environment variable name per source by setting the `apiKeyEnvVar` property in your source configuration (see below). This is useful when you need different API keys for different sources.
 
 **Important Notes:**
 - **Private Models**: For private models, the API key must belong to an account that has been granted access to the model. Without proper access, the catalog service will not be able to retrieve model information.
-- **Gated Models**: For gated models (models with usage restrictions), you must accept the model's terms of service on HuggingFace before the catalog service can access all available model information. Visit the model's page on HuggingFace and accept the terms to ensure full metadata is available.
+- **Gated Models**: For gated models (models with usage restrictions), you must accept the model's terms of service on Hugging Face before the catalog service can access all available model information. Visit the model's page on Hugging Face and accept the terms to ensure full metadata is available.
 
 #### 2. Configure the Source
 
-Add a HuggingFace source to your `catalog-sources.yaml`:
+Add a Hugging Face source to your `catalog-sources.yaml`:
 
 ```yaml
 catalogs:
-  - name: "HuggingFace Hub"
+  - name: "Hugging Face Hub"
     id: "huggingface"
     type: "hf"
     enabled: true
     # Required: List of model identifiers to include
     # Format: "organization/model-name" or "username/model-name"
+    # Supports wildcard patterns: "organization/*" or "organization/prefix*"
     includedModels:
       - "meta-llama/Llama-3.1-8B-Instruct"
-      - "ibm-granite/granite-4.0-h-small"
       - "microsoft/phi-2"
-    
+      - "microsoft/phi-3*"  # All models starting with "phi-3"
+
     # Optional: Exclude specific models or patterns
     # Supports exact matches or patterns ending with "*"
     excludedModels:
       - "some-org/unwanted-model"
       - "another-org/test-*"  # Excludes all models starting with "test-"
-    
+
     # Optional: Configure a custom environment variable name for the API key
     # Defaults to "HF_API_KEY" if not specified
     properties:
       apiKeyEnvVar: "MY_CUSTOM_API_KEY_VAR"
 ```
 
+#### Organization-Restricted Sources
+
+You can restrict a source to only fetch models from a specific organization using the `allowedOrganization` property. This automatically prefixes all model patterns with the organization name:
+
+```yaml
+catalogs:
+  - name: "Meta LLaMA Models"
+    id: "meta-llama-models"
+    type: "hf"
+    enabled: true
+    properties:
+      allowedOrganization: "meta-llama"
+      apiKeyEnvVar: "HF_API_KEY"
+    includedModels:
+      # These patterns are automatically prefixed with "meta-llama/"
+      - "*"           # Expands to: meta-llama/*
+      - "Llama-3*"    # Expands to: meta-llama/Llama-3*
+      - "CodeLlama-*" # Expands to: meta-llama/CodeLlama-*
+    excludedModels:
+      - "*-4bit"      # Excludes: meta-llama/*-4bit
+      - "*-GGUF"      # Excludes: meta-llama/*-GGUF
+```
+
+**Benefits of organization-restricted sources:**
+- **Simplified configuration**: No need to repeat organization name in every pattern
+- **Security**: Prevents accidental inclusion of models from other organizations
+- **Convenience**: Use `"*"` to get all models from an organization
+- **Performance**: Optimized API calls when fetching from a single organization
+
 #### Model Filtering
 
 Both `includedModels` and `excludedModels` are top-level properties (not nested under `properties`):
 
-- **`includedModels`** (required): List of model identifiers to fetch from HuggingFace. Format: `"organization/model-name"` or `"username/model-name"`
+- **`includedModels`** (required): List of model identifiers to fetch from Hugging Face
 - **`excludedModels`** (optional): List of models or patterns to exclude from the results
 
-The `excludedModels` property supports:
+#### Supported Pattern Types
+
+**Exact Model Names:**
+```yaml
+includedModels:
+  - "meta-llama/Llama-3.1-8B-Instruct"  # Specific model
+  - "microsoft/phi-2"                    # Specific model
+```
+
+**Wildcard Patterns:**
+
+In `includedModels`, wildcards can match model names by a prefix.
+
+```yaml
+includedModels:
+  - "microsoft/phi-*"      # All models starting with "phi-"
+  - "meta-llama/Llama-3*"  # All models starting with "Llama-3"
+  - "huggingface/*"        # All models from huggingface organization
+```
+
+**Organization-Only Patterns (with `allowedOrganization`):**
+```yaml
+properties:
+  allowedOrganization: "meta-llama"
+includedModels:
+  - "*"          # All models from meta-llama organization
+  - "Llama-3*"   # All meta-llama models starting with "Llama-3"
+  - "CodeLlama-*" # All meta-llama models starting with "CodeLlama-"
+```
+
+#### Pattern Validation
+
+**Valid patterns:**
+- `"org/model"` - Exact model name
+- `"org/prefix*"` - Models starting with prefix
+- `"org/*"` - All models from organization
+- `"*"` - All models (only when using `allowedOrganization`)
+
+**Invalid patterns (will be rejected):**
+- `"*"` - Global wildcard (without `allowedOrganization`)
+- `"*/*"` - Global organization wildcard
+- `"org*"` - Wildcard in organization name
+- `"org/"` - Empty model name
+- `"*prefix*"` - Multiple wildcards
+
+#### Exclusion Patterns
+
+The `excludedModels` property supports prefixes like `includedModels` and also suffixes and mid-name wildcards:
 - **Exact matches**: `"meta-llama/Llama-3.1-8B-Instruct"` - excludes this specific model
-- **Pattern matching**: `"test-*"` - excludes all models starting with "test-"
+- **Pattern matching**:
+    - `"*-draft"` - excludes all models ending with "-draft"
+    - `"Llama-3.*-Instruct"` - excludes all Llama 3.x models ending with "-Instruct"
+- **Organization patterns**: `"test-org/*"` - excludes all models from test-org
 
 ## Development
 
