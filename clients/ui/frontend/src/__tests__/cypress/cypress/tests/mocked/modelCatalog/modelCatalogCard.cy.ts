@@ -1,9 +1,7 @@
 /* eslint-disable camelcase */
 import { modelCatalog } from '~/__tests__/cypress/cypress/pages/modelCatalog';
 import {
-  mockCatalogAccuracyMetricsArtifact,
   mockCatalogModel,
-  mockCatalogModelArtifact,
   mockCatalogModelArtifactList,
   mockCatalogModelList,
   mockCatalogPerformanceMetricsArtifact,
@@ -111,6 +109,8 @@ const initIntercepts = ({
     mockCatalogFilterOptionsList(),
   );
 
+  // The /performance_artifacts endpoint only returns performance metrics artifacts
+  // (no accuracy or model artifacts - those are filtered server-side)
   cy.interceptApi(
     `GET /api/:apiVersion/model_catalog/sources/:sourceId/performance_artifacts/:modelName`,
     {
@@ -163,9 +163,10 @@ const initIntercepts = ({
             },
           },
         }),
-        mockCatalogAccuracyMetricsArtifact({}),
-        mockCatalogModelArtifact({}),
       ],
+      pageSize: 10,
+      size: 3,
+      nextPageToken: '',
     },
   ).as('getCatalogSourceModelArtifacts');
 };
@@ -223,30 +224,99 @@ describe('ModelCatalogCard Component', () => {
   });
 
   describe('Validated Model', () => {
-    beforeEach(() => {
-      initIntercepts({ useValidatedModel: true });
-      modelCatalog.visit();
-    });
-    it('should show validated model correctly', () => {
-      cy.wait('@getCatalogSourceModelArtifacts');
-      modelCatalog.findFirstModelCatalogCard().within(() => {
-        modelCatalog.findValidatedModelHardware().should('contain.text', '2xH100-80');
-        modelCatalog.findValidatedModelReplicas().should('contain.text', '7');
-        modelCatalog.findValidatedModelTtft().should('contain.text', '35.49');
-        modelCatalog.findValidatedModelBenchmarkNext().click();
-        modelCatalog.findValidatedModelHardware().should('contain.text', '33xRTX 4090');
-        modelCatalog.findValidatedModelReplicas().should('contain.text', '10');
-        modelCatalog.findValidatedModelTtft().should('contain.text', '67.15');
-        modelCatalog.findValidatedModelBenchmarkNext().click();
-        modelCatalog.findValidatedModelHardware().should('contain.text', '40xA100');
-        modelCatalog.findValidatedModelReplicas().should('contain.text', '15');
-        modelCatalog.findValidatedModelTtft().should('contain.text', '42.12');
-        modelCatalog.findValidatedModelBenchmarkPrev().click();
-        modelCatalog.findValidatedModelHardware().should('contain.text', '33xRTX 4090');
-        modelCatalog.findValidatedModelReplicas().should('contain.text', '10');
-        modelCatalog.findValidatedModelTtft().should('contain.text', '67.15');
-        modelCatalog.findValidatedModelBenchmarkLink().click();
+    describe('Toggle OFF (default)', () => {
+      beforeEach(() => {
+        initIntercepts({ useValidatedModel: true });
+        modelCatalog.visit();
+      });
+
+      it('should show description with View benchmarks link when toggle is OFF', () => {
+        cy.wait('@getCatalogSourceModelArtifacts');
+        modelCatalog.findFirstModelCatalogCard().within(() => {
+          // Should show description
+          modelCatalog.findModelCatalogDescription().should('be.visible');
+
+          // Should show "View X benchmarks" link
+          modelCatalog.findValidatedModelBenchmarkLink().should('be.visible');
+          modelCatalog
+            .findValidatedModelBenchmarkLink()
+            .should('contain.text', 'View 3 benchmarks');
+
+          // Should NOT show hardware, replicas, TTFT metrics when toggle is OFF
+          modelCatalog.findValidatedModelHardware().should('not.exist');
+          modelCatalog.findValidatedModelReplicas().should('not.exist');
+          modelCatalog.findValidatedModelTtft().should('not.exist');
+        });
+      });
+
+      it('should navigate to Performance Insights tab when clicking View benchmarks link', () => {
+        cy.wait('@getCatalogSourceModelArtifacts');
+        modelCatalog.findFirstModelCatalogCard().within(() => {
+          modelCatalog.findValidatedModelBenchmarkLink().click();
+        });
         cy.url().should('include', 'performance-insights');
+      });
+    });
+
+    describe('Toggle ON', () => {
+      beforeEach(() => {
+        initIntercepts({ useValidatedModel: true });
+        // Enable feature flag and visit
+        modelCatalog.visit({ enableTempDevCatalogAdvancedFiltersFeature: true });
+        cy.wait('@getCatalogSourceModelArtifacts');
+        // Turn the toggle ON before each test in this block
+        modelCatalog.togglePerformanceView();
+      });
+
+      it('should show validated model metrics correctly when toggle is ON', () => {
+        modelCatalog.findFirstModelCatalogCard().within(() => {
+          // Should show hardware, replicas, TTFT metrics
+          modelCatalog.findValidatedModelHardware().should('contain.text', '2xH100-80');
+          modelCatalog.findValidatedModelReplicas().should('contain.text', '7');
+          modelCatalog.findValidatedModelTtft().should('contain.text', '35.49');
+
+          // Should NOT show description when toggle is ON
+          modelCatalog.findModelCatalogDescription().should('not.exist');
+
+          // Navigate through benchmarks
+          modelCatalog.findValidatedModelBenchmarkNext().click();
+          modelCatalog.findValidatedModelHardware().should('contain.text', '33xRTX 4090');
+          modelCatalog.findValidatedModelReplicas().should('contain.text', '10');
+          modelCatalog.findValidatedModelTtft().should('contain.text', '67.15');
+
+          modelCatalog.findValidatedModelBenchmarkNext().click();
+          modelCatalog.findValidatedModelHardware().should('contain.text', '40xA100');
+          modelCatalog.findValidatedModelReplicas().should('contain.text', '15');
+          modelCatalog.findValidatedModelTtft().should('contain.text', '42.12');
+
+          modelCatalog.findValidatedModelBenchmarkPrev().click();
+          modelCatalog.findValidatedModelHardware().should('contain.text', '33xRTX 4090');
+          modelCatalog.findValidatedModelReplicas().should('contain.text', '10');
+          modelCatalog.findValidatedModelTtft().should('contain.text', '67.15');
+
+          // Click benchmark link to navigate to Performance Insights
+          modelCatalog.findValidatedModelBenchmarkLink().click();
+        });
+        cy.url().should('include', 'performance-insights');
+      });
+
+      it('should navigate through benchmarks correctly', () => {
+        modelCatalog.findFirstModelCatalogCard().within(() => {
+          // Initial state - first benchmark
+          modelCatalog.findValidatedModelHardware().should('contain.text', '2xH100-80');
+
+          // Navigate to next benchmark
+          modelCatalog.findValidatedModelBenchmarkNext().click();
+          modelCatalog.findValidatedModelHardware().should('contain.text', '33xRTX 4090');
+
+          // Navigate to next benchmark
+          modelCatalog.findValidatedModelBenchmarkNext().click();
+          modelCatalog.findValidatedModelHardware().should('contain.text', '40xA100');
+
+          // Navigate back
+          modelCatalog.findValidatedModelBenchmarkPrev().click();
+          modelCatalog.findValidatedModelHardware().should('contain.text', '33xRTX 4090');
+        });
       });
     });
   });
