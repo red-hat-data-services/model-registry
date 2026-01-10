@@ -13,23 +13,14 @@ import {
   StackItem,
 } from '@patternfly/react-core';
 import { Link } from 'react-router-dom';
-import { HelpIcon, AngleLeftIcon, AngleRightIcon } from '@patternfly/react-icons';
-import {
-  CatalogModel,
-  CatalogSource,
-  CatalogArtifactType,
-  MetricsType,
-  CatalogPerformanceMetricsArtifact,
-  CatalogAccuracyMetricsArtifact,
-} from '~/app/modelCatalogTypes';
+import { HelpIcon, AngleLeftIcon, AngleRightIcon, ArrowRightIcon } from '@patternfly/react-icons';
+import { TruncatedText } from 'mod-arch-shared';
+import { CatalogModel, CatalogSource } from '~/app/modelCatalogTypes';
 import { extractValidatedModelMetrics } from '~/app/pages/modelCatalog/utils/validatedModelUtils';
 import { catalogModelDetailsTabFromModel } from '~/app/routes/modelCatalog/catalogModel';
 import { ModelDetailsTab, ModelCatalogNumberFilterKey } from '~/concepts/modelCatalog/const';
 import { useCatalogPerformanceArtifacts } from '~/app/hooks/modelCatalog/useCatalogPerformanceArtifacts';
-import {
-  filterArtifactsByType,
-  getActiveLatencyFieldName,
-} from '~/app/pages/modelCatalog/utils/modelCatalogUtils';
+import { getActiveLatencyFieldName } from '~/app/pages/modelCatalog/utils/modelCatalogUtils';
 import { formatLatency } from '~/app/pages/modelCatalog/utils/performanceMetricsUtils';
 import { ModelCatalogContext } from '~/app/context/modelCatalog/ModelCatalogContext';
 
@@ -45,7 +36,8 @@ const ModelCatalogCardBody: React.FC<ModelCatalogCardBodyProps> = ({
   source,
 }) => {
   const [currentPerformanceIndex, setCurrentPerformanceIndex] = useState(0);
-  const { filterData, filterOptions } = React.useContext(ModelCatalogContext);
+  const { filterData, filterOptions, performanceViewEnabled } =
+    React.useContext(ModelCatalogContext);
 
   const handlePreviousBenchmark = () => {
     setCurrentPerformanceIndex((prev) => (prev > 0 ? prev - 1 : performanceMetrics.length - 1));
@@ -74,17 +66,13 @@ const ModelCatalogCardBody: React.FC<ModelCatalogCardBodyProps> = ({
       isValidated, // Only fetch if validated
     );
 
-  const performanceMetrics = filterArtifactsByType<CatalogPerformanceMetricsArtifact>(
-    performanceArtifactsList.items,
-    CatalogArtifactType.metricsArtifact,
-    MetricsType.performanceMetrics,
-  );
+  // Performance artifacts are already filtered by the server endpoint
+  const performanceMetrics = performanceArtifactsList.items;
 
-  const accuracyMetrics = filterArtifactsByType<CatalogAccuracyMetricsArtifact>(
-    performanceArtifactsList.items,
-    CatalogArtifactType.metricsArtifact,
-    MetricsType.accuracyMetrics,
-  );
+  // NOTE: Accuracy metrics are not currently returned by the /performance_artifacts endpoint.
+  // This is kept as a placeholder for when accuracy metrics support is restored.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const accuracyMetrics: any[] = [];
 
   const isLoading = isValidated && !performanceArtifactsLoaded;
 
@@ -101,6 +89,44 @@ const ModelCatalogCardBody: React.FC<ModelCatalogCardBodyProps> = ({
   }
 
   if (isValidated && performanceMetrics.length > 0) {
+    // When performance view toggle is OFF, show description with a link to benchmarks
+    if (!performanceViewEnabled) {
+      return (
+        <Stack hasGutter>
+          <StackItem>
+            <TruncatedText
+              content={model.description || ''}
+              maxLines={4}
+              data-testid="model-catalog-card-description"
+            />
+          </StackItem>
+          <StackItem>
+            <Link
+              to={catalogModelDetailsTabFromModel(
+                ModelDetailsTab.PERFORMANCE_INSIGHTS,
+                model.name,
+                source?.id,
+              )}
+            >
+              <Button
+                variant="link"
+                isInline
+                tabIndex={-1}
+                icon={<ArrowRightIcon />}
+                iconPosition="end"
+                style={{ padding: 0, fontSize: 'inherit' }}
+                data-testid="validated-model-benchmark-link"
+              >
+                View {performanceMetrics.length} benchmark
+                {performanceMetrics.length !== 1 ? 's' : ''}
+              </Button>
+            </Link>
+          </StackItem>
+        </Stack>
+      );
+    }
+
+    // When performance view toggle is ON, show hardware, TTFT and replicas data
     const metrics = extractValidatedModelMetrics(
       performanceMetrics,
       accuracyMetrics,
@@ -220,18 +246,11 @@ const ModelCatalogCardBody: React.FC<ModelCatalogCardBodyProps> = ({
 
   // Standard card body for non-validated models
   return (
-    <div
+    <TruncatedText
+      content={model.description || ''}
+      maxLines={4}
       data-testid="model-catalog-card-description"
-      style={{
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        WebkitLineClamp: 4,
-        WebkitBoxOrient: 'vertical',
-        display: '-webkit-box',
-      }}
-    >
-      {model.description}
-    </div>
+    />
   );
 };
 

@@ -93,21 +93,6 @@ export const getModelArtifactUri = (artifacts: CatalogArtifacts[]): string => {
 export const hasModelArtifacts = (artifacts: CatalogArtifacts[]): boolean =>
   artifacts.some((artifact) => artifact.artifactType === CatalogArtifactType.modelArtifact);
 
-export const filterArtifactsByType = <T extends CatalogArtifacts>(
-  artifacts: CatalogArtifacts[],
-  artifactType: CatalogArtifactType,
-  metricsType?: MetricsType,
-): T[] =>
-  artifacts.filter((artifact): artifact is T => {
-    if (artifact.artifactType !== artifactType) {
-      return false;
-    }
-    if (metricsType && 'metricsType' in artifact) {
-      return artifact.metricsType === metricsType;
-    }
-    return true;
-  });
-
 export const hasPerformanceArtifacts = (artifacts: CatalogArtifacts[]): boolean =>
   artifacts.some(
     (artifact) =>
@@ -177,27 +162,6 @@ const isArrayOfSelections = (
 ): data is string[] =>
   filterOption?.type === 'string' && Array.isArray(filterOption.values) && Array.isArray(data);
 
-// TODO: Implement performance filters.
-// type FilterId = keyof CatalogFilterOptionsList['filters'];
-// const KNOWN_LESS_THAN_IDS: FilterId[] = [ModelCatalogNumberFilterKey.TTFT_MEAN]; // TODO: populate with filters that need to talk about "less" values
-// const isKnownLessThanValue = (
-//   filterOption: CatalogFilterOptions[keyof CatalogFilterOptions],
-//   filterId: FilterId,
-//   data: unknown,
-// ): data is number =>
-//   filterOption.type === 'number' &&
-//   KNOWN_LESS_THAN_IDS.includes(filterId) &&
-//   typeof data === 'number';
-
-// const KNOWN_MORE_THAN_IDS: FilterId[] = [ModelCatalogNumberFilterKey.RPS_MEAN]; // TODO: populate with filters that need to talk about "more" values
-// const isKnownMoreThanValue = (
-//   filterOption: CatalogFilterOptions[keyof CatalogFilterOptions],
-//   filterId: FilterId,
-//   data: unknown,
-// ): data is number =>
-//   filterOption.type === 'number' &&
-//   KNOWN_MORE_THAN_IDS.includes(filterId) &&
-//   typeof data === 'number';
 /**
  * Filter IDs that should use "less than" comparison (latency filters).
  * All latency field names use less-than comparison.
@@ -306,6 +270,38 @@ export const filtersToFilterQuery = (
   return nonEmptyFilters.length === 0 ? '' : nonEmptyFilters.join(' AND ');
 };
 
+const findServerFilterKey = (
+  filterId: string,
+  filters: CatalogFilterOptions | undefined,
+): string | undefined => {
+  if (!filters) {
+    return undefined;
+  }
+
+  if (filterId in filters) {
+    return filterId;
+  }
+
+  for (const suffix of ['.string_value', '.double_value', '.int_value', '.array_value']) {
+    const key = `artifacts.${filterId}${suffix}`;
+    if (key in filters) {
+      return key;
+    }
+  }
+  return undefined;
+};
+
+const convertToFilterQueryKey = (serverFilterKey: string): string => {
+  const prefix = 'artifacts.';
+  if (serverFilterKey.startsWith(prefix)) {
+    return serverFilterKey.substring(prefix.length);
+  }
+  return serverFilterKey;
+};
+
+const isLatencyFieldName = (id: string): id is LatencyMetricFieldName =>
+  ALL_LATENCY_FIELD_NAMES.some((name) => name === id);
+
 /**
  * Converts filter data into a filter query string for the /artifacts/performance endpoint.
  * Only includes filters that have the 'artifacts.' prefix and strips that prefix in the output.
@@ -315,55 +311,43 @@ export const filtersToArtifactsFilterQuery = (
   filterData: ModelCatalogFilterStates,
   options: CatalogFilterOptionsList,
 ): string => {
-  const isLatencyFieldName = (id: string): boolean =>
-    ALL_LATENCY_FIELD_NAMES.some((name) => name === id);
-
   const serializedFilters: string[] = Object.entries(filterData)
-    .filter(([filterId]) => {
-      // Only include artifact-specific filters (those with artifacts. prefix in filter options)
-      // OR performance-related filters like latency and hardware_type/use_case
-      // But NOT rps_mean - that goes to targetRPS param
-      if (filterId === ModelCatalogNumberFilterKey.MIN_RPS) {
-        return false; // RPS is passed as targetRPS param, not in filterQuery
-      }
-      // Include latency filters, hardware_type, and use_case for artifacts filtering
-      if (isLatencyFieldName(filterId)) {
-        return true;
-      }
-      if (
+    .filter(
+      ([filterId]) =>
         filterId === ModelCatalogStringFilterKey.HARDWARE_TYPE ||
-        filterId === ModelCatalogStringFilterKey.USE_CASE
-      ) {
-        return true;
-      }
-      return false;
-    })
+        filterId === ModelCatalogStringFilterKey.USE_CASE ||
+        isLatencyFieldName(filterId),
+    )
     .map(([filterId, data]) => {
       if (typeof data === 'undefined') {
         return '';
       }
 
-      // For artifacts endpoint, we use the filter ID directly (no prefix stripping needed
-      // since our local state doesn't have the prefix - the backend filter_options have it)
+      const serverFilterKey = findServerFilterKey(filterId, options.filters);
+      const queryKey = serverFilterKey ? convertToFilterQueryKey(serverFilterKey) : filterId;
+
       const filterOption =
-        options.filters && isFilterIdInMap(filterId, options.filters)
-          ? options.filters[filterId]
+        serverFilterKey && options.filters && isFilterIdInMap(serverFilterKey, options.filters)
+          ? options.filters[serverFilterKey]
           : undefined;
 
-      if (isArrayOfSelections(filterOption, data)) {
+      if (filterOption?.type === 'string' && Array.isArray(data)) {
         switch (data.length) {
           case 0:
             return '';
           case 1:
-            return eqFilter(filterId, data[0]);
+            return eqFilter(queryKey, data[0]);
           default:
-            return inFilter(filterId, data);
+            return inFilter(queryKey, data);
         }
       }
 
-      // Numeric filters for artifacts: latency uses less-than
-      if (isKnownLessThanValue(filterOption, filterId, data)) {
-        return `${filterId} < ${data}`;
+      if (
+        filterOption?.type === 'number' &&
+        isLatencyFieldName(filterId) &&
+        typeof data === 'number'
+      ) {
+        return `${queryKey}<${data}`; // ttft_p90.double_value<60
       }
 
       return '';
