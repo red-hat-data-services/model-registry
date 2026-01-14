@@ -7,7 +7,9 @@ FROM registry.access.redhat.com/ubi9/python-312-minimal@sha256:64a3083a25d9f7573
 USER 0
 
 # Install skopeo for Push/Pull of container images to integrate with Model Registry py client and Olot.
+# Update packages first to resolve glibc dependency conflicts, then install build dependencies
 RUN . /cachi2/cachi2.env && \
+    microdnf update -y && \
     microdnf install -y skopeo gcc make python3.12-devel cargo g++ && \
     microdnf clean all
 
