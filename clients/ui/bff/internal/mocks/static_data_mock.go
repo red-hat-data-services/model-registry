@@ -224,6 +224,10 @@ func newCustomProperties() *map[string]openapi.MetadataValue {
 }
 
 func catalogCustomProperties() *map[string]openapi.MetadataValue {
+	return catalogCustomPropertiesWithVariant("", "FP16")
+}
+
+func catalogCustomPropertiesWithVariant(variantGroupId string, tensorType string) *map[string]openapi.MetadataValue {
 	result := map[string]openapi.MetadataValue{
 		"tensorflow": {
 			MetadataStringValue: &openapi.MetadataStringValue{
@@ -275,16 +279,32 @@ func catalogCustomProperties() *map[string]openapi.MetadataValue {
 		},
 		"tensor_type": {
 			MetadataStringValue: &openapi.MetadataStringValue{
-				StringValue:  "FP8",
+				StringValue:  tensorType,
 				MetadataType: "MetadataStringValue",
 			},
 		},
 		"size": {
 			MetadataStringValue: &openapi.MetadataStringValue{
-				StringValue:  "7B param",
+				StringValue:  "8B params",
 				MetadataType: "MetadataStringValue",
 			},
 		},
+		"model_type": {
+			MetadataStringValue: &openapi.MetadataStringValue{
+				StringValue:  "generative",
+				MetadataType: "MetadataStringValue",
+			},
+		},
+	}
+
+	// Add variant_group_id if provided
+	if variantGroupId != "" {
+		result["variant_group_id"] = openapi.MetadataValue{
+			MetadataStringValue: &openapi.MetadataStringValue{
+				StringValue:  variantGroupId,
+				MetadataType: "MetadataStringValue",
+			},
+		}
 	}
 
 	return &result
@@ -330,6 +350,8 @@ func GenerateMockArtifact() openapi.Artifact {
 	return mockData
 }
 
+const graniteVariantGroupId = "b6c850a4-aa4c-4a0f-91b1-0a69f4352843"
+
 func GetCatalogModelMocks() []models.CatalogModel {
 	sampleModel1 := models.CatalogModel{
 		Name:             "repo1/granite-8b-code-instruct",
@@ -340,7 +362,7 @@ func GetCatalogModelMocks() []models.CatalogModel {
 		LicenseLink:      stringToPointer("https://www.apache.org/licenses/LICENSE-2.0.txt"),
 		Maturity:         stringToPointer("Technology preview"),
 		Language:         []string{"ar", "cs", "de", "en", "es", "fr", "it", "ja", "ko", "nl", "pt", "zh"},
-		CustomProperties: catalogCustomProperties(),
+		CustomProperties: catalogCustomPropertiesWithVariant(graniteVariantGroupId, "FP16"),
 		Logo:             stringToPointer("data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTQ1Ij48ZGVmcz48c3R5bGU+LmNscy0xe2ZpbGw6I2UwMDt9PC9zdHlsZT48L2RlZnM+PHRpdGxlPlJlZEhhdC1Mb2dvLUhhdC1Db2xvcjwvdGl0bGU+PHBhdGggZD0iTTE1Ny43Nyw2Mi42MWExNCwxNCwwLDAsMSwuMzEsMy40MmMwLDE0Ljg4LTE4LjEsMTcuNDYtMzAuNjEsMTcuNDZDNzguODMsODMuNDksNDIuNTMsNTMuMjYsNDIuNTMsNDRhNi40Myw2LjQzLDAsMCwxLC4yMi0xLjk0bC0zLjY2LDkuMDZhMTguNDUsMTguNDUsMCwwLDAtMS41MSw3LjMzYzAsMTguMTEsNDEsNDUuNDgsODcuNzQsNDUuNDgsMjAuNjksMCwzNi40My03Ljc2LDM2LjQzLTIxLjc3LDAtMS4wOCwwLTEuOTQtMS43My0xMC4xM1oiLz48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0xMjcuNDcsODMuNDljMTIuNTEsMCwzMC42MS0yLjU4LDMwLjYxLTE3LjQ2YTE0LDE0LDAsMCwwLS4zMS0zLjQybC03LjQ1LTMyLjM2Yy0xLjcyLTcuMTItMy4yMy0xMC4zNS0xNS43My0xNi42QzEyNC44OSw4LjY5LDEwMy43Ni41LDk3LjUxLjUsOTEuNjkuNSw5MCw4LDgzLjA2LDhjLTYuNjgsMC0xMS42NC01LjYtMTcuODktNS42LTYsMC05LjkxLDQuMDktMTIuOTMsMTIuNSwwLDAtOC40MSwyMy43Mi05LjQ5LDI3LjE2QTYuNDMsNi40MywwLDAsMCw0Mi41Myw0NGMwLDkuMjIsMzYuMywzOS40NSw4NC45NCwzOS40NU0xNjAsNzIuMDdjMS43Myw4LjE5LDEuNzMsOS4wNSwxLjczLDEwLjEzLDAsMTQtMTUuNzQsMjEuNzctMzYuNDMsMjEuNzdDNzguNTQsMTA0LDM3LjU4LDc2LjYsMzcuNTgsNTguNDlhMTguNDUsMTguNDUsMCwwLDEsMS41MS03LjMzQzIyLjI3LDUyLC41LDU1LC41LDc0LjIyYzAsMzEuNDgsNzQuNTksNzAuMjgsMTMzLjY1LDcwLjI4LDQ1LjI4LDAsNTYuNy0yMC40OCw1Ni43LTM2LjY1LDAtMTIuNzItMTEtMjcuMTYtMzAuODMtMzUuNzgiLz48L3N2Zz4="),
 		Readme: stringToPointer(`---
 pipeline_tag: text-generation
@@ -686,28 +708,41 @@ Granite 3.1 Instruct Models are primarily finetuned using instruction-response p
 	}
 
 	sampleModel2 := models.CatalogModel{
-		Name:             "repo1/granite-7b-instruct",
-		Description:      stringToPointer("Granite 7B instruction-tuned model for enterprise applications"),
+		Name:             "repo1/granite-8b-code-instruct-quantized.w4a16",
+		Description:      stringToPointer("Granite 8B Code Instruct - INT4 quantized variant for efficient inference"),
 		Provider:         stringToPointer("Provider one"),
 		Tasks:            []string{"text-generation", "image-text-to-text"},
 		License:          stringToPointer("apache-2.0"),
 		Maturity:         stringToPointer("Generally Available"),
 		Language:         []string{"en"},
 		SourceId:         stringToPointer("sample-source"),
-		CustomProperties: catalogCustomProperties(),
+		CustomProperties: catalogCustomPropertiesWithVariant(graniteVariantGroupId, "INT4"),
 		Logo:             stringToPointer("data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTQ1Ij48ZGVmcz48c3R5bGU+LmNscy0xe2ZpbGw6I2UwMDt9PC9zdHlsZT48L2RlZnM+PHRpdGxlPlJlZEhhdC1Mb2dvLUhhdC1Db2xvcjwvdGl0bGU+PHBhdGggZD0iTTE1Ny43Nyw2Mi42MWExNCwxNCwwLDAsMSwuMzEsMy40MmMwLDE0Ljg4LTE4LjEsMTcuNDYtMzAuNjEsMTcuNDZDNzguODMsODMuNDksNDIuNTMsNTMuMjYsNDIuNTMsNDRhNi40Myw2LjQzLDAsMCwxLC4yMi0xLjk0bC0zLjY2LDkuMDZhMTguNDUsMTguNDUsMCwwLDAtMS41MSw3LjMzYzAsMTguMTEsNDEsNDUuNDgsODcuNzQsNDUuNDgsMjAuNjksMCwzNi40My03Ljc2LDM2LjQzLTIxLjc3LDAtMS4wOCwwLTEuOTQtMS43My0xMC4xM1oiLz48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0xMjcuNDcsODMuNDljMTIuNTEsMCwzMC42MS0yLjU4LDMwLjYxLTE3LjQ2YTE0LDE0LDAsMCwwLS4zMS0zLjQybC03LjQ1LTMyLjM2Yy0xLjcyLTcuMTItMy4yMy0xMC4zNS0xNS43My0xNi42QzEyNC44OSw4LjY5LDEwMy43Ni41LDk3LjUxLjUsOTEuNjkuNSw5MCw4LDgzLjA2LDhjLTYuNjgsMC0xMS42NC01LjYtMTcuODktNS42LTYsMC05LjkxLDQuMDktMTIuOTMsMTIuNSwwLDAtOC40MSwyMy43Mi05LjQ5LDI3LjE2QTYuNDMsNi40MywwLDAsMCw0Mi41Myw0NGMwLDkuMjIsMzYuMywzOS40NSw4NC45NCwzOS40NU0xNjAsNzIuMDdjMS43Myw4LjE5LDEuNzMsOS4wNSwxLjczLDEwLjEzLDAsMTQtMTUuNzQsMjEuNzctMzYuNDMsMjEuNzdDNzguNTQsMTA0LDM3LjU4LDc2LjYsMzcuNTgsNTguNDlhMTguNDUsMTguNDUsMCwwLDEsMS41MS03LjMzQzIyLjI3LDUyLC41LDU1LC41LDc0LjIyYzAsMzEuNDgsNzQuNTksNzAuMjgsMTMzLjY1LDcwLjI4LDQ1LjI4LDAsNTYuNy0yMC40OCw1Ni43LTM2LjY1LDAtMTIuNzItMTEtMjcuMTYtMzAuODMtMzUuNzgiLz48L3N2Zz4="),
 	}
 
 	sampleModel3 := models.CatalogModel{
-		Name:             "repo1/granite-3b-code-base",
-		Description:      stringToPointer("Granite 3B code generation model for programming tasks"),
+		Name:             "repo1/granite-8b-code-instruct-quantized.w8a8",
+		Description:      stringToPointer("Granite 8B Code Instruct - INT8 quantized variant for balanced performance"),
 		Provider:         stringToPointer("IBM"),
 		Tasks:            []string{"audio-to-text", "text-to-text", "video-to-text"},
 		License:          stringToPointer("mit"),
 		Maturity:         stringToPointer("Generally Available"),
 		Language:         []string{"en"},
 		SourceId:         stringToPointer("sample-source"),
-		CustomProperties: catalogCustomProperties(),
+		CustomProperties: catalogCustomPropertiesWithVariant(graniteVariantGroupId, "INT8"),
+		Logo:             stringToPointer("data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTQ1Ij48ZGVmcz48c3R5bGU+LmNscy0xe2ZpbGw6I2UwMDt9PC9zdHlsZT48L2RlZnM+PHRpdGxlPlJlZEhhdC1Mb2dvLUhhdC1Db2xvcjwvdGl0bGU+PHBhdGggZD0iTTE1Ny43Nyw2Mi42MWExNCwxNCwwLDAsMSwuMzEsMy40MmMwLDE0Ljg4LTE4LjEsMTcuNDYtMzAuNjEsMTcuNDZDNzguODMsODMuNDksNDIuNTMsNTMuMjYsNDIuNTMsNDRhNi40Myw2LjQzLDAsMCwxLC4yMi0xLjk0bC0zLjY2LDkuMDZhMTguNDUsMTguNDUsMCwwLDAtMS41MSw3LjMzYzAsMTguMTEsNDEsNDUuNDgsODcuNzQsNDUuNDgsMjAuNjksMCwzNi40My03Ljc2LDM2LjQzLTIxLjc3LDAtMS4wOCwwLTEuOTQtMS43My0xMC4xM1oiLz48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0xMjcuNDcsODMuNDljMTIuNTEsMCwzMC42MS0yLjU4LDMwLjYxLTE3LjQ2YTE0LDE0LDAsMCwwLS4zMS0zLjQybC03LjQ1LTMyLjM2Yy0xLjcyLTcuMTItMy4yMy0xMC4zNS0xNS43My0xNi42QzEyNC44OSw4LjY5LDEwMy43Ni41LDk3LjUxLjUsOTEuNjkuNSw5MCw4LDgzLjA2LDhjLTYuNjgsMC0xMS42NC01LjYtMTcuODktNS42LTYsMC05LjkxLDQuMDktMTIuOTMsMTIuNSwwLDAtOC40MSwyMy43Mi05LjQ5LDI3LjE2QTYuNDMsNi40MywwLDAsMCw0Mi41Myw0NGMwLDkuMjIsMzYuMywzOS40NSw4NC45NCwzOS40NU0xNjAsNzIuMDdjMS43Myw4LjE5LDEuNzMsOS4wNSwxLjczLDEwLjEzLDAsMTQtMTUuNzQsMjEuNzctMzYuNDMsMjEuNzdDNzguNTQsMTA0LDM3LjU4LDc2LjYsMzcuNTgsNTguNDlhMTguNDUsMTguNDUsMCwwLDEsMS41MS03LjMzQzIyLjI3LDUyLC41LDU1LC41LDc0LjIyYzAsMzEuNDgsNzQuNTksNzAuMjgsMTMzLjY1LDcwLjI4LDQ1LjI4LDAsNTYuNy0yMC40OCw1Ni43LTM2LjY1LDAtMTIuNzItMTEtMjcuMTYtMzAuODMtMzUuNzgiLz48L3N2Zz4="),
+	}
+
+	sampleModel4 := models.CatalogModel{
+		Name:             "repo1/granite-8b-code-instruct-bf16",
+		Description:      stringToPointer("Granite 8B Code Instruct - BF16 variant for high precision"),
+		Provider:         stringToPointer("IBM"),
+		Tasks:            []string{"text-generation", "code-generation"},
+		License:          stringToPointer("apache-2.0"),
+		Maturity:         stringToPointer("Generally Available"),
+		Language:         []string{"en"},
+		SourceId:         stringToPointer("sample-source"),
+		CustomProperties: catalogCustomPropertiesWithVariant(graniteVariantGroupId, "BF16"),
 		Logo:             stringToPointer("data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTQ1Ij48ZGVmcz48c3R5bGU+LmNscy0xe2ZpbGw6I2UwMDt9PC9zdHlsZT48L2RlZnM+PHRpdGxlPlJlZEhhdC1Mb2dvLUhhdC1Db2xvcjwvdGl0bGU+PHBhdGggZD0iTTE1Ny43Nyw2Mi42MWExNCwxNCwwLDAsMSwuMzEsMy40MmMwLDE0Ljg4LTE4LjEsMTcuNDYtMzAuNjEsMTcuNDZDNzguODMsODMuNDksNDIuNTMsNTMuMjYsNDIuNTMsNDRhNi40Myw2LjQzLDAsMCwxLC4yMi0xLjk0bC0zLjY2LDkuMDZhMTguNDUsMTguNDUsMCwwLDAtMS41MSw3LjMzYzAsMTguMTEsNDEsNDUuNDgsODcuNzQsNDUuNDgsMjAuNjksMCwzNi40My03Ljc2LDM2LjQzLTIxLjc3LDAtMS4wOCwwLTEuOTQtMS43My0xMC4xM1oiLz48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0xMjcuNDcsODMuNDljMTIuNTEsMCwzMC42MS0yLjU4LDMwLjYxLTE3LjQ2YTE0LDE0LDAsMCwwLS4zMS0zLjQybC03LjQ1LTMyLjM2Yy0xLjcyLTcuMTItMy4yMy0xMC4zNS0xNS43My0xNi42QzEyNC44OSw4LjY5LDEwMy43Ni41LDk3LjUxLjUsOTEuNjkuNSw5MCw4LDgzLjA2LDhjLTYuNjgsMC0xMS42NC01LjYtMTcuODktNS42LTYsMC05LjkxLDQuMDktMTIuOTMsMTIuNSwwLDAtOC40MSwyMy43Mi05LjQ5LDI3LjE2QTYuNDMsNi40MywwLDAsMCw0Mi41Myw0NGMwLDkuMjIsMzYuMywzOS40NSw4NC45NCwzOS40NU0xNjAsNzIuMDdjMS43Myw4LjE5LDEuNzMsOS4wNSwxLjczLDEwLjEzLDAsMTQtMTUuNzQsMjEuNzctMzYuNDMsMjEuNzdDNzguNTQsMTA0LDM3LjU4LDc2LjYsMzcuNTgsNTguNDlhMTguNDUsMTguNDUsMCwwLDEsMS41MS03LjMzQzIyLjI3LDUyLC41LDU1LC41LDc0LjIyYzAsMzEuNDgsNzQuNTksNzAuMjgsMTMzLjY1LDcwLjI4LDQ1LjI4LDAsNTYuNy0yMC40OCw1Ni43LTM2LjY1LDAtMTIuNzItMTEtMjcuMTYtMzAuODMtMzUuNzgiLz48L3N2Zz4="),
 	}
 
@@ -792,7 +827,7 @@ Granite 3.1 Instruct Models are primarily finetuned using instruction-response p
 	}
 
 	allModels := []models.CatalogModel{
-		sampleModel1, sampleModel2, sampleModel3,
+		sampleModel1, sampleModel2, sampleModel3, sampleModel4,
 		huggingFaceModel1, huggingFaceModel2, huggingFaceModel3,
 		otherModel1, otherModel2,
 	}
@@ -2036,18 +2071,78 @@ func GetFilterOptionMocks() map[string]models.FilterOption {
 }
 
 func GetNamedQueriesMocks() map[string]map[string]models.FieldFilter {
-	namedQuries := make(map[string]map[string]models.FieldFilter)
-	namedQuries["validation-default"] = map[string]models.FieldFilter{
-		"ttft_p90": {
+	namedQueries := make(map[string]map[string]models.FieldFilter)
+
+	// Default performance filters - applied when performance toggle is turned on
+	// Uses full filter key format matching the filters map
+	namedQueries["default-performance-filters"] = map[string]models.FieldFilter{
+		"artifacts.use_case.string_value": {
+			Operator: "=",
+			Value:    "Chatbot", // UseCaseOptionValue.CHATBOT
+		},
+		"artifacts.ttft_p90.double_value": {
+			Operator: "<=",
+			Value:    "max", // 'max' means use the max value from the range in filters
+		},
+		"artifacts.requests_per_second.double_value": {
+			Operator: "<=",
+			Value:    "max", // 'max' means use the max value from the range in filters
+		},
+	}
+
+	// Legacy validation-default query for backward compatibility
+	namedQueries["validation-default"] = map[string]models.FieldFilter{
+		"artifacts.ttft_p90.double_value": {
 			Operator: "<",
 			Value:    float64(70),
 		},
-		"workload_type": {
+		"artifacts.use_case.string_value": {
 			Operator: "=",
-			Value:    "Chat",
+			Value:    "Chatbot",
 		},
 	}
-	return namedQuries
+
+	// High performance GPU configurations
+	namedQueries["high_performance_gpu"] = map[string]models.FieldFilter{
+		"artifacts.hardware_type.string_value": {
+			Operator: "in",
+			Value:    []interface{}{"H100-80", "A100-80"},
+		},
+		"artifacts.requests_per_second.double_value": {
+			Operator: ">=",
+			Value:    float64(50),
+		},
+	}
+
+	// Low latency optimized
+	namedQueries["low_latency"] = map[string]models.FieldFilter{
+		"artifacts.ttft_p90.double_value": {
+			Operator: "<",
+			Value:    float64(100),
+		},
+		"artifacts.e2e_p90.double_value": {
+			Operator: "<",
+			Value:    float64(500),
+		},
+	}
+
+	// Chatbot optimized
+	namedQueries["chatbot_optimized"] = map[string]models.FieldFilter{
+		"artifacts.use_case.string_value": {
+			Operator: "=",
+			Value:    "Chatbot",
+		},
+	}
+
+	// RAG optimized
+	namedQueries["rag_optimized"] = map[string]models.FieldFilter{
+		"artifacts.use_case.string_value": {
+			Operator: "in",
+			Value:    []interface{}{"RAG", "Long RAG"},
+		},
+	}
+
+	return namedQueries
 }
 
 func GetFilterOptionsListMock() models.FilterOptionsList {
@@ -2065,107 +2160,93 @@ func BoolPtr(b bool) *bool {
 }
 
 func GetModelsWithInclusionStatusListMocks() []models.CatalogSourcePreviewModel {
-	return []models.CatalogSourcePreviewModel{
-		{
-			Name:     "sample-source/granite",
+	// Generate enough models to test pagination (page size is 20)
+	// We want 45 included and 25 excluded = 70 total models
+	var allModels []models.CatalogSourcePreviewModel
+
+	// Add 45 included models
+	for i := 1; i <= 45; i++ {
+		allModels = append(allModels, models.CatalogSourcePreviewModel{
+			Name:     fmt.Sprintf("sample-source/included-model-%d", i),
 			Included: true,
-		},
-		{
-			Name:     "sample-source/model-1",
-			Included: true,
-		},
-		{
-			Name:     "sample-source/model-2",
-			Included: true,
-		},
-		{
-			Name:     "sample-source/model-3",
-			Included: true,
-		},
-		{
-			Name:     "sample-source/model-4",
-			Included: true,
-		},
-		{
-			Name:     "sample-source/model-5",
-			Included: true,
-		},
-		{
-			Name:     "sample-source/model-6",
-			Included: false,
-		},
-		{
-			Name:     "adminModel1/model-1",
-			Included: true,
-		},
-		{
-			Name:     "adminModel1/model-2",
-			Included: true,
-		},
-		{
-			Name:     "adminModel1/model-3",
-			Included: true,
-		},
-		{
-			Name:     "adminModel1/model-4",
-			Included: true,
-		},
-		{
-			Name:     "adminModel1/model-5",
-			Included: true,
-		},
-		{
-			Name:     "adminModel1/model-6",
-			Included: true,
-		},
-		{
-			Name:     "adminModel1/model-7",
-			Included: true,
-		},
-		{
-			Name:     "adminModel1/model-8",
-			Included: true,
-		},
-		{
-			Name:     "adminModel1/model-9",
-			Included: true,
-		},
-		{
-			Name:     "adminModel1/model-10",
-			Included: false,
-		},
-		{
-			Name:     "adminModel1/model-11",
-			Included: false,
-		},
-		{
-			Name:     "adminModel1/model-12",
-			Included: false,
-		},
-		{
-			Name:     "adminModel1/model-13",
-			Included: false,
-		},
+		})
 	}
+
+	// Add 25 excluded models
+	for i := 1; i <= 25; i++ {
+		allModels = append(allModels, models.CatalogSourcePreviewModel{
+			Name:     fmt.Sprintf("sample-source/excluded-model-%d", i),
+			Included: false,
+		})
+	}
+
+	return allModels
 }
 
 func GetCatalogSourcePreviewSummaryMock() models.CatalogSourcePreviewSummary {
 	return models.CatalogSourcePreviewSummary{
-		TotalModels:    20,
-		IncludedModels: 15,
-		ExcludedModels: 5,
+		TotalModels:    70,
+		IncludedModels: 45,
+		ExcludedModels: 25,
 	}
 }
 
 func CreateCatalogSourcePreviewMock() models.CatalogSourcePreviewResult {
-	catalogModelPreview := GetModelsWithInclusionStatusListMocks()
+	return CreateCatalogSourcePreviewMockWithFilter("all", 20, "")
+}
+
+func CreateCatalogSourcePreviewMockWithFilter(filterStatus string, pageSize int, nextPageToken string) models.CatalogSourcePreviewResult {
+	allModels := GetModelsWithInclusionStatusListMocks()
 	catalogSourcePreviewSummary := GetCatalogSourcePreviewSummaryMock()
 
+	// Filter based on filterStatus
+	var filteredModels []models.CatalogSourcePreviewModel
+	switch filterStatus {
+	case "included":
+		for _, m := range allModels {
+			if m.Included {
+				filteredModels = append(filteredModels, m)
+			}
+		}
+	case "excluded":
+		for _, m := range allModels {
+			if !m.Included {
+				filteredModels = append(filteredModels, m)
+			}
+		}
+	default: // "all" or empty
+		filteredModels = allModels
+	}
+
+	// Handle pagination
+	startIndex := 0
+	if nextPageToken != "" {
+		// Parse token as start index (simple mock implementation)
+		_, _ = fmt.Sscanf(nextPageToken, "%d", &startIndex)
+	}
+
+	if pageSize <= 0 {
+		pageSize = 10
+	}
+
+	endIndex := startIndex + pageSize
+	if endIndex > len(filteredModels) {
+		endIndex = len(filteredModels)
+	}
+
+	pagedModels := filteredModels[startIndex:endIndex]
+
+	// Generate next page token if there are more items
+	var newNextPageToken string
+	if endIndex < len(filteredModels) {
+		newNextPageToken = fmt.Sprintf("%d", endIndex)
+	}
+
 	return models.CatalogSourcePreviewResult{
-		Items:         catalogModelPreview,
+		Items:         pagedModels,
 		Summary:       catalogSourcePreviewSummary,
-		NextPageToken: "",
-		PageSize:      int32(10),
-		Size:          int32(len(catalogModelPreview)),
+		NextPageToken: newNextPageToken,
+		PageSize:      int32(pageSize),
+		Size:          int32(len(pagedModels)),
 	}
 }
