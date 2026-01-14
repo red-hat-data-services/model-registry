@@ -171,6 +171,7 @@ export type GetCatalogModelsBySource = (
   searchKeyword?: string,
   filterData?: ModelCatalogFilterStates,
   filterOptions?: CatalogFilterOptionsList | null,
+  filterQuery?: string,
 ) => Promise<CatalogModelList>;
 
 export type GetListSources = (opts: APIOptions) => Promise<CatalogSourceList>;
@@ -377,9 +378,16 @@ export type CatalogSourcePreviewResult = {
   size: number;
 };
 
+export type PreviewCatalogSourceQueryParams = {
+  filterStatus?: 'all' | 'included' | 'excluded';
+  pageSize?: number;
+  nextPageToken?: string;
+};
+
 export type PreviewCatalogSource = (
   opts: APIOptions,
   data: CatalogSourcePreviewRequest,
+  queryParams?: PreviewCatalogSourceQueryParams,
 ) => Promise<CatalogSourcePreviewResult>;
 
 export type ModelCatalogSettingsAPIs = {
