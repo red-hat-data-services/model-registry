@@ -1,4 +1,3 @@
-import { TempDevFeature } from '~/app/hooks/useTempDevFeatureAvailable';
 import { appChrome } from './appChrome';
 
 class ModelCatalogFilter {
@@ -32,12 +31,7 @@ class ModelCatalogFilter {
 }
 
 class ModelCatalog {
-  visit({
-    enableTempDevCatalogAdvancedFiltersFeature = false,
-  }: { enableTempDevCatalogAdvancedFiltersFeature?: boolean } = {}) {
-    if (enableTempDevCatalogAdvancedFiltersFeature) {
-      window.localStorage.setItem(TempDevFeature.CatalogAdvancedFilters, 'true');
-    }
+  visit() {
     cy.visit('/model-catalog');
     this.wait();
   }
@@ -330,6 +324,10 @@ class ModelCatalog {
     return cy.findByTestId('latency-reset-filter');
   }
 
+  findEmptyStateResetFiltersButton() {
+    return this.findModelCatalogEmptyState().findByRole('button', { name: /Reset filters/i });
+  }
+
   clickApplyFilter() {
     this.findApplyFilterButton().click();
     return this;
@@ -395,6 +393,24 @@ class ModelCatalog {
 
   findAllCompressionVariants() {
     return cy.get('[data-testid^="compression-variant-"]');
+  }
+
+  // Performance Empty State
+  findPerformanceEmptyState() {
+    return cy.findByTestId('performance-empty-state');
+  }
+
+  findSetPerformanceOffLink() {
+    return this.findPerformanceEmptyState().contains(
+      'button',
+      /Turn.*Model performance view.*off/i,
+    );
+  }
+
+  findSelectAllModelsCategoryButton() {
+    return this.findPerformanceEmptyState().findByRole('button', {
+      name: /View all models with performance data/i,
+    });
   }
 }
 
