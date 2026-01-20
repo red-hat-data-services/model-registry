@@ -52,7 +52,7 @@ spec:
         },
         {
           "type": "pip", 
-          "path": "jobs/async-upload/.konflux/aarh64", 
+          "path": "jobs/async-upload/.konflux/aarch64", 
           "requirements_files": ["requirements.txt"], 
           "requirements_build_files": ["requirements-build.txt"],
           "binary": { 
