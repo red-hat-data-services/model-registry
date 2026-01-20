@@ -18,7 +18,9 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=on
 
 WORKDIR /app
-COPY ./poetry.lock ./pyproject.toml ./requirements.txt ./
+COPY ./poetry.lock ./pyproject.toml ./requirements.txt 
+
+COPY ./.konflux
 
 # Build argument to specify architecture
 ARG TARGETARCH=x86_64
