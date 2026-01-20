@@ -41,9 +41,41 @@ spec:
     value: |
       [
         {"type": "rpm", "path": "jobs/async-upload"}, 
-        {"type": "pip", "path": "jobs/async-upload", 
-          "requirements_files": ["requirements-downstream.txt"], 
-          "requirements_build_files": ["requirements-build-downstream.txt", "requirements-downstream-build-extra.txt"]
+        {
+          "type": "pip", 
+          "path": "jobs/async-upload/.konflux/x86_64", 
+          "requirements_files": ["requirements.txt"], 
+          "requirements_build_files": ["requirements-build.txt"],
+          "binary": { 
+            "arch": "x86_64"
+          }
+        },
+        {
+          "type": "pip", 
+          "path": "jobs/async-upload/.konflux/aarh64", 
+          "requirements_files": ["requirements.txt"], 
+          "requirements_build_files": ["requirements-build.txt"],
+          "binary": { 
+            "arch": "aarch64"
+          }
+        },
+        {
+          "type": "pip", 
+          "path": "jobs/async-upload/.konflux/s390x", 
+          "requirements_files": ["requirements.txt"], 
+          "requirements_build_files": ["requirements-build.txt"],
+          "binary": { 
+            "arch": "s390x"
+          }
+        },
+        {
+          "type": "pip", 
+          "path": "jobs/async-upload/.konflux/ppc64le", 
+          "requirements_files": ["requirements.txt"], 
+          "requirements_build_files": ["requirements-build.txt"],
+          "binary": { 
+            "arch": "ppc64le"
+          }
         }
       ]
   - name: build-image-index

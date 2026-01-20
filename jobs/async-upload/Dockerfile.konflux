@@ -18,10 +18,26 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=on
 
 WORKDIR /app
-COPY ./poetry.lock ./pyproject.toml ./requirements.txt ./requirements-downstream.txt ./
+COPY ./poetry.lock ./pyproject.toml ./requirements.txt ./
 
-RUN python -m pip install -r requirements.txt --no-binary :all: \
-    && echo "Installation completed" \
+# Build argument to specify architecture
+ARG TARGETARCH=x86_64
+
+# Install dependencies
+RUN echo "Installing $TARGETARCH dependencies ..." && \
+    if [ "$TARGETARCH" = "amd64" ] || [ "$TARGETARCH" = "x86_64" ]; then \
+        python -m pip install --no-cache-dir -r .konflux/x86_64/requirements.txt; \
+    elif [ "$TARGETARCH" = "arm64" ] || [ "$TARGETARCH" = "aarch64" ]; then \
+        python -m pip install --no-cache-dir -r .konflux/aarch64/requirements.txt; \
+    elif [ "$TARGETARCH" = "s390x" ] || [ "$TARGETARCH" = "ppc64le" ]; then \
+        dnf install -y gcc ninja-build \
+        && python -m pip install --no-cache-dir -r .konflux/${TARGETARCH}/requirements.txt; \
+    else \
+        echo "ERROR: Unsupported architecture: $TARGETARCH"; \
+        exit 1; \
+    fi
+
+RUN echo "Installation completed" \
     && echo "Python path:" && python -c "import sys; print('\\n'.join(sys.path))" \
     && echo "Installed packages:" \
     && python -m pip list 
