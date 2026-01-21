@@ -12,8 +12,8 @@ metadata:
       == "stable"
   creationTimestamp: null
   labels:
-    appstudio.openshift.io/application: opendatahub-release
-    appstudio.openshift.io/component: odh-model-registry
+    appstudio.openshift.io/application: opendatahub-builds
+    appstudio.openshift.io/component: odh-model-registry-ci
     pipelines.appstudio.openshift.io/type: build
   name: odh-model-registry-on-pull-request
   namespace: open-data-hub-tenant
