@@ -1,2 +1,2 @@
 # This file includes some additional build dependencies that were not caught by pybuild-deps.
-Cython==3.1.10
+Cython==3.1.8
