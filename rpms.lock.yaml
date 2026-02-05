@@ -46,13 +46,13 @@ arches:
     name: crun
     evr: 1.23.1-2.el9_7
     sourcerpm: crun-1.23.1-2.el9_7.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/f/fuse-overlayfs-1.15-1.el9.aarch64.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/f/fuse-overlayfs-1.16-1.el9_7.aarch64.rpm
     repoid: ubi-9-for-aarch64-appstream-rpms
-    size: 64506
-    checksum: sha256:ca71ef4c89e10d75a46257c190e7274e2354092d18dbceba95a701e3f3df7c61
+    size: 63393
+    checksum: sha256:7e26a4ef20d9e376a3f84b78d36d1ad6c66ce154e7dfef8757b6aec471a86a4c
     name: fuse-overlayfs
-    evr: 1.15-1.el9
-    sourcerpm: fuse-overlayfs-1.15-1.el9.src.rpm
+    evr: 1.16-1.el9_7
+    sourcerpm: fuse-overlayfs-1.16-1.el9_7.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/f/fuse3-3.10.2-9.el9.aarch64.rpm
     repoid: ubi-9-for-aarch64-appstream-rpms
     size: 58189
@@ -88,13 +88,13 @@ arches:
     name: glibc-devel
     evr: 2.34-231.el9_7.2
     sourcerpm: glibc-2.34-231.el9_7.2.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/k/kernel-headers-5.14.0-611.20.1.el9_7.aarch64.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/k/kernel-headers-5.14.0-611.27.1.el9_7.aarch64.rpm
     repoid: ubi-9-for-aarch64-appstream-rpms
-    size: 2956369
-    checksum: sha256:2772ae5d60ba0a253ea8f080244a307e252a67dab1aa04ae96afe607236cc241
+    size: 2970461
+    checksum: sha256:32f93e66433d0db1d2b353bf7b29c876b6d16a06d97fe89001ad0ad3cf35ad37
     name: kernel-headers
-    evr: 5.14.0-611.20.1.el9_7
-    sourcerpm: kernel-5.14.0-611.20.1.el9_7.src.rpm
+    evr: 5.14.0-611.27.1.el9_7
+    sourcerpm: kernel-5.14.0-611.27.1.el9_7.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/l/libasan-11.5.0-11.el9.aarch64.rpm
     repoid: ubi-9-for-aarch64-appstream-rpms
     size: 408716
@@ -158,13 +158,13 @@ arches:
     name: llvm-libs
     evr: 20.1.8-3.el9
     sourcerpm: llvm-20.1.8-3.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/p/python3.12-devel-3.12.12-1.el9_7.aarch64.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/p/python3.12-devel-3.12.12-4.el9_7.aarch64.rpm
     repoid: ubi-9-for-aarch64-appstream-rpms
-    size: 332935
-    checksum: sha256:fe7cb035b8540dbed2557360c805c78ea09c6581f0c97bb96e4787d99399643d
+    size: 338253
+    checksum: sha256:7eca214d3fc1d3e9c5fbdecb0ae44306a6af73c106cbc431462740fb0f9fdd80
     name: python3.12-devel
-    evr: 3.12.12-1.el9_7
-    sourcerpm: python3.12-3.12.12-1.el9_7.src.rpm
+    evr: 3.12.12-4.el9_7
+    sourcerpm: python3.12-3.12.12-4.el9_7.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/r/rust-1.88.0-1.el9.aarch64.rpm
     repoid: ubi-9-for-aarch64-appstream-rpms
     size: 28639155
@@ -386,13 +386,13 @@ arches:
     name: crun
     evr: 1.23.1-2.el9_7
     sourcerpm: crun-1.23.1-2.el9_7.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/f/fuse-overlayfs-1.15-1.el9.ppc64le.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/f/fuse-overlayfs-1.16-1.el9_7.ppc64le.rpm
     repoid: ubi-9-for-ppc64le-appstream-rpms
-    size: 70213
-    checksum: sha256:637cc6a5b98682ef3c2a1cb8ec5a882861601261e390dee00db9e07868108d61
+    size: 69175
+    checksum: sha256:9df6b647cd0e1cf6567184647117ffd2e8180b56f19a2cc07815a8b49f387913
     name: fuse-overlayfs
-    evr: 1.15-1.el9
-    sourcerpm: fuse-overlayfs-1.15-1.el9.src.rpm
+    evr: 1.16-1.el9_7
+    sourcerpm: fuse-overlayfs-1.16-1.el9_7.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/f/fuse3-3.10.2-9.el9.ppc64le.rpm
     repoid: ubi-9-for-ppc64le-appstream-rpms
     size: 60949
@@ -428,13 +428,13 @@ arches:
     name: glibc-devel
     evr: 2.34-231.el9_7.2
     sourcerpm: glibc-2.34-231.el9_7.2.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/k/kernel-headers-5.14.0-611.20.1.el9_7.ppc64le.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/k/kernel-headers-5.14.0-611.27.1.el9_7.ppc64le.rpm
     repoid: ubi-9-for-ppc64le-appstream-rpms
-    size: 2978069
-    checksum: sha256:3f982050621fc70c6e5208e6a08dc5a55a668d8f22e40b6d81904ab0bfbd8612
+    size: 2992141
+    checksum: sha256:08becd857b15cb034b955f96c95301cad8b2bce76de5302f035609af17f7ce6b
     name: kernel-headers
-    evr: 5.14.0-611.20.1.el9_7
-    sourcerpm: kernel-5.14.0-611.20.1.el9_7.src.rpm
+    evr: 5.14.0-611.27.1.el9_7
+    sourcerpm: kernel-5.14.0-611.27.1.el9_7.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/l/libasan-11.5.0-11.el9.ppc64le.rpm
     repoid: ubi-9-for-ppc64le-appstream-rpms
     size: 440457
@@ -498,13 +498,13 @@ arches:
     name: llvm-libs
     evr: 20.1.8-3.el9
     sourcerpm: llvm-20.1.8-3.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/p/python3.12-devel-3.12.12-1.el9_7.ppc64le.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/p/python3.12-devel-3.12.12-4.el9_7.ppc64le.rpm
     repoid: ubi-9-for-ppc64le-appstream-rpms
-    size: 333009
-    checksum: sha256:9bbc7b2f9aada90345d6af155582e0268ff360b4a4aca266789ca22ebdce395d
+    size: 338374
+    checksum: sha256:522b6deb594f6fafa10e370f3f432adf3c2f92473f5a825ce51685925c3028b5
     name: python3.12-devel
-    evr: 3.12.12-1.el9_7
-    sourcerpm: python3.12-3.12.12-1.el9_7.src.rpm
+    evr: 3.12.12-4.el9_7
+    sourcerpm: python3.12-3.12.12-4.el9_7.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/r/rust-1.88.0-1.el9.ppc64le.rpm
     repoid: ubi-9-for-ppc64le-appstream-rpms
     size: 26079470
@@ -726,13 +726,13 @@ arches:
     name: crun
     evr: 1.23.1-2.el9_7
     sourcerpm: crun-1.23.1-2.el9_7.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/f/fuse-overlayfs-1.15-1.el9.s390x.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/f/fuse-overlayfs-1.16-1.el9_7.s390x.rpm
     repoid: ubi-9-for-s390x-appstream-rpms
-    size: 64960
-    checksum: sha256:e1353b2b85bff11ae7d20d983a3a277a8e79ec66b264a7fe7203da17d700bd59
+    size: 63890
+    checksum: sha256:1d084e4bc29c8c7194393b8fcf789fb739c048f9ce50da663c9c625a1ca6c9ca
     name: fuse-overlayfs
-    evr: 1.15-1.el9
-    sourcerpm: fuse-overlayfs-1.15-1.el9.src.rpm
+    evr: 1.16-1.el9_7
+    sourcerpm: fuse-overlayfs-1.16-1.el9_7.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/f/fuse3-3.10.2-9.el9.s390x.rpm
     repoid: ubi-9-for-s390x-appstream-rpms
     size: 58849
@@ -775,13 +775,13 @@ arches:
     name: glibc-headers
     evr: 2.34-231.el9_7.2
     sourcerpm: glibc-2.34-231.el9_7.2.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/k/kernel-headers-5.14.0-611.20.1.el9_7.s390x.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/k/kernel-headers-5.14.0-611.27.1.el9_7.s390x.rpm
     repoid: ubi-9-for-s390x-appstream-rpms
-    size: 2986601
-    checksum: sha256:6da1df82ca97f73bbdbfaa586daac0996b0c642a3f83a8fd3301ad133d443482
+    size: 3000713
+    checksum: sha256:4347c0ce42dcf51fa1baebea71132b10337258c5bb56d12710cc97014323aac3
     name: kernel-headers
-    evr: 5.14.0-611.20.1.el9_7
-    sourcerpm: kernel-5.14.0-611.20.1.el9_7.src.rpm
+    evr: 5.14.0-611.27.1.el9_7
+    sourcerpm: kernel-5.14.0-611.27.1.el9_7.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/l/libasan-11.5.0-11.el9.s390x.rpm
     repoid: ubi-9-for-s390x-appstream-rpms
     size: 412655
@@ -845,13 +845,13 @@ arches:
     name: llvm-libs
     evr: 20.1.8-3.el9
     sourcerpm: llvm-20.1.8-3.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/p/python3.12-devel-3.12.12-1.el9_7.s390x.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/p/python3.12-devel-3.12.12-4.el9_7.s390x.rpm
     repoid: ubi-9-for-s390x-appstream-rpms
-    size: 332954
-    checksum: sha256:68508ebfa60faaea529a743b3537266905d8d05a1f52c5e9250e6189e10d4395
+    size: 338276
+    checksum: sha256:941477615c5558c2f3659369c77b8def7b1343593b4155a269254960c17c6216
     name: python3.12-devel
-    evr: 3.12.12-1.el9_7
-    sourcerpm: python3.12-3.12.12-1.el9_7.src.rpm
+    evr: 3.12.12-4.el9_7
+    sourcerpm: python3.12-3.12.12-4.el9_7.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/r/rust-1.88.0-1.el9.s390x.rpm
     repoid: ubi-9-for-s390x-appstream-rpms
     size: 31184880
@@ -1073,13 +1073,13 @@ arches:
     name: crun
     evr: 1.23.1-2.el9_7
     sourcerpm: crun-1.23.1-2.el9_7.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/f/fuse-overlayfs-1.15-1.el9.x86_64.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/f/fuse-overlayfs-1.16-1.el9_7.x86_64.rpm
     repoid: ubi-9-for-x86_64-appstream-rpms
-    size: 68396
-    checksum: sha256:62c90f4005f8887e7be48827f5b3212d7ceec9479f1e4047e79740793371d3a6
+    size: 67299
+    checksum: sha256:e5069c6983d99bbd995748e9cd50712b8daaef07750d270c65246278b71fc37a
     name: fuse-overlayfs
-    evr: 1.15-1.el9
-    sourcerpm: fuse-overlayfs-1.15-1.el9.src.rpm
+    evr: 1.16-1.el9_7
+    sourcerpm: fuse-overlayfs-1.16-1.el9_7.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/f/fuse3-3.10.2-9.el9.x86_64.rpm
     repoid: ubi-9-for-x86_64-appstream-rpms
     size: 58706
@@ -1122,13 +1122,13 @@ arches:
     name: glibc-headers
     evr: 2.34-231.el9_7.2
     sourcerpm: glibc-2.34-231.el9_7.2.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/k/kernel-headers-5.14.0-611.20.1.el9_7.x86_64.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/k/kernel-headers-5.14.0-611.27.1.el9_7.x86_64.rpm
     repoid: ubi-9-for-x86_64-appstream-rpms
-    size: 2995425
-    checksum: sha256:ea2365970de61d610802f7fc88d650e9ea7cc184409963fe4c8f8e684a342971
+    size: 3009521
+    checksum: sha256:72c49c292d82d089934b9e52d74173cb463b33f025ea7f3ab09c6848f7f43cdb
     name: kernel-headers
-    evr: 5.14.0-611.20.1.el9_7
-    sourcerpm: kernel-5.14.0-611.20.1.el9_7.src.rpm
+    evr: 5.14.0-611.27.1.el9_7
+    sourcerpm: kernel-5.14.0-611.27.1.el9_7.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/l/libmpc-1.2.1-4.el9.x86_64.rpm
     repoid: ubi-9-for-x86_64-appstream-rpms
     size: 66075
@@ -1178,13 +1178,13 @@ arches:
     name: llvm-libs
     evr: 20.1.8-3.el9
     sourcerpm: llvm-20.1.8-3.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/p/python3.12-devel-3.12.12-1.el9_7.x86_64.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/p/python3.12-devel-3.12.12-4.el9_7.x86_64.rpm
     repoid: ubi-9-for-x86_64-appstream-rpms
-    size: 333025
-    checksum: sha256:b453c37808b0c4987746d369ed449aa12520f0268ecfe669073dd409d7a61594
+    size: 338363
+    checksum: sha256:3b278827df7abf18464b8100a19ecd5d94971a71f528803522ff3de43fa17f1e
     name: python3.12-devel
-    evr: 3.12.12-1.el9_7
-    sourcerpm: python3.12-3.12.12-1.el9_7.src.rpm
+    evr: 3.12.12-4.el9_7
+    sourcerpm: python3.12-3.12.12-4.el9_7.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/r/rust-1.88.0-1.el9.x86_64.rpm
     repoid: ubi-9-for-x86_64-appstream-rpms
     size: 30892199
