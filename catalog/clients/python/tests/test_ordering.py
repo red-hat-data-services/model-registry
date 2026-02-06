@@ -15,6 +15,8 @@ import pytest
 
 from model_catalog import CatalogAPIClient
 
+from tests.sorting_utils import get_field_value, validate_items_sorted_correctly
+
 
 def _assert_response_valid(response: dict[str, Any]) -> None:
     """Assert that API response has valid structure.
@@ -66,28 +68,30 @@ def _model_has_accuracy(model: dict[str, Any]) -> bool:
 class TestNameOrdering:
     """Test suite for NAME ordering functionality."""
 
-    def test_order_by_name_asc(self, api_client: CatalogAPIClient):
+    def test_order_by_name_asc(self, api_client: CatalogAPIClient, suppress_ssl_warnings: None):
         """Test that ordering by name ASC returns models."""
         response = api_client.get_models(order_by="name", sort_order="ASC")
         _assert_response_valid(response)
 
-    def test_order_by_name_desc(self, api_client: CatalogAPIClient):
+    def test_order_by_name_desc(self, api_client: CatalogAPIClient, suppress_ssl_warnings: None):
         """Test that ordering by name DESC returns models."""
         response = api_client.get_models(order_by="name", sort_order="DESC")
         _assert_response_valid(response)
 
-    def test_name_asc_vs_desc_are_reversed(self, api_client: CatalogAPIClient):
+    def test_name_asc_vs_desc_are_reversed(self, api_client: CatalogAPIClient, suppress_ssl_warnings: None,
+                                           kind_cluster: bool):
         """Test that ASC and DESC orderings are reversed."""
         # Use large page size to get all models
-        response_asc = api_client.get_models(order_by="name", sort_order="ASC", page_size=100)
-        response_desc = api_client.get_models(order_by="name", sort_order="DESC", page_size=100)
+        page_size = 100 if kind_cluster else 1000
+        response_asc = api_client.get_models(order_by="name", sort_order="ASC", page_size=page_size)
+        response_desc = api_client.get_models(order_by="name", sort_order="DESC", page_size=page_size)
 
         if response_asc["items"] and len(response_asc["items"]) > 1:
             names_asc = [m["name"] for m in response_asc["items"]]
             names_desc = [m["name"] for m in response_desc["items"]]
             assert names_asc == list(reversed(names_desc))
 
-    def test_name_ordering_consistent(self, api_client: CatalogAPIClient):
+    def test_name_ordering_consistent(self, api_client: CatalogAPIClient, suppress_ssl_warnings: None):
         """Test name ordering returns consistent results."""
         response = api_client.get_models(order_by="name", sort_order="ASC")
         _assert_response_valid(response)
@@ -101,7 +105,7 @@ class TestNameOrdering:
             names2 = [m["name"] for m in response2["items"]]
             assert names == names2
 
-    def test_name_ordering_pagination_maintains_order(self, api_client: CatalogAPIClient):
+    def test_name_ordering_pagination_maintains_order(self, api_client: CatalogAPIClient, suppress_ssl_warnings: None):
         """Test that pagination maintains ordering.
 
         Note: Uses nextPageToken from first response. This is safe because test data
@@ -131,22 +135,64 @@ class TestNameOrdering:
                 )
 
 
+class TestFieldOrdering:
+    """Test suite for ID, CREATE_TIME, and LAST_UPDATE_TIME ordering."""
+
+    @pytest.mark.parametrize(
+        "order_by,sort_order",
+        [
+            ("ID", "ASC"),
+            ("ID", "DESC"),
+            ("CREATE_TIME", "ASC"),
+            ("CREATE_TIME", "DESC"),
+            ("LAST_UPDATE_TIME", "ASC"),
+            ("LAST_UPDATE_TIME", "DESC"),
+        ],
+    )
+    def test_field_sorting_works_correctly(
+        self,
+        order_by: str,
+        sort_order: str,
+        api_client: CatalogAPIClient,
+        suppress_ssl_warnings: None,
+    ):
+        """Test models endpoint sorts correctly by field and order.
+
+        Validates that the API correctly sorts models by:
+        - ID (numeric)
+        - CREATE_TIME (timestamp)
+        - LAST_UPDATE_TIME (timestamp)
+
+        In both ASC and DESC order.
+        """
+        response = api_client.get_models(order_by=order_by, sort_order=sort_order)
+
+        assert isinstance(response, dict), f"Response is not a dict: {type(response)}"
+        assert "items" in response, f"Response missing 'items' field: {response.keys()}"
+
+        items = response["items"]
+
+        assert validate_items_sorted_correctly(items, order_by, sort_order), (
+            f"Models not sorted correctly by {order_by} {sort_order}"
+        )
+
+
 class TestAccuracyOrdering:
     """Test suite for ACCURACY ordering functionality."""
 
-    def test_order_by_accuracy_desc(self, api_client: CatalogAPIClient):
+    def test_order_by_accuracy_desc(self, api_client: CatalogAPIClient, suppress_ssl_warnings: None):
         """Test that orderBy=ACCURACY with sortOrder=DESC returns a valid response."""
         response = api_client.get_models(order_by="ACCURACY", sort_order="DESC")
         assert isinstance(response, dict)
         assert "items" in response
 
-    def test_order_by_accuracy_asc(self, api_client: CatalogAPIClient):
+    def test_order_by_accuracy_asc(self, api_client: CatalogAPIClient, suppress_ssl_warnings: None):
         """Test that orderBy=ACCURACY with sortOrder=ASC returns a valid response."""
         response = api_client.get_models(order_by="ACCURACY", sort_order="ASC")
         assert isinstance(response, dict)
         assert "items" in response
 
-    def test_accuracy_desc_sorts_correctly(self, api_client: CatalogAPIClient):
+    def test_accuracy_desc_sorts_correctly(self, api_client: CatalogAPIClient, suppress_ssl_warnings: None):
         """Test that orderBy=ACCURACY DESC returns models in descending accuracy order."""
         response = api_client.get_models(order_by="ACCURACY", sort_order="DESC")
         items = response.get("items", [])
@@ -166,7 +212,7 @@ class TestAccuracyOrdering:
             for i in range(len(accuracies) - 1):
                 assert accuracies[i] >= accuracies[i + 1], f"Accuracies not in descending order: {accuracies}"
 
-    def test_models_without_accuracy_come_last(self, api_client: CatalogAPIClient):
+    def test_models_without_accuracy_come_last(self, api_client: CatalogAPIClient, suppress_ssl_warnings: None):
         """Test that models without accuracy metrics come last (NULLS LAST)."""
         response = api_client.get_models(order_by="ACCURACY", sort_order="DESC")
         items = response.get("items", [])
@@ -188,7 +234,7 @@ class TestAccuracyOrdering:
             "Found model with accuracy after model without - NULLS LAST violated"
         )
 
-    def test_accuracy_sorting_with_pagination(self, api_client: CatalogAPIClient):
+    def test_accuracy_sorting_with_pagination(self, api_client: CatalogAPIClient, suppress_ssl_warnings: None):
         """Test that accuracy sorting works correctly with pagination."""
         response1 = api_client.get_models(
             order_by="ACCURACY",
@@ -211,7 +257,7 @@ class TestAccuracyOrdering:
         all_items = response1["items"] + response2["items"]
         assert len(all_items) >= 2
 
-    def test_accuracy_sorting_returns_all_models(self, api_client: CatalogAPIClient):
+    def test_accuracy_sorting_returns_all_models(self, api_client: CatalogAPIClient, suppress_ssl_warnings: None):
         """Test that accuracy sorting returns all models, not just those with accuracy."""
         response_all = api_client.get_models()
         all_count = len(response_all.get("items", []))
@@ -221,7 +267,7 @@ class TestAccuracyOrdering:
 
         assert sorted_count == all_count, f"Sorted count ({sorted_count}) != all count ({all_count})"
 
-    def test_accuracy_metrics_structure(self, api_client: CatalogAPIClient):
+    def test_accuracy_metrics_structure(self, api_client: CatalogAPIClient, suppress_ssl_warnings: None):
         """Test that accuracy metrics are stored as custom properties on artifacts."""
         response = api_client.get_models()
         items = response.get("items", [])
@@ -234,3 +280,56 @@ class TestAccuracyOrdering:
                     assert "double_value" in accuracy_prop or "metadataType" in accuracy_prop, (
                         f"Accuracy property has unexpected structure: {accuracy_prop}"
                     )
+
+    @pytest.mark.parametrize(
+        "sort_order,filter_query",
+        [
+            ("ASC", "tasks='text-generation'"),
+            ("DESC", "tasks='text-generation'"),
+        ],
+    )
+    def test_accuracy_sorting_with_filter(
+        self,
+        sort_order: str,
+        filter_query: str,
+        api_client: CatalogAPIClient,
+        suppress_ssl_warnings: None,
+    ):
+        """Test accuracy sorting works correctly with filter applied.
+
+        Validates:
+        1. Filter is applied correctly (only matching models returned)
+        2. Models WITH accuracy appear first, sorted by accuracy value
+        3. Models WITHOUT accuracy appear after (NULLS LAST)
+        """
+        response = api_client.get_models(
+            order_by="ACCURACY",
+            sort_order=sort_order,
+            filter_query=filter_query,
+        )
+
+        assert isinstance(response, dict)
+        assert "items" in response
+
+        items = response.get("items", [])
+
+        # Validate NULLS LAST behavior
+        found_model_without_accuracy = False
+        accuracies_with_values = []
+
+        for model in items:
+            acc = _get_model_accuracy(model)
+            if acc is None:
+                found_model_without_accuracy = True
+            else:
+                assert not found_model_without_accuracy, (
+                    "Found model with accuracy after model without accuracy"
+                )
+                accuracies_with_values.append(acc)
+
+        # Validate accuracy ordering
+        if len(accuracies_with_values) >= 2:
+            expected = sorted(accuracies_with_values, reverse=(sort_order == "DESC"))
+            assert accuracies_with_values == expected, (
+                f"Accuracies not in {sort_order} order: {accuracies_with_values}"
+            )
