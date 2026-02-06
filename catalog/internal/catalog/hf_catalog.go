@@ -43,6 +43,15 @@ const (
 	defaultSyncInterval = 24 * time.Hour
 )
 
+// ModelType represents the classification of a model based on its tasks.
+type ModelType string
+
+const (
+	ModelTypeGenerative ModelType = "generative"
+	ModelTypePredictive ModelType = "predictive"
+	ModelTypeUnknown    ModelType = "unknown"
+)
+
 // gatedString is a custom type that can unmarshal both boolean and string values from JSON
 // It converts booleans to strings (false -> "false", true -> "true")
 type gatedString string
@@ -136,6 +145,61 @@ var catalogLogoSVG []byte
 var (
 	catalogModelLogo = "data:image/svg+xml;base64," + base64.StdEncoding.EncodeToString(catalogLogoSVG)
 )
+
+// generativeTasks contains the set of Hugging Face task types that indicate generative models.
+// These models produce novel content (text, images, audio, etc.).
+var generativeTasks = map[string]bool{
+	"text-generation":                true,
+	"summarization":                  true,
+	"translation":                    true,
+	"text-to-image":                  true,
+	"unconditional-image-generation": true,
+	"image-to-image":                 true,
+	"text-to-speech":                 true,
+	"audio-to-audio":                 true,
+}
+
+// predictiveTasks contains the set of Hugging Face task types that indicate predictive models.
+// These models produce classifications, scores, labels, or predictions.
+var predictiveTasks = map[string]bool{
+	"text-classification":         true,
+	"image-classification":        true,
+	"zero-shot-classification":    true,
+	"audio-classification":        true,
+	"question-answering":          true,
+	"document-question-answering": true,
+	"object-detection":            true,
+	"image-segmentation":          true,
+	"keypoint-detection":          true,
+	"feature-extraction":          true,
+	"image-feature-extraction":    true,
+	"fill-mask":                   true,
+}
+
+// classifyModelTypeFromTasks classifies a model as generative, predictive, or unknown based on its task information.
+func classifyModelTypeFromTasks(tasks []string) ModelType {
+	if len(tasks) == 0 {
+		return ModelTypeUnknown
+	}
+
+	hasPredictive := false
+
+	// If model has both generative and predictive tasks, return generative
+	for _, task := range tasks {
+		task = strings.ToLower(strings.TrimSpace(task))
+		if generativeTasks[task] {
+			return ModelTypeGenerative
+		} else if predictiveTasks[task] {
+			hasPredictive = true
+		}
+	}
+
+	if hasPredictive {
+		return ModelTypePredictive
+	}
+
+	return ModelTypeUnknown
+}
 
 // populateFromHFInfo populates the hfModel's CatalogModel fields from Hugging Face API data
 func (hfm *hfModel) populateFromHFInfo(ctx context.Context, provider *hfModelProvider, hfInfo *hfModelInfo, sourceId string, originalModelName string) {
@@ -275,8 +339,18 @@ func (hfm *hfModel) populateFromHFInfo(ctx context.Context, provider *hfModelPro
 		hfm.Tasks = tasks
 	}
 
+	// Classify model type based on tasks (heuristic-based classification)
+	modelType := classifyModelTypeFromTasks(tasks)
+
 	// Convert tags and other metadata to custom properties
 	customProps := make(map[string]apimodels.MetadataValue)
+
+	// Add model_type classification (always set, including "unknown")
+	customProps["model_type"] = apimodels.MetadataValue{
+		MetadataStringValue: &apimodels.MetadataStringValue{
+			StringValue: string(modelType),
+		},
+	}
 
 	customProps["hf_private"] = apimodels.MetadataValue{
 		MetadataStringValue: &apimodels.MetadataStringValue{
@@ -325,18 +399,20 @@ func (hfm *hfModel) populateFromHFInfo(ctx context.Context, provider *hfModelPro
 }
 
 func (p *hfModelProvider) Models(ctx context.Context) (<-chan ModelProviderRecord, error) {
-	// Read the catalog and report errors
-	catalog, err := p.getModelsFromHF(ctx)
-	if err != nil {
-		return nil, err
+	// Read the catalog - may return partial results with an error if any models fail to be loaded
+	catalog, fetchErr := p.getModelsFromHF(ctx)
+
+	// If we got no models AND an error, return the error immediately
+	if fetchErr != nil && len(catalog) == 0 {
+		return nil, fetchErr
 	}
 
 	ch := make(chan ModelProviderRecord)
 	go func() {
 		defer close(ch)
 
-		// Send the initial list right away.
-		p.emit(ctx, catalog, ch)
+		// Send the initial list right away, then send error status if there was a partial failure
+		p.emitWithError(ctx, catalog, fetchErr, ch)
 
 		// Set up periodic polling with configurable interval
 		ticker := time.NewTicker(p.syncInterval)
@@ -349,11 +425,13 @@ func (p *hfModelProvider) Models(ctx context.Context) (<-chan ModelProviderRecor
 			case <-ticker.C:
 				glog.Infof("Periodic sync: reprocessing all models for source %s", p.sourceId)
 				catalog, err := p.getModelsFromHF(ctx)
-				if err != nil {
+				// Even if there's an error, emit successful models first, then signal the error
+				if len(catalog) > 0 || err == nil {
+					p.emitWithError(ctx, catalog, err, ch)
+				} else {
+					// No models and an error - just log it
 					glog.Errorf("unable to reprocess Hugging Face models: %v", err)
-					continue
 				}
-				p.emit(ctx, catalog, ch)
 			}
 		}
 	}()
@@ -703,6 +781,13 @@ func parseHFTime(timeStr string) (int64, error) {
 }
 
 func (p *hfModelProvider) emit(ctx context.Context, models []ModelProviderRecord, out chan<- ModelProviderRecord) {
+	p.emitWithError(ctx, models, nil, out)
+}
+
+// emitWithError sends all successfully loadedmodels to the channel, then sends a final empty record.
+// If err is non-nil, the final record will include the error to signal a partial failure
+// (some models were loaded successfully, but others failed).
+func (p *hfModelProvider) emitWithError(ctx context.Context, models []ModelProviderRecord, err error, out chan<- ModelProviderRecord) {
 	done := ctx.Done()
 	for _, model := range models {
 		// Check if model should be excluded by name
@@ -722,8 +807,9 @@ func (p *hfModelProvider) emit(ctx context.Context, models []ModelProviderRecord
 	}
 
 	// Send an empty record to indicate that we're done with the batch.
+	// Include any error to signal partial failure (models loaded, but some failed).
 	select {
-	case out <- ModelProviderRecord{}:
+	case out <- ModelProviderRecord{Error: err}:
 	case <-done:
 	}
 }
