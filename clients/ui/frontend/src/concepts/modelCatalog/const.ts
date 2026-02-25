@@ -249,6 +249,13 @@ export enum CatalogModelCustomPropertyKey {
   TENSOR_TYPE = 'tensor_type',
   SIZE = 'size',
   ARCHITECTURE = 'architecture',
+  MODEL_TYPE = 'model_type',
+}
+
+export enum ModelType {
+  GENERATIVE = 'generative',
+  PREDICTIVE = 'predictive',
+  UNKNOWN = 'unknown',
 }
 
 export enum ModelCatalogLicense {
@@ -610,6 +617,14 @@ export const MODEL_CATALOG_FILTER_CATEGORY_NAMES: Record<ModelCatalogFilterKey, 
     string
   >),
 };
+
+export const MODEL_CATALOG_FILTER_CHIP_PREFIXES = {
+  WORKLOAD_TYPE: 'Workload type:',
+  MAX_RPS: 'Max RPS:',
+  LATENCY_METRIC: 'Metric:',
+  LATENCY_PERCENTILE: 'Percentile:',
+  LATENCY_THRESHOLD: 'Under',
+} as const;
 
 export enum ModelDetailsTab {
   OVERVIEW = 'overview',
