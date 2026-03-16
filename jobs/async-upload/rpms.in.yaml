@@ -10,6 +10,8 @@ packages:
   - skopeo
   - gcc
   - make
+  - python3.12
+  - python3.12-libs
   - python3.12-devel
   - cargo
   - g++
