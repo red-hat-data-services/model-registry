@@ -10,10 +10,16 @@ packages:
   - skopeo
   - gcc
   - make
+  - python3.12
+  - python3.12-libs
   - python3.12-devel
   - cargo
   - g++
 context:
-  containerfile: 
+  containerfile:
     file: "./Dockerfile.konflux"
     stageName: base
+# Force prefetch of python3.12 and python3.12-libs so hermetic build has them in Cachi2 repo (base image has them but microdnf may need exact EVR from repo)
+reinstallPackages:
+  - python3.12
+  - python3.12-libs
