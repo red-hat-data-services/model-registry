@@ -51,7 +51,7 @@ spec:
             "requirements.txt"
           ],
           "requirements_build_files": [
-            "requirements-build.txt",
+            "requirements-build.txt"
           ]
         }
       ]
