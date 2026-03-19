@@ -13,6 +13,8 @@ packages:
   - python3.12
   - python3.12-libs
   - python3.12-devel
+  - openssl-devel
+  - libffi-devel
   - cargo
   - g++
 context:
