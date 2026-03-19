@@ -4,7 +4,7 @@
 # uv venv
 # uv pip install pip-tools pybuild-deps
 # uv run pip-compile --allow-unsafe --output-file=requirements-extra-build-deps.txt extra-build-deps.txt
-# uv run pybuild-deps compile -o requirements-extra-build-deps-build.txt requirements-extra-build-deps.txt
+# uv run pybuild-deps compile -o requirements-build.txt requirements.txt requirements-extra-build-deps.txt
 
 # propcache requires Cython>=3.1.0 and <3.2.0
 Cython>=3.1.0,<3.2.0
