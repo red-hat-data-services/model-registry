@@ -15,6 +15,7 @@ packages:
   - python3.12-devel
   - cargo
   - g++
+  - libffi-devel
 context:
   containerfile:
     file: "./Dockerfile.konflux"
