@@ -6,9 +6,14 @@ FROM registry.access.redhat.com/ubi9/python-312-minimal@sha256:8e3dceaff6954a958
 
 USER 0
 
+ARG TARGETARCH
+
 # Install skopeo for Push/Pull of container images to integrate with Model Registry py client and Olot.
 RUN . /cachi2/cachi2.env && \
      microdnf install -y skopeo gcc make python3.12-devel cargo g++ && \
+    if [ "$TARGETARCH" = "ppc64le" ] || [ "$TARGETARCH" = "s390x" ]; then \
+      microdnf install -y openssl-devel perl; \
+    fi && \
     microdnf clean all
 
 # security/env hardening
@@ -20,11 +25,17 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 COPY ./poetry.lock ./pyproject.toml ./requirements.txt ./
 
-RUN python -m pip install -r requirements.txt --no-binary :all: \
+# rfc3161-client has no pre-built wheels for ppc64le/s390x, so pip builds from
+# source via Rust/maturin. OPENSSL_NO_VENDOR tells openssl-sys to link against
+# the system OpenSSL instead of compiling its own (which requires perl).
+RUN if [ "$TARGETARCH" = "ppc64le" ] || [ "$TARGETARCH" = "s390x" ]; then \
+      export OPENSSL_NO_VENDOR=1; \
+    fi && \
+    python -m pip install -r requirements.txt  \
     && echo "Installation completed" \
     && echo "Python path:" && python -c "import sys; print('\\n'.join(sys.path))" \
     && echo "Installed packages:" \
-    && python -m pip list 
+    && python -m pip list
 
 # Copy application source
 COPY . .
