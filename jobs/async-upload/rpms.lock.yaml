@@ -158,11 +158,25 @@ arches:
     name: llvm-libs
     evr: 20.1.8-3.el9
     sourcerpm: llvm-20.1.8-3.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/p/python3.12-3.12.12-4.el9_7.1.aarch64.rpm
+    repoid: ubi-9-for-aarch64-appstream-rpms
+    size: 32556
+    checksum: sha256:0d360b72d46221e6c67bf4911523c7f63ce394e1d10d33d0ed1fe1f584989781
+    name: python3.12
+    evr: 3.12.12-4.el9_7.1
+    sourcerpm: python3.12-3.12.12-4.el9_7.1.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/p/python3.12-devel-3.12.12-4.el9_7.1.aarch64.rpm
     repoid: ubi-9-for-aarch64-appstream-rpms
     size: 338363
     checksum: sha256:8af12147aaa269686e10cf612df6bcdbdb9b979c06d0493dadba04fcbc2d0807
     name: python3.12-devel
+    evr: 3.12.12-4.el9_7.1
+    sourcerpm: python3.12-3.12.12-4.el9_7.1.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/p/python3.12-libs-3.12.12-4.el9_7.1.aarch64.rpm
+    repoid: ubi-9-for-aarch64-appstream-rpms
+    size: 10139241
+    checksum: sha256:79f41e3b0dc48884c4d7de8339ba9462862e645d5a53a2f61f970469c1a70395
+    name: python3.12-libs
     evr: 3.12.12-4.el9_7.1
     sourcerpm: python3.12-3.12.12-4.el9_7.1.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/r/rust-1.88.0-1.el9.aarch64.rpm
@@ -884,11 +898,25 @@ arches:
     name: llvm-libs
     evr: 20.1.8-3.el9
     sourcerpm: llvm-20.1.8-3.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/p/python3.12-3.12.12-4.el9_7.1.ppc64le.rpm
+    repoid: ubi-9-for-ppc64le-appstream-rpms
+    size: 32611
+    checksum: sha256:bbdb5fd1db7376531291fccbdbc6054e215e7c27c7c1c7be4811a4890ff49b51
+    name: python3.12
+    evr: 3.12.12-4.el9_7.1
+    sourcerpm: python3.12-3.12.12-4.el9_7.1.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/p/python3.12-devel-3.12.12-4.el9_7.1.ppc64le.rpm
     repoid: ubi-9-for-ppc64le-appstream-rpms
     size: 338427
     checksum: sha256:0a7621103283ff2e415fd592ae295e89395bc0138c3707200b18e03ac56d4dea
     name: python3.12-devel
+    evr: 3.12.12-4.el9_7.1
+    sourcerpm: python3.12-3.12.12-4.el9_7.1.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/p/python3.12-libs-3.12.12-4.el9_7.1.ppc64le.rpm
+    repoid: ubi-9-for-ppc64le-appstream-rpms
+    size: 10078807
+    checksum: sha256:818cae0b74e9d7c65f599e42d39241588d50332103be6a1995722b32ad3dce37
+    name: python3.12-libs
     evr: 3.12.12-4.el9_7.1
     sourcerpm: python3.12-3.12.12-4.el9_7.1.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/r/rust-1.88.0-1.el9.ppc64le.rpm
@@ -1630,11 +1658,25 @@ arches:
     name: llvm-libs
     evr: 20.1.8-3.el9
     sourcerpm: llvm-20.1.8-3.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/p/python3.12-3.12.12-4.el9_7.1.s390x.rpm
+    repoid: ubi-9-for-s390x-appstream-rpms
+    size: 32416
+    checksum: sha256:0571271237e964c415a1e250b2231a661593ab624634df7bda88b437798015a0
+    name: python3.12
+    evr: 3.12.12-4.el9_7.1
+    sourcerpm: python3.12-3.12.12-4.el9_7.1.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/p/python3.12-devel-3.12.12-4.el9_7.1.s390x.rpm
     repoid: ubi-9-for-s390x-appstream-rpms
     size: 338376
     checksum: sha256:98878a74a20591a8e3f6f7b8eb4204f18104782791d79364412ebe1eb7c51b38
     name: python3.12-devel
+    evr: 3.12.12-4.el9_7.1
+    sourcerpm: python3.12-3.12.12-4.el9_7.1.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/p/python3.12-libs-3.12.12-4.el9_7.1.s390x.rpm
+    repoid: ubi-9-for-s390x-appstream-rpms
+    size: 9973559
+    checksum: sha256:9ff71df093ae61b010222e30821e0044c42e92c7e8f69c0d6574ac0e30ca21e1
+    name: python3.12-libs
     evr: 3.12.12-4.el9_7.1
     sourcerpm: python3.12-3.12.12-4.el9_7.1.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/r/rust-1.88.0-1.el9.s390x.rpm
@@ -2349,11 +2391,25 @@ arches:
     name: llvm-libs
     evr: 20.1.8-3.el9
     sourcerpm: llvm-20.1.8-3.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/p/python3.12-3.12.12-4.el9_7.1.x86_64.rpm
+    repoid: ubi-9-for-x86_64-appstream-rpms
+    size: 32599
+    checksum: sha256:320e0811e1a64e9ac607c666b41d69fbd9917cf83befd52d88cf55396a2f0f6b
+    name: python3.12
+    evr: 3.12.12-4.el9_7.1
+    sourcerpm: python3.12-3.12.12-4.el9_7.1.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/p/python3.12-devel-3.12.12-4.el9_7.1.x86_64.rpm
     repoid: ubi-9-for-x86_64-appstream-rpms
     size: 338470
     checksum: sha256:e3805fb4876aab3183cf972175b9279932f410ca515ab4e53a1f3082228e6110
     name: python3.12-devel
+    evr: 3.12.12-4.el9_7.1
+    sourcerpm: python3.12-3.12.12-4.el9_7.1.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/p/python3.12-libs-3.12.12-4.el9_7.1.x86_64.rpm
+    repoid: ubi-9-for-x86_64-appstream-rpms
+    size: 10214024
+    checksum: sha256:3c63141ada03d7512b5e068309d0a067503601d9dfae060dd06dd69478943b82
+    name: python3.12-libs
     evr: 3.12.12-4.el9_7.1
     sourcerpm: python3.12-3.12.12-4.el9_7.1.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/r/rust-1.88.0-1.el9.x86_64.rpm
