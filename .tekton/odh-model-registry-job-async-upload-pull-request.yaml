@@ -41,6 +41,8 @@ spec:
     value: true
   - name: prefetch-mode
     value: permissive
+  - name: prefetch-log-level
+    value: debug
   - name: prefetch-input
     value: |
       [
