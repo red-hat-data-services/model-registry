@@ -54,7 +54,8 @@ spec:
           ],
           "requirements_build_files": [
             "requirements-build.txt"
-          ]
+          ],
+          "binary": {}
         }
       ]
   - name: build-image-index
