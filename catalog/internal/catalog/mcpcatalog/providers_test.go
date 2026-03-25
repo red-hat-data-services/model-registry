@@ -427,6 +427,109 @@ func TestYamlMCPEndpointsJSONKeys(t *testing.T) {
 	assert.NotContains(t, jsonStr, `"SSE":`, "JSON key must not be uppercase 'SSE'")
 }
 
+func TestYamlMCPArtifactURIValidation(t *testing.T) {
+	tests := []struct {
+		name        string
+		server      *yamlMCPServer
+		wantErr     bool
+		errContains string
+	}{
+		{
+			name: "artifact with valid oci URI passes",
+			server: &yamlMCPServer{
+				Name: "server-oci-artifact",
+				Artifacts: []*yamlMCPArtifact{
+					{Name: "container", URI: "oci://registry.example.com/image:v1", Type: "container"},
+				},
+			},
+		},
+		{
+			name: "artifact with valid https URI passes",
+			server: &yamlMCPServer{
+				Name: "server-https-artifact",
+				Artifacts: []*yamlMCPArtifact{
+					{Name: "model", URI: "https://example.com/model.bin", Type: "model"},
+				},
+			},
+		},
+		{
+			name: "artifact with valid s3 URI passes",
+			server: &yamlMCPServer{
+				Name: "server-s3-artifact",
+				Artifacts: []*yamlMCPArtifact{
+					{Name: "weights", URI: "s3://bucket/path/to/weights", Type: "weights"},
+				},
+			},
+		},
+		{
+			name: "artifact with invalid URI (no scheme) is rejected",
+			server: &yamlMCPServer{
+				Name: "server-invalid-uri",
+				Artifacts: []*yamlMCPArtifact{
+					{Name: "bad", URI: "not-a-valid-uri", Type: "model"},
+				},
+			},
+			wantErr:     true,
+			errContains: "must have a scheme",
+		},
+		{
+			name: "artifact with unsupported scheme is rejected",
+			server: &yamlMCPServer{
+				Name: "server-ftp-artifact",
+				Artifacts: []*yamlMCPArtifact{
+					{Name: "bad", URI: "ftp://example.com/model.bin", Type: "model"},
+				},
+			},
+			wantErr:     true,
+			errContains: "unsupported scheme",
+		},
+		{
+			name: "artifact with empty URI is rejected",
+			server: &yamlMCPServer{
+				Name: "server-empty-uri",
+				Artifacts: []*yamlMCPArtifact{
+					{Name: "empty", URI: "", Type: "model"},
+				},
+			},
+			wantErr:     true,
+			errContains: "cannot be empty",
+		},
+		{
+			name: "multiple artifacts with one invalid URI is rejected",
+			server: &yamlMCPServer{
+				Name: "server-mixed-artifacts",
+				Artifacts: []*yamlMCPArtifact{
+					{Name: "good", URI: "s3://bucket/valid", Type: "model"},
+					{Name: "bad", URI: "invalid-uri", Type: "model"},
+				},
+			},
+			wantErr:     true,
+			errContains: "artifact 1",
+		},
+		{
+			name: "server with no artifacts passes",
+			server: &yamlMCPServer{
+				Name: "server-no-artifacts",
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			record := tc.server.ToMCPServerProviderRecord()
+			if tc.wantErr {
+				assert.NotNil(t, record.Error, "expected an error but got none")
+				if tc.errContains != "" {
+					assert.Contains(t, record.Error.Error(), tc.errContains)
+				}
+			} else {
+				assert.Nil(t, record.Error, "expected no error but got: %v", record.Error)
+				assert.NotNil(t, record.Server)
+			}
+		})
+	}
+}
+
 func TestYamlMCPServerLicenseTransformation(t *testing.T) {
 	tests := []struct {
 		name            string
@@ -815,6 +918,105 @@ func TestYamlMCPProviderEmitWithRuntimeMetadata(t *testing.T) {
 	assert.Equal(t, "api-creds", parsed.Prerequisites.Secrets[0].Name)
 	require.Len(t, parsed.Prerequisites.Secrets[0].Keys, 1)
 	assert.Equal(t, "API_KEY", *parsed.Prerequisites.Secrets[0].Keys[0].EnvVarName)
+}
+
+func TestYamlMCPServerSecurityIndicatorsToStandardProperties(t *testing.T) {
+	trueVal := true
+	falseVal := false
+	yamlServer := &yamlMCPServer{
+		Name: "test-server",
+		SecurityIndicators: &yamlMCPSecurityIndicator{
+			VerifiedSource: &trueVal,
+			SecureEndpoint: &falseVal,
+			Sast:           &trueVal,
+			ReadOnlyTools:  &falseVal,
+		},
+	}
+
+	record := yamlServer.ToMCPServerProviderRecord()
+
+	require.NotNil(t, record.Server)
+	require.Nil(t, record.Error)
+
+	// Security indicators must land in standard properties, not custom properties
+	props := record.Server.GetProperties()
+	require.NotNil(t, props)
+
+	propMap := make(map[string]bool)
+	for _, p := range *props {
+		if p.BoolValue != nil {
+			propMap[p.Name] = *p.BoolValue
+		}
+	}
+
+	assert.True(t, propMap["verifiedSource"], "verifiedSource should be true in standard properties")
+	assert.False(t, propMap["secureEndpoint"], "secureEndpoint should be false in standard properties")
+	assert.True(t, propMap["sast"], "sast should be true in standard properties")
+	assert.False(t, propMap["readOnlyTools"], "readOnlyTools should be false in standard properties")
+
+	// Security indicators must NOT appear in custom properties
+	customProps := record.Server.GetCustomProperties()
+	if customProps != nil {
+		for _, p := range *customProps {
+			assert.NotEqual(t, "verifiedSource", p.Name)
+			assert.NotEqual(t, "secureEndpoint", p.Name)
+			assert.NotEqual(t, "sast", p.Name)
+			assert.NotEqual(t, "readOnlyTools", p.Name)
+		}
+	}
+}
+
+func TestYamlMCPServerSecurityIndicatorsNil(t *testing.T) {
+	yamlServer := &yamlMCPServer{
+		Name:               "test-server",
+		SecurityIndicators: nil,
+	}
+
+	record := yamlServer.ToMCPServerProviderRecord()
+
+	require.NotNil(t, record.Server)
+	require.Nil(t, record.Error)
+
+	props := record.Server.GetProperties()
+	if props != nil {
+		for _, p := range *props {
+			assert.Nil(t, p.BoolValue, "no bool properties should exist when SecurityIndicators is nil (prop: %s)", p.Name)
+		}
+	}
+}
+
+func TestYamlMCPServerSecurityIndicatorsPartial(t *testing.T) {
+	trueVal := true
+	yamlServer := &yamlMCPServer{
+		Name: "test-server",
+		SecurityIndicators: &yamlMCPSecurityIndicator{
+			VerifiedSource: &trueVal,
+			// SecureEndpoint, Sast, ReadOnlyTools intentionally unset
+		},
+	}
+
+	record := yamlServer.ToMCPServerProviderRecord()
+
+	require.NotNil(t, record.Server)
+	require.Nil(t, record.Error)
+
+	props := record.Server.GetProperties()
+	require.NotNil(t, props)
+
+	boolProps := make(map[string]bool)
+	for _, p := range *props {
+		if p.BoolValue != nil {
+			boolProps[p.Name] = *p.BoolValue
+		}
+	}
+
+	assert.True(t, boolProps["verifiedSource"], "verifiedSource should be true")
+	_, hasSecureEndpoint := boolProps["secureEndpoint"]
+	assert.False(t, hasSecureEndpoint, "secureEndpoint should not be present when unset")
+	_, hasSast := boolProps["sast"]
+	assert.False(t, hasSast, "sast should not be present when unset")
+	_, hasReadOnlyTools := boolProps["readOnlyTools"]
+	assert.False(t, hasReadOnlyTools, "readOnlyTools should not be present when unset")
 }
 
 // Helper function
