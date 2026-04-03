@@ -25,6 +25,11 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 COPY ./poetry.lock ./pyproject.toml ./requirements.txt ./
 
+#Temp workaround to install sigstore-models without uv-build because uv-build breaks hermetic builds.
+RUN tar -xzf /hermeto-output/deps/pip/sigstore_models-0.0.6.tar.gz -C /tmp && cd /tmp/sigstore_models-0.0.6 \
+    && sed -i '/^\[build-system\]$/,/^build-backend = "uv_build"$/d' /tmp/sigstore_models-0.0.6/pyproject.toml \
+    && python -m pip install .
+
 # rfc3161-client has no pre-built wheels for ppc64le/s390x, so pip builds from
 # source via Rust/maturin. OPENSSL_NO_VENDOR tells openssl-sys to link against
 # the system OpenSSL instead of compiling its own (which requires perl).
