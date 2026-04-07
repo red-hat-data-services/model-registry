@@ -58,10 +58,7 @@ spec:
             "requirements-build.txt",
             "requirements-extra-build-deps.txt"
           ],
-          "binary": {
-            "packages": ":all:",
-            "arch": "x86_64,aarch64,ppc64le,s390x"
-          }
+          "binary": { }
         }
       ]
   - name: build-source-image
