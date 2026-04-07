@@ -91,6 +91,10 @@ test-integration-run:
 	@echo "Running integration tests..."
 	CONTAINER_IMAGE_URI=$(JOB_IMG) poetry run pytest --integration tests/integration/ -vs
 
+.PHONY: local-hermetic-build
+local-hermetic-build:
+	cd ../../ && ./jobs/async-upload/local_hermetic_build.sh
+
 .PHONY: install
 install: install-poetry-export
 	poetry install
