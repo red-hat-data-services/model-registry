@@ -11,9 +11,14 @@ packages:
   - gcc
   - make
   - python3.12-devel
+  - python3.12
+  - python3.12-libs
   - cargo
   - g++
 context:
   containerfile: 
     file: "./Dockerfile.konflux"
     stageName: base
+reinstallPackages:
+  - python3.12
+  - python3.12-libs
