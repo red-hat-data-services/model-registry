@@ -11,7 +11,9 @@ python = ">=3.11,<4.0"
 configargparse = ">=1.7.1,<2.0.0"
 model-registry = { version = ">=0.2.19,<0.4.0", extras = ["boto3", "olot"] }
 pydantic = ">=2.0.0,<3.0.0"
-huggingface-hub = "^1.6.0"
+# hf-xet (Rust) is a mandatory dep from huggingface-hub 0.31+ and 1.x on amd64/arm64;
+# it breaks hermetic Cachi2 + pip --no-binary :all:. Cap below 0.31 (0.30.x last safe line).
+huggingface-hub = ">=0.29.3,<0.31.0"
 requests = "^2.32.5"
 
 [tool.poetry.group.dev.dependencies]
