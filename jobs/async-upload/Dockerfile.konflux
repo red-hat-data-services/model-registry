@@ -20,7 +20,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 COPY ./poetry.lock ./pyproject.toml ./requirements.txt ./
 
-RUN python -m pip install -r requirements.txt --no-binary :all: \
+# hf-xet (Rust/maturin) does not reliably build from source under hermetic/Cachi2; allow its wheel only.
+RUN python -m pip install -r requirements.txt --no-binary :all: --only-binary hf-xet \
     && echo "Installation completed" \
     && echo "Python path:" && python -c "import sys; print('\\n'.join(sys.path))" \
     && echo "Installed packages:" \
