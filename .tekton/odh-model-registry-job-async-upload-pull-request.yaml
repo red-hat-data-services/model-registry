@@ -31,6 +31,8 @@ spec:
     - io.openshift.tags=odh-model-registry-job-async-upload
   - name: output-image
     value: quay.io/rhoai/pull-request-pipelines:odh-model-registry-job-async-upload-{{revision}}
+  - name: rhoai-version
+    value: "3.3.2"
   - name: dockerfile
     value: Dockerfile.konflux
   - name: path-context
