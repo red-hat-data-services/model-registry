@@ -20,11 +20,14 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 COPY ./poetry.lock ./pyproject.toml ./requirements.txt ./requirements-downstream.txt ./requirements-build.txt ./
 
-RUN python -m pip install -r requirements-downstream.txt \
+# hf-xet builds from sdist via maturin; --ignore-rust-version avoids
+# edition2024 errors with the system Rust toolchain.
+RUN MATURIN_PEP517_ARGS="--ignore-rust-version" \
+    python -m pip install -r requirements-downstream.txt \
     && echo "Installation completed" \
     && echo "Python path:" && python -c "import sys; print('\\n'.join(sys.path))" \
     && echo "Installed packages:" \
-    && python -m pip list 
+    && python -m pip list
 
 # Copy application source
 COPY . .
