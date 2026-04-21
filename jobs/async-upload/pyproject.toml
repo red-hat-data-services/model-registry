@@ -11,7 +11,9 @@ python = ">=3.11,<4.0"
 configargparse = ">=1.7.1,<2.0.0"
 model-registry = { version = ">=0.3.7,<0.4.0", extras = ["boto3", "olot", "signing"] }
 pydantic = ">=2.0.0,<3.0.0"
-huggingface-hub = "^1.10.1"
+# hf-xet (Rust) is a mandatory dep from huggingface-hub 0.31+;
+# it breaks hermetic Cachi2 prefetch (cargo vendor on stale Cargo.lock).
+huggingface-hub = ">=0.29.3,<0.31.0"
 requests = "^2.33.0"
 
 [tool.poetry.group.dev.dependencies]
