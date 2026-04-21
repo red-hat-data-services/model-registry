@@ -4,16 +4,17 @@ arches:
   - ppc64le
   - s390x
 contentOrigin:
-  repofiles: 
+  repofiles:
     - "./ubi.repo"
 packages:
   - skopeo
   - gcc
   - make
   - python3.12-devel
+  - openssl-devel
   - cargo
   - g++
 context:
-  containerfile: 
+  containerfile:
     file: "./Dockerfile.konflux"
     stageName: base

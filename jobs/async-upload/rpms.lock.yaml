@@ -158,6 +158,13 @@ arches:
     name: llvm-libs
     evr: 20.1.8-3.el9
     sourcerpm: llvm-20.1.8-3.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/o/openssl-devel-3.5.1-7.el9_7.aarch64.rpm
+    repoid: ubi-9-for-aarch64-appstream-rpms
+    size: 4996906
+    checksum: sha256:d9e2b9611a355580f0010beaee8aa9ca649b5c00225812c30be340b220a7e158
+    name: openssl-devel
+    evr: 1:3.5.1-7.el9_7
+    sourcerpm: openssl-3.5.1-7.el9_7.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/p/python3.12-devel-3.12.12-4.el9_7.2.aarch64.rpm
     repoid: ubi-9-for-aarch64-appstream-rpms
     size: 338397
@@ -884,6 +891,13 @@ arches:
     name: llvm-libs
     evr: 20.1.8-3.el9
     sourcerpm: llvm-20.1.8-3.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/o/openssl-devel-3.5.1-7.el9_7.ppc64le.rpm
+    repoid: ubi-9-for-ppc64le-appstream-rpms
+    size: 4996761
+    checksum: sha256:e80d9fa082234c8d941869ccbb7836761f7cc7c15a9211f56e8ad17fc79f4530
+    name: openssl-devel
+    evr: 1:3.5.1-7.el9_7
+    sourcerpm: openssl-3.5.1-7.el9_7.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/p/python3.12-devel-3.12.12-4.el9_7.2.ppc64le.rpm
     repoid: ubi-9-for-ppc64le-appstream-rpms
     size: 338575
@@ -1630,6 +1644,13 @@ arches:
     name: llvm-libs
     evr: 20.1.8-3.el9
     sourcerpm: llvm-20.1.8-3.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/o/openssl-devel-3.5.1-7.el9_7.s390x.rpm
+    repoid: ubi-9-for-s390x-appstream-rpms
+    size: 4997670
+    checksum: sha256:c8d3dd29b240b782a39624632849a1401d4dc74b42e79e435e841cf22d65e853
+    name: openssl-devel
+    evr: 1:3.5.1-7.el9_7
+    sourcerpm: openssl-3.5.1-7.el9_7.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/p/python3.12-devel-3.12.12-4.el9_7.2.s390x.rpm
     repoid: ubi-9-for-s390x-appstream-rpms
     size: 338369
@@ -2349,6 +2370,13 @@ arches:
     name: llvm-libs
     evr: 20.1.8-3.el9
     sourcerpm: llvm-20.1.8-3.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/o/openssl-devel-3.5.1-7.el9_7.x86_64.rpm
+    repoid: ubi-9-for-x86_64-appstream-rpms
+    size: 4998056
+    checksum: sha256:85e1a341adc784f4420742219e182f421655a5482aabe2b274445681747e1730
+    name: openssl-devel
+    evr: 1:3.5.1-7.el9_7
+    sourcerpm: openssl-3.5.1-7.el9_7.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/p/python3.12-devel-3.12.12-4.el9_7.2.x86_64.rpm
     repoid: ubi-9-for-x86_64-appstream-rpms
     size: 338609
