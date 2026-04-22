@@ -16,6 +16,7 @@ packages:
   - libffi-devel
   - openssl-devel
   - perl
+  - perl-core
 context:
   containerfile: 
     file: "./Dockerfile.konflux"
