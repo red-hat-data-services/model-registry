@@ -38,11 +38,9 @@ spec:
   - name: dockerfile
     value: Dockerfile.konflux
   - name: path-context
-    value: jobs/async-upload
+    value: ./jobs/async-upload
   - name: hermetic
-    value: false
-  - name: prefetch-mode
-    value: permissive
+    value: true
   - name: prefetch-input
     value: |
       [
@@ -57,14 +55,17 @@ spec:
             "requirements.txt"
           ],
           "requirements_build_files": [
-            "requirements-build.txt"
+            "requirements-build.txt",
+            "requirements-extra-build-deps.txt"
           ],
           "binary": {
-            "arch": "x86_64,aarch64,ppc64le,s390x",
-            "os": "linux"
+            "packages": ":all:",
+            "arch": "x86_64,aarch64,ppc64le,s390x"
           }
         }
       ]
+  - name: build-source-image
+    value: true
   - name: build-image-index
     value: true
   - name: build-platforms
