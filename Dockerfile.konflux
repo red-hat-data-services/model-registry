@@ -20,7 +20,7 @@ COPY . .
  
 RUN CGO_ENABLED=1 GOOS=linux go build -tags strictfipsruntime -a -o model-registry main.go
  
-FROM registry.redhat.io/ubi8/ubi-minimal@sha256:18dde055f01f35b31122731440263922bc32e62cdd15f1d00764f3fa763464c3
+FROM registry.redhat.io/ubi8/ubi-minimal@sha256:46f08923b566497395dda7d4d07bad383b4eedd5a382c3e22e715b169f414331
  
 WORKDIR /
  
