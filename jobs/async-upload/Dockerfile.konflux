@@ -12,7 +12,7 @@ ARG TARGETARCH
 RUN . /cachi2/cachi2.env && \
     microdnf install -y skopeo gcc make python3.12-devel cargo g++ libffi-devel && \
     if [ "$TARGETARCH" = "ppc64le" ] || [ "$TARGETARCH" = "s390x" ]; then \
-      microdnf install -y openssl-devel perl; \
+      microdnf install -y openssl-devel perl perl-core; \
     fi && \
     microdnf clean all
 
