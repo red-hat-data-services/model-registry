@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { PageSection, Sidebar, SidebarContent, SidebarPanel } from '@patternfly/react-core';
+import { PageSection, Sidebar, SidebarContent, SidebarPanel, Stack } from '@patternfly/react-core';
 import { ApplicationsPage, ProjectObjectType, TitleWithIcon } from 'mod-arch-shared';
 import { SearchIcon } from '@patternfly/react-icons';
 import ScrollViewOnMount from '~/app/shared/components/ScrollViewOnMount';
@@ -85,24 +85,26 @@ const ModelCatalog: React.FC = () => {
               <ModelCatalogFilters />
             </SidebarPanel>
             <SidebarContent>
-              <ModelCatalogSourceLabelSelectorNavigator
-                searchTerm={searchTerm}
-                onSearch={handleSearch}
-                onClearSearch={handleClearSearch}
-                onResetAllFilters={handleFilterReset}
-              />
-              <PageSection isFilled padding={{ default: 'noPadding' }}>
-                {isAllModelsView && !isSingleCategory ? (
-                  <ModelCatalogAllModelsView searchTerm={searchTerm} />
-                ) : (
-                  <ModelCatalogGalleryView
-                    searchTerm={searchTerm}
-                    handleFilterReset={handleFilterReset}
-                    isSingleCategory={isSingleCategory}
-                    singleCategoryLabel={isSingleCategory ? activeCategories[0] : undefined}
-                  />
-                )}
-              </PageSection>
+              <Stack hasGutter>
+                <ModelCatalogSourceLabelSelectorNavigator
+                  searchTerm={searchTerm}
+                  onSearch={handleSearch}
+                  onClearSearch={handleClearSearch}
+                  onResetAllFilters={handleFilterReset}
+                />
+                <PageSection isFilled padding={{ default: 'noPadding' }}>
+                  {isAllModelsView && !isSingleCategory ? (
+                    <ModelCatalogAllModelsView searchTerm={searchTerm} />
+                  ) : (
+                    <ModelCatalogGalleryView
+                      searchTerm={searchTerm}
+                      handleFilterReset={handleFilterReset}
+                      isSingleCategory={isSingleCategory}
+                      singleCategoryLabel={isSingleCategory ? activeCategories[0] : undefined}
+                    />
+                  )}
+                </PageSection>
+              </Stack>
             </SidebarContent>
           </Sidebar>
         )}
