@@ -47,9 +47,12 @@ USER 1000
 ENV PATH="/home/1000/.local/bin:$PATH"
 RUN ls -l /app
 
-# Sanity checks model_registry module import
-RUN echo "Testing model_registry import..." \
-&& python -c "import model_registry; print('model_registry package found')"
+# Sanity checks critical imports (catches broken/empty wheels at build time)
+RUN python -c "\
+import model_registry; \
+import model_signing; \
+from model_registry.signing import Signer; \
+print('all imports ok')"
 
 # TODO: unavailble in OCI format: Add an explicit health-check (K8s will surface this in Pod.status)
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
