@@ -19,6 +19,9 @@ metadata:
   name: odh-model-registry-job-async-upload-on-pull-request-95643
   namespace: rhoai-tenant
 spec:
+  timeouts:
+    pipeline: 8h
+    tasks: 4h
   params:
   - name: git-url
     value: '{{source_url}}'
@@ -33,14 +36,14 @@ spec:
     - io.openshift.tags=odh-model-registry-job-async-upload
   - name: output-image
     value: quay.io/rhoai/pull-request-pipelines:odh-model-registry-job-async-upload-{{revision}}
+  - name: rhoai-version
+    value: "3.5.0-ea.2"
   - name: dockerfile
     value: Dockerfile.konflux
   - name: path-context
-    value: jobs/async-upload
+    value: ./jobs/async-upload
   - name: hermetic
-    value: false
-  - name: prefetch-mode
-    value: permissive
+    value: "true"
   - name: prefetch-input
     value: |
       [
@@ -55,14 +58,13 @@ spec:
             "requirements.txt"
           ],
           "requirements_build_files": [
-            "requirements-build.txt"
-          ],
-          "binary": {
-            "arch": "x86_64,aarch64,ppc64le,s390x",
-            "os": "linux"
-          }
+            "requirements-build.txt",
+            "requirements-extra-build-deps.txt"
+          ]
         }
       ]
+  - name: build-source-image
+    value: true
   - name: build-image-index
     value: true
   - name: build-platforms
