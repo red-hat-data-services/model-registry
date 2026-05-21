@@ -2237,13 +2237,13 @@ arches:
     name: python3-libs
     evr: 3.9.25-7.el9_8
     sourcerpm: python3.9-3.9.25-7.el9_8.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/baseos/os/Packages/p/python3-pip-wheel-21.3.1-1.el9.noarch.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/baseos/os/Packages/p/python3-pip-wheel-21.3.1-2.el9_8.noarch.rpm
     repoid: ubi-9-for-aarch64-baseos-rpms
-    size: 1193706
-    checksum: sha256:75c46aab03898c66ce16be556432b71aed7efcedce02b9263339c14f57b4fdc0
+    size: 1198443
+    checksum: sha256:918041963ad5c3b91276bf1ed3307280673ca8352e2e632bbb3847b33d2bc15a
     name: python3-pip-wheel
-    evr: 21.3.1-1.el9
-    sourcerpm: python-pip-21.3.1-1.el9.src.rpm
+    evr: 21.3.1-2.el9_8
+    sourcerpm: python-pip-21.3.1-2.el9_8.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/baseos/os/Packages/p/python3-pyparsing-2.4.7-9.el9.noarch.rpm
     repoid: ubi-9-for-aarch64-baseos-rpms
     size: 157800
@@ -3426,12 +3426,12 @@ arches:
     checksum: sha256:cb0cca6cd8da2ffffe67b9937a1b3146fe30bf942154a1a81955e5821737cf32
     name: pyparsing
     evr: 2.4.7-9.el9
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/baseos/source/SRPMS/Packages/p/python-pip-21.3.1-1.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/baseos/source/SRPMS/Packages/p/python-pip-21.3.1-2.el9_8.src.rpm
     repoid: ubi-9-for-aarch64-baseos-source-rpms
-    size: 8984717
-    checksum: sha256:cb9e0cca3bd8dc24798cf1fb333d574774ce8288598331d44994d768f33648d3
+    size: 8988034
+    checksum: sha256:c755a55a4023f5a52ecae2029ebb9be588981de14a10ff9adc4174277e47a00a
     name: python-pip
-    evr: 21.3.1-1.el9
+    evr: 21.3.1-2.el9_8
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/baseos/source/SRPMS/Packages/p/python-setuptools-53.0.0-15.el9.src.rpm
     repoid: ubi-9-for-aarch64-baseos-source-rpms
     size: 2080284
@@ -5723,13 +5723,13 @@ arches:
     name: python3-libs
     evr: 3.9.25-7.el9_8
     sourcerpm: python3.9-3.9.25-7.el9_8.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/baseos/os/Packages/p/python3-pip-wheel-21.3.1-1.el9.noarch.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/baseos/os/Packages/p/python3-pip-wheel-21.3.1-2.el9_8.noarch.rpm
     repoid: ubi-9-for-ppc64le-baseos-rpms
-    size: 1193706
-    checksum: sha256:75c46aab03898c66ce16be556432b71aed7efcedce02b9263339c14f57b4fdc0
+    size: 1198443
+    checksum: sha256:918041963ad5c3b91276bf1ed3307280673ca8352e2e632bbb3847b33d2bc15a
     name: python3-pip-wheel
-    evr: 21.3.1-1.el9
-    sourcerpm: python-pip-21.3.1-1.el9.src.rpm
+    evr: 21.3.1-2.el9_8
+    sourcerpm: python-pip-21.3.1-2.el9_8.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/baseos/os/Packages/p/python3-pyparsing-2.4.7-9.el9.noarch.rpm
     repoid: ubi-9-for-ppc64le-baseos-rpms
     size: 157800
@@ -6918,12 +6918,12 @@ arches:
     checksum: sha256:cb0cca6cd8da2ffffe67b9937a1b3146fe30bf942154a1a81955e5821737cf32
     name: pyparsing
     evr: 2.4.7-9.el9
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/baseos/source/SRPMS/Packages/p/python-pip-21.3.1-1.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/baseos/source/SRPMS/Packages/p/python-pip-21.3.1-2.el9_8.src.rpm
     repoid: ubi-9-for-ppc64le-baseos-source-rpms
-    size: 8984717
-    checksum: sha256:cb9e0cca3bd8dc24798cf1fb333d574774ce8288598331d44994d768f33648d3
+    size: 8988034
+    checksum: sha256:c755a55a4023f5a52ecae2029ebb9be588981de14a10ff9adc4174277e47a00a
     name: python-pip
-    evr: 21.3.1-1.el9
+    evr: 21.3.1-2.el9_8
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/baseos/source/SRPMS/Packages/p/python-setuptools-53.0.0-15.el9.src.rpm
     repoid: ubi-9-for-ppc64le-baseos-source-rpms
     size: 2080284
@@ -9215,13 +9215,13 @@ arches:
     name: python3-libs
     evr: 3.9.25-7.el9_8
     sourcerpm: python3.9-3.9.25-7.el9_8.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/baseos/os/Packages/p/python3-pip-wheel-21.3.1-1.el9.noarch.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/baseos/os/Packages/p/python3-pip-wheel-21.3.1-2.el9_8.noarch.rpm
     repoid: ubi-9-for-s390x-baseos-rpms
-    size: 1193706
-    checksum: sha256:75c46aab03898c66ce16be556432b71aed7efcedce02b9263339c14f57b4fdc0
+    size: 1198443
+    checksum: sha256:918041963ad5c3b91276bf1ed3307280673ca8352e2e632bbb3847b33d2bc15a
     name: python3-pip-wheel
-    evr: 21.3.1-1.el9
-    sourcerpm: python-pip-21.3.1-1.el9.src.rpm
+    evr: 21.3.1-2.el9_8
+    sourcerpm: python-pip-21.3.1-2.el9_8.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/baseos/os/Packages/p/python3-pyparsing-2.4.7-9.el9.noarch.rpm
     repoid: ubi-9-for-s390x-baseos-rpms
     size: 157800
@@ -10404,12 +10404,12 @@ arches:
     checksum: sha256:cb0cca6cd8da2ffffe67b9937a1b3146fe30bf942154a1a81955e5821737cf32
     name: pyparsing
     evr: 2.4.7-9.el9
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/baseos/source/SRPMS/Packages/p/python-pip-21.3.1-1.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/baseos/source/SRPMS/Packages/p/python-pip-21.3.1-2.el9_8.src.rpm
     repoid: ubi-9-for-s390x-baseos-source-rpms
-    size: 8984717
-    checksum: sha256:cb9e0cca3bd8dc24798cf1fb333d574774ce8288598331d44994d768f33648d3
+    size: 8988034
+    checksum: sha256:c755a55a4023f5a52ecae2029ebb9be588981de14a10ff9adc4174277e47a00a
     name: python-pip
-    evr: 21.3.1-1.el9
+    evr: 21.3.1-2.el9_8
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/baseos/source/SRPMS/Packages/p/python-setuptools-53.0.0-15.el9.src.rpm
     repoid: ubi-9-for-s390x-baseos-source-rpms
     size: 2080284
@@ -10601,13 +10601,13 @@ arches:
     name: go-srpm-macros
     evr: 3.8.1-1.el9
     sourcerpm: go-rpm-macros-3.8.1-1.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/k/kernel-headers-5.14.0-687.5.3.el9_8.x86_64.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/k/kernel-headers-5.14.0-687.10.1.el9_8.x86_64.rpm
     repoid: ubi-9-for-x86_64-appstream-rpms
-    size: 2828985
-    checksum: sha256:1db7b37ecdeb557221f4e17bdd1d82b7dea3c8568f323f9dd93bb590350c4846
+    size: 2838185
+    checksum: sha256:e622df50b3b3b7365d3f314f0a0701b248adf972eb807a8e7886020304bb0cf6
     name: kernel-headers
-    evr: 5.14.0-687.5.3.el9_8
-    sourcerpm: kernel-5.14.0-687.5.3.el9_8.src.rpm
+    evr: 5.14.0-687.10.1.el9_8
+    sourcerpm: kernel-5.14.0-687.10.1.el9_8.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/k/kernel-srpm-macros-1.0-14.el9.noarch.rpm
     repoid: ubi-9-for-x86_64-appstream-rpms
     size: 14098
@@ -12694,13 +12694,13 @@ arches:
     name: python3-libs
     evr: 3.9.25-7.el9_8
     sourcerpm: python3.9-3.9.25-7.el9_8.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/baseos/os/Packages/p/python3-pip-wheel-21.3.1-1.el9.noarch.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/baseos/os/Packages/p/python3-pip-wheel-21.3.1-2.el9_8.noarch.rpm
     repoid: ubi-9-for-x86_64-baseos-rpms
-    size: 1193706
-    checksum: sha256:75c46aab03898c66ce16be556432b71aed7efcedce02b9263339c14f57b4fdc0
+    size: 1198443
+    checksum: sha256:918041963ad5c3b91276bf1ed3307280673ca8352e2e632bbb3847b33d2bc15a
     name: python3-pip-wheel
-    evr: 21.3.1-1.el9
-    sourcerpm: python-pip-21.3.1-1.el9.src.rpm
+    evr: 21.3.1-2.el9_8
+    sourcerpm: python-pip-21.3.1-2.el9_8.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/baseos/os/Packages/p/python3-pyparsing-2.4.7-9.el9.noarch.rpm
     repoid: ubi-9-for-x86_64-baseos-rpms
     size: 157800
@@ -13883,12 +13883,12 @@ arches:
     checksum: sha256:cb0cca6cd8da2ffffe67b9937a1b3146fe30bf942154a1a81955e5821737cf32
     name: pyparsing
     evr: 2.4.7-9.el9
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/baseos/source/SRPMS/Packages/p/python-pip-21.3.1-1.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/baseos/source/SRPMS/Packages/p/python-pip-21.3.1-2.el9_8.src.rpm
     repoid: ubi-9-for-x86_64-baseos-source-rpms
-    size: 8984717
-    checksum: sha256:cb9e0cca3bd8dc24798cf1fb333d574774ce8288598331d44994d768f33648d3
+    size: 8988034
+    checksum: sha256:c755a55a4023f5a52ecae2029ebb9be588981de14a10ff9adc4174277e47a00a
     name: python-pip
-    evr: 21.3.1-1.el9
+    evr: 21.3.1-2.el9_8
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/baseos/source/SRPMS/Packages/p/python-setuptools-53.0.0-15.el9.src.rpm
     repoid: ubi-9-for-x86_64-baseos-source-rpms
     size: 2080284
