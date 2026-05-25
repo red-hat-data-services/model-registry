@@ -47,10 +47,10 @@ USER 1000
 ENV PATH="/home/1000/.local/bin:$PATH"
 RUN ls -l /app
 
-# Diagnose which native module segfaults on s390x (temporary — remove once resolved)
-RUN for mod in _cffi_backend cryptography rfc3161_client hf_xet blake3 pydantic_core rpds_py; do \
-      python -c "import $mod; print('$mod: ok')" || echo ">>> $mod: FAILED (exit $?)"; \
-    done
+# Diagnose which import segfaults on s390x (temporary — remove once resolved)
+RUN python -c "import model_registry; print('model_registry: ok')" || echo ">>> model_registry: FAILED (exit $?)"
+RUN python -c "import model_signing; print('model_signing: ok')" || echo ">>> model_signing: FAILED (exit $?)"
+RUN python -c "from model_registry.signing import Signer; print('Signer: ok')" || echo ">>> Signer: FAILED (exit $?)"
 
 # Sanity checks critical imports (catches broken/empty wheels at build time)
 RUN python -c "\
