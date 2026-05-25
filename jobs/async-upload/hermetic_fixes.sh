@@ -20,6 +20,7 @@ set -e
 #
 # Workaround: Overwrite the generated config with one that also redirects the
 # known git source (pyca/cryptography) to the local vendor directory.
+# The tag MUST match the cryptography version in requirements.txt (currently 46.0.7).
 #
 # Remove when: Hermeto supports vendoring and redirecting git-sourced Cargo deps.
 # -----------------------------------------------------------------------------
@@ -28,9 +29,9 @@ cat <<EOF > /cachi2/output/.cargo/config.toml
 [source.crates-io]
 replace-with = "local"
 
-[source."git+https://github.com/pyca/cryptography.git?tag=45.0.4"]
+[source."git+https://github.com/pyca/cryptography.git?tag=46.0.7"]
 git = "https://github.com/pyca/cryptography.git"
-tag = "45.0.4"
+tag = "46.0.7"
 replace-with = "local"
 
 [source.local]
