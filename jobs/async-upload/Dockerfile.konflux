@@ -32,6 +32,7 @@ RUN if [ "$TARGETARCH" = "ppc64le" ] || [ "$TARGETARCH" = "s390x" ]; then \
       export OPENSSL_NO_VENDOR=1; \
     fi && \
     python -m pip install -r requirements.txt  \
+    && ./hermetic_fixes.sh post-install \
     && echo "Installation completed" \
     && echo "Python path:" && python -c "import sys; print('\\n'.join(sys.path))" \
     && echo "Installed packages:" \
@@ -47,12 +48,13 @@ USER 1000
 ENV PATH="/home/1000/.local/bin:$PATH"
 RUN ls -l /app
 
-# protobuf's native _upb C extension segfaults on s390x
-# (https://github.com/protocolbuffers/protobuf/issues/24103)
-ENV PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
-
-# Sanity checks critical imports (catches broken/empty wheels at build time)
-RUN python -c "\
+# Sanity checks critical imports (catches broken/empty wheels at build time).
+# On s390x the native _upb wheel was already swapped for the pure-Python one
+# by hermetic_fixes.sh, but set the env var as a safety net.
+RUN if [ "$(uname -m)" = "s390x" ]; then \
+      export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python; \
+    fi && \
+    python -c "\
 import model_registry; \
 import model_signing; \
 from model_registry.signing import Signer; \
