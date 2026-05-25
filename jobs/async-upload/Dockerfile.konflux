@@ -47,19 +47,9 @@ USER 1000
 ENV PATH="/home/1000/.local/bin:$PATH"
 RUN ls -l /app
 
-# Trace which sub-import inside model_signing segfaults (temporary)
-RUN printf '%s\n' \
-      'import sys' \
-      '_orig = __builtins__.__import__' \
-      'def _trace(name, *a, **kw):' \
-      '    print(f"  importing: {name}", flush=True)' \
-      '    return _orig(name, *a, **kw)' \
-      '__builtins__.__import__ = _trace' \
-      'import model_signing' \
-      "print('model_signing: ok')" \
-      > /tmp/trace_imports.py && \
-    python /tmp/trace_imports.py 2>&1 || \
-    echo ">>> SEGFAULT after last import above (exit $?)"
+# protobuf's native _upb C extension segfaults on s390x
+# (https://github.com/protocolbuffers/protobuf/issues/24103)
+ENV PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
 
 # Sanity checks critical imports (catches broken/empty wheels at build time)
 RUN python -c "\
