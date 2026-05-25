@@ -9,6 +9,14 @@ set -e
 # upstream condition that would make it safe to remove.
 # =============================================================================
 
+# s390x is big-endian; vendored OpenSSL compilation produces binaries that
+# segfault at runtime. Link against the system OpenSSL instead.
+# This must be set before any pip install that might build cryptography from
+# source (Fix #3 pulls it as a transitive dep of rh-model-signing).
+ARCH=$(uname -m)
+if [ "$ARCH" = "s390x" ] || [ "$ARCH" = "ppc64le" ]; then
+  export OPENSSL_NO_VENDOR=1
+fi
 
 # -----------------------------------------------------------------------------
 # Fix #1 — Cargo git source redirect missing from Hermeto-generated config
