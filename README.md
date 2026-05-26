@@ -6,7 +6,9 @@
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/9937/badge)](https://www.bestpractices.dev/projects/9937)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/kubeflow/hub/badge)](https://scorecard.dev/viewer/?uri=github.com/kubeflow/hub)
 
-Kubeflow Hub (formerly known as Model Registry) provides a central repository for model developers to store and manage models, versions, and artifacts metadata.
+Kubeflow Hub is an umbrella project including the **Model Registry**, which provides a central repository for model developers to store and manage models, versions, and artifact metadata; and the **[Catalog](catalog/README.md)**, which enables federated discovery across external catalogs.
+
+The project was formerly known as Model Registry.
 
 ## Red Hat's Pledge
 - Red Hat drives the project's development through Open Source principles, ensuring transparency, sustainability, and community ownership.
