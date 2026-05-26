@@ -28,7 +28,6 @@ fi
 #
 # Workaround: Overwrite the generated config with one that also redirects the
 # known git source (pyca/cryptography) to the local vendor directory.
-# The tag MUST match the cryptography version in requirements.txt (currently 46.0.7).
 #
 # Remove when: Hermeto supports vendoring and redirecting git-sourced Cargo deps.
 # -----------------------------------------------------------------------------
@@ -37,14 +36,16 @@ cat <<EOF > /cachi2/output/.cargo/config.toml
 [source.crates-io]
 replace-with = "local"
 
-[source."git+https://github.com/pyca/cryptography.git?tag=46.0.7"]
+[source."git+https://github.com/pyca/cryptography.git?tag=45.0.4"]
 git = "https://github.com/pyca/cryptography.git"
-tag = "46.0.7"
+tag = "45.0.4"
 replace-with = "local"
 
 [source.local]
 directory = "/cachi2/output/deps/cargo"
 EOF
+# explicitly install the package here so we fail fast if the cargo redirect does not work
+pip install rfc3161-client
 
 # -----------------------------------------------------------------------------
 # Fix #2 — sigstore_models cannot be built via uv-build in a hermetic environment
