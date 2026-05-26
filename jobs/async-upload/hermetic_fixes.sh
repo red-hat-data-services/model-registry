@@ -9,6 +9,14 @@ set -e
 # upstream condition that would make it safe to remove.
 # =============================================================================
 
+# s390x is big-endian; vendored OpenSSL compilation produces binaries that
+# segfault at runtime. Link against the system OpenSSL instead.
+# This must be set before any pip install that might build cryptography from
+# source (Fix #3 pulls it as a transitive dep of rh-model-signing).
+ARCH=$(uname -m)
+if [ "$ARCH" = "s390x" ] || [ "$ARCH" = "ppc64le" ]; then
+  export OPENSSL_NO_VENDOR=1
+fi
 
 # -----------------------------------------------------------------------------
 # Fix #1 — Cargo git source redirect missing from Hermeto-generated config
@@ -20,6 +28,7 @@ set -e
 #
 # Workaround: Overwrite the generated config with one that also redirects the
 # known git source (pyca/cryptography) to the local vendor directory.
+# The tag MUST match the cryptography version in requirements.txt (currently 46.0.7).
 #
 # Remove when: Hermeto supports vendoring and redirecting git-sourced Cargo deps.
 # -----------------------------------------------------------------------------
@@ -28,9 +37,9 @@ cat <<EOF > /cachi2/output/.cargo/config.toml
 [source.crates-io]
 replace-with = "local"
 
-[source."git+https://github.com/pyca/cryptography.git?tag=45.0.4"]
+[source."git+https://github.com/pyca/cryptography.git?tag=46.0.7"]
 git = "https://github.com/pyca/cryptography.git"
-tag = "45.0.4"
+tag = "46.0.7"
 replace-with = "local"
 
 [source.local]
@@ -86,3 +95,39 @@ python -m pip install .
 # Remove when: the UBI9 base image is updated to Rust ≥ 1.89.0.
 # -----------------------------------------------------------------------------
 MATURIN_PEP517_ARGS="--ignore-rust-version" pip install hf-xet
+
+# -----------------------------------------------------------------------------
+# Fix #5 — protobuf _upb C extension segfaults on s390x (post-install)
+#
+# Pip selects protobuf-7.34.0-cp310-abi3-manylinux2014_s390x.whl on s390x.
+# The bundled google/_upb/_message.abi3.so segfaults when generated protos
+# (e.g. in_toto_attestation) register descriptors, and again at interpreter
+# shutdown. PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python alone is insufficient
+# because the broken .so is still installed and may be loaded on exit.
+#
+# Workaround: After the main requirements install, replace protobuf with the
+# py3-none-any wheel vendored by Hermeto (no native _upb).
+#
+# Upstream: https://github.com/protocolbuffers/protobuf/issues/24103
+#
+# Remove when: a pinned protobuf release includes a verified s390x upb fix.
+# -----------------------------------------------------------------------------
+fix_protobuf_s390x() {
+  if [ "$(uname -m)" != "s390x" ]; then
+    return 0
+  fi
+
+  # Version MUST match protobuf in requirements.txt (currently 7.34.0).
+  PROTOBUF_WHEEL="/cachi2/output/deps/pip/protobuf-7.34.0-py3-none-any.whl"
+  if [ ! -f "$PROTOBUF_WHEEL" ]; then
+    echo "Fix #5: pure-Python protobuf wheel not found at $PROTOBUF_WHEEL" >&2
+    exit 1
+  fi
+
+  python -m pip uninstall -y protobuf
+  PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python python -m pip install --no-deps "$PROTOBUF_WHEEL"
+}
+
+if [ "${1:-}" = "post-install" ]; then
+  fix_protobuf_s390x
+fi
