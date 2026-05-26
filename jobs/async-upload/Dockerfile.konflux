@@ -22,6 +22,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 COPY ./poetry.lock ./pyproject.toml ./requirements.txt ./
 
+ENV PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
 COPY ./hermetic_fixes.sh ./
 RUN ./hermetic_fixes.sh
 
@@ -32,7 +33,6 @@ RUN if [ "$TARGETARCH" = "ppc64le" ] || [ "$TARGETARCH" = "s390x" ]; then \
       export OPENSSL_NO_VENDOR=1; \
     fi && \
     python -m pip install -r requirements.txt  \
-    && ./hermetic_fixes.sh post-install \
     && echo "Installation completed" \
     && echo "Python path:" && python -c "import sys; print('\\n'.join(sys.path))" \
     && echo "Installed packages:" \
