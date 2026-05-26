@@ -49,12 +49,7 @@ ENV PATH="/home/1000/.local/bin:$PATH"
 RUN ls -l /app
 
 # Sanity checks critical imports (catches broken/empty wheels at build time).
-# On s390x the native _upb wheel was already swapped for the pure-Python one
-# by hermetic_fixes.sh, but set the env var as a safety net.
-RUN if [ "$(uname -m)" = "s390x" ]; then \
-      export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python; \
-    fi && \
-    python -c "\
+RUN python -c "\
 import model_registry; \
 import model_signing; \
 from model_registry.signing import Signer; \
