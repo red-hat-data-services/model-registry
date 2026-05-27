@@ -14,7 +14,6 @@ import (
 	"github.com/go-chi/cors"
 	"gorm.io/gorm"
 
-	"github.com/kubeflow/hub/catalog/internal/catalog/basecatalog"
 	"github.com/kubeflow/hub/internal/platform/datastore"
 )
 
@@ -24,7 +23,6 @@ type ServerConfig struct {
 	ConfigPaths            []string
 	PerformanceMetricsPath []string
 	RepoSet                datastore.RepoSet
-	TypeMap                map[string]int32
 	Logger                 *slog.Logger
 }
 
@@ -59,25 +57,14 @@ func (s *Server) Init(ctx context.Context) error {
 		return nil
 	}
 
-	var sourceConfig *basecatalog.SourceConfig
-	if len(s.cfg.ConfigPaths) > 0 {
-		cfg, err := LoadConfig(s.cfg.ConfigPaths[0])
-		if err != nil {
-			return fmt.Errorf("loading source config: %w", err)
-		}
-		sourceConfig = cfg
-	}
-
 	for _, p := range registered {
 		basePath := computeBasePath(p)
 
 		pluginCfg := Config{
-			SourceConfig:           sourceConfig,
 			DB:                     s.cfg.DB,
 			BasePath:               basePath,
 			ConfigPaths:            s.cfg.ConfigPaths,
 			RepoSet:                s.cfg.RepoSet,
-			TypeMap:                s.cfg.TypeMap,
 			PerformanceMetricsPath: s.cfg.PerformanceMetricsPath,
 			Logger:                 s.cfg.Logger.With("plugin", p.Name()),
 		}
