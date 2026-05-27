@@ -14,7 +14,7 @@ The contributor's guide:
 * and [describes](https://www.kubeflow.org/docs/about/contributing/#owners-files-and-pr-workflow) the pull request and review workflow in detail, including the
   OWNERS files and automated workflow tool
 
-The [Kubeflow Community calendar](https://www.kubeflow.org/docs/about/community/#kubeflow-community-calendar) provides an overview of the community calls and specifically the bi-weekly Kubeflow Model Registry meeting.
+The [Kubeflow Community calendar](https://www.kubeflow.org/docs/about/community/#kubeflow-community-calendar) provides an overview of the community calls and specifically the bi-weekly Kubeflow Hub meeting.
 
 <hr/>
 

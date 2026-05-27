@@ -8,10 +8,17 @@ GRAPHQL_SCHEMA := internal/catalog/genqlient/queries/schema.graphql
 GO ?= "$(shell which go)"
 
 .PHONY: gen/openapi-server
-gen/openapi-server: internal/server/openapi/api_model_catalog_service.go
+gen/openapi-server: internal/server/openapi/api_model_catalog_service.go internal/server/openapi/api_mcp_catalog_service.go internal/server/openapi/type_asserts.go
 
-internal/server/openapi/api_model_catalog_service.go: ../api/openapi/catalog.yaml
-	OPENAPI_GENERATOR="$(OPENAPI_GENERATOR)" ./scripts/gen_openapi_server.sh
+internal/server/openapi/api_model_catalog_service.go: ../api/openapi/src/catalog.yaml ../api/openapi/src/plugins/model.yaml ../api/openapi/src/lib/common.yaml
+	OPENAPI_GENERATOR="$(OPENAPI_GENERATOR)" ./plugins/model/scripts/gen_openapi_server.sh
+
+internal/server/openapi/api_mcp_catalog_service.go: ../api/openapi/src/catalog.yaml ../api/openapi/src/plugins/mcp.yaml ../api/openapi/src/lib/common.yaml
+	OPENAPI_GENERATOR="$(OPENAPI_GENERATOR)" ./plugins/mcp/scripts/gen_openapi_server.sh
+
+internal/server/openapi/type_asserts.go: internal/server/openapi/api_model_catalog_service.go internal/server/openapi/api_mcp_catalog_service.go
+	./scripts/gen_type_asserts.sh internal/server/openapi
+	../bin/goimports -w internal/server/openapi
 
 .PHONY: gen/openapi
 gen/openapi: pkg/openapi/client.go
@@ -43,6 +50,8 @@ clean-graphql:
 .PHONY: clean-internal-server-openapi
 clean-internal-server-openapi:
 	while IFS= read -r file; do rm -f "internal/server/openapi/$$file"; done < internal/server/openapi/.openapi-generator/FILES
+	rm -f internal/server/openapi/api_model_catalog_service.go internal/server/openapi/api_mcp_catalog_service.go
+	rm -f internal/server/openapi/api_model.go internal/server/openapi/api_mcp.go
 
 .PHONY: test
 test:

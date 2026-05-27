@@ -5,7 +5,7 @@
 [![Read the Docs](https://img.shields.io/readthedocs/model-registry)](https://model-registry.readthedocs.io/en/latest/)
 [![Tutorial Website](https://img.shields.io/badge/Website-green?style=plastic&label=Tutorial&labelColor=blue)](https://www.kubeflow.org/docs/components/model-registry/getting-started/)
 
-This library provides a high level interface for interacting with a model registry server.
+This is the Python SDK for the **Model Registry** component of [Kubeflow Hub](https://github.com/kubeflow/hub). It provides a high-level interface for interacting with a model registry server.
 
 > **Alpha**
 >
