@@ -10,7 +10,7 @@ ARG TARGETARCH
 
 # Install skopeo for Push/Pull of container images to integrate with Model Registry py client and Olot.
 RUN . /cachi2/cachi2.env && \
-     microdnf install -y skopeo gcc make python3.12-devel cargo g++ libffi-devel openssl-devel perl && \
+    microdnf install -y skopeo gcc make python3.12-devel cargo g++ libffi-devel openssl-devel perl && \
     microdnf clean all
 
 # security/env hardening
@@ -47,7 +47,7 @@ USER 1000
 ENV PATH="/home/1000/.local/bin:$PATH"
 RUN ls -l /app
 
-# Sanity checks critical imports (catches broken/empty wheels at build time)
+# Sanity checks critical imports (catches broken/empty wheels at build time).
 RUN python -c "\
 import model_registry; \
 import model_signing; \
