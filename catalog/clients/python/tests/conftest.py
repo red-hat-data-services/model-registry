@@ -60,34 +60,37 @@ def _auto_mark_test(item) -> None:
         item.add_marker(pytest.mark.e2e)
 
 
-def _apply_skip_markers(item, *, e2e: bool, fuzz: bool) -> None:
-    """Apply skip markers based on CLI flags."""
-    skip_e2e = pytest.mark.skip(reason="need --e2e option to run E2E tests")
-    skip_fuzz = pytest.mark.skip(reason="need --fuzz option to run fuzzing tests")
-    skip_other = pytest.mark.skip(reason="skipping non-selected tests")
-
-    if e2e:
-        if "e2e" not in item.keywords:
-            item.add_marker(skip_other)
-    elif fuzz:
-        if "fuzz" not in item.keywords:
-            item.add_marker(skip_other)
-    else:
-        # No flag specified - skip both e2e and fuzz tests
-        if "e2e" in item.keywords:
-            item.add_marker(skip_e2e)
-        if "fuzz" in item.keywords:
-            item.add_marker(skip_fuzz)
-
-
 def pytest_collection_modifyitems(config, items):
     """Modify test collection based on markers and options."""
     e2e = config.getoption("--e2e")
     fuzz = config.getoption("--fuzz")
 
+    selected = []
+    deselected = []
+
     for item in items:
         _auto_mark_test(item)
-        _apply_skip_markers(item, e2e=e2e, fuzz=fuzz)
+
+        if e2e:
+            if "e2e" in item.keywords:
+                selected.append(item)
+            else:
+                deselected.append(item)
+        elif fuzz:
+            if "fuzz" in item.keywords:
+                selected.append(item)
+            else:
+                deselected.append(item)
+        else:
+            # Default run (no flags): only collect unit tests, deselect e2e/fuzz
+            if "e2e" in item.keywords or "fuzz" in item.keywords:
+                deselected.append(item)
+            else:
+                selected.append(item)
+
+    if deselected:
+        config.hook.pytest_deselected(items=deselected)
+        items[:] = selected
 
 
 def pytest_report_teststatus(report, config):

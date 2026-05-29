@@ -4,33 +4,33 @@ import pytest
 logging.basicConfig(level=logging.INFO)
 
 def pytest_collection_modifyitems(config, items):
-    for item in items: 
-        skip_e2e = pytest.mark.skip(
-            reason="this is an end-to-end test, requires explicit opt-in --e2e option to run."
-        )
-        skip_integration = pytest.mark.skip(
-            reason="this is an integration test, requires explicit opt-in --integration option to run."
-        )
-        skip_not_e2e = pytest.mark.skip(
-            reason="skipping non-e2e tests; opt-out of --e2e -like options to run."
-        )
-        skip_not_integration = pytest.mark.skip(
-            reason="skipping non-integration tests; opt-out of --integration -like options to run."
-        )
-        
-        e2e_option = config.getoption("--e2e")
-        integration_option = config.getoption("--integration")
-        
-        if "e2e" in item.keywords:
-            if not e2e_option:
-                item.add_marker(skip_e2e)
-        elif "integration" in item.keywords:
-            if not integration_option:
-                item.add_marker(skip_integration)
-        elif e2e_option:
-            item.add_marker(skip_not_e2e)
+    e2e_option = config.getoption("--e2e")
+    integration_option = config.getoption("--integration")
+
+    selected = []
+    deselected = []
+
+    for item in items:
+        if e2e_option:
+            if "e2e" in item.keywords:
+                selected.append(item)
+            else:
+                deselected.append(item)
         elif integration_option:
-            item.add_marker(skip_not_integration)
+            if "integration" in item.keywords:
+                selected.append(item)
+            else:
+                deselected.append(item)
+        else:
+            # Default run (no flags): only collect unit tests, deselect e2e/integration
+            if "e2e" in item.keywords or "integration" in item.keywords:
+                deselected.append(item)
+            else:
+                selected.append(item)
+
+    if deselected:
+        config.hook.pytest_deselected(items=deselected)
+        items[:] = selected
 
 
 def pytest_addoption(parser):
