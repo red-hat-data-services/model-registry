@@ -31,18 +31,18 @@ func TestYamlModelToModelProviderRecord(t *testing.T) {
 			name: "complete model with all properties",
 			yamlModel: yamlModel{
 				CatalogModel: model.CatalogModel{
-					Name:                     "test-model",
-					Description:              apiutils.Of("Test model description"),
-					Readme:                   apiutils.Of("# Test Model\nThis is a test model."),
-					Maturity:                 apiutils.Of("Generally Available"),
-					Language:                 []string{"en", "fr"},
-					Tasks:                    []string{"text-generation", "nlp"},
-					ValidatedTasks:           []string{"text-generation", "tool-calling"},
-					Provider:                 apiutils.Of("IBM"),
-					Logo:                     apiutils.Of("https://example.com/logo.png"),
-					License:                  apiutils.Of("apache-2.0"),
-					LicenseLink:              apiutils.Of("https://www.apache.org/licenses/LICENSE-2.0"),
-					LibraryName:              apiutils.Of("transformers"),
+					Name:           "test-model",
+					Description:    apiutils.Of("Test model description"),
+					Readme:         apiutils.Of("# Test Model\nThis is a test model."),
+					Maturity:       apiutils.Of("Generally Available"),
+					Language:       []string{"en", "fr"},
+					Tasks:          []string{"text-generation", "nlp"},
+					ValidatedTasks: []string{"text-generation", "tool-calling"},
+					Provider:       apiutils.Of("IBM"),
+					Logo:           apiutils.Of("https://example.com/logo.png"),
+					License:        apiutils.Of("apache-2.0"),
+					LicenseLink:    apiutils.Of("https://www.apache.org/licenses/LICENSE-2.0"),
+					LibraryName:    apiutils.Of("transformers"),
 					ServingConfig: &model.ServingConfig{
 						ToolCalling: &model.ToolCallingConfig{
 							ToolCallParser:       apiutils.Of("granite"),
@@ -818,6 +818,163 @@ func TestYamlModelProviderInvalidPattern(t *testing.T) {
 	_, err := newYamlModelProvider(context.Background(), source, filepath.Dir(catalogPath))
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "pattern cannot be empty")
+}
+
+func TestYamlModelHardwareTagAsCustomProperty(t *testing.T) {
+	t.Run("single hardware_tag value", func(t *testing.T) {
+		ym := yamlModel{
+			CatalogModel: model.CatalogModel{
+				Name:  "test-vendor/single-hw",
+				Tasks: []string{"text-generation"},
+				CustomProperties: map[string]model.MetadataValue{
+					"hardware_tag": {
+						MetadataStringValue: &model.MetadataStringValue{
+							StringValue:  "Hardware Tag 1",
+							MetadataType: "MetadataStringValue",
+						},
+					},
+				},
+			},
+			Artifacts: []*yamlArtifact{
+				{CatalogArtifact: model.CatalogArtifact{
+					CatalogModelArtifact: &model.CatalogModelArtifact{
+						ArtifactType: "model-artifact",
+						Uri:          "oci://registry.example.com/test:latest",
+					},
+				}},
+			},
+		}
+
+		record := ym.ToModelProviderRecord()
+		require.NotNil(t, record.Model)
+		require.Nil(t, record.Error)
+
+		customPropMap := customPropsToMap(t, record)
+		assert.Contains(t, customPropMap, "hardware_tag")
+		assert.Equal(t, "Hardware Tag 1", *customPropMap["hardware_tag"].StringValue)
+		assert.True(t, customPropMap["hardware_tag"].IsCustomProperty)
+	})
+
+	t.Run("multiple hardware_tag values comma-separated", func(t *testing.T) {
+		ym := yamlModel{
+			CatalogModel: model.CatalogModel{
+				Name:  "test-vendor/multi-hw",
+				Tasks: []string{"text-generation"},
+				CustomProperties: map[string]model.MetadataValue{
+					"hardware_tag": {
+						MetadataStringValue: &model.MetadataStringValue{
+							StringValue:  "Hardware Tag 1,Hardware Tag 2",
+							MetadataType: "MetadataStringValue",
+						},
+					},
+				},
+			},
+			Artifacts: []*yamlArtifact{
+				{CatalogArtifact: model.CatalogArtifact{
+					CatalogModelArtifact: &model.CatalogModelArtifact{
+						ArtifactType: "model-artifact",
+						Uri:          "oci://registry.example.com/test:latest",
+					},
+				}},
+			},
+		}
+
+		record := ym.ToModelProviderRecord()
+		require.NotNil(t, record.Model)
+		require.Nil(t, record.Error)
+
+		customPropMap := customPropsToMap(t, record)
+		assert.Contains(t, customPropMap, "hardware_tag")
+		assert.Equal(t, "Hardware Tag 1,Hardware Tag 2", *customPropMap["hardware_tag"].StringValue)
+		assert.True(t, customPropMap["hardware_tag"].IsCustomProperty)
+	})
+
+	t.Run("empty hardware_tag produces no custom property", func(t *testing.T) {
+		ym := yamlModel{
+			CatalogModel: model.CatalogModel{
+				Name:  "test-vendor/empty-hw",
+				Tasks: []string{"text-generation"},
+				CustomProperties: map[string]model.MetadataValue{
+					"hardware_tag": {
+						MetadataStringValue: &model.MetadataStringValue{
+							StringValue:  "",
+							MetadataType: "MetadataStringValue",
+						},
+					},
+					"model_type": {
+						MetadataStringValue: &model.MetadataStringValue{
+							StringValue:  "predictive",
+							MetadataType: "MetadataStringValue",
+						},
+					},
+				},
+			},
+			Artifacts: []*yamlArtifact{
+				{CatalogArtifact: model.CatalogArtifact{
+					CatalogModelArtifact: &model.CatalogModelArtifact{
+						ArtifactType: "model-artifact",
+						Uri:          "oci://registry.example.com/test:latest",
+					},
+				}},
+			},
+		}
+
+		record := ym.ToModelProviderRecord()
+		require.NotNil(t, record.Model)
+		require.Nil(t, record.Error)
+
+		customPropMap := customPropsToMap(t, record)
+		assert.NotContains(t, customPropMap, "hardware_tag")
+		assert.Contains(t, customPropMap, "model_type")
+		assert.Equal(t, "predictive", *customPropMap["model_type"].StringValue)
+	})
+
+	t.Run("missing hardware_tag produces no custom property", func(t *testing.T) {
+		ym := yamlModel{
+			CatalogModel: model.CatalogModel{
+				Name:  "test-vendor/no-hw",
+				Tasks: []string{"text-generation"},
+				CustomProperties: map[string]model.MetadataValue{
+					"model_type": {
+						MetadataStringValue: &model.MetadataStringValue{
+							StringValue:  "generative",
+							MetadataType: "MetadataStringValue",
+						},
+					},
+				},
+			},
+			Artifacts: []*yamlArtifact{
+				{CatalogArtifact: model.CatalogArtifact{
+					CatalogModelArtifact: &model.CatalogModelArtifact{
+						ArtifactType: "model-artifact",
+						Uri:          "oci://registry.example.com/test:latest",
+					},
+				}},
+			},
+		}
+
+		record := ym.ToModelProviderRecord()
+		require.NotNil(t, record.Model)
+		require.Nil(t, record.Error)
+
+		customPropMap := customPropsToMap(t, record)
+		assert.NotContains(t, customPropMap, "hardware_tag")
+		assert.Contains(t, customPropMap, "model_type")
+		assert.Equal(t, "generative", *customPropMap["model_type"].StringValue)
+	})
+}
+
+func customPropsToMap(t *testing.T, record ModelProviderRecord) map[string]models.Properties {
+	t.Helper()
+	customProps := record.Model.GetCustomProperties()
+	m := make(map[string]models.Properties)
+	if customProps == nil {
+		return m
+	}
+	for _, prop := range *customProps {
+		m[prop.Name] = prop
+	}
+	return m
 }
 
 func writeMiniCatalog(t *testing.T, modelNames []string) string {

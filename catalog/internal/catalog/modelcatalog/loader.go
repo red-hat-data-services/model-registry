@@ -12,7 +12,7 @@ import (
 	"github.com/kubeflow/hub/catalog/internal/catalog/basecatalog"
 	"github.com/kubeflow/hub/catalog/internal/catalog/modelcatalog/models"
 	sharedmodels "github.com/kubeflow/hub/catalog/internal/db/models"
-	"github.com/kubeflow/hub/catalog/internal/db/service"
+	"github.com/kubeflow/hub/catalog/internal/db/service"  // for type name constants
 	mrmodels "github.com/kubeflow/hub/internal/platform/db/entity"
 )
 
@@ -75,13 +75,13 @@ type ModelLoader struct {
 	// Labels contains current labels loaded from the configuration files.
 	Labels *LabelCollection
 
-	services      service.Services
+	services      Services
 	handlers      []LoaderEventHandler
 	loadedSources map[string]bool // tracks which source IDs have been loaded
 }
 
 // NewModelLoader creates a new ModelLoader with external state
-func NewModelLoader(services service.Services, state basecatalog.LoaderState) *ModelLoader {
+func NewModelLoader(services Services, state basecatalog.LoaderState) *ModelLoader {
 	paths := state.Paths()
 	// Convert paths to absolute for consistent origin ordering.
 	// This matches how loadOne converts paths before calling Merge.
@@ -329,11 +329,11 @@ func (l *ModelLoader) updateDatabase(ctx context.Context) error {
 					}
 				}
 
-			for _, handler := range l.handlers {
-				if err := handler(ctx, record); err != nil {
-					glog.Errorf("%s: event handler error: %v", *attr.Name, err)
+				for _, handler := range l.handlers {
+					if err := handler(ctx, record); err != nil {
+						glog.Errorf("%s: event handler error: %v", *attr.Name, err)
+					}
 				}
-			}
 			}()
 		}
 	}()

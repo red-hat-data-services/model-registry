@@ -32,26 +32,33 @@ def pytest_addoption(parser):
 
 
 def pytest_collection_modifyitems(config, items):
-    skip_reasons = {
-        "e2e": pytest.mark.skip(reason="this is an end-to-end test, requires explicit opt-in --e2e option to run."),
-        "fuzz": pytest.mark.skip(reason="this is a fuzzing test, requires explicit opt-in --fuzz option to run."),
-        "skip": pytest.mark.skip(reason="skipping non-e2e and non-fuzz tests"),
-    }
     e2e = config.getoption("--e2e")
     fuzz = config.getoption("--fuzz")
 
+    selected = []
+    deselected = []
+
     for item in items:
         if e2e:
-            if "e2e" not in item.keywords:
-                item.add_marker(skip_reasons["skip"])
-        elif fuzz:
-            if "fuzz" not in item.keywords:
-                item.add_marker(skip_reasons["skip"])
-        else:
             if "e2e" in item.keywords:
-                item.add_marker(skip_reasons["e2e"])
+                selected.append(item)
+            else:
+                deselected.append(item)
+        elif fuzz:
             if "fuzz" in item.keywords:
-                item.add_marker(skip_reasons["fuzz"])
+                selected.append(item)
+            else:
+                deselected.append(item)
+        else:
+            # Default run (no flags): only collect unit tests, deselect e2e/fuzz
+            if "e2e" in item.keywords or "fuzz" in item.keywords:
+                deselected.append(item)
+            else:
+                selected.append(item)
+
+    if deselected:
+        config.hook.pytest_deselected(items=deselected)
+        items[:] = selected
 
 
 def pytest_report_teststatus(report, config):
