@@ -21,7 +21,8 @@ import (
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
 
-	_ "github.com/kubeflow/hub/catalog/internal/plugins/catalog"
+	_ "github.com/kubeflow/hub/catalog/internal/plugins/mcp"
+	_ "github.com/kubeflow/hub/catalog/internal/plugins/model"
 )
 
 var catalogCfg = struct {
@@ -140,7 +141,6 @@ func runCatalogServer(_ *cobra.Command, _ []string) error {
 		ConfigPaths:            catalogCfg.ConfigPath,
 		PerformanceMetricsPath: catalogCfg.PerformanceMetricsPath,
 		RepoSet:                repoSet,
-		TypeMap:                repoSet.TypeMap(),
 	})
 
 	if err := pluginServer.Init(ctx); err != nil {
