@@ -164,6 +164,12 @@ func (ym *yamlModel) convertModelProperties() ([]models.Properties, []models.Pro
 		}
 	}
 
+	// Drop hardware_tag if its value is empty
+	if val, ok := ym.CustomProperties["hardware_tag"]; ok &&
+		val.MetadataStringValue != nil && val.MetadataStringValue.StringValue == "" {
+		delete(ym.CustomProperties, "hardware_tag")
+	}
+
 	// Convert custom properties from the YAML model
 	if customProps := convertCustomProperties(&ym.CustomProperties); customProps != nil {
 		customProperties = append(customProperties, customProps...)

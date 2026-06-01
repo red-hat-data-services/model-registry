@@ -295,7 +295,7 @@ func (m *ModelCatalogServiceAPIService) FindModels(ctx context.Context, recommen
 		// Use recommended latency sorting (ignores orderBy)
 		models, err := m.provider.FindModelsWithRecommendedLatency(ctx, pagination, paretoParams, sourceIDs, q)
 		if err != nil {
-			return ErrorResponse(http.StatusInternalServerError, fmt.Errorf("failed to find models with recommended latency: %w", err)), err
+			return ErrorResponse(api.ErrToStatus(err), fmt.Errorf("failed to find models with recommended latency: %w", err)), err
 		}
 
 		return Response(http.StatusOK, *models), nil
@@ -318,7 +318,7 @@ func (m *ModelCatalogServiceAPIService) FindModels(ctx context.Context, recommen
 
 	models, err := m.provider.ListModels(ctx, listModelsParams)
 	if err != nil {
-		return ErrorResponse(http.StatusInternalServerError, err), err
+		return ErrorResponse(api.ErrToStatus(err), err), err
 	}
 
 	return Response(http.StatusOK, models), nil

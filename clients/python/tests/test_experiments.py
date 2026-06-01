@@ -68,7 +68,6 @@ def test_start_experiment_run(client: ModelRegistry, schema_json: str):
 
 
 @pytest.mark.skip(reason="Skipping test_start_experiment_run_with_advanced_scenarios")
-@pytest.mark.e2e
 def test_start_experiment_run_with_advanced_scenarios(
     client: ModelRegistry, get_temp_dir_with_models, patch_s3_env, schema_json: str
 ):
