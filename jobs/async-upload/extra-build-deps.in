@@ -6,7 +6,7 @@
 # uv run pip-compile --allow-unsafe --output-file=requirements-extra-build-deps.txt extra-build-deps.txt
 # uv run pybuild-deps compile -o requirements-build.txt requirements.txt requirements-extra-build-deps.txt
 
-# propcache requires Cython>=3.1.0 and <3.2.0
-Cython>=3.1.0,<3.2.0
+# propcache requires Cython>=3.2.0
+Cython>=3.2.0,<3.3.0
 # typer-slim requires rich>=10.11.0
 rich>=14.2.0

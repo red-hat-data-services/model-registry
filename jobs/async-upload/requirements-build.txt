@@ -8,7 +8,7 @@ calver==2025.10.20
     # via trove-classifiers
 cffi==2.0.0 ; python_version >= "3.11" and python_version < "4.0" and platform_python_implementation != "PyPy"
     # via cryptography
-cython==3.1.8
+cython==3.2.5
     # via pyyaml
 expandvars==1.1.2
     # via
@@ -22,7 +22,6 @@ flit-core==3.12.0
     #   idna
     #   markdown-it-py
     #   mdurl
-    #   mypy-extensions
     #   packaging
     #   pathspec
     #   rfc8785
@@ -50,7 +49,7 @@ hatchling==1.27.0
     # via
     #   securesystemslib
     #   tuf
-hatchling==1.29.0
+hatchling==1.30.1
     # via
     #   annotated-types
     #   attrs
@@ -73,7 +72,7 @@ hatchling==1.29.0
     #   rh-model-signing
     #   typing-inspection
     #   urllib3
-maturin==1.12.6
+maturin==1.13.3
     # via
     #   blake3
     #   cryptography
@@ -81,18 +80,15 @@ maturin==1.12.6
     #   pydantic-core
     #   rfc3161-client
     #   rpds-py
-mypy-extensions==1.1.0
-    # via mypy
-mypy==1.15.0
-    # via charset-normalizer
-packaging==25.0 ; python_version >= "3.11" and python_version < "4.0"
+packaging==26.2 ; python_version >= "3.11" and python_version < "4.0"
     # via
     #   hatchling
     #   setuptools-scm
+    #   vcs-versioning
     #   wheel
-pathspec==1.0.4
+pathspec==1.1.1
     # via hatchling
-pdm-backend==2.4.7
+pdm-backend==2.4.8
     # via
     #   annotated-doc
     #   typer
@@ -100,7 +96,7 @@ pkgconfig==1.6.0
     # via aiohttp
 pluggy==1.6.0
     # via hatchling
-poetry-core==2.3.1
+poetry-core==2.4.1
     # via
     #   aiohappyeyeballs
     #   model-registry
@@ -111,42 +107,35 @@ pycparser==3.0 ; python_version >= "3.11" and python_version < "4.0" and platfor
     # via cffi
 semantic-version==2.10.0
     # via setuptools-rust
-setuptools-rust==1.12.0
+setuptools-rust==1.12.1
     # via maturin
-setuptools-scm==7.1.0
-    # via python-dateutil
-setuptools-scm==9.2.2
+setuptools-scm==10.0.5
     # via
     #   anyio
-    #   charset-normalizer
+    #   configargparse
     #   hatch-vcs
     #   nest-asyncio2
     #   pluggy
     #   setuptools-rust
-    #   sniffio
     #   tqdm
     #   urllib3
-trove-classifiers==2026.1.14.14
+setuptools-scm==7.1.0
+    # via python-dateutil
+trove-classifiers==2026.6.1.19
     # via hatchling
-types-psutil==7.2.2.20260130
-    # via mypy
-types-setuptools==82.0.0.20260210
-    # via mypy
 typing-extensions==4.15.0 ; python_version >= "3.11" and python_version < "4.0"
-    # via
-    #   mypy
-    #   setuptools-scm
+    # via setuptools-scm
 # uv-build removed: sigstore-models installs from a pure-Python wheel so its
 # build backend is never invoked; keeping uv-build here breaks Cachi2 prefetch
 # because its sdist ships a stale Cargo.lock (cargo vendor --locked fails).
-wheel==0.46.3
+vcs-versioning==1.1.1
+    # via setuptools-scm
+wheel==0.47.0
     # via
     #   nest-asyncio2
     #   pycparser
     #   python-dateutil
-    #   pyyaml
     #   shellingham
-    #   tqdm
 
 # The following packages are considered to be unsafe in a requirements file:
 setuptools==82.0.1
@@ -162,7 +151,6 @@ setuptools==82.0.1
     #   frozenlist
     #   maturin
     #   multidict
-    #   mypy
     #   nest-asyncio2
     #   pathspec
     #   pluggy
@@ -172,13 +160,12 @@ setuptools==82.0.1
     #   pyjwt
     #   python-dateutil
     #   pyyaml
+    #   requests
     #   setuptools-rust
     #   setuptools-scm
     #   shellingham
     #   sigstore-rekor-types
-    #   sniffio
     #   tqdm
     #   trove-classifiers
-    #   types-psutil
-    #   types-setuptools
+    #   vcs-versioning
     #   yarl
