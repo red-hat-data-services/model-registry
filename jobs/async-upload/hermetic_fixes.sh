@@ -78,8 +78,8 @@ python -m pip install .
 #
 # Remove when: upstream ships an sdist/wheel with the correct build config.
 # -----------------------------------------------------------------------------
-tar -xzf /cachi2/output/deps/pip/rh_model_signing-0.1.0.tar.gz -C /tmp
-cd /tmp/rh_model_signing-0.1.0
+tar -xzf /cachi2/output/deps/pip/rh_model_signing-1.0.1.tar.gz -C /tmp
+cd /tmp/rh_model_signing-1.0.1
 sed -i 's|packages = \["src/model_signing"\]|packages = ["model_signing"]|' pyproject.toml
 python -m pip install .
 
