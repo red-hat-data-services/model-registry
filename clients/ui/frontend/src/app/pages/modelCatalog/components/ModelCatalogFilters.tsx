@@ -44,25 +44,25 @@ const LABEL_MAPPINGS: Record<string, Record<string, string>> = {
 };
 
 const ModelCatalogFilters: React.FC = () => {
-  const { filterOptions, filterOptionsLoaded, filterOptionsLoadError, filterData, setFilterData } =
+  const { filterOptions, filterOptionsLoaded, filterOptionsLoadError, filters, setFilters } =
     React.useContext(ModelCatalogContext);
   const onFilterChange = React.useCallback(
     (key: string, values: string[]) => {
       const match = BASIC_STRING_FILTER_KEYS.find((k) => k === key);
       if (match) {
-        setFilterData(match, values);
+        setFilters((prev) => ({ ...prev, [match]: values }));
       }
     },
-    [setFilterData],
+    [setFilters],
   );
 
   const selectedStringFilters = React.useMemo(() => {
     const result: Record<string, string[] | undefined> = {};
     for (const key of BASIC_STRING_FILTER_KEYS) {
-      result[key] = filterData[key];
+      result[key] = filters[key];
     }
     return result;
-  }, [filterData]);
+  }, [filters]);
 
   const baseFilterItems = useCatalogFilterConfigs({
     filterKeys: BASIC_STRING_FILTER_KEYS,
