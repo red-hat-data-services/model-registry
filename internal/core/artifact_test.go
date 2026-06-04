@@ -6,7 +6,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	"github.com/kubeflow/hub/pkg/api"
 	"github.com/kubeflow/hub/pkg/openapi"
 	"github.com/stretchr/testify/assert"
@@ -19,16 +18,16 @@ func TestUpsertArtifact(t *testing.T) {
 
 	t.Run("successful create model artifact", func(t *testing.T) {
 		modelArtifact := &openapi.ModelArtifact{
-			Name:               apiutils.Of("test-model-artifact"),
-			Description:        apiutils.Of("Test model artifact description"),
-			ExternalId:         apiutils.Of("model-ext-123"),
-			Uri:                apiutils.Of("s3://bucket/model.pkl"),
-			State:              apiutils.Of(openapi.ARTIFACTSTATE_LIVE),
-			ModelFormatName:    apiutils.Of("pickle"),
-			ModelFormatVersion: apiutils.Of("1.0"),
-			StorageKey:         apiutils.Of("model-storage-key"),
-			StoragePath:        apiutils.Of("/models/test"),
-			ServiceAccountName: apiutils.Of("model-sa"),
+			Name:               new("test-model-artifact"),
+			Description:        new("Test model artifact description"),
+			ExternalId:         new("model-ext-123"),
+			Uri:                new("s3://bucket/model.pkl"),
+			State:              new(openapi.ARTIFACTSTATE_LIVE),
+			ModelFormatName:    new("pickle"),
+			ModelFormatVersion: new("1.0"),
+			StorageKey:         new("model-storage-key"),
+			StoragePath:        new("/models/test"),
+			ServiceAccountName: new("model-sa"),
 		}
 
 		artifact := &openapi.Artifact{
@@ -56,11 +55,11 @@ func TestUpsertArtifact(t *testing.T) {
 
 	t.Run("successful create doc artifact", func(t *testing.T) {
 		docArtifact := &openapi.DocArtifact{
-			Name:        apiutils.Of("test-doc-artifact"),
-			Description: apiutils.Of("Test doc artifact description"),
-			ExternalId:  apiutils.Of("doc-ext-123"),
-			Uri:         apiutils.Of("s3://bucket/doc.pdf"),
-			State:       apiutils.Of(openapi.ARTIFACTSTATE_LIVE),
+			Name:        new("test-doc-artifact"),
+			Description: new("Test doc artifact description"),
+			ExternalId:  new("doc-ext-123"),
+			Uri:         new("s3://bucket/doc.pdf"),
+			State:       new(openapi.ARTIFACTSTATE_LIVE),
 		}
 
 		artifact := &openapi.Artifact{
@@ -84,8 +83,8 @@ func TestUpsertArtifact(t *testing.T) {
 	t.Run("successful update model artifact", func(t *testing.T) {
 		// Create first
 		modelArtifact := &openapi.ModelArtifact{
-			Name: apiutils.Of("update-model-artifact"),
-			Uri:  apiutils.Of("s3://bucket/original.pkl"),
+			Name: new("update-model-artifact"),
+			Uri:  new("s3://bucket/original.pkl"),
 		}
 
 		created, err := _service.UpsertModelArtifact(modelArtifact)
@@ -93,8 +92,8 @@ func TestUpsertArtifact(t *testing.T) {
 		require.NotNil(t, created.Id)
 
 		// Update by modifying the created artifact
-		created.Uri = apiutils.Of("s3://bucket/updated.pkl")
-		created.Description = apiutils.Of("Updated description")
+		created.Uri = new("s3://bucket/updated.pkl")
+		created.Description = new("Updated description")
 
 		updated, err := _service.UpsertModelArtifact(created)
 		require.NoError(t, err)
@@ -119,7 +118,7 @@ func TestUpsertArtifact(t *testing.T) {
 		}
 
 		modelArtifact := &openapi.ModelArtifact{
-			Name:             apiutils.Of("custom-props-artifact"),
+			Name:             new("custom-props-artifact"),
 			CustomProperties: customProps,
 		}
 
@@ -161,7 +160,7 @@ func TestUpsertArtifact(t *testing.T) {
 	t.Run("metric without value error", func(t *testing.T) {
 		artifact := &openapi.Artifact{
 			Metric: &openapi.Metric{
-				Name: apiutils.Of("test-metric-no-value"),
+				Name: new("test-metric-no-value"),
 				// Value is intentionally omitted
 			},
 		}
@@ -177,7 +176,7 @@ func TestUpsertArtifact(t *testing.T) {
 	t.Run("create model artifact with null name generates UUID", func(t *testing.T) {
 		modelArtifact := &openapi.ModelArtifact{
 			// Name is intentionally nil/not set
-			Uri: apiutils.Of("s3://bucket/model-no-name.pkl"),
+			Uri: new("s3://bucket/model-no-name.pkl"),
 		}
 
 		artifact := &openapi.Artifact{
@@ -199,7 +198,7 @@ func TestUpsertArtifact(t *testing.T) {
 	t.Run("create doc artifact with null name generates UUID", func(t *testing.T) {
 		docArtifact := &openapi.DocArtifact{
 			// Name is intentionally nil/not set
-			Uri: apiutils.Of("s3://bucket/doc-no-name.pdf"),
+			Uri: new("s3://bucket/doc-no-name.pdf"),
 		}
 
 		artifact := &openapi.Artifact{
@@ -220,7 +219,7 @@ func TestUpsertArtifact(t *testing.T) {
 	t.Run("create dataset with null name generates UUID", func(t *testing.T) {
 		dataSet := &openapi.DataSet{
 			// Name is intentionally nil/not set
-			Uri: apiutils.Of("s3://bucket/dataset-no-name.csv"),
+			Uri: new("s3://bucket/dataset-no-name.csv"),
 		}
 
 		artifact := &openapi.Artifact{
@@ -241,7 +240,7 @@ func TestUpsertArtifact(t *testing.T) {
 	t.Run("create metric with null name generates UUID", func(t *testing.T) {
 		metric := &openapi.Metric{
 			// Name is intentionally nil/not set
-			Value: apiutils.Of(0.99),
+			Value: new(0.99),
 		}
 
 		artifact := &openapi.Artifact{
@@ -262,7 +261,7 @@ func TestUpsertArtifact(t *testing.T) {
 	t.Run("create parameter with null name generates UUID", func(t *testing.T) {
 		parameter := &openapi.Parameter{
 			// Name is intentionally nil/not set
-			Value: apiutils.Of("param-value"),
+			Value: new("param-value"),
 		}
 
 		artifact := &openapi.Artifact{
@@ -284,8 +283,8 @@ func TestUpsertArtifact(t *testing.T) {
 		// First create an artifact with a specific name
 		originalName := "original-artifact-name"
 		modelArtifact := &openapi.ModelArtifact{
-			Name: apiutils.Of(originalName),
-			Uri:  apiutils.Of("s3://bucket/original.pkl"),
+			Name: new(originalName),
+			Uri:  new("s3://bucket/original.pkl"),
 		}
 
 		created, err := _service.UpsertModelArtifact(modelArtifact)
@@ -296,7 +295,7 @@ func TestUpsertArtifact(t *testing.T) {
 		updateArtifact := &openapi.ModelArtifact{
 			Id: created.Id,
 			// Name is intentionally nil
-			Uri: apiutils.Of("s3://bucket/updated.pkl"),
+			Uri: new("s3://bucket/updated.pkl"),
 		}
 
 		updated, err := _service.UpsertModelArtifact(updateArtifact)
@@ -310,9 +309,9 @@ func TestUpsertArtifact(t *testing.T) {
 		// Test with unicode characters: Chinese, Russian, Japanese, and emoji
 		unicodeName := "模型工件-тест-モデルアーティファクト-🚀"
 		modelArtifact := &openapi.ModelArtifact{
-			Name:        apiutils.Of(unicodeName),
-			Description: apiutils.Of("Test model artifact with unicode characters"),
-			Uri:         apiutils.Of("s3://bucket/unicode-model.pkl"),
+			Name:        new(unicodeName),
+			Description: new("Test model artifact with unicode characters"),
+			Uri:         new("s3://bucket/unicode-model.pkl"),
 		}
 
 		artifact := &openapi.Artifact{
@@ -340,9 +339,9 @@ func TestUpsertArtifact(t *testing.T) {
 		// Test with various special characters
 		specialName := "!@#$%^&*()_+-=[]{}|;':\",./<>?"
 		modelArtifact := &openapi.ModelArtifact{
-			Name:        apiutils.Of(specialName),
-			Description: apiutils.Of("Test model artifact with special characters"),
-			Uri:         apiutils.Of("s3://bucket/special-model.pkl"),
+			Name:        new(specialName),
+			Description: new("Test model artifact with special characters"),
+			Uri:         new("s3://bucket/special-model.pkl"),
 		}
 
 		artifact := &openapi.Artifact{
@@ -369,9 +368,9 @@ func TestUpsertArtifact(t *testing.T) {
 		// Test with mixed unicode and special characters
 		mixedName := "文档@#$%工件-тест!@#-ドキュメント()アーティファクト-🚀[]"
 		docArtifact := &openapi.DocArtifact{
-			Name:        apiutils.Of(mixedName),
-			Description: apiutils.Of("Test doc artifact with mixed unicode and special characters"),
-			Uri:         apiutils.Of("s3://bucket/mixed-doc.pdf"),
+			Name:        new(mixedName),
+			Description: new("Test doc artifact with mixed unicode and special characters"),
+			Uri:         new("s3://bucket/mixed-doc.pdf"),
 		}
 
 		artifact := &openapi.Artifact{
@@ -400,9 +399,9 @@ func TestUpsertArtifact(t *testing.T) {
 		for i := range 15 {
 			artifactName := "paging-test-artifact-" + fmt.Sprintf("%02d", i)
 			modelArtifact := &openapi.ModelArtifact{
-				Name:        apiutils.Of(artifactName),
-				Description: apiutils.Of("Pagination test artifact " + fmt.Sprintf("%02d", i)),
-				Uri:         apiutils.Of("s3://bucket/paging-test-" + fmt.Sprintf("%02d", i) + ".pkl"),
+				Name:        new(artifactName),
+				Description: new("Pagination test artifact " + fmt.Sprintf("%02d", i)),
+				Uri:         new("s3://bucket/paging-test-" + fmt.Sprintf("%02d", i) + ".pkl"),
 			}
 
 			artifact := &openapi.Artifact{
@@ -559,15 +558,15 @@ func TestUpsertModelVersionArtifact(t *testing.T) {
 
 		modelVersion := &openapi.ModelVersion{
 			Name:        "v1.0",
-			Description: apiutils.Of("Version 1.0"),
+			Description: new("Version 1.0"),
 		}
 		createdVersion, err := _service.UpsertModelVersion(modelVersion, createdModel.Id)
 		require.NoError(t, err)
 
 		// Create artifact associated with model version
 		modelArtifact := &openapi.ModelArtifact{
-			Name: apiutils.Of("version-artifact"),
-			Uri:  apiutils.Of("s3://bucket/version-model.pkl"),
+			Name: new("version-artifact"),
+			Uri:  new("s3://bucket/version-model.pkl"),
 		}
 
 		artifact := &openapi.Artifact{
@@ -587,7 +586,7 @@ func TestUpsertModelVersionArtifact(t *testing.T) {
 
 	t.Run("invalid model version id", func(t *testing.T) {
 		modelArtifact := &openapi.ModelArtifact{
-			Name: apiutils.Of("test-artifact"),
+			Name: new("test-artifact"),
 		}
 
 		artifact := &openapi.Artifact{
@@ -618,9 +617,9 @@ func TestUpsertModelVersionArtifact(t *testing.T) {
 		// Test with unicode characters: Chinese, Russian, Japanese, and emoji
 		unicodeName := "版本工件-тест-バージョンアーティファクト-🚀"
 		modelArtifact := &openapi.ModelArtifact{
-			Name:        apiutils.Of(unicodeName),
-			Description: apiutils.Of("Test model version artifact with unicode characters"),
-			Uri:         apiutils.Of("s3://bucket/unicode-version-model.pkl"),
+			Name:        new(unicodeName),
+			Description: new("Test model version artifact with unicode characters"),
+			Uri:         new("s3://bucket/unicode-version-model.pkl"),
 		}
 
 		artifact := &openapi.Artifact{
@@ -661,9 +660,9 @@ func TestUpsertModelVersionArtifact(t *testing.T) {
 		// Test with various special characters
 		specialName := "!@#$%^&*()_+-=[]{}|;':\",./<>?"
 		modelArtifact := &openapi.ModelArtifact{
-			Name:        apiutils.Of(specialName),
-			Description: apiutils.Of("Test model version artifact with special characters"),
-			Uri:         apiutils.Of("s3://bucket/special-version-model.pkl"),
+			Name:        new(specialName),
+			Description: new("Test model version artifact with special characters"),
+			Uri:         new("s3://bucket/special-version-model.pkl"),
 		}
 
 		artifact := &openapi.Artifact{
@@ -703,9 +702,9 @@ func TestUpsertModelVersionArtifact(t *testing.T) {
 		// Test with mixed unicode and special characters
 		mixedName := "版本@#$%工件-тест!@#-バージョン()アーティファクト-🚀[]"
 		modelArtifact := &openapi.ModelArtifact{
-			Name:        apiutils.Of(mixedName),
-			Description: apiutils.Of("Test model version artifact with mixed unicode and special characters"),
-			Uri:         apiutils.Of("s3://bucket/mixed-version-model.pkl"),
+			Name:        new(mixedName),
+			Description: new("Test model version artifact with mixed unicode and special characters"),
+			Uri:         new("s3://bucket/mixed-version-model.pkl"),
 		}
 
 		artifact := &openapi.Artifact{
@@ -747,9 +746,9 @@ func TestUpsertModelVersionArtifact(t *testing.T) {
 		for i := range 15 {
 			artifactName := "paging-test-version-artifact-" + fmt.Sprintf("%02d", i)
 			modelArtifact := &openapi.ModelArtifact{
-				Name:        apiutils.Of(artifactName),
-				Description: apiutils.Of("Pagination test model version artifact " + fmt.Sprintf("%02d", i)),
-				Uri:         apiutils.Of("s3://bucket/paging-version-test-" + fmt.Sprintf("%02d", i) + ".pkl"),
+				Name:        new(artifactName),
+				Description: new("Pagination test model version artifact " + fmt.Sprintf("%02d", i)),
+				Uri:         new("s3://bucket/paging-version-test-" + fmt.Sprintf("%02d", i) + ".pkl"),
 			}
 
 			artifact := &openapi.Artifact{
@@ -876,9 +875,9 @@ func TestGetArtifactById(t *testing.T) {
 	t.Run("successful get model artifact", func(t *testing.T) {
 		// Create a model artifact first
 		modelArtifact := &openapi.ModelArtifact{
-			Name:        apiutils.Of("get-test-model-artifact"),
-			Description: apiutils.Of("Test description"),
-			Uri:         apiutils.Of("s3://bucket/test.pkl"),
+			Name:        new("get-test-model-artifact"),
+			Description: new("Test description"),
+			Uri:         new("s3://bucket/test.pkl"),
 		}
 
 		artifact := &openapi.Artifact{
@@ -904,9 +903,9 @@ func TestGetArtifactById(t *testing.T) {
 	t.Run("successful get doc artifact", func(t *testing.T) {
 		// Create a doc artifact first
 		docArtifact := &openapi.DocArtifact{
-			Name:        apiutils.Of("get-test-doc-artifact"),
-			Description: apiutils.Of("Test doc description"),
-			Uri:         apiutils.Of("s3://bucket/test.pdf"),
+			Name:        new("get-test-doc-artifact"),
+			Description: new("Test doc description"),
+			Uri:         new("s3://bucket/test.pdf"),
 		}
 
 		artifact := &openapi.Artifact{
@@ -965,8 +964,8 @@ func TestGetArtifactByParams(t *testing.T) {
 
 		// Create artifact with model version
 		modelArtifact := &openapi.ModelArtifact{
-			Name: apiutils.Of("params-test-artifact"),
-			Uri:  apiutils.Of("s3://bucket/params-test.pkl"),
+			Name: new("params-test-artifact"),
+			Uri:  new("s3://bucket/params-test.pkl"),
 		}
 
 		artifact := &openapi.Artifact{
@@ -977,7 +976,7 @@ func TestGetArtifactByParams(t *testing.T) {
 		require.NoError(t, err)
 
 		// Get by name and model version ID
-		result, err := _service.GetArtifactByParams(apiutils.Of("params-test-artifact"), createdVersion.Id, nil)
+		result, err := _service.GetArtifactByParams(new("params-test-artifact"), createdVersion.Id, nil)
 
 		require.NoError(t, err)
 		require.NotNil(t, result)
@@ -987,9 +986,9 @@ func TestGetArtifactByParams(t *testing.T) {
 
 	t.Run("successful get by external id", func(t *testing.T) {
 		modelArtifact := &openapi.ModelArtifact{
-			Name:       apiutils.Of("external-id-artifact"),
-			ExternalId: apiutils.Of("ext-params-123"),
-			Uri:        apiutils.Of("s3://bucket/external.pkl"),
+			Name:       new("external-id-artifact"),
+			ExternalId: new("ext-params-123"),
+			Uri:        new("s3://bucket/external.pkl"),
 		}
 
 		artifact := &openapi.Artifact{
@@ -1000,7 +999,7 @@ func TestGetArtifactByParams(t *testing.T) {
 		require.NoError(t, err)
 
 		// Get by external ID
-		result, err := _service.GetArtifactByParams(nil, nil, apiutils.Of("ext-params-123"))
+		result, err := _service.GetArtifactByParams(nil, nil, new("ext-params-123"))
 
 		require.NoError(t, err)
 		require.NotNil(t, result)
@@ -1018,7 +1017,7 @@ func TestGetArtifactByParams(t *testing.T) {
 	})
 
 	t.Run("artifact not found", func(t *testing.T) {
-		result, err := _service.GetArtifactByParams(nil, nil, apiutils.Of("non-existent"))
+		result, err := _service.GetArtifactByParams(nil, nil, new("non-existent"))
 
 		assert.Error(t, err)
 		assert.Nil(t, result)
@@ -1062,16 +1061,16 @@ func TestGetArtifactByParams(t *testing.T) {
 				artifactName: "shared-model-artifact-name",
 				createArtifact1: &openapi.Artifact{
 					ModelArtifact: &openapi.ModelArtifact{
-						Name:        apiutils.Of("shared-model-artifact-name"),
-						Uri:         apiutils.Of("s3://bucket/model-v1.pkl"),
-						Description: apiutils.Of("Model artifact for version 1"),
+						Name:        new("shared-model-artifact-name"),
+						Uri:         new("s3://bucket/model-v1.pkl"),
+						Description: new("Model artifact for version 1"),
 					},
 				},
 				createArtifact2: &openapi.Artifact{
 					ModelArtifact: &openapi.ModelArtifact{
-						Name:        apiutils.Of("shared-model-artifact-name"),
-						Uri:         apiutils.Of("s3://bucket/model-v2.pkl"),
-						Description: apiutils.Of("Model artifact for version 2"),
+						Name:        new("shared-model-artifact-name"),
+						Uri:         new("s3://bucket/model-v2.pkl"),
+						Description: new("Model artifact for version 2"),
 					},
 				},
 				checkField: func(a *openapi.Artifact) any { return a.ModelArtifact },
@@ -1087,16 +1086,16 @@ func TestGetArtifactByParams(t *testing.T) {
 				artifactName: "shared-doc-artifact-name",
 				createArtifact1: &openapi.Artifact{
 					DocArtifact: &openapi.DocArtifact{
-						Name:        apiutils.Of("shared-doc-artifact-name"),
-						Uri:         apiutils.Of("s3://bucket/doc-v1.pdf"),
-						Description: apiutils.Of("Doc artifact for version 1"),
+						Name:        new("shared-doc-artifact-name"),
+						Uri:         new("s3://bucket/doc-v1.pdf"),
+						Description: new("Doc artifact for version 1"),
 					},
 				},
 				createArtifact2: &openapi.Artifact{
 					DocArtifact: &openapi.DocArtifact{
-						Name:        apiutils.Of("shared-doc-artifact-name"),
-						Uri:         apiutils.Of("s3://bucket/doc-v2.pdf"),
-						Description: apiutils.Of("Doc artifact for version 2"),
+						Name:        new("shared-doc-artifact-name"),
+						Uri:         new("s3://bucket/doc-v2.pdf"),
+						Description: new("Doc artifact for version 2"),
 					},
 				},
 				checkField: func(a *openapi.Artifact) any { return a.DocArtifact },
@@ -1112,16 +1111,16 @@ func TestGetArtifactByParams(t *testing.T) {
 				artifactName: "shared-dataset-artifact-name",
 				createArtifact1: &openapi.Artifact{
 					DataSet: &openapi.DataSet{
-						Name:        apiutils.Of("shared-dataset-artifact-name"),
-						Uri:         apiutils.Of("s3://bucket/dataset-v1.csv"),
-						Description: apiutils.Of("Dataset for version 1"),
+						Name:        new("shared-dataset-artifact-name"),
+						Uri:         new("s3://bucket/dataset-v1.csv"),
+						Description: new("Dataset for version 1"),
 					},
 				},
 				createArtifact2: &openapi.Artifact{
 					DataSet: &openapi.DataSet{
-						Name:        apiutils.Of("shared-dataset-artifact-name"),
-						Uri:         apiutils.Of("s3://bucket/dataset-v2.csv"),
-						Description: apiutils.Of("Dataset for version 2"),
+						Name:        new("shared-dataset-artifact-name"),
+						Uri:         new("s3://bucket/dataset-v2.csv"),
+						Description: new("Dataset for version 2"),
 					},
 				},
 				checkField: func(a *openapi.Artifact) any { return a.DataSet },
@@ -1137,16 +1136,16 @@ func TestGetArtifactByParams(t *testing.T) {
 				artifactName: "shared-metric-artifact-name",
 				createArtifact1: &openapi.Artifact{
 					Metric: &openapi.Metric{
-						Name:        apiutils.Of("shared-metric-artifact-name"),
-						Value:       apiutils.Of(0.95),
-						Description: apiutils.Of("Metric for version 1"),
+						Name:        new("shared-metric-artifact-name"),
+						Value:       new(0.95),
+						Description: new("Metric for version 1"),
 					},
 				},
 				createArtifact2: &openapi.Artifact{
 					Metric: &openapi.Metric{
-						Name:        apiutils.Of("shared-metric-artifact-name"),
-						Value:       apiutils.Of(0.97),
-						Description: apiutils.Of("Metric for version 2"),
+						Name:        new("shared-metric-artifact-name"),
+						Value:       new(0.97),
+						Description: new("Metric for version 2"),
 					},
 				},
 				checkField: func(a *openapi.Artifact) any { return a.Metric },
@@ -1162,16 +1161,16 @@ func TestGetArtifactByParams(t *testing.T) {
 				artifactName: "shared-parameter-artifact-name",
 				createArtifact1: &openapi.Artifact{
 					Parameter: &openapi.Parameter{
-						Name:        apiutils.Of("shared-parameter-artifact-name"),
-						Value:       apiutils.Of("0.001"),
-						Description: apiutils.Of("Parameter for version 1"),
+						Name:        new("shared-parameter-artifact-name"),
+						Value:       new("0.001"),
+						Description: new("Parameter for version 1"),
 					},
 				},
 				createArtifact2: &openapi.Artifact{
 					Parameter: &openapi.Parameter{
-						Name:        apiutils.Of("shared-parameter-artifact-name"),
-						Value:       apiutils.Of("0.002"),
-						Description: apiutils.Of("Parameter for version 2"),
+						Name:        new("shared-parameter-artifact-name"),
+						Value:       new("0.002"),
+						Description: new("Parameter for version 2"),
 					},
 				},
 				checkField: func(a *openapi.Artifact) any { return a.Parameter },
@@ -1228,13 +1227,13 @@ func TestGetArtifactByParams(t *testing.T) {
 
 		// Create two experiment runs
 		run1 := &openapi.ExperimentRun{
-			Name: apiutils.Of("run-with-all-artifacts-1"),
+			Name: new("run-with-all-artifacts-1"),
 		}
 		createdRun1, err := _service.UpsertExperimentRun(run1, createdExperiment.Id)
 		require.NoError(t, err)
 
 		run2 := &openapi.ExperimentRun{
-			Name: apiutils.Of("run-with-all-artifacts-2"),
+			Name: new("run-with-all-artifacts-2"),
 		}
 		createdRun2, err := _service.UpsertExperimentRun(run2, createdExperiment.Id)
 		require.NoError(t, err)
@@ -1253,16 +1252,16 @@ func TestGetArtifactByParams(t *testing.T) {
 				artifactName: "shared-run-model-artifact-name",
 				createArtifact1: &openapi.Artifact{
 					ModelArtifact: &openapi.ModelArtifact{
-						Name:        apiutils.Of("shared-run-model-artifact-name"),
-						Uri:         apiutils.Of("s3://bucket/run1-model.pkl"),
-						Description: apiutils.Of("Model artifact for run 1"),
+						Name:        new("shared-run-model-artifact-name"),
+						Uri:         new("s3://bucket/run1-model.pkl"),
+						Description: new("Model artifact for run 1"),
 					},
 				},
 				createArtifact2: &openapi.Artifact{
 					ModelArtifact: &openapi.ModelArtifact{
-						Name:        apiutils.Of("shared-run-model-artifact-name"),
-						Uri:         apiutils.Of("s3://bucket/run2-model.pkl"),
-						Description: apiutils.Of("Model artifact for run 2"),
+						Name:        new("shared-run-model-artifact-name"),
+						Uri:         new("s3://bucket/run2-model.pkl"),
+						Description: new("Model artifact for run 2"),
 					},
 				},
 				checkField: func(a *openapi.Artifact) any { return a.ModelArtifact },
@@ -1278,16 +1277,16 @@ func TestGetArtifactByParams(t *testing.T) {
 				artifactName: "shared-run-doc-artifact-name",
 				createArtifact1: &openapi.Artifact{
 					DocArtifact: &openapi.DocArtifact{
-						Name:        apiutils.Of("shared-run-doc-artifact-name"),
-						Uri:         apiutils.Of("s3://bucket/run1-doc.pdf"),
-						Description: apiutils.Of("Doc artifact for run 1"),
+						Name:        new("shared-run-doc-artifact-name"),
+						Uri:         new("s3://bucket/run1-doc.pdf"),
+						Description: new("Doc artifact for run 1"),
 					},
 				},
 				createArtifact2: &openapi.Artifact{
 					DocArtifact: &openapi.DocArtifact{
-						Name:        apiutils.Of("shared-run-doc-artifact-name"),
-						Uri:         apiutils.Of("s3://bucket/run2-doc.pdf"),
-						Description: apiutils.Of("Doc artifact for run 2"),
+						Name:        new("shared-run-doc-artifact-name"),
+						Uri:         new("s3://bucket/run2-doc.pdf"),
+						Description: new("Doc artifact for run 2"),
 					},
 				},
 				checkField: func(a *openapi.Artifact) any { return a.DocArtifact },
@@ -1303,16 +1302,16 @@ func TestGetArtifactByParams(t *testing.T) {
 				artifactName: "shared-run-dataset-artifact-name",
 				createArtifact1: &openapi.Artifact{
 					DataSet: &openapi.DataSet{
-						Name:        apiutils.Of("shared-run-dataset-artifact-name"),
-						Uri:         apiutils.Of("s3://bucket/run1-dataset.csv"),
-						Description: apiutils.Of("Dataset for run 1"),
+						Name:        new("shared-run-dataset-artifact-name"),
+						Uri:         new("s3://bucket/run1-dataset.csv"),
+						Description: new("Dataset for run 1"),
 					},
 				},
 				createArtifact2: &openapi.Artifact{
 					DataSet: &openapi.DataSet{
-						Name:        apiutils.Of("shared-run-dataset-artifact-name"),
-						Uri:         apiutils.Of("s3://bucket/run2-dataset.csv"),
-						Description: apiutils.Of("Dataset for run 2"),
+						Name:        new("shared-run-dataset-artifact-name"),
+						Uri:         new("s3://bucket/run2-dataset.csv"),
+						Description: new("Dataset for run 2"),
 					},
 				},
 				checkField: func(a *openapi.Artifact) any { return a.DataSet },
@@ -1328,16 +1327,16 @@ func TestGetArtifactByParams(t *testing.T) {
 				artifactName: "shared-run-metric-artifact-name",
 				createArtifact1: &openapi.Artifact{
 					Metric: &openapi.Metric{
-						Name:        apiutils.Of("shared-run-metric-artifact-name"),
-						Value:       apiutils.Of(0.91),
-						Description: apiutils.Of("Metric for run 1"),
+						Name:        new("shared-run-metric-artifact-name"),
+						Value:       new(0.91),
+						Description: new("Metric for run 1"),
 					},
 				},
 				createArtifact2: &openapi.Artifact{
 					Metric: &openapi.Metric{
-						Name:        apiutils.Of("shared-run-metric-artifact-name"),
-						Value:       apiutils.Of(0.93),
-						Description: apiutils.Of("Metric for run 2"),
+						Name:        new("shared-run-metric-artifact-name"),
+						Value:       new(0.93),
+						Description: new("Metric for run 2"),
 					},
 				},
 				checkField: func(a *openapi.Artifact) any { return a.Metric },
@@ -1353,16 +1352,16 @@ func TestGetArtifactByParams(t *testing.T) {
 				artifactName: "shared-run-parameter-artifact-name",
 				createArtifact1: &openapi.Artifact{
 					Parameter: &openapi.Parameter{
-						Name:        apiutils.Of("shared-run-parameter-artifact-name"),
-						Value:       apiutils.Of("0.01"),
-						Description: apiutils.Of("Parameter for run 1"),
+						Name:        new("shared-run-parameter-artifact-name"),
+						Value:       new("0.01"),
+						Description: new("Parameter for run 1"),
 					},
 				},
 				createArtifact2: &openapi.Artifact{
 					Parameter: &openapi.Parameter{
-						Name:        apiutils.Of("shared-run-parameter-artifact-name"),
-						Value:       apiutils.Of("0.02"),
-						Description: apiutils.Of("Parameter for run 2"),
+						Name:        new("shared-run-parameter-artifact-name"),
+						Value:       new("0.02"),
+						Description: new("Parameter for run 2"),
 					},
 				},
 				checkField: func(a *openapi.Artifact) any { return a.Parameter },
@@ -1417,20 +1416,20 @@ func TestGetArtifacts(t *testing.T) {
 		artifacts := []*openapi.Artifact{
 			{
 				ModelArtifact: &openapi.ModelArtifact{
-					Name: apiutils.Of("list-artifact-1"),
-					Uri:  apiutils.Of("s3://bucket/artifact1.pkl"),
+					Name: new("list-artifact-1"),
+					Uri:  new("s3://bucket/artifact1.pkl"),
 				},
 			},
 			{
 				ModelArtifact: &openapi.ModelArtifact{
-					Name: apiutils.Of("list-artifact-2"),
-					Uri:  apiutils.Of("s3://bucket/artifact2.pkl"),
+					Name: new("list-artifact-2"),
+					Uri:  new("s3://bucket/artifact2.pkl"),
 				},
 			},
 			{
 				DocArtifact: &openapi.DocArtifact{
-					Name: apiutils.Of("list-doc-artifact"),
-					Uri:  apiutils.Of("s3://bucket/doc.pdf"),
+					Name: new("list-doc-artifact"),
+					Uri:  new("s3://bucket/doc.pdf"),
 				},
 			},
 		}
@@ -1442,7 +1441,7 @@ func TestGetArtifacts(t *testing.T) {
 
 		// List all artifacts
 		listOptions := api.ListOptions{
-			PageSize: apiutils.Of(int32(10)),
+			PageSize: new(int32(10)),
 		}
 
 		result, err := _service.GetArtifacts(openapi.ARTIFACTTYPEQUERYPARAM_MODEL_ARTIFACT, listOptions, nil)
@@ -1472,8 +1471,8 @@ func TestGetArtifacts(t *testing.T) {
 		for i := range 3 {
 			artifact := &openapi.Artifact{
 				ModelArtifact: &openapi.ModelArtifact{
-					Name: apiutils.Of("version-artifact-" + string(rune('1'+i))),
-					Uri:  apiutils.Of("s3://bucket/version" + string(rune('1'+i)) + ".pkl"),
+					Name: new("version-artifact-" + string(rune('1'+i))),
+					Uri:  new("s3://bucket/version" + string(rune('1'+i)) + ".pkl"),
 				},
 			}
 			_, err := _service.UpsertModelVersionArtifact(artifact, *createdVersion.Id)
@@ -1482,7 +1481,7 @@ func TestGetArtifacts(t *testing.T) {
 
 		// List artifacts for this model version
 		listOptions := api.ListOptions{
-			PageSize: apiutils.Of(int32(10)),
+			PageSize: new(int32(10)),
 		}
 
 		result, err := _service.GetArtifacts(openapi.ARTIFACTTYPEQUERYPARAM_MODEL_ARTIFACT, listOptions, createdVersion.Id)
@@ -1495,7 +1494,7 @@ func TestGetArtifacts(t *testing.T) {
 	t.Run("invalid model version id", func(t *testing.T) {
 		listOptions := api.ListOptions{}
 
-		result, err := _service.GetArtifacts(openapi.ARTIFACTTYPEQUERYPARAM_MODEL_ARTIFACT, listOptions, apiutils.Of("invalid"))
+		result, err := _service.GetArtifacts(openapi.ARTIFACTTYPEQUERYPARAM_MODEL_ARTIFACT, listOptions, new("invalid"))
 
 		assert.Error(t, err)
 		assert.Nil(t, result)
@@ -1509,11 +1508,11 @@ func TestUpsertModelArtifact(t *testing.T) {
 
 	t.Run("successful create", func(t *testing.T) {
 		modelArtifact := &openapi.ModelArtifact{
-			Name:               apiutils.Of("direct-model-artifact"),
-			Description:        apiutils.Of("Direct model artifact"),
-			Uri:                apiutils.Of("s3://bucket/direct.pkl"),
-			ModelFormatName:    apiutils.Of("tensorflow"),
-			ModelFormatVersion: apiutils.Of("2.8"),
+			Name:               new("direct-model-artifact"),
+			Description:        new("Direct model artifact"),
+			Uri:                new("s3://bucket/direct.pkl"),
+			ModelFormatName:    new("tensorflow"),
+			ModelFormatVersion: new("2.8"),
 		}
 
 		result, err := _service.UpsertModelArtifact(modelArtifact)
@@ -1540,11 +1539,11 @@ func TestUpsertModelArtifact(t *testing.T) {
 		// Test with unicode characters: Chinese, Russian, Japanese, and emoji
 		unicodeName := "直接模型工件-тест-ダイレクトモデルアーティファクト-🚀"
 		modelArtifact := &openapi.ModelArtifact{
-			Name:               apiutils.Of(unicodeName),
-			Description:        apiutils.Of("Direct model artifact with unicode characters"),
-			Uri:                apiutils.Of("s3://bucket/unicode-direct.pkl"),
-			ModelFormatName:    apiutils.Of("tensorflow-unicode"),
-			ModelFormatVersion: apiutils.Of("2.8-测试"),
+			Name:               new(unicodeName),
+			Description:        new("Direct model artifact with unicode characters"),
+			Uri:                new("s3://bucket/unicode-direct.pkl"),
+			ModelFormatName:    new("tensorflow-unicode"),
+			ModelFormatVersion: new("2.8-测试"),
 		}
 
 		result, err := _service.UpsertModelArtifact(modelArtifact)
@@ -1569,11 +1568,11 @@ func TestUpsertModelArtifact(t *testing.T) {
 		// Test with various special characters
 		specialName := "!@#$%^&*()_+-=[]{}|;':\",./<>?"
 		modelArtifact := &openapi.ModelArtifact{
-			Name:               apiutils.Of(specialName),
-			Description:        apiutils.Of("Direct model artifact with special characters"),
-			Uri:                apiutils.Of("s3://bucket/special-direct.pkl"),
-			ModelFormatName:    apiutils.Of("format@#$%"),
-			ModelFormatVersion: apiutils.Of("1.0!@#"),
+			Name:               new(specialName),
+			Description:        new("Direct model artifact with special characters"),
+			Uri:                new("s3://bucket/special-direct.pkl"),
+			ModelFormatName:    new("format@#$%"),
+			ModelFormatVersion: new("1.0!@#"),
 		}
 
 		result, err := _service.UpsertModelArtifact(modelArtifact)
@@ -1598,11 +1597,11 @@ func TestUpsertModelArtifact(t *testing.T) {
 		// Test with mixed unicode and special characters
 		mixedName := "直接@#$%模型-тест!@#-ダイレクト()モデル-🚀[]"
 		modelArtifact := &openapi.ModelArtifact{
-			Name:               apiutils.Of(mixedName),
-			Description:        apiutils.Of("Direct model artifact with mixed unicode and special characters"),
-			Uri:                apiutils.Of("s3://bucket/mixed-direct.pkl"),
-			ModelFormatName:    apiutils.Of("tensorflow@#$%-测试"),
-			ModelFormatVersion: apiutils.Of("2.8!@#-тест"),
+			Name:               new(mixedName),
+			Description:        new("Direct model artifact with mixed unicode and special characters"),
+			Uri:                new("s3://bucket/mixed-direct.pkl"),
+			ModelFormatName:    new("tensorflow@#$%-测试"),
+			ModelFormatVersion: new("2.8!@#-тест"),
 		}
 
 		result, err := _service.UpsertModelArtifact(modelArtifact)
@@ -1626,8 +1625,8 @@ func TestUpsertModelArtifact(t *testing.T) {
 	t.Run("create with null name generates UUID", func(t *testing.T) {
 		modelArtifact := &openapi.ModelArtifact{
 			// Name is intentionally nil
-			Uri:             apiutils.Of("s3://bucket/direct-no-name.pkl"),
-			ModelFormatName: apiutils.Of("tensorflow"),
+			Uri:             new("s3://bucket/direct-no-name.pkl"),
+			ModelFormatName: new("tensorflow"),
 		}
 
 		result, err := _service.UpsertModelArtifact(modelArtifact)
@@ -1646,8 +1645,8 @@ func TestUpsertModelArtifact(t *testing.T) {
 		// Create multiple model artifacts for pagination testing
 		for i := range 15 {
 			modelArtifact := &openapi.ModelArtifact{
-				Name: apiutils.Of(fmt.Sprintf("paging-test-direct-model-artifact-%d", i+1)),
-				Uri:  apiutils.Of(fmt.Sprintf("s3://bucket/paging-direct-model-%d.pkl", i+1)),
+				Name: new(fmt.Sprintf("paging-test-direct-model-artifact-%d", i+1)),
+				Uri:  new(fmt.Sprintf("s3://bucket/paging-direct-model-%d.pkl", i+1)),
 			}
 
 			result, err := _service.UpsertModelArtifact(modelArtifact)
@@ -1657,7 +1656,7 @@ func TestUpsertModelArtifact(t *testing.T) {
 
 		// Test pagination with page size 5
 		listOptions := api.ListOptions{
-			PageSize: apiutils.Of(int32(5)),
+			PageSize: new(int32(5)),
 		}
 
 		// Get first page
@@ -1668,7 +1667,7 @@ func TestUpsertModelArtifact(t *testing.T) {
 		assert.NotNil(t, firstPage.NextPageToken)
 
 		// Get second page
-		listOptions.NextPageToken = apiutils.Of(firstPage.NextPageToken)
+		listOptions.NextPageToken = new(firstPage.NextPageToken)
 		secondPage, err := _service.GetModelArtifacts(listOptions, nil)
 		require.NoError(t, err)
 		require.NotNil(t, secondPage)
@@ -1695,8 +1694,8 @@ func TestGetModelArtifactById(t *testing.T) {
 	t.Run("successful get", func(t *testing.T) {
 		// Create a model artifact
 		modelArtifact := &openapi.ModelArtifact{
-			Name: apiutils.Of("get-model-artifact"),
-			Uri:  apiutils.Of("s3://bucket/get-model.pkl"),
+			Name: new("get-model-artifact"),
+			Uri:  new("s3://bucket/get-model.pkl"),
 		}
 
 		created, err := _service.UpsertModelArtifact(modelArtifact)
@@ -1716,8 +1715,8 @@ func TestGetModelArtifactById(t *testing.T) {
 	t.Run("artifact is not model artifact", func(t *testing.T) {
 		// Create a doc artifact
 		docArtifact := &openapi.DocArtifact{
-			Name: apiutils.Of("doc-not-model"),
-			Uri:  apiutils.Of("s3://bucket/doc.pdf"),
+			Name: new("doc-not-model"),
+			Uri:  new("s3://bucket/doc.pdf"),
 		}
 
 		artifact := &openapi.Artifact{
@@ -1769,7 +1768,7 @@ func TestGetModelArtifactByInferenceService(t *testing.T) {
 		require.NoError(t, err)
 
 		inferenceService := &openapi.InferenceService{
-			Name:                 apiutils.Of("inference-artifact-service"),
+			Name:                 new("inference-artifact-service"),
 			RegisteredModelId:    *createdModel.Id,
 			ServingEnvironmentId: *createdEnv.Id,
 			ModelVersionId:       createdVersion.Id,
@@ -1779,8 +1778,8 @@ func TestGetModelArtifactByInferenceService(t *testing.T) {
 
 		// Create model artifact for the model version
 		modelArtifact := &openapi.ModelArtifact{
-			Name: apiutils.Of("inference-model-artifact"),
-			Uri:  apiutils.Of("s3://bucket/inference-model.pkl"),
+			Name: new("inference-model-artifact"),
+			Uri:  new("s3://bucket/inference-model.pkl"),
 		}
 
 		artifact := &openapi.Artifact{
@@ -1821,7 +1820,7 @@ func TestGetModelArtifactByInferenceService(t *testing.T) {
 		require.NoError(t, err)
 
 		inferenceService := &openapi.InferenceService{
-			Name:                 apiutils.Of("no-artifact-service"),
+			Name:                 new("no-artifact-service"),
 			RegisteredModelId:    *createdModel.Id,
 			ServingEnvironmentId: *createdEnv.Id,
 			ModelVersionId:       createdVersion.Id,
@@ -1844,16 +1843,16 @@ func TestGetModelArtifactByParams(t *testing.T) {
 
 	t.Run("successful get by external id", func(t *testing.T) {
 		modelArtifact := &openapi.ModelArtifact{
-			Name:       apiutils.Of("params-model-artifact"),
-			ExternalId: apiutils.Of("model-params-ext-123"),
-			Uri:        apiutils.Of("s3://bucket/params-model.pkl"),
+			Name:       new("params-model-artifact"),
+			ExternalId: new("model-params-ext-123"),
+			Uri:        new("s3://bucket/params-model.pkl"),
 		}
 
 		created, err := _service.UpsertModelArtifact(modelArtifact)
 		require.NoError(t, err)
 
 		// Get by external ID
-		result, err := _service.GetModelArtifactByParams(nil, nil, apiutils.Of("model-params-ext-123"))
+		result, err := _service.GetModelArtifactByParams(nil, nil, new("model-params-ext-123"))
 
 		require.NoError(t, err)
 		require.NotNil(t, result)
@@ -1864,9 +1863,9 @@ func TestGetModelArtifactByParams(t *testing.T) {
 	t.Run("artifact is not model artifact", func(t *testing.T) {
 		// Create a doc artifact
 		docArtifact := &openapi.DocArtifact{
-			Name:       apiutils.Of("doc-params-artifact"),
-			ExternalId: apiutils.Of("doc-params-ext-123"),
-			Uri:        apiutils.Of("s3://bucket/doc-params.pdf"),
+			Name:       new("doc-params-artifact"),
+			ExternalId: new("doc-params-ext-123"),
+			Uri:        new("s3://bucket/doc-params.pdf"),
 		}
 
 		artifact := &openapi.Artifact{
@@ -1877,7 +1876,7 @@ func TestGetModelArtifactByParams(t *testing.T) {
 		require.NoError(t, err)
 
 		// Try to get as model artifact
-		result, err := _service.GetModelArtifactByParams(nil, nil, apiutils.Of("doc-params-ext-123"))
+		result, err := _service.GetModelArtifactByParams(nil, nil, new("doc-params-ext-123"))
 
 		assert.Error(t, err)
 		assert.Nil(t, result)
@@ -1912,10 +1911,10 @@ func TestGetModelArtifactByParams(t *testing.T) {
 
 		// Create model artifact "shared-artifact-name-test" for the first version
 		artifact1 := &openapi.ModelArtifact{
-			Name:            apiutils.Of("shared-artifact-name-test"),
-			Uri:             apiutils.Of("s3://bucket/artifact-v1.pkl"),
-			Description:     apiutils.Of("Artifact for version 1"),
-			ModelFormatName: apiutils.Of("pickle"),
+			Name:            new("shared-artifact-name-test"),
+			Uri:             new("s3://bucket/artifact-v1.pkl"),
+			Description:     new("Artifact for version 1"),
+			ModelFormatName: new("pickle"),
 		}
 		artifactWrapper1 := &openapi.Artifact{
 			ModelArtifact: artifact1,
@@ -1925,10 +1924,10 @@ func TestGetModelArtifactByParams(t *testing.T) {
 
 		// Create model artifact "shared-artifact-name-test" for the second version
 		artifact2 := &openapi.ModelArtifact{
-			Name:            apiutils.Of("shared-artifact-name-test"),
-			Uri:             apiutils.Of("s3://bucket/artifact-v2.pkl"),
-			Description:     apiutils.Of("Artifact for version 2"),
-			ModelFormatName: apiutils.Of("pickle"),
+			Name:            new("shared-artifact-name-test"),
+			Uri:             new("s3://bucket/artifact-v2.pkl"),
+			Description:     new("Artifact for version 2"),
+			ModelFormatName: new("pickle"),
 		}
 		artifactWrapper2 := &openapi.Artifact{
 			ModelArtifact: artifact2,
@@ -1966,8 +1965,8 @@ func TestGetModelArtifacts(t *testing.T) {
 		// Create multiple model artifacts
 		for i := range 3 {
 			modelArtifact := &openapi.ModelArtifact{
-				Name: apiutils.Of("list-model-artifact-" + string(rune('1'+i))),
-				Uri:  apiutils.Of("s3://bucket/model" + string(rune('1'+i)) + ".pkl"),
+				Name: new("list-model-artifact-" + string(rune('1'+i))),
+				Uri:  new("s3://bucket/model" + string(rune('1'+i)) + ".pkl"),
 			}
 			_, err := _service.UpsertModelArtifact(modelArtifact)
 			require.NoError(t, err)
@@ -1975,7 +1974,7 @@ func TestGetModelArtifacts(t *testing.T) {
 
 		// List all model artifacts
 		listOptions := api.ListOptions{
-			PageSize: apiutils.Of(int32(10)),
+			PageSize: new(int32(10)),
 		}
 
 		result, err := _service.GetModelArtifacts(listOptions, nil)
@@ -2004,8 +2003,8 @@ func TestGetModelArtifacts(t *testing.T) {
 		// Create model artifacts for this model version
 		for i := range 2 {
 			modelArtifact := &openapi.ModelArtifact{
-				Name: apiutils.Of("version-model-artifact-" + string(rune('1'+i))),
-				Uri:  apiutils.Of("s3://bucket/version-model" + string(rune('1'+i)) + ".pkl"),
+				Name: new("version-model-artifact-" + string(rune('1'+i))),
+				Uri:  new("s3://bucket/version-model" + string(rune('1'+i)) + ".pkl"),
 			}
 
 			artifact := &openapi.Artifact{
@@ -2018,7 +2017,7 @@ func TestGetModelArtifacts(t *testing.T) {
 
 		// List model artifacts for this model version
 		listOptions := api.ListOptions{
-			PageSize: apiutils.Of(int32(10)),
+			PageSize: new(int32(10)),
 		}
 
 		result, err := _service.GetModelArtifacts(listOptions, createdVersion.Id)
@@ -2031,7 +2030,7 @@ func TestGetModelArtifacts(t *testing.T) {
 	t.Run("invalid model version id", func(t *testing.T) {
 		listOptions := api.ListOptions{}
 
-		result, err := _service.GetModelArtifacts(listOptions, apiutils.Of("invalid"))
+		result, err := _service.GetModelArtifacts(listOptions, new("invalid"))
 
 		assert.Error(t, err)
 		assert.Nil(t, result)
@@ -2047,28 +2046,28 @@ func TestArtifactRoundTrip(t *testing.T) {
 		// Create registered model and model version
 		registeredModel := &openapi.RegisteredModel{
 			Name:        "roundtrip-model",
-			Description: apiutils.Of("Model for roundtrip test"),
+			Description: new("Model for roundtrip test"),
 		}
 		createdModel, err := _service.UpsertRegisteredModel(registeredModel)
 		require.NoError(t, err)
 
 		modelVersion := &openapi.ModelVersion{
 			Name:        "v1.0",
-			Description: apiutils.Of("Version 1.0"),
+			Description: new("Version 1.0"),
 		}
 		createdVersion, err := _service.UpsertModelVersion(modelVersion, createdModel.Id)
 		require.NoError(t, err)
 
 		// Create model artifact
 		modelArtifact := &openapi.ModelArtifact{
-			Name:               apiutils.Of("roundtrip-artifact"),
-			Description:        apiutils.Of("Roundtrip test artifact"),
-			Uri:                apiutils.Of("s3://bucket/roundtrip.pkl"),
-			ModelFormatName:    apiutils.Of("sklearn"),
-			ModelFormatVersion: apiutils.Of("1.0"),
-			StorageKey:         apiutils.Of("roundtrip-key"),
-			StoragePath:        apiutils.Of("/models/roundtrip"),
-			ServiceAccountName: apiutils.Of("roundtrip-sa"),
+			Name:               new("roundtrip-artifact"),
+			Description:        new("Roundtrip test artifact"),
+			Uri:                new("s3://bucket/roundtrip.pkl"),
+			ModelFormatName:    new("sklearn"),
+			ModelFormatVersion: new("1.0"),
+			StorageKey:         new("roundtrip-key"),
+			StoragePath:        new("/models/roundtrip"),
+			ServiceAccountName: new("roundtrip-sa"),
 		}
 
 		artifact := &openapi.Artifact{
@@ -2095,9 +2094,9 @@ func TestArtifactRoundTrip(t *testing.T) {
 		assert.Equal(t, "roundtrip-sa", *retrieved.ModelArtifact.ServiceAccountName)
 
 		// Update
-		retrieved.ModelArtifact.Description = apiutils.Of("Updated description")
-		retrieved.ModelArtifact.Uri = apiutils.Of("s3://bucket/updated-roundtrip.pkl")
-		retrieved.ModelArtifact.State = apiutils.Of(openapi.ARTIFACTSTATE_DELETED)
+		retrieved.ModelArtifact.Description = new("Updated description")
+		retrieved.ModelArtifact.Uri = new("s3://bucket/updated-roundtrip.pkl")
+		retrieved.ModelArtifact.State = new(openapi.ARTIFACTSTATE_DELETED)
 
 		updated, err := _service.UpsertArtifact(retrieved)
 		require.NoError(t, err)
@@ -2109,7 +2108,7 @@ func TestArtifactRoundTrip(t *testing.T) {
 
 		// List artifacts for model version
 		listOptions := api.ListOptions{
-			PageSize: apiutils.Of(int32(10)),
+			PageSize: new(int32(10)),
 		}
 
 		artifacts, err := _service.GetArtifacts(openapi.ARTIFACTTYPEQUERYPARAM_MODEL_ARTIFACT, listOptions, createdVersion.Id)
@@ -2144,8 +2143,8 @@ func TestArtifactRoundTrip(t *testing.T) {
 		}
 
 		modelArtifact := &openapi.ModelArtifact{
-			Name:             apiutils.Of("custom-props-roundtrip"),
-			Uri:              apiutils.Of("s3://bucket/custom-props.pkl"),
+			Name:             new("custom-props-roundtrip"),
+			Uri:              new("s3://bucket/custom-props.pkl"),
 			CustomProperties: customProps,
 		}
 
@@ -2205,8 +2204,8 @@ func TestModelArtifactNilFieldsPreservation(t *testing.T) {
 	t.Run("nil fields preserved during model artifact upsert", func(t *testing.T) {
 		// Create model artifact with only required fields, leaving optional fields as nil
 		modelArtifact := &openapi.ModelArtifact{
-			Name: apiutils.Of("nil-fields-test"),
-			Uri:  apiutils.Of("s3://bucket/test.pkl"),
+			Name: new("nil-fields-test"),
+			Uri:  new("s3://bucket/test.pkl"),
 			// Explicitly leaving these fields as nil:
 			// Description: nil,
 			// ExternalId: nil,
@@ -2243,7 +2242,7 @@ func TestModelArtifactNilFieldsPreservation(t *testing.T) {
 		assert.Nil(t, created.ModelSourceName)
 
 		// Update the artifact while keeping nil fields as nil
-		created.Uri = apiutils.Of("s3://bucket/updated.pkl")
+		created.Uri = new("s3://bucket/updated.pkl")
 		// Keep all other optional fields as nil
 
 		updated, err := _service.UpsertModelArtifact(created)
@@ -2273,8 +2272,8 @@ func TestDocArtifactNilFieldsPreservation(t *testing.T) {
 	t.Run("nil fields preserved during doc artifact upsert", func(t *testing.T) {
 		// Create doc artifact with only required fields, leaving optional fields as nil
 		docArtifact := &openapi.DocArtifact{
-			Name: apiutils.Of("nil-fields-doc-test"),
-			Uri:  apiutils.Of("s3://bucket/doc.pdf"),
+			Name: new("nil-fields-doc-test"),
+			Uri:  new("s3://bucket/doc.pdf"),
 			// Explicitly leaving these fields as nil:
 			// Description: nil,
 			// ExternalId: nil,
@@ -2295,7 +2294,7 @@ func TestDocArtifactNilFieldsPreservation(t *testing.T) {
 		assert.Nil(t, created.DocArtifact.ExternalId)
 
 		// Update the artifact while keeping nil fields as nil
-		created.DocArtifact.Uri = apiutils.Of("s3://bucket/updated-doc.pdf")
+		created.DocArtifact.Uri = new("s3://bucket/updated-doc.pdf")
 		// Keep all other optional fields as nil
 		updated, err := _service.UpsertArtifact(created)
 		require.NoError(t, err)
@@ -2331,7 +2330,7 @@ func TestArtifactTypeFiltering(t *testing.T) {
 	require.NoError(t, err)
 
 	experimentRun := &openapi.ExperimentRun{
-		Name: apiutils.Of("artifact-type-test-run"),
+		Name: new("artifact-type-test-run"),
 	}
 	createdExperimentRun, err := service.UpsertExperimentRun(experimentRun, createdExperiment.Id)
 	require.NoError(t, err)
@@ -2341,8 +2340,8 @@ func TestArtifactTypeFiltering(t *testing.T) {
 		// Create ModelArtifact
 		modelArtifact := &openapi.Artifact{
 			ModelArtifact: &openapi.ModelArtifact{
-				Name: apiutils.Of("test-model-artifact"),
-				Uri:  apiutils.Of("s3://bucket/model.pkl"),
+				Name: new("test-model-artifact"),
+				Uri:  new("s3://bucket/model.pkl"),
 			},
 		}
 		_, err := service.UpsertArtifact(modelArtifact)
@@ -2351,8 +2350,8 @@ func TestArtifactTypeFiltering(t *testing.T) {
 		// Create DocArtifact
 		docArtifact := &openapi.Artifact{
 			DocArtifact: &openapi.DocArtifact{
-				Name: apiutils.Of("test-doc-artifact"),
-				Uri:  apiutils.Of("s3://bucket/doc.pdf"),
+				Name: new("test-doc-artifact"),
+				Uri:  new("s3://bucket/doc.pdf"),
 			},
 		}
 		_, err = service.UpsertArtifact(docArtifact)
@@ -2361,8 +2360,8 @@ func TestArtifactTypeFiltering(t *testing.T) {
 		// Create DataSet
 		dataSet := &openapi.Artifact{
 			DataSet: &openapi.DataSet{
-				Name: apiutils.Of("test-dataset-artifact"),
-				Uri:  apiutils.Of("s3://bucket/dataset.csv"),
+				Name: new("test-dataset-artifact"),
+				Uri:  new("s3://bucket/dataset.csv"),
 			},
 		}
 		_, err = service.UpsertArtifact(dataSet)
@@ -2371,8 +2370,8 @@ func TestArtifactTypeFiltering(t *testing.T) {
 		// Create Metric
 		metric := &openapi.Artifact{
 			Metric: &openapi.Metric{
-				Name:  apiutils.Of("test-metric-artifact"),
-				Value: apiutils.Of(0.95),
+				Name:  new("test-metric-artifact"),
+				Value: new(0.95),
 			},
 		}
 		_, err = service.UpsertArtifact(metric)
@@ -2381,8 +2380,8 @@ func TestArtifactTypeFiltering(t *testing.T) {
 		// Create Parameter
 		parameter := &openapi.Artifact{
 			Parameter: &openapi.Parameter{
-				Name:  apiutils.Of("test-parameter-artifact"),
-				Value: apiutils.Of("param-value"),
+				Name:  new("test-parameter-artifact"),
+				Value: new("param-value"),
 			},
 		}
 		_, err = service.UpsertArtifact(parameter)
@@ -2406,7 +2405,7 @@ func TestArtifactTypeFiltering(t *testing.T) {
 		for _, tc := range testCases {
 			t.Run(tc.name, func(t *testing.T) {
 				listOptions := api.ListOptions{
-					PageSize: apiutils.Of(int32(100)),
+					PageSize: new(int32(100)),
 				}
 
 				result, err := service.GetArtifacts(tc.artifactType, listOptions, nil)
@@ -2462,7 +2461,7 @@ func TestArtifactTypeFiltering(t *testing.T) {
 		// Test empty filter returns all types
 		t.Run("no filter returns all types", func(t *testing.T) {
 			listOptions := api.ListOptions{
-				PageSize: apiutils.Of(int32(100)),
+				PageSize: new(int32(100)),
 			}
 
 			result, err := service.GetArtifacts("", listOptions, nil)
@@ -2480,32 +2479,32 @@ func TestArtifactTypeFiltering(t *testing.T) {
 		artifacts := []*openapi.Artifact{
 			{
 				ModelArtifact: &openapi.ModelArtifact{
-					Name: apiutils.Of("mv-model-artifact"),
-					Uri:  apiutils.Of("s3://bucket/mv-model.pkl"),
+					Name: new("mv-model-artifact"),
+					Uri:  new("s3://bucket/mv-model.pkl"),
 				},
 			},
 			{
 				DocArtifact: &openapi.DocArtifact{
-					Name: apiutils.Of("mv-doc-artifact"),
-					Uri:  apiutils.Of("s3://bucket/mv-doc.pdf"),
+					Name: new("mv-doc-artifact"),
+					Uri:  new("s3://bucket/mv-doc.pdf"),
 				},
 			},
 			{
 				DataSet: &openapi.DataSet{
-					Name: apiutils.Of("mv-dataset-artifact"),
-					Uri:  apiutils.Of("s3://bucket/mv-dataset.csv"),
+					Name: new("mv-dataset-artifact"),
+					Uri:  new("s3://bucket/mv-dataset.csv"),
 				},
 			},
 			{
 				Metric: &openapi.Metric{
-					Name:  apiutils.Of("mv-metric-artifact"),
-					Value: apiutils.Of(0.95),
+					Name:  new("mv-metric-artifact"),
+					Value: new(0.95),
 				},
 			},
 			{
 				Parameter: &openapi.Parameter{
-					Name:  apiutils.Of("mv-parameter-artifact"),
-					Value: apiutils.Of("mv-param-value"),
+					Name:  new("mv-parameter-artifact"),
+					Value: new("mv-param-value"),
 				},
 			},
 		}
@@ -2534,7 +2533,7 @@ func TestArtifactTypeFiltering(t *testing.T) {
 		for _, tc := range testCases {
 			t.Run(tc.name, func(t *testing.T) {
 				listOptions := api.ListOptions{
-					PageSize: apiutils.Of(int32(100)),
+					PageSize: new(int32(100)),
 				}
 
 				result, err := service.GetArtifacts(tc.artifactType, listOptions, createdVersion.Id)
@@ -2588,32 +2587,32 @@ func TestArtifactTypeFiltering(t *testing.T) {
 		artifacts := []*openapi.Artifact{
 			{
 				ModelArtifact: &openapi.ModelArtifact{
-					Name: apiutils.Of("er-model-artifact"),
-					Uri:  apiutils.Of("s3://bucket/er-model.pkl"),
+					Name: new("er-model-artifact"),
+					Uri:  new("s3://bucket/er-model.pkl"),
 				},
 			},
 			{
 				DocArtifact: &openapi.DocArtifact{
-					Name: apiutils.Of("er-doc-artifact"),
-					Uri:  apiutils.Of("s3://bucket/er-doc.pdf"),
+					Name: new("er-doc-artifact"),
+					Uri:  new("s3://bucket/er-doc.pdf"),
 				},
 			},
 			{
 				DataSet: &openapi.DataSet{
-					Name: apiutils.Of("er-dataset-artifact"),
-					Uri:  apiutils.Of("s3://bucket/er-dataset.csv"),
+					Name: new("er-dataset-artifact"),
+					Uri:  new("s3://bucket/er-dataset.csv"),
 				},
 			},
 			{
 				Metric: &openapi.Metric{
-					Name:  apiutils.Of("er-metric-artifact"),
-					Value: apiutils.Of(0.85),
+					Name:  new("er-metric-artifact"),
+					Value: new(0.85),
 				},
 			},
 			{
 				Parameter: &openapi.Parameter{
-					Name:  apiutils.Of("er-parameter-artifact"),
-					Value: apiutils.Of("er-param-value"),
+					Name:  new("er-parameter-artifact"),
+					Value: new("er-param-value"),
 				},
 			},
 		}
@@ -2629,9 +2628,9 @@ func TestArtifactTypeFiltering(t *testing.T) {
 		for i, value := range values {
 			metricArtifact := &openapi.Artifact{
 				Metric: &openapi.Metric{
-					Name:        apiutils.Of(metricName),
-					Value:       apiutils.Of(value),
-					Description: apiutils.Of(fmt.Sprintf("Accuracy step %d", i+1)),
+					Name:        new(metricName),
+					Value:       new(value),
+					Description: new(fmt.Sprintf("Accuracy step %d", i+1)),
 				},
 			}
 			_, err := service.UpsertExperimentRunArtifact(metricArtifact, *createdExperimentRun.Id)
@@ -2657,7 +2656,7 @@ func TestArtifactTypeFiltering(t *testing.T) {
 		for _, tc := range testCases {
 			t.Run(tc.name, func(t *testing.T) {
 				listOptions := api.ListOptions{
-					PageSize: apiutils.Of(int32(100)),
+					PageSize: new(int32(100)),
 				}
 
 				result, err := service.GetExperimentRunArtifacts(tc.artifactType, listOptions, createdExperimentRun.Id)
@@ -2709,7 +2708,7 @@ func TestArtifactTypeFiltering(t *testing.T) {
 	t.Run("edge cases", func(t *testing.T) {
 		t.Run("invalid artifact type", func(t *testing.T) {
 			listOptions := api.ListOptions{
-				PageSize: apiutils.Of(int32(100)),
+				PageSize: new(int32(100)),
 			}
 
 			result, err := service.GetArtifacts("invalid-artifact-type", listOptions, nil)
@@ -2733,7 +2732,7 @@ func TestArtifactTypeFiltering(t *testing.T) {
 			require.NoError(t, err)
 
 			listOptions := api.ListOptions{
-				PageSize: apiutils.Of(int32(100)),
+				PageSize: new(int32(100)),
 			}
 
 			result, err := service.GetArtifacts(openapi.ARTIFACTTYPEQUERYPARAM_MODEL_ARTIFACT, listOptions, createdEmptyVersion.Id)
@@ -2747,7 +2746,7 @@ func TestArtifactTypeFiltering(t *testing.T) {
 	t.Run("metric history filtering", func(t *testing.T) {
 		// Verify that GetExperimentRunArtifacts does NOT return metric history records
 		listOptions := api.ListOptions{
-			PageSize: apiutils.Of(int32(100)),
+			PageSize: new(int32(100)),
 		}
 
 		result, err := service.GetExperimentRunArtifacts("", listOptions, createdExperimentRun.Id)
@@ -2814,15 +2813,15 @@ func TestEmbedMDMetricDuplicateHandling(t *testing.T) {
 	// Create experiment
 	experiment := &openapi.Experiment{
 		Name:        "test-experiment-duplicate-metrics",
-		Description: apiutils.Of("Test experiment for duplicate metric handling"),
+		Description: new("Test experiment for duplicate metric handling"),
 	}
 	savedExperiment, err := service.UpsertExperiment(experiment)
 	require.NoError(t, err)
 
 	// Create experiment run
 	experimentRun := &openapi.ExperimentRun{
-		Name:        apiutils.Of("test-experiment-run-duplicate-metrics"),
-		Description: apiutils.Of("Test experiment run for duplicate metric handling"),
+		Name:        new("test-experiment-run-duplicate-metrics"),
+		Description: new("Test experiment run for duplicate metric handling"),
 	}
 	savedExperimentRun, err := service.UpsertExperimentRun(experimentRun, savedExperiment.Id)
 	require.NoError(t, err)
@@ -2830,11 +2829,11 @@ func TestEmbedMDMetricDuplicateHandling(t *testing.T) {
 	// Create first metric
 	firstMetric := &openapi.Artifact{
 		Metric: &openapi.Metric{
-			Name:        apiutils.Of("accuracy"),
-			Value:       apiutils.Of(0.85),
-			Timestamp:   apiutils.Of("1234567890"),
-			Step:        apiutils.Of(int64(1)),
-			Description: apiutils.Of("First accuracy measurement"),
+			Name:        new("accuracy"),
+			Value:       new(0.85),
+			Timestamp:   new("1234567890"),
+			Step:        new(int64(1)),
+			Description: new("First accuracy measurement"),
 		},
 	}
 
@@ -2847,11 +2846,11 @@ func TestEmbedMDMetricDuplicateHandling(t *testing.T) {
 	// Create second metric with same name but different value
 	secondMetric := &openapi.Artifact{
 		Metric: &openapi.Metric{
-			Name:        apiutils.Of("accuracy"), // Same name as first metric
-			Value:       apiutils.Of(0.92),       // Different value
-			Timestamp:   apiutils.Of("1234567900"),
-			Step:        apiutils.Of(int64(2)),
-			Description: apiutils.Of("Updated accuracy measurement"),
+			Name:        new("accuracy"), // Same name as first metric
+			Value:       new(0.92),       // Different value
+			Timestamp:   new("1234567900"),
+			Step:        new(int64(2)),
+			Description: new("Updated accuracy measurement"),
 		},
 	}
 
@@ -2886,15 +2885,15 @@ func TestEmbedMDParameterDuplicateHandling(t *testing.T) {
 	// Create experiment
 	experiment := &openapi.Experiment{
 		Name:        "test-experiment-duplicate-parameters",
-		Description: apiutils.Of("Test experiment for duplicate parameter handling"),
+		Description: new("Test experiment for duplicate parameter handling"),
 	}
 	savedExperiment, err := service.UpsertExperiment(experiment)
 	require.NoError(t, err)
 
 	// Create experiment run
 	experimentRun := &openapi.ExperimentRun{
-		Name:        apiutils.Of("test-experiment-run-duplicate-parameters"),
-		Description: apiutils.Of("Test experiment run for duplicate parameter handling"),
+		Name:        new("test-experiment-run-duplicate-parameters"),
+		Description: new("Test experiment run for duplicate parameter handling"),
 	}
 	savedExperimentRun, err := service.UpsertExperimentRun(experimentRun, savedExperiment.Id)
 	require.NoError(t, err)
@@ -2902,9 +2901,9 @@ func TestEmbedMDParameterDuplicateHandling(t *testing.T) {
 	// Create first parameter
 	firstParameter := &openapi.Artifact{
 		Parameter: &openapi.Parameter{
-			Name:        apiutils.Of("learning_rate"),
-			Value:       apiutils.Of("0.01"),
-			Description: apiutils.Of("Initial learning rate"),
+			Name:        new("learning_rate"),
+			Value:       new("0.01"),
+			Description: new("Initial learning rate"),
 		},
 	}
 
@@ -2917,9 +2916,9 @@ func TestEmbedMDParameterDuplicateHandling(t *testing.T) {
 	// Create second parameter with same name but different value
 	secondParameter := &openapi.Artifact{
 		Parameter: &openapi.Parameter{
-			Name:        apiutils.Of("learning_rate"), // Same name as first parameter
-			Value:       apiutils.Of("0.001"),         // Different value
-			Description: apiutils.Of("Updated learning rate"),
+			Name:        new("learning_rate"), // Same name as first parameter
+			Value:       new("0.001"),         // Different value
+			Description: new("Updated learning rate"),
 		},
 	}
 
@@ -2965,19 +2964,19 @@ func TestArtifactFilterQuery(t *testing.T) {
 	require.NoError(t, err)
 
 	experimentRun1 := &openapi.ExperimentRun{
-		Name: apiutils.Of("filter-test-run-1"),
+		Name: new("filter-test-run-1"),
 	}
 	createdExperimentRun1, err := service.UpsertExperimentRun(experimentRun1, createdExperiment1.Id)
 	require.NoError(t, err)
 
 	experimentRun2 := &openapi.ExperimentRun{
-		Name: apiutils.Of("filter-test-run-2"),
+		Name: new("filter-test-run-2"),
 	}
 	createdExperimentRun2, err := service.UpsertExperimentRun(experimentRun2, createdExperiment1.Id)
 	require.NoError(t, err)
 
 	experimentRun3 := &openapi.ExperimentRun{
-		Name: apiutils.Of("filter-test-run-3"),
+		Name: new("filter-test-run-3"),
 	}
 	createdExperimentRun3, err := service.UpsertExperimentRun(experimentRun3, createdExperiment2.Id)
 	require.NoError(t, err)
@@ -2986,8 +2985,8 @@ func TestArtifactFilterQuery(t *testing.T) {
 	// Artifacts for experiment1/run1
 	artifact1 := &openapi.Artifact{
 		ModelArtifact: &openapi.ModelArtifact{
-			Name: apiutils.Of("model-exp1-run1"),
-			Uri:  apiutils.Of("s3://bucket/model1.pkl"),
+			Name: new("model-exp1-run1"),
+			Uri:  new("s3://bucket/model1.pkl"),
 		},
 	}
 	createdArtifact1, err := service.UpsertExperimentRunArtifact(artifact1, *createdExperimentRun1.Id)
@@ -2996,8 +2995,8 @@ func TestArtifactFilterQuery(t *testing.T) {
 	// Artifacts for experiment1/run2
 	artifact2 := &openapi.Artifact{
 		DocArtifact: &openapi.DocArtifact{
-			Name: apiutils.Of("doc-exp1-run2"),
-			Uri:  apiutils.Of("s3://bucket/doc1.pdf"),
+			Name: new("doc-exp1-run2"),
+			Uri:  new("s3://bucket/doc1.pdf"),
 		},
 	}
 	createdArtifact2, err := service.UpsertExperimentRunArtifact(artifact2, *createdExperimentRun2.Id)
@@ -3006,8 +3005,8 @@ func TestArtifactFilterQuery(t *testing.T) {
 	// Artifacts for experiment2/run3
 	artifact3 := &openapi.Artifact{
 		DataSet: &openapi.DataSet{
-			Name: apiutils.Of("dataset-exp2-run3"),
-			Uri:  apiutils.Of("s3://bucket/dataset1.csv"),
+			Name: new("dataset-exp2-run3"),
+			Uri:  new("s3://bucket/dataset1.csv"),
 		},
 	}
 	createdArtifact3, err := service.UpsertExperimentRunArtifact(artifact3, *createdExperimentRun3.Id)
@@ -3016,8 +3015,8 @@ func TestArtifactFilterQuery(t *testing.T) {
 	// Create a metric for experiment1/run1
 	metric1 := &openapi.Artifact{
 		Metric: &openapi.Metric{
-			Name:  apiutils.Of("accuracy-exp1-run1"),
-			Value: apiutils.Of(0.95),
+			Name:  new("accuracy-exp1-run1"),
+			Value: new(0.95),
 		},
 	}
 	createdMetric1, err := service.UpsertExperimentRunArtifact(metric1, *createdExperimentRun1.Id)
@@ -3026,8 +3025,8 @@ func TestArtifactFilterQuery(t *testing.T) {
 	// Create a parameter for experiment2/run3
 	param1 := &openapi.Artifact{
 		Parameter: &openapi.Parameter{
-			Name:  apiutils.Of("lr-exp2-run3"),
-			Value: apiutils.Of("0.001"),
+			Name:  new("lr-exp2-run3"),
+			Value: new("0.001"),
 		},
 	}
 	createdParam1, err := service.UpsertExperimentRunArtifact(param1, *createdExperimentRun3.Id)
@@ -3037,8 +3036,8 @@ func TestArtifactFilterQuery(t *testing.T) {
 	// These should be excluded from experiment-based filters
 	standaloneArtifact1 := &openapi.Artifact{
 		ModelArtifact: &openapi.ModelArtifact{
-			Name: apiutils.Of("standalone-model-artifact"),
-			Uri:  apiutils.Of("s3://bucket/standalone-model.pkl"),
+			Name: new("standalone-model-artifact"),
+			Uri:  new("s3://bucket/standalone-model.pkl"),
 			// No experimentId or experimentRunId
 		},
 	}
@@ -3047,8 +3046,8 @@ func TestArtifactFilterQuery(t *testing.T) {
 
 	standaloneArtifact2 := &openapi.Artifact{
 		DocArtifact: &openapi.DocArtifact{
-			Name: apiutils.Of("standalone-doc-artifact"),
-			Uri:  apiutils.Of("s3://bucket/standalone-doc.pdf"),
+			Name: new("standalone-doc-artifact"),
+			Uri:  new("s3://bucket/standalone-doc.pdf"),
 			// No experimentId or experimentRunId
 		},
 	}
@@ -3057,8 +3056,8 @@ func TestArtifactFilterQuery(t *testing.T) {
 
 	standaloneArtifact3 := &openapi.Artifact{
 		Metric: &openapi.Metric{
-			Name:  apiutils.Of("standalone-metric"),
-			Value: apiutils.Of(0.75),
+			Name:  new("standalone-metric"),
+			Value: new(0.75),
 			// No experimentId or experimentRunId
 		},
 	}
@@ -3069,7 +3068,7 @@ func TestArtifactFilterQuery(t *testing.T) {
 	t.Run("GetArtifacts with experimentId equality filter", func(t *testing.T) {
 		filterQuery := fmt.Sprintf(`experimentId = "%s"`, *createdExperiment1.Id)
 		listOptions := api.ListOptions{
-			PageSize:    apiutils.Of(int32(100)),
+			PageSize:    new(int32(100)),
 			FilterQuery: &filterQuery,
 		}
 
@@ -3096,7 +3095,7 @@ func TestArtifactFilterQuery(t *testing.T) {
 	t.Run("GetArtifacts with experimentRunId equality filter", func(t *testing.T) {
 		filterQuery := fmt.Sprintf(`experimentRunId = "%s"`, *createdExperimentRun1.Id)
 		listOptions := api.ListOptions{
-			PageSize:    apiutils.Of(int32(100)),
+			PageSize:    new(int32(100)),
 			FilterQuery: &filterQuery,
 		}
 
@@ -3121,7 +3120,7 @@ func TestArtifactFilterQuery(t *testing.T) {
 	t.Run("GetArtifacts with experimentId IN filter", func(t *testing.T) {
 		filterQuery := fmt.Sprintf(`experimentId IN ("%s", "%s")`, *createdExperiment1.Id, *createdExperiment2.Id)
 		listOptions := api.ListOptions{
-			PageSize:    apiutils.Of(int32(100)),
+			PageSize:    new(int32(100)),
 			FilterQuery: &filterQuery,
 		}
 
@@ -3158,7 +3157,7 @@ func TestArtifactFilterQuery(t *testing.T) {
 	t.Run("GetArtifacts with experimentRunId IN filter", func(t *testing.T) {
 		filterQuery := fmt.Sprintf(`experimentRunId IN ("%s", "%s")`, *createdExperimentRun1.Id, *createdExperimentRun3.Id)
 		listOptions := api.ListOptions{
-			PageSize:    apiutils.Of(int32(100)),
+			PageSize:    new(int32(100)),
 			FilterQuery: &filterQuery,
 		}
 
@@ -3193,7 +3192,7 @@ func TestArtifactFilterQuery(t *testing.T) {
 	t.Run("GetArtifacts with combined experimentId and artifact type filter", func(t *testing.T) {
 		filterQuery := fmt.Sprintf(`experimentId = "%s" AND name LIKE "%%model%%"`, *createdExperiment1.Id)
 		listOptions := api.ListOptions{
-			PageSize:    apiutils.Of(int32(100)),
+			PageSize:    new(int32(100)),
 			FilterQuery: &filterQuery,
 		}
 
@@ -3211,7 +3210,7 @@ func TestArtifactFilterQuery(t *testing.T) {
 	t.Run("GetModelArtifacts with experimentId filter", func(t *testing.T) {
 		filterQuery := fmt.Sprintf(`experimentId = "%s"`, *createdExperiment1.Id)
 		listOptions := api.ListOptions{
-			PageSize:    apiutils.Of(int32(100)),
+			PageSize:    new(int32(100)),
 			FilterQuery: &filterQuery,
 		}
 
@@ -3240,7 +3239,7 @@ func TestArtifactFilterQuery(t *testing.T) {
 		// This should work even when filtering by experimentId within a specific experiment run
 		filterQuery := fmt.Sprintf(`experimentId = "%s"`, *createdExperiment1.Id)
 		listOptions := api.ListOptions{
-			PageSize:    apiutils.Of(int32(100)),
+			PageSize:    new(int32(100)),
 			FilterQuery: &filterQuery,
 		}
 
@@ -3267,7 +3266,7 @@ func TestArtifactFilterQuery(t *testing.T) {
 	t.Run("Invalid filterQuery syntax", func(t *testing.T) {
 		invalidFilter := "experimentId <<< invalid syntax"
 		listOptions := api.ListOptions{
-			PageSize:    apiutils.Of(int32(100)),
+			PageSize:    new(int32(100)),
 			FilterQuery: &invalidFilter,
 		}
 
@@ -3281,7 +3280,7 @@ func TestArtifactFilterQuery(t *testing.T) {
 	t.Run("GetArtifacts with explicit experimentId.int_value filter", func(t *testing.T) {
 		filterQuery := fmt.Sprintf(`experimentId.int_value = "%s"`, *createdExperiment2.Id)
 		listOptions := api.ListOptions{
-			PageSize:    apiutils.Of(int32(100)),
+			PageSize:    new(int32(100)),
 			FilterQuery: &filterQuery,
 		}
 
@@ -3306,7 +3305,7 @@ func TestArtifactFilterQuery(t *testing.T) {
 	t.Run("Verify standalone artifacts are excluded from experiment filters", func(t *testing.T) {
 		// First, get all artifacts without any filter to verify we have both experiment and standalone artifacts
 		listOptionsAll := api.ListOptions{
-			PageSize: apiutils.Of(int32(100)),
+			PageSize: new(int32(100)),
 		}
 
 		allResult, err := service.GetArtifacts("", listOptionsAll, nil)
@@ -3346,7 +3345,7 @@ func TestArtifactFilterQuery(t *testing.T) {
 		// Now test that experiment filters exclude standalone artifacts
 		filterQuery := fmt.Sprintf(`experimentId = "%s"`, *createdExperiment1.Id)
 		listOptionsFiltered := api.ListOptions{
-			PageSize:    apiutils.Of(int32(100)),
+			PageSize:    new(int32(100)),
 			FilterQuery: &filterQuery,
 		}
 
@@ -3379,7 +3378,7 @@ func TestArtifactFilterQuery(t *testing.T) {
 	t.Run("Filter by non-existent experimentId excludes all artifacts", func(t *testing.T) {
 		filterQuery := `experimentId = "non-existent-experiment-id"`
 		listOptions := api.ListOptions{
-			PageSize:    apiutils.Of(int32(100)),
+			PageSize:    new(int32(100)),
 			FilterQuery: &filterQuery,
 		}
 
@@ -3412,9 +3411,9 @@ func TestArtifactTypeMismatchOnUpdate(t *testing.T) {
 
 	t.Run("cannot change model-artifact to doc-artifact", func(t *testing.T) {
 		modelArtifact := &openapi.ModelArtifact{
-			Name:        apiutils.Of("test-type-mismatch-model"),
-			Description: apiutils.Of("Original model artifact"),
-			Uri:         apiutils.Of("s3://bucket/model.pkl"),
+			Name:        new("test-type-mismatch-model"),
+			Description: new("Original model artifact"),
+			Uri:         new("s3://bucket/model.pkl"),
 		}
 
 		artifact := &openapi.Artifact{
@@ -3429,8 +3428,8 @@ func TestArtifactTypeMismatchOnUpdate(t *testing.T) {
 		updateArtifact := &openapi.Artifact{
 			DocArtifact: &openapi.DocArtifact{
 				Id:          created.ModelArtifact.Id,
-				Description: apiutils.Of("Trying to change to doc artifact"),
-				Uri:         apiutils.Of("s3://bucket/doc.pdf"),
+				Description: new("Trying to change to doc artifact"),
+				Uri:         new("s3://bucket/doc.pdf"),
 			},
 		}
 
@@ -3443,9 +3442,9 @@ func TestArtifactTypeMismatchOnUpdate(t *testing.T) {
 
 	t.Run("cannot change doc-artifact to model-artifact", func(t *testing.T) {
 		docArtifact := &openapi.DocArtifact{
-			Name:        apiutils.Of("test-type-mismatch-doc"),
-			Description: apiutils.Of("Original doc artifact"),
-			Uri:         apiutils.Of("s3://bucket/doc.pdf"),
+			Name:        new("test-type-mismatch-doc"),
+			Description: new("Original doc artifact"),
+			Uri:         new("s3://bucket/doc.pdf"),
 		}
 
 		artifact := &openapi.Artifact{
@@ -3460,8 +3459,8 @@ func TestArtifactTypeMismatchOnUpdate(t *testing.T) {
 		updateArtifact := &openapi.Artifact{
 			ModelArtifact: &openapi.ModelArtifact{
 				Id:          created.DocArtifact.Id,
-				Description: apiutils.Of("Trying to change to model artifact"),
-				Uri:         apiutils.Of("s3://bucket/model.pkl"),
+				Description: new("Trying to change to model artifact"),
+				Uri:         new("s3://bucket/model.pkl"),
 			},
 		}
 

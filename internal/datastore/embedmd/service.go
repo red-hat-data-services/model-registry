@@ -11,7 +11,6 @@ import (
 	"github.com/golang/glog"
 	"github.com/kubeflow/hub/internal/db/models"
 	"github.com/kubeflow/hub/internal/db/service"
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	"github.com/kubeflow/hub/internal/platform/datastore"
 	db "github.com/kubeflow/hub/internal/platform/db"
 	_ "github.com/kubeflow/hub/internal/platform/db/drivers"
@@ -256,7 +255,7 @@ func (s *EmbedMDService) createTypeProperties(repo models.TypePropertyRepository
 			_, err := repo.Save(&models.TypePropertyImpl{
 				TypeID:   typeID,
 				Name:     name,
-				DataType: apiutils.Of(int32(dataType)),
+				DataType: new(int32(dataType)),
 			})
 			if err != nil {
 				errs = append(errs, fmt.Errorf("%s-%s: %w", typeName, name, err))

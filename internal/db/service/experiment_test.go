@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	"github.com/kubeflow/hub/internal/db/models"
 	"github.com/kubeflow/hub/internal/db/service"
 	"github.com/stretchr/testify/assert"
@@ -23,25 +22,25 @@ func TestExperimentRepository(t *testing.T) {
 	t.Run("TestSave", func(t *testing.T) {
 		// Test creating a new experiment
 		experiment := &models.ExperimentImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.ExperimentAttributes{
-				Name:       apiutils.Of("test-experiment"),
-				ExternalID: apiutils.Of("experiment-ext-123"),
+				Name:       new("test-experiment"),
+				ExternalID: new("experiment-ext-123"),
 			},
 			Properties: &[]models.Properties{
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Test experiment description"),
+					StringValue: new("Test experiment description"),
 				},
 				{
 					Name:        "owner",
-					StringValue: apiutils.Of("test-user"),
+					StringValue: new("test-user"),
 				},
 			},
 			CustomProperties: &[]models.Properties{
 				{
 					Name:             "custom-experiment-prop",
-					StringValue:      apiutils.Of("custom-experiment-value"),
+					StringValue:      new("custom-experiment-value"),
 					IsCustomProperty: true,
 				},
 			},
@@ -58,8 +57,8 @@ func TestExperimentRepository(t *testing.T) {
 
 		// Test updating the same experiment
 		experiment.ID = saved.GetID()
-		experiment.GetAttributes().Name = apiutils.Of("updated-experiment")
-		experiment.GetAttributes().ExternalID = apiutils.Of("updated-experiment-ext-123")
+		experiment.GetAttributes().Name = new("updated-experiment")
+		experiment.GetAttributes().ExternalID = new("updated-experiment-ext-123")
 		// Preserve CreateTimeSinceEpoch from the saved entity (simulating what OpenAPI converter would do)
 		experiment.GetAttributes().CreateTimeSinceEpoch = saved.GetAttributes().CreateTimeSinceEpoch
 
@@ -76,15 +75,15 @@ func TestExperimentRepository(t *testing.T) {
 	t.Run("TestGetByID", func(t *testing.T) {
 		// First create an experiment to retrieve
 		experiment := &models.ExperimentImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.ExperimentAttributes{
-				Name:       apiutils.Of("get-test-experiment"),
-				ExternalID: apiutils.Of("get-experiment-ext-123"),
+				Name:       new("get-test-experiment"),
+				ExternalID: new("get-experiment-ext-123"),
 			},
 			Properties: &[]models.Properties{
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Experiment for get test"),
+					StringValue: new("Experiment for get test"),
 				},
 			},
 		}
@@ -111,41 +110,41 @@ func TestExperimentRepository(t *testing.T) {
 		// Create multiple experiments for listing
 		testExperiments := []*models.ExperimentImpl{
 			{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.ExperimentAttributes{
-					Name:       apiutils.Of("list-experiment-1"),
-					ExternalID: apiutils.Of("list-experiment-ext-1"),
+					Name:       new("list-experiment-1"),
+					ExternalID: new("list-experiment-ext-1"),
 				},
 				Properties: &[]models.Properties{
 					{
 						Name:        "description",
-						StringValue: apiutils.Of("First experiment"),
+						StringValue: new("First experiment"),
 					},
 				},
 			},
 			{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.ExperimentAttributes{
-					Name:       apiutils.Of("list-experiment-2"),
-					ExternalID: apiutils.Of("list-experiment-ext-2"),
+					Name:       new("list-experiment-2"),
+					ExternalID: new("list-experiment-ext-2"),
 				},
 				Properties: &[]models.Properties{
 					{
 						Name:        "description",
-						StringValue: apiutils.Of("Second experiment"),
+						StringValue: new("Second experiment"),
 					},
 				},
 			},
 			{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.ExperimentAttributes{
-					Name:       apiutils.Of("list-experiment-3"),
-					ExternalID: apiutils.Of("list-experiment-ext-3"),
+					Name:       new("list-experiment-3"),
+					ExternalID: new("list-experiment-ext-3"),
 				},
 				Properties: &[]models.Properties{
 					{
 						Name:        "description",
-						StringValue: apiutils.Of("Third experiment"),
+						StringValue: new("Third experiment"),
 					},
 				},
 			},
@@ -168,7 +167,7 @@ func TestExperimentRepository(t *testing.T) {
 
 		// Test listing by name
 		listOptions = models.ExperimentListOptions{
-			Name: apiutils.Of("list-experiment-1"),
+			Name: new("list-experiment-1"),
 		}
 		listOptions.PageSize = &pageSize
 
@@ -182,7 +181,7 @@ func TestExperimentRepository(t *testing.T) {
 
 		// Test listing by external ID
 		listOptions = models.ExperimentListOptions{
-			ExternalID: apiutils.Of("list-experiment-ext-2"),
+			ExternalID: new("list-experiment-ext-2"),
 		}
 		listOptions.PageSize = &pageSize
 
@@ -197,7 +196,7 @@ func TestExperimentRepository(t *testing.T) {
 		// Test ordering by ID (deterministic)
 		listOptions = models.ExperimentListOptions{
 			Pagination: models.Pagination{
-				OrderBy: apiutils.Of("ID"),
+				OrderBy: new("ID"),
 			},
 		}
 		listOptions.PageSize = &pageSize
@@ -218,10 +217,10 @@ func TestExperimentRepository(t *testing.T) {
 	t.Run("TestListOrdering", func(t *testing.T) {
 		// Create experiments sequentially with time delays to ensure deterministic ordering
 		experiment1 := &models.ExperimentImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.ExperimentAttributes{
-				Name:       apiutils.Of("time-test-experiment-1"),
-				ExternalID: apiutils.Of("time-experiment-ext-1"),
+				Name:       new("time-test-experiment-1"),
+				ExternalID: new("time-experiment-ext-1"),
 			},
 		}
 		saved1, err := repo.Save(experiment1)
@@ -231,10 +230,10 @@ func TestExperimentRepository(t *testing.T) {
 		time.Sleep(10 * time.Millisecond)
 
 		experiment2 := &models.ExperimentImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.ExperimentAttributes{
-				Name:       apiutils.Of("time-test-experiment-2"),
-				ExternalID: apiutils.Of("time-experiment-ext-2"),
+				Name:       new("time-test-experiment-2"),
+				ExternalID: new("time-experiment-ext-2"),
 			},
 		}
 		saved2, err := repo.Save(experiment2)
@@ -244,7 +243,7 @@ func TestExperimentRepository(t *testing.T) {
 		pageSize := int32(10)
 		listOptions := models.ExperimentListOptions{
 			Pagination: models.Pagination{
-				OrderBy: apiutils.Of("CREATE_TIME"),
+				OrderBy: new("CREATE_TIME"),
 			},
 		}
 		listOptions.PageSize = &pageSize
@@ -277,34 +276,34 @@ func TestExperimentRepository(t *testing.T) {
 
 	t.Run("TestSaveWithProperties", func(t *testing.T) {
 		experiment := &models.ExperimentImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.ExperimentAttributes{
-				Name:       apiutils.Of("props-test-experiment"),
-				ExternalID: apiutils.Of("props-experiment-ext-123"),
+				Name:       new("props-test-experiment"),
+				ExternalID: new("props-experiment-ext-123"),
 			},
 			Properties: &[]models.Properties{
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Experiment with properties"),
+					StringValue: new("Experiment with properties"),
 				},
 				{
 					Name:        "owner",
-					StringValue: apiutils.Of("test-user"),
+					StringValue: new("test-user"),
 				},
 				{
 					Name:        "state",
-					StringValue: apiutils.Of("LIVE"),
+					StringValue: new("LIVE"),
 				},
 			},
 			CustomProperties: &[]models.Properties{
 				{
 					Name:             "team",
-					StringValue:      apiutils.Of("ml-team"),
+					StringValue:      new("ml-team"),
 					IsCustomProperty: true,
 				},
 				{
 					Name:             "priority",
-					IntValue:         apiutils.Of(int32(5)),
+					IntValue:         new(int32(5)),
 					IsCustomProperty: true,
 				},
 			},
@@ -365,25 +364,25 @@ func TestExperimentRepository(t *testing.T) {
 	t.Run("TestUpdateProperties", func(t *testing.T) {
 		// Create experiment with initial properties
 		experiment := &models.ExperimentImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.ExperimentAttributes{
-				Name:       apiutils.Of("update-props-experiment"),
-				ExternalID: apiutils.Of("update-props-ext-123"),
+				Name:       new("update-props-experiment"),
+				ExternalID: new("update-props-ext-123"),
 			},
 			Properties: &[]models.Properties{
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Initial description"),
+					StringValue: new("Initial description"),
 				},
 				{
 					Name:        "owner",
-					StringValue: apiutils.Of("initial-user"),
+					StringValue: new("initial-user"),
 				},
 			},
 			CustomProperties: &[]models.Properties{
 				{
 					Name:             "team",
-					StringValue:      apiutils.Of("initial-team"),
+					StringValue:      new("initial-team"),
 					IsCustomProperty: true,
 				},
 			},
@@ -399,26 +398,26 @@ func TestExperimentRepository(t *testing.T) {
 		experiment.Properties = &[]models.Properties{
 			{
 				Name:        "description",
-				StringValue: apiutils.Of("Updated description"),
+				StringValue: new("Updated description"),
 			},
 			{
 				Name:        "owner",
-				StringValue: apiutils.Of("updated-user"),
+				StringValue: new("updated-user"),
 			},
 			{
 				Name:        "state",
-				StringValue: apiutils.Of("LIVE"),
+				StringValue: new("LIVE"),
 			},
 		}
 		experiment.CustomProperties = &[]models.Properties{
 			{
 				Name:             "team",
-				StringValue:      apiutils.Of("updated-team"),
+				StringValue:      new("updated-team"),
 				IsCustomProperty: true,
 			},
 			{
 				Name:             "priority",
-				IntValue:         apiutils.Of(int32(10)),
+				IntValue:         new(int32(10)),
 				IsCustomProperty: true,
 			},
 		}
@@ -462,10 +461,10 @@ func TestExperimentRepository(t *testing.T) {
 		// Create multiple experiments for pagination testing
 		for i := range 5 {
 			experiment := &models.ExperimentImpl{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.ExperimentAttributes{
-					Name:       apiutils.Of(fmt.Sprintf("page-experiment-%d", i)),
-					ExternalID: apiutils.Of(fmt.Sprintf("page-experiment-ext-%d", i)),
+					Name:       new(fmt.Sprintf("page-experiment-%d", i)),
+					ExternalID: new(fmt.Sprintf("page-experiment-ext-%d", i)),
 				},
 			}
 			_, err := repo.Save(experiment)
@@ -498,7 +497,7 @@ func TestExperimentRepository(t *testing.T) {
 	t.Run("TestEmptyResults", func(t *testing.T) {
 		// Test listing with filter that returns no results
 		listOptions := models.ExperimentListOptions{
-			Name: apiutils.Of("non-existent-experiment"),
+			Name: new("non-existent-experiment"),
 		}
 
 		result, err := repo.List(listOptions)

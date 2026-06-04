@@ -5,7 +5,6 @@ import (
 
 	"github.com/kubeflow/hub/catalog/internal/catalog/mcpcatalog/models"
 	"github.com/kubeflow/hub/catalog/internal/converter"
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	dbmodels "github.com/kubeflow/hub/internal/platform/db/entity"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -39,10 +38,10 @@ func TestConvertDbMCPToolToOpenapi_StripsQualifiedPrefix(t *testing.T) {
 			accessType := "read_only"
 			tool := &models.MCPServerToolImpl{
 				Attributes: &models.MCPServerToolAttributes{
-					Name: apiutils.Of(tc.storedName),
+					Name: new(tc.storedName),
 				},
 				Properties: &[]dbmodels.Properties{
-					{Name: "accessType", StringValue: apiutils.Of(accessType)},
+					{Name: "accessType", StringValue: new(accessType)},
 				},
 			}
 

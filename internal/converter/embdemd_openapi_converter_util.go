@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/golang/glog"
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	"github.com/kubeflow/hub/internal/db/models"
 	"github.com/kubeflow/hub/pkg/api"
 	"github.com/kubeflow/hub/pkg/openapi"
@@ -430,7 +429,7 @@ func MapEmbedMDURIModelArtifact(source *models.ModelArtifactAttributes) *string 
 }
 
 func MapEmbedMDArtifactTypeModelArtifact(source *models.ModelArtifactAttributes) *string {
-	return apiutils.Of("model-artifact")
+	return new("model-artifact")
 }
 
 func MapEmbedMDPropertyModelFormatName(source *[]models.Properties) *string {
@@ -558,7 +557,7 @@ func MapEmbedMDURIDocArtifact(source *models.DocArtifactAttributes) *string {
 }
 
 func MapEmbedMDArtifactTypeDocArtifact(source *models.DocArtifactAttributes) *string {
-	return apiutils.Of("doc-artifact")
+	return new("doc-artifact")
 }
 
 func MapEmbedMDExternalIDDocArtifact(source *models.DocArtifactAttributes) *string {
@@ -804,7 +803,7 @@ func MapEmbedMDURIDataSet(source *models.DataSetAttributes) *string {
 }
 
 func MapEmbedMDArtifactTypeDataSet(source *models.DataSetAttributes) *string {
-	return apiutils.Of("dataset-artifact")
+	return new("dataset-artifact")
 }
 
 func MapEmbedMDExternalIDDataSet(source *models.DataSetAttributes) *string {
@@ -833,7 +832,7 @@ func MapEmbedMDStateDataSet(source *models.DataSetAttributes) (*openapi.Artifact
 
 // Metric mapping functions
 func MapEmbedMDArtifactTypeMetric(source *models.MetricAttributes) *string {
-	return apiutils.Of("metric")
+	return new("metric")
 }
 
 func MapEmbedMDExternalIDMetric(source *models.MetricAttributes) *string {
@@ -917,7 +916,7 @@ func MapEmbedMDPropertyParameterTypeParameter(source *[]models.Properties) (*ope
 
 // Parameter mapping functions
 func MapEmbedMDArtifactTypeParameter(source *models.ParameterAttributes) *string {
-	return apiutils.Of("parameter")
+	return new("parameter")
 }
 
 func MapEmbedMDExternalIDParameter(source *models.ParameterAttributes) *string {

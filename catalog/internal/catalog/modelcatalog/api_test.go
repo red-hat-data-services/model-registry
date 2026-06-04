@@ -14,7 +14,6 @@ import (
 	"github.com/kubeflow/hub/catalog/internal/catalog/modelcatalog/models"
 	sharedmodels "github.com/kubeflow/hub/catalog/internal/db/models"
 	apimodels "github.com/kubeflow/hub/catalog/pkg/openapi"
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	mrmodels "github.com/kubeflow/hub/internal/platform/db/entity"
 	"github.com/stretchr/testify/assert"
 )
@@ -356,7 +355,7 @@ func TestLoadCatalogSourcesWithMockRepositories(t *testing.T) {
 				CatalogSource: apimodels.CatalogSource{
 					Id:      "test-catalog",
 					Name:    "Test Catalog",
-					Enabled: apiutils.Of(true),
+					Enabled: new(true),
 				},
 				Type: testProviderName,
 				Properties: map[string]any{
@@ -472,7 +471,7 @@ func TestLoadCatalogSourcesWithRepositoryErrors(t *testing.T) {
 				CatalogSource: apimodels.CatalogSource{
 					Id:      "test-catalog",
 					Name:    "Test Catalog",
-					Enabled: apiutils.Of(true),
+					Enabled: new(true),
 				},
 				Type: testProviderName,
 			},

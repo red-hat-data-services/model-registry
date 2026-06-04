@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/kubeflow/hub/catalog/internal/catalog/modelcatalog/models"
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	dbmodels "github.com/kubeflow/hub/internal/platform/db/entity"
 	"github.com/kubeflow/hub/internal/testutils"
 	"github.com/stretchr/testify/assert"
@@ -29,8 +28,8 @@ func TestCatalogMetricsArtifactRepository(t *testing.T) {
 		// First create a catalog model for attribution
 		catalogModel := &models.CatalogModelImpl{
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("test-catalog-model-for-metrics"),
-				ExternalID: apiutils.Of("catalog-model-metrics-ext-123"),
+				Name:       new("test-catalog-model-for-metrics"),
+				ExternalID: new("catalog-model-metrics-ext-123"),
 			},
 		}
 		savedCatalogModel, err := catalogModelRepo.Save(catalogModel)
@@ -39,20 +38,20 @@ func TestCatalogMetricsArtifactRepository(t *testing.T) {
 		// Test creating a new catalog metrics artifact
 		catalogMetricsArtifact := &models.CatalogMetricsArtifactImpl{
 			Attributes: &models.CatalogMetricsArtifactAttributes{
-				Name:        apiutils.Of("test-catalog-metrics-artifact"),
-				ExternalID:  apiutils.Of("catalog-metrics-ext-123"),
+				Name:        new("test-catalog-metrics-artifact"),
+				ExternalID:  new("catalog-metrics-ext-123"),
 				MetricsType: models.MetricsTypeAccuracy,
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Test catalog metrics artifact description"),
+					StringValue: new("Test catalog metrics artifact description"),
 				},
 			},
 			CustomProperties: &[]dbmodels.Properties{
 				{
 					Name:        "custom-metrics-prop",
-					StringValue: apiutils.Of("custom-metrics-value"),
+					StringValue: new("custom-metrics-value"),
 				},
 			},
 		}
@@ -67,7 +66,7 @@ func TestCatalogMetricsArtifactRepository(t *testing.T) {
 
 		// Test updating the same catalog metrics artifact
 		catalogMetricsArtifact.ID = saved.GetID()
-		catalogMetricsArtifact.GetAttributes().Name = apiutils.Of("updated-catalog-metrics-artifact")
+		catalogMetricsArtifact.GetAttributes().Name = new("updated-catalog-metrics-artifact")
 		catalogMetricsArtifact.GetAttributes().MetricsType = models.MetricsTypePerformance
 		// Preserve CreateTimeSinceEpoch from the saved entity
 		catalogMetricsArtifact.GetAttributes().CreateTimeSinceEpoch = saved.GetAttributes().CreateTimeSinceEpoch
@@ -84,8 +83,8 @@ func TestCatalogMetricsArtifactRepository(t *testing.T) {
 		// First create a catalog model
 		catalogModel := &models.CatalogModelImpl{
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("test-catalog-model-for-getbyid-metrics"),
-				ExternalID: apiutils.Of("catalog-model-getbyid-metrics-ext"),
+				Name:       new("test-catalog-model-for-getbyid-metrics"),
+				ExternalID: new("catalog-model-getbyid-metrics-ext"),
 			},
 		}
 		savedCatalogModel, err := catalogModelRepo.Save(catalogModel)
@@ -94,8 +93,8 @@ func TestCatalogMetricsArtifactRepository(t *testing.T) {
 		// Create a catalog metrics artifact to retrieve
 		catalogMetricsArtifact := &models.CatalogMetricsArtifactImpl{
 			Attributes: &models.CatalogMetricsArtifactAttributes{
-				Name:        apiutils.Of("get-test-catalog-metrics-artifact"),
-				ExternalID:  apiutils.Of("get-catalog-metrics-ext-123"),
+				Name:        new("get-test-catalog-metrics-artifact"),
+				ExternalID:  new("get-catalog-metrics-ext-123"),
 				MetricsType: models.MetricsTypeAccuracy,
 			},
 		}
@@ -122,8 +121,8 @@ func TestCatalogMetricsArtifactRepository(t *testing.T) {
 		// Create a catalog model for the artifacts
 		catalogModel := &models.CatalogModelImpl{
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("test-catalog-model-for-list-metrics"),
-				ExternalID: apiutils.Of("catalog-model-list-metrics-ext"),
+				Name:       new("test-catalog-model-for-list-metrics"),
+				ExternalID: new("catalog-model-list-metrics-ext"),
 			},
 		}
 		savedCatalogModel, err := catalogModelRepo.Save(catalogModel)
@@ -133,22 +132,22 @@ func TestCatalogMetricsArtifactRepository(t *testing.T) {
 		testArtifacts := []*models.CatalogMetricsArtifactImpl{
 			{
 				Attributes: &models.CatalogMetricsArtifactAttributes{
-					Name:        apiutils.Of("list-catalog-metrics-artifact-1"),
-					ExternalID:  apiutils.Of("list-catalog-metrics-ext-1"),
+					Name:        new("list-catalog-metrics-artifact-1"),
+					ExternalID:  new("list-catalog-metrics-ext-1"),
 					MetricsType: models.MetricsTypeAccuracy,
 				},
 			},
 			{
 				Attributes: &models.CatalogMetricsArtifactAttributes{
-					Name:        apiutils.Of("list-catalog-metrics-artifact-2"),
-					ExternalID:  apiutils.Of("list-catalog-metrics-ext-2"),
+					Name:        new("list-catalog-metrics-artifact-2"),
+					ExternalID:  new("list-catalog-metrics-ext-2"),
 					MetricsType: models.MetricsTypePerformance,
 				},
 			},
 			{
 				Attributes: &models.CatalogMetricsArtifactAttributes{
-					Name:        apiutils.Of("list-catalog-metrics-artifact-3"),
-					ExternalID:  apiutils.Of("list-catalog-metrics-ext-3"),
+					Name:        new("list-catalog-metrics-artifact-3"),
+					ExternalID:  new("list-catalog-metrics-ext-3"),
 					MetricsType: models.MetricsTypePerformance,
 				},
 			},
@@ -209,8 +208,8 @@ func TestCatalogMetricsArtifactRepository(t *testing.T) {
 		// Create a catalog model
 		catalogModel := &models.CatalogModelImpl{
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("test-catalog-model-for-props-metrics"),
-				ExternalID: apiutils.Of("catalog-model-props-metrics-ext"),
+				Name:       new("test-catalog-model-for-props-metrics"),
+				ExternalID: new("catalog-model-props-metrics-ext"),
 			},
 		}
 		savedCatalogModel, err := catalogModelRepo.Save(catalogModel)
@@ -219,28 +218,28 @@ func TestCatalogMetricsArtifactRepository(t *testing.T) {
 		// Create a catalog metrics artifact with both properties and custom properties
 		catalogMetricsArtifact := &models.CatalogMetricsArtifactImpl{
 			Attributes: &models.CatalogMetricsArtifactAttributes{
-				Name:        apiutils.Of("props-test-catalog-metrics-artifact"),
-				ExternalID:  apiutils.Of("props-catalog-metrics-ext-123"),
+				Name:        new("props-test-catalog-metrics-artifact"),
+				ExternalID:  new("props-catalog-metrics-ext-123"),
 				MetricsType: models.MetricsTypeAccuracy,
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "version",
-					StringValue: apiutils.Of("1.0.0"),
+					StringValue: new("1.0.0"),
 				},
 				{
 					Name:        "value",
-					DoubleValue: apiutils.Of(0.95),
+					DoubleValue: new(0.95),
 				},
 			},
 			CustomProperties: &[]dbmodels.Properties{
 				{
 					Name:        "team",
-					StringValue: apiutils.Of("catalog-metrics-team"),
+					StringValue: new("catalog-metrics-team"),
 				},
 				{
 					Name:      "is_validated",
-					BoolValue: apiutils.Of(true),
+					BoolValue: new(true),
 				},
 			},
 		}
@@ -302,14 +301,14 @@ func TestCatalogMetricsArtifactRepository(t *testing.T) {
 		// Test creating a catalog metrics artifact without parent resource attribution
 		catalogMetricsArtifact := &models.CatalogMetricsArtifactImpl{
 			Attributes: &models.CatalogMetricsArtifactAttributes{
-				Name:        apiutils.Of("standalone-catalog-metrics-artifact"),
-				ExternalID:  apiutils.Of("standalone-catalog-metrics-ext"),
+				Name:        new("standalone-catalog-metrics-artifact"),
+				ExternalID:  new("standalone-catalog-metrics-ext"),
 				MetricsType: models.MetricsTypeAccuracy,
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Standalone catalog metrics artifact without parent"),
+					StringValue: new("Standalone catalog metrics artifact without parent"),
 				},
 			},
 		}
@@ -332,8 +331,8 @@ func TestCatalogMetricsArtifactRepository(t *testing.T) {
 		// Create a catalog model
 		catalogModel := &models.CatalogModelImpl{
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("test-catalog-model-for-ordering-metrics"),
-				ExternalID: apiutils.Of("catalog-model-ordering-metrics-ext"),
+				Name:       new("test-catalog-model-for-ordering-metrics"),
+				ExternalID: new("catalog-model-ordering-metrics-ext"),
 			},
 		}
 		savedCatalogModel, err := catalogModelRepo.Save(catalogModel)
@@ -342,8 +341,8 @@ func TestCatalogMetricsArtifactRepository(t *testing.T) {
 		// Create artifacts sequentially with time delays to ensure deterministic ordering
 		artifact1 := &models.CatalogMetricsArtifactImpl{
 			Attributes: &models.CatalogMetricsArtifactAttributes{
-				Name:        apiutils.Of("time-test-catalog-metrics-artifact-1"),
-				ExternalID:  apiutils.Of("time-catalog-metrics-ext-1"),
+				Name:        new("time-test-catalog-metrics-artifact-1"),
+				ExternalID:  new("time-catalog-metrics-ext-1"),
 				MetricsType: models.MetricsTypeAccuracy,
 			},
 		}
@@ -355,8 +354,8 @@ func TestCatalogMetricsArtifactRepository(t *testing.T) {
 
 		artifact2 := &models.CatalogMetricsArtifactImpl{
 			Attributes: &models.CatalogMetricsArtifactAttributes{
-				Name:        apiutils.Of("time-test-catalog-metrics-artifact-2"),
-				ExternalID:  apiutils.Of("time-catalog-metrics-ext-2"),
+				Name:        new("time-test-catalog-metrics-artifact-2"),
+				ExternalID:  new("time-catalog-metrics-ext-2"),
 				MetricsType: models.MetricsTypePerformance,
 			},
 		}
@@ -366,7 +365,7 @@ func TestCatalogMetricsArtifactRepository(t *testing.T) {
 		// Test ordering by CREATE_TIME
 		listOptions := models.CatalogMetricsArtifactListOptions{
 			Pagination: dbmodels.Pagination{
-				OrderBy: apiutils.Of("CREATE_TIME"),
+				OrderBy: new("CREATE_TIME"),
 			},
 		}
 
@@ -398,12 +397,12 @@ func TestCatalogMetricsArtifactRepository(t *testing.T) {
 
 	t.Run("TestMetricsTypeField", func(t *testing.T) {
 		// Test various metrics types
-		metricsTypes := []models.MetricsType{models.MetricsTypeAccuracy, models.MetricsTypePerformance}
+		metricsTypes := []models.MetricsType{models.MetricsTypeAccuracy, models.MetricsTypePerformance, models.MetricsTypeSecurityMetrics}
 
 		catalogModel := &models.CatalogModelImpl{
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("test-catalog-model-for-metrics-types"),
-				ExternalID: apiutils.Of("catalog-model-metrics-types-ext"),
+				Name:       new("test-catalog-model-for-metrics-types"),
+				ExternalID: new("catalog-model-metrics-types-ext"),
 			},
 		}
 		savedCatalogModel, err := catalogModelRepo.Save(catalogModel)
@@ -412,8 +411,8 @@ func TestCatalogMetricsArtifactRepository(t *testing.T) {
 		for i, metricsType := range metricsTypes {
 			artifact := &models.CatalogMetricsArtifactImpl{
 				Attributes: &models.CatalogMetricsArtifactAttributes{
-					Name:        apiutils.Of(fmt.Sprintf("metrics-type-test-%d", i)),
-					ExternalID:  apiutils.Of(fmt.Sprintf("metrics-type-ext-%d", i)),
+					Name:        new(fmt.Sprintf("metrics-type-test-%d", i)),
+					ExternalID:  new(fmt.Sprintf("metrics-type-ext-%d", i)),
 					MetricsType: metricsType,
 				},
 			}
@@ -433,8 +432,8 @@ func TestCatalogMetricsArtifactRepository(t *testing.T) {
 		// Create a catalog model
 		catalogModel := &models.CatalogModelImpl{
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("test-catalog-model-for-typeid-metrics"),
-				ExternalID: apiutils.Of("catalog-model-typeid-metrics-ext"),
+				Name:       new("test-catalog-model-for-typeid-metrics"),
+				ExternalID: new("catalog-model-typeid-metrics-ext"),
 			},
 		}
 		savedCatalogModel, err := catalogModelRepo.Save(catalogModel)
@@ -444,8 +443,8 @@ func TestCatalogMetricsArtifactRepository(t *testing.T) {
 		catalogMetricsArtifact := &models.CatalogMetricsArtifactImpl{
 			// Intentionally not setting TypeID to test auto-setting
 			Attributes: &models.CatalogMetricsArtifactAttributes{
-				Name:        apiutils.Of("typeid-test-metrics-artifact"),
-				ExternalID:  apiutils.Of("typeid-metrics-ext-123"),
+				Name:        new("typeid-test-metrics-artifact"),
+				ExternalID:  new("typeid-metrics-ext-123"),
 				MetricsType: models.MetricsTypeAccuracy,
 			},
 		}
@@ -462,8 +461,8 @@ func TestCatalogMetricsArtifactRepository(t *testing.T) {
 		catalogMetricsArtifact2 := &models.CatalogMetricsArtifactImpl{
 			TypeID: &explicitTypeID,
 			Attributes: &models.CatalogMetricsArtifactAttributes{
-				Name:        apiutils.Of("explicit-typeid-metrics-artifact"),
-				ExternalID:  apiutils.Of("explicit-typeid-metrics-ext-123"),
+				Name:        new("explicit-typeid-metrics-artifact"),
+				ExternalID:  new("explicit-typeid-metrics-ext-123"),
 				MetricsType: models.MetricsTypePerformance,
 			},
 		}
@@ -479,8 +478,8 @@ func TestCatalogMetricsArtifactRepository(t *testing.T) {
 		// Create a catalog model
 		catalogModel := &models.CatalogModelImpl{
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("test-catalog-model-for-name-matching-metrics"),
-				ExternalID: apiutils.Of("catalog-model-name-match-metrics-ext"),
+				Name:       new("test-catalog-model-for-name-matching-metrics"),
+				ExternalID: new("catalog-model-name-match-metrics-ext"),
 			},
 		}
 		savedCatalogModel, err := catalogModelRepo.Save(catalogModel)
@@ -490,14 +489,14 @@ func TestCatalogMetricsArtifactRepository(t *testing.T) {
 		artifactName := "name-matching-metrics-artifact"
 		catalogMetricsArtifact1 := &models.CatalogMetricsArtifactImpl{
 			Attributes: &models.CatalogMetricsArtifactAttributes{
-				Name:        apiutils.Of(artifactName),
-				ExternalID:  apiutils.Of("name-match-metrics-ext-123"),
+				Name:        new(artifactName),
+				ExternalID:  new("name-match-metrics-ext-123"),
 				MetricsType: models.MetricsTypeAccuracy,
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "accuracy",
-					StringValue: apiutils.Of("0.95"),
+					StringValue: new("0.95"),
 				},
 			},
 		}
@@ -512,14 +511,14 @@ func TestCatalogMetricsArtifactRepository(t *testing.T) {
 		// Create second artifact with same name (should update existing)
 		catalogMetricsArtifact2 := &models.CatalogMetricsArtifactImpl{
 			Attributes: &models.CatalogMetricsArtifactAttributes{
-				Name:        apiutils.Of(artifactName), // Same name
-				ExternalID:  apiutils.Of("name-match-metrics-ext-456"),
+				Name:        new(artifactName), // Same name
+				ExternalID:  new("name-match-metrics-ext-456"),
 				MetricsType: models.MetricsTypePerformance, // Different metrics type
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "latency",
-					StringValue: apiutils.Of("50ms"),
+					StringValue: new("50ms"),
 				},
 			},
 		}
@@ -556,8 +555,8 @@ func TestCatalogMetricsArtifactRepository(t *testing.T) {
 		// Test that artifact with different name creates new entity
 		catalogMetricsArtifact3 := &models.CatalogMetricsArtifactImpl{
 			Attributes: &models.CatalogMetricsArtifactAttributes{
-				Name:        apiutils.Of("different-name-metrics-artifact"),
-				ExternalID:  apiutils.Of("different-name-metrics-ext-789"),
+				Name:        new("different-name-metrics-artifact"),
+				ExternalID:  new("different-name-metrics-ext-789"),
 				MetricsType: models.MetricsTypeAccuracy,
 			},
 		}
@@ -575,8 +574,8 @@ func TestCatalogMetricsArtifactRepository(t *testing.T) {
 		// Create a catalog model
 		catalogModel := &models.CatalogModelImpl{
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("test-catalog-model-for-no-match-metrics"),
-				ExternalID: apiutils.Of("catalog-model-no-match-metrics-ext"),
+				Name:       new("test-catalog-model-for-no-match-metrics"),
+				ExternalID: new("catalog-model-no-match-metrics-ext"),
 			},
 		}
 		savedCatalogModel, err := catalogModelRepo.Save(catalogModel)
@@ -585,8 +584,8 @@ func TestCatalogMetricsArtifactRepository(t *testing.T) {
 		// Test saving artifact when no existing artifact with same name exists
 		catalogMetricsArtifact := &models.CatalogMetricsArtifactImpl{
 			Attributes: &models.CatalogMetricsArtifactAttributes{
-				Name:        apiutils.Of("unique-metrics-artifact-name"),
-				ExternalID:  apiutils.Of("unique-metrics-ext-123"),
+				Name:        new("unique-metrics-artifact-name"),
+				ExternalID:  new("unique-metrics-ext-123"),
 				MetricsType: models.MetricsTypeAccuracy,
 			},
 		}
@@ -603,8 +602,8 @@ func TestCatalogMetricsArtifactRepository(t *testing.T) {
 		// Create a catalog model
 		catalogModel := &models.CatalogModelImpl{
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("test-catalog-model-for-invalid-metrics"),
-				ExternalID: apiutils.Of("catalog-model-invalid-metrics-ext"),
+				Name:       new("test-catalog-model-for-invalid-metrics"),
+				ExternalID: new("catalog-model-invalid-metrics-ext"),
 			},
 		}
 		savedCatalogModel, err := catalogModelRepo.Save(catalogModel)
@@ -613,8 +612,8 @@ func TestCatalogMetricsArtifactRepository(t *testing.T) {
 		// Test saving artifact with invalid metrics type (should fail)
 		catalogMetricsArtifact := &models.CatalogMetricsArtifactImpl{
 			Attributes: &models.CatalogMetricsArtifactAttributes{
-				Name:        apiutils.Of("invalid-metrics-type-artifact"),
-				ExternalID:  apiutils.Of("invalid-metrics-ext-123"),
+				Name:        new("invalid-metrics-type-artifact"),
+				ExternalID:  new("invalid-metrics-ext-123"),
 				MetricsType: models.MetricsType("invalid-type"),
 			},
 		}
@@ -622,5 +621,64 @@ func TestCatalogMetricsArtifactRepository(t *testing.T) {
 		_, err = repo.Save(catalogMetricsArtifact, savedCatalogModel.GetID())
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "unknown metrics type")
+	})
+
+	t.Run("TestBatchSaveWithSecurityMetrics", func(t *testing.T) {
+		catalogModel := &models.CatalogModelImpl{
+			Attributes: &models.CatalogModelAttributes{
+				Name:       new("test-catalog-model-for-batch-security"),
+				ExternalID: new("catalog-model-batch-security-ext"),
+			},
+		}
+		savedCatalogModel, err := catalogModelRepo.Save(catalogModel)
+		require.NoError(t, err)
+
+		artifacts := []models.CatalogMetricsArtifact{
+			&models.CatalogMetricsArtifactImpl{
+				Attributes: &models.CatalogMetricsArtifactAttributes{
+					Name:        new("batch-security-artifact-1"),
+					ExternalID:  new("batch-security-ext-1"),
+					MetricsType: models.MetricsTypeSecurityMetrics,
+				},
+			},
+			&models.CatalogMetricsArtifactImpl{
+				Attributes: &models.CatalogMetricsArtifactAttributes{
+					Name:        new("batch-security-artifact-2"),
+					ExternalID:  new("batch-security-ext-2"),
+					MetricsType: models.MetricsTypeSecurityMetrics,
+				},
+				CustomProperties: &[]dbmodels.Properties{
+					{Name: "attack_success_rate", DoubleValue: new(0.15)},
+					{Name: "pass", BoolValue: new(true)},
+				},
+			},
+		}
+
+		saved, err := repo.BatchSave(artifacts, savedCatalogModel.GetID())
+		require.NoError(t, err)
+		require.Len(t, saved, 2)
+		for _, a := range saved {
+			assert.NotNil(t, a.GetID())
+			assert.Equal(t, models.MetricsTypeSecurityMetrics, a.GetAttributes().MetricsType)
+		}
+
+		// Verify retrieval
+		retrieved1, err := repo.GetByID(*saved[0].GetID())
+		require.NoError(t, err)
+		assert.Equal(t, models.MetricsTypeSecurityMetrics, retrieved1.GetAttributes().MetricsType)
+
+		retrieved2, err := repo.GetByID(*saved[1].GetID())
+		require.NoError(t, err)
+		assert.Equal(t, models.MetricsTypeSecurityMetrics, retrieved2.GetAttributes().MetricsType)
+		require.NotNil(t, retrieved2.GetCustomProperties())
+		props := *retrieved2.GetCustomProperties()
+		var foundRate bool
+		for _, p := range props {
+			if p.Name == "attack_success_rate" {
+				foundRate = true
+				assert.Equal(t, 0.15, *p.DoubleValue)
+			}
+		}
+		assert.True(t, foundRate, "attack_success_rate custom property should be present")
 	})
 }

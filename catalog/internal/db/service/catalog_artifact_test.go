@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/kubeflow/hub/catalog/internal/testhelpers"
 	modelcatalogmodels "github.com/kubeflow/hub/catalog/internal/catalog/modelcatalog/models"
 	modelcatalogservice "github.com/kubeflow/hub/catalog/internal/catalog/modelcatalog/service"
 	"github.com/kubeflow/hub/catalog/internal/db/models"
 	"github.com/kubeflow/hub/catalog/internal/db/service"
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	dbmodels "github.com/kubeflow/hub/internal/platform/db/entity"
 	"github.com/kubeflow/hub/internal/testutils"
 	"github.com/stretchr/testify/assert"
@@ -31,7 +31,7 @@ const (
 )
 
 func TestCatalogArtifactRepository(t *testing.T) {
-	sharedDB, cleanup := testutils.SetupPostgresWithMigrations(t, service.DatastoreSpec())
+	sharedDB, cleanup := testutils.SetupPostgresWithMigrations(t, testhelpers.MustDatastoreSpec(t))
 	defer cleanup()
 
 	// Get the catalog artifact type IDs
@@ -53,10 +53,10 @@ func TestCatalogArtifactRepository(t *testing.T) {
 
 	// Create shared test data
 	catalogModel := &modelcatalogmodels.CatalogModelImpl{
-		TypeID: apiutils.Of(int32(catalogModelTypeID)),
+		TypeID: new(int32(catalogModelTypeID)),
 		Attributes: &modelcatalogmodels.CatalogModelAttributes{
-			Name:       apiutils.Of("test-catalog-model-for-artifacts"),
-			ExternalID: apiutils.Of("catalog-model-artifacts-ext-123"),
+			Name:       new("test-catalog-model-for-artifacts"),
+			ExternalID: new("catalog-model-artifacts-ext-123"),
 		},
 	}
 	savedCatalogModel, err := catalogModelRepo.Save(catalogModel)
@@ -65,12 +65,12 @@ func TestCatalogArtifactRepository(t *testing.T) {
 	t.Run("GetByID_ModelArtifact", func(t *testing.T) {
 		// Create a model artifact using the specific repository
 		modelArtifact := &modelcatalogmodels.CatalogModelArtifactImpl{
-			TypeID: apiutils.Of(int32(modelArtifactTypeID)),
+			TypeID: new(int32(modelArtifactTypeID)),
 			Attributes: &modelcatalogmodels.CatalogModelArtifactAttributes{
-				Name:         apiutils.Of("test-model-artifact-getbyid"),
-				ExternalID:   apiutils.Of("model-art-getbyid-ext-123"),
-				URI:          apiutils.Of("s3://test-bucket/model.bin"),
-				ArtifactType: apiutils.Of(modelcatalogmodels.CatalogModelArtifactType),
+				Name:         new("test-model-artifact-getbyid"),
+				ExternalID:   new("model-art-getbyid-ext-123"),
+				URI:          new("s3://test-bucket/model.bin"),
+				ArtifactType: new(modelcatalogmodels.CatalogModelArtifactType),
 			},
 		}
 		savedModelArtifact, err := modelArtifactRepo.Save(modelArtifact, savedCatalogModel.GetID())
@@ -91,12 +91,12 @@ func TestCatalogArtifactRepository(t *testing.T) {
 	t.Run("GetByID_MetricsArtifact", func(t *testing.T) {
 		// Create a metrics artifact using the specific repository
 		metricsArtifact := &modelcatalogmodels.CatalogMetricsArtifactImpl{
-			TypeID: apiutils.Of(int32(metricsArtifactTypeID)),
+			TypeID: new(int32(metricsArtifactTypeID)),
 			Attributes: &modelcatalogmodels.CatalogMetricsArtifactAttributes{
-				Name:         apiutils.Of("test-metrics-artifact-getbyid"),
-				ExternalID:   apiutils.Of("metrics-art-getbyid-ext-123"),
+				Name:         new("test-metrics-artifact-getbyid"),
+				ExternalID:   new("metrics-art-getbyid-ext-123"),
 				MetricsType:  modelcatalogmodels.MetricsTypeAccuracy,
-				ArtifactType: apiutils.Of("metrics-artifact"),
+				ArtifactType: new("metrics-artifact"),
 			},
 		}
 		savedMetricsArtifact, err := metricsArtifactRepo.Save(metricsArtifact, savedCatalogModel.GetID())
@@ -124,32 +124,32 @@ func TestCatalogArtifactRepository(t *testing.T) {
 	t.Run("List_AllArtifacts", func(t *testing.T) {
 		// Create test artifacts of both types
 		modelArtifact1 := &modelcatalogmodels.CatalogModelArtifactImpl{
-			TypeID: apiutils.Of(int32(modelArtifactTypeID)),
+			TypeID: new(int32(modelArtifactTypeID)),
 			Attributes: &modelcatalogmodels.CatalogModelArtifactAttributes{
-				Name:         apiutils.Of("test-model-artifact-list-1"),
-				ExternalID:   apiutils.Of("model-list-1-ext"),
-				URI:          apiutils.Of("s3://test/model1.bin"),
-				ArtifactType: apiutils.Of(modelcatalogmodels.CatalogModelArtifactType),
+				Name:         new("test-model-artifact-list-1"),
+				ExternalID:   new("model-list-1-ext"),
+				URI:          new("s3://test/model1.bin"),
+				ArtifactType: new(modelcatalogmodels.CatalogModelArtifactType),
 			},
 		}
 
 		modelArtifact2 := &modelcatalogmodels.CatalogModelArtifactImpl{
-			TypeID: apiutils.Of(int32(modelArtifactTypeID)),
+			TypeID: new(int32(modelArtifactTypeID)),
 			Attributes: &modelcatalogmodels.CatalogModelArtifactAttributes{
-				Name:         apiutils.Of("test-model-artifact-list-2"),
-				ExternalID:   apiutils.Of("model-list-2-ext"),
-				URI:          apiutils.Of("s3://test/model2.bin"),
-				ArtifactType: apiutils.Of(modelcatalogmodels.CatalogModelArtifactType),
+				Name:         new("test-model-artifact-list-2"),
+				ExternalID:   new("model-list-2-ext"),
+				URI:          new("s3://test/model2.bin"),
+				ArtifactType: new(modelcatalogmodels.CatalogModelArtifactType),
 			},
 		}
 
 		metricsArtifact1 := &modelcatalogmodels.CatalogMetricsArtifactImpl{
-			TypeID: apiutils.Of(int32(metricsArtifactTypeID)),
+			TypeID: new(int32(metricsArtifactTypeID)),
 			Attributes: &modelcatalogmodels.CatalogMetricsArtifactAttributes{
-				Name:         apiutils.Of("test-metrics-artifact-list-1"),
-				ExternalID:   apiutils.Of("metrics-list-1-ext"),
+				Name:         new("test-metrics-artifact-list-1"),
+				ExternalID:   new("metrics-list-1-ext"),
 				MetricsType:  modelcatalogmodels.MetricsTypeAccuracy,
-				ArtifactType: apiutils.Of("metrics-artifact"),
+				ArtifactType: new("metrics-artifact"),
 			},
 		}
 
@@ -237,12 +237,12 @@ func TestCatalogArtifactRepository(t *testing.T) {
 	t.Run("List_FilterByExternalID", func(t *testing.T) {
 		// Create artifact with specific external ID for filtering
 		testArtifact := &modelcatalogmodels.CatalogMetricsArtifactImpl{
-			TypeID: apiutils.Of(int32(metricsArtifactTypeID)),
+			TypeID: new(int32(metricsArtifactTypeID)),
 			Attributes: &modelcatalogmodels.CatalogMetricsArtifactAttributes{
-				Name:         apiutils.Of("external-id-filter-test"),
-				ExternalID:   apiutils.Of("unique-external-id-123"),
+				Name:         new("external-id-filter-test"),
+				ExternalID:   new("unique-external-id-123"),
 				MetricsType:  modelcatalogmodels.MetricsTypePerformance,
-				ArtifactType: apiutils.Of("metrics-artifact"),
+				ArtifactType: new("metrics-artifact"),
 			},
 		}
 		savedArtifact, err := metricsArtifactRepo.Save(testArtifact, savedCatalogModel.GetID())
@@ -270,12 +270,12 @@ func TestCatalogArtifactRepository(t *testing.T) {
 		// Create multiple artifacts for pagination testing
 		for i := range 5 {
 			artifact := &modelcatalogmodels.CatalogModelArtifactImpl{
-				TypeID: apiutils.Of(int32(modelArtifactTypeID)),
+				TypeID: new(int32(modelArtifactTypeID)),
 				Attributes: &modelcatalogmodels.CatalogModelArtifactAttributes{
-					Name:         apiutils.Of(fmt.Sprintf("pagination-test-%d", i)),
-					ExternalID:   apiutils.Of(fmt.Sprintf("pagination-ext-%d", i)),
-					URI:          apiutils.Of(fmt.Sprintf("s3://test/pagination-%d.bin", i)),
-					ArtifactType: apiutils.Of(modelcatalogmodels.CatalogModelArtifactType),
+					Name:         new(fmt.Sprintf("pagination-test-%d", i)),
+					ExternalID:   new(fmt.Sprintf("pagination-ext-%d", i)),
+					URI:          new(fmt.Sprintf("s3://test/pagination-%d.bin", i)),
+					ArtifactType: new(modelcatalogmodels.CatalogModelArtifactType),
 				},
 			}
 			_, err := modelArtifactRepo.Save(artifact, savedCatalogModel.GetID())
@@ -288,7 +288,7 @@ func TestCatalogArtifactRepository(t *testing.T) {
 			ParentResourceID: savedCatalogModel.GetID(),
 			Pagination: dbmodels.Pagination{
 				PageSize: &pageSize,
-				OrderBy:  apiutils.Of("ID"),
+				OrderBy:  new("ID"),
 			},
 		}
 
@@ -318,21 +318,21 @@ func TestCatalogArtifactRepository(t *testing.T) {
 		customProps := []dbmodels.Properties{
 			{
 				Name:        "custom_prop_1",
-				StringValue: apiutils.Of("custom_value_1"),
+				StringValue: new("custom_value_1"),
 			},
 			{
 				Name:        "custom_prop_2",
-				StringValue: apiutils.Of("custom_value_2"),
+				StringValue: new("custom_value_2"),
 			},
 		}
 
 		artifactWithCustomProps := &modelcatalogmodels.CatalogModelArtifactImpl{
-			TypeID: apiutils.Of(int32(modelArtifactTypeID)),
+			TypeID: new(int32(modelArtifactTypeID)),
 			Attributes: &modelcatalogmodels.CatalogModelArtifactAttributes{
-				Name:         apiutils.Of("artifact-with-custom-props"),
-				ExternalID:   apiutils.Of("custom-props-ext"),
-				URI:          apiutils.Of("s3://test/custom-props.bin"),
-				ArtifactType: apiutils.Of(modelcatalogmodels.CatalogModelArtifactType),
+				Name:         new("artifact-with-custom-props"),
+				ExternalID:   new("custom-props-ext"),
+				URI:          new("s3://test/custom-props.bin"),
+				ArtifactType: new(modelcatalogmodels.CatalogModelArtifactType),
 			},
 			CustomProperties: &customProps,
 		}
@@ -376,12 +376,12 @@ func TestCatalogArtifactRepository(t *testing.T) {
 
 		// Create a metrics artifact first using the complete repo
 		metricsArtifact := &modelcatalogmodels.CatalogMetricsArtifactImpl{
-			TypeID: apiutils.Of(int32(metricsArtifactTypeID)),
+			TypeID: new(int32(metricsArtifactTypeID)),
 			Attributes: &modelcatalogmodels.CatalogMetricsArtifactAttributes{
-				Name:         apiutils.Of("test-mapping-error"),
-				ExternalID:   apiutils.Of("mapping-error-ext"),
+				Name:         new("test-mapping-error"),
+				ExternalID:   new("mapping-error-ext"),
 				MetricsType:  modelcatalogmodels.MetricsTypeAccuracy,
-				ArtifactType: apiutils.Of("metrics-artifact"),
+				ArtifactType: new("metrics-artifact"),
 			},
 		}
 		savedMetricsArtifact, err := metricsArtifactRepo.Save(metricsArtifact, savedCatalogModel.GetID())
@@ -396,10 +396,10 @@ func TestCatalogArtifactRepository(t *testing.T) {
 	t.Run("TestNameOrdering", func(t *testing.T) {
 		// Create a new model for this test
 		testModel := &modelcatalogmodels.CatalogModelImpl{
-			TypeID: apiutils.Of(int32(catalogModelTypeID)),
+			TypeID: new(int32(catalogModelTypeID)),
 			Attributes: &modelcatalogmodels.CatalogModelAttributes{
-				Name:       apiutils.Of("test-model-for-name-ordering"),
-				ExternalID: apiutils.Of("test-model-name-ordering-ext"),
+				Name:       new("test-model-for-name-ordering"),
+				ExternalID: new("test-model-name-ordering-ext"),
 			},
 		}
 		savedTestModel, err := catalogModelRepo.Save(testModel)
@@ -410,21 +410,21 @@ func TestCatalogArtifactRepository(t *testing.T) {
 			name *string
 			desc string
 		}{
-			{apiutils.Of("zebra-artifact"), "zebra"},
-			{apiutils.Of("alpha-artifact"), "alpha"},
-			{apiutils.Of("beta-artifact"), "beta"},
+			{new("zebra-artifact"), "zebra"},
+			{new("alpha-artifact"), "alpha"},
+			{new("beta-artifact"), "beta"},
 			{nil, "null-name"}, // Artifact with no name (like real model artifacts)
-			{apiutils.Of("gamma-artifact"), "gamma"},
+			{new("gamma-artifact"), "gamma"},
 		}
 
 		for _, artifact := range testArtifacts {
 			metricsArtifact := &modelcatalogmodels.CatalogMetricsArtifactImpl{
-				TypeID: apiutils.Of(int32(metricsArtifactTypeID)),
+				TypeID: new(int32(metricsArtifactTypeID)),
 				Attributes: &modelcatalogmodels.CatalogMetricsArtifactAttributes{
 					Name:         artifact.name,
-					ExternalID:   apiutils.Of(fmt.Sprintf("name-test-%s", artifact.desc)),
+					ExternalID:   new(fmt.Sprintf("name-test-%s", artifact.desc)),
 					MetricsType:  modelcatalogmodels.MetricsTypePerformance,
-					ArtifactType: apiutils.Of("metrics-artifact"),
+					ArtifactType: new("metrics-artifact"),
 				},
 			}
 			_, err := metricsArtifactRepo.Save(metricsArtifact, savedTestModel.GetID())
@@ -435,8 +435,8 @@ func TestCatalogArtifactRepository(t *testing.T) {
 		listOptions := models.CatalogArtifactListOptions{
 			ParentResourceID: savedTestModel.GetID(),
 			Pagination: dbmodels.Pagination{
-				OrderBy:   apiutils.Of("NAME"),
-				SortOrder: apiutils.Of("ASC"),
+				OrderBy:   new("NAME"),
+				SortOrder: new("ASC"),
 			},
 		}
 		result, err := repo.List(listOptions)
@@ -495,8 +495,8 @@ func TestCatalogArtifactRepository(t *testing.T) {
 		listOptions = models.CatalogArtifactListOptions{
 			ParentResourceID: savedTestModel.GetID(),
 			Pagination: dbmodels.Pagination{
-				OrderBy:   apiutils.Of("NAME"),
-				SortOrder: apiutils.Of("DESC"),
+				OrderBy:   new("NAME"),
+				SortOrder: new("DESC"),
 			},
 		}
 		result, err = repo.List(listOptions)
@@ -547,10 +547,10 @@ func TestCatalogArtifactRepository(t *testing.T) {
 	t.Run("TestNameOrderingPagination", func(t *testing.T) {
 		// Create a new model for this test
 		testModel := &modelcatalogmodels.CatalogModelImpl{
-			TypeID: apiutils.Of(int32(catalogModelTypeID)),
+			TypeID: new(int32(catalogModelTypeID)),
 			Attributes: &modelcatalogmodels.CatalogModelAttributes{
-				Name:       apiutils.Of("test-model-for-name-pagination"),
-				ExternalID: apiutils.Of("test-model-name-pagination-ext"),
+				Name:       new("test-model-for-name-pagination"),
+				ExternalID: new("test-model-name-pagination-ext"),
 			},
 		}
 		savedTestModel, err := catalogModelRepo.Save(testModel)
@@ -567,12 +567,12 @@ func TestCatalogArtifactRepository(t *testing.T) {
 
 		for i, name := range artifactNames {
 			metricsArtifact := &modelcatalogmodels.CatalogMetricsArtifactImpl{
-				TypeID: apiutils.Of(int32(metricsArtifactTypeID)),
+				TypeID: new(int32(metricsArtifactTypeID)),
 				Attributes: &modelcatalogmodels.CatalogMetricsArtifactAttributes{
-					Name:         apiutils.Of(name),
-					ExternalID:   apiutils.Of(fmt.Sprintf("pagination-test-%d", i)),
+					Name:         new(name),
+					ExternalID:   new(fmt.Sprintf("pagination-test-%d", i)),
 					MetricsType:  modelcatalogmodels.MetricsTypePerformance,
-					ArtifactType: apiutils.Of("metrics-artifact"),
+					ArtifactType: new("metrics-artifact"),
 				},
 			}
 			_, err := metricsArtifactRepo.Save(metricsArtifact, savedTestModel.GetID())
@@ -584,8 +584,8 @@ func TestCatalogArtifactRepository(t *testing.T) {
 		listOptions := models.CatalogArtifactListOptions{
 			ParentResourceID: savedTestModel.GetID(),
 			Pagination: dbmodels.Pagination{
-				OrderBy:   apiutils.Of("NAME"),
-				SortOrder: apiutils.Of("ASC"),
+				OrderBy:   new("NAME"),
+				SortOrder: new("ASC"),
 				PageSize:  &pageSize,
 			},
 		}
@@ -654,8 +654,8 @@ func TestCatalogArtifactRepository(t *testing.T) {
 		listOptions = models.CatalogArtifactListOptions{
 			ParentResourceID: savedTestModel.GetID(),
 			Pagination: dbmodels.Pagination{
-				OrderBy:   apiutils.Of("NAME"),
-				SortOrder: apiutils.Of("DESC"),
+				OrderBy:   new("NAME"),
+				SortOrder: new("DESC"),
 				PageSize:  &pageSize,
 			},
 		}
@@ -693,10 +693,10 @@ func TestCatalogArtifactRepository(t *testing.T) {
 	t.Run("TestCustomPropertyOrdering_DoubleValue", func(t *testing.T) {
 		// Create a new model for this test
 		testModel := &modelcatalogmodels.CatalogModelImpl{
-			TypeID: apiutils.Of(int32(catalogModelTypeID)),
+			TypeID: new(int32(catalogModelTypeID)),
 			Attributes: &modelcatalogmodels.CatalogModelAttributes{
-				Name:       apiutils.Of("test-model-custom-property-ordering"),
-				ExternalID: apiutils.Of("test-model-custom-property-ext"),
+				Name:       new("test-model-custom-property-ordering"),
+				ExternalID: new("test-model-custom-property-ext"),
 			},
 		}
 		savedTestModel, err := catalogModelRepo.Save(testModel)
@@ -718,17 +718,17 @@ func TestCatalogArtifactRepository(t *testing.T) {
 			customProps := []dbmodels.Properties{
 				{
 					Name:        testPropertyAccuracy,
-					DoubleValue: apiutils.Of(tc.accuracy),
+					DoubleValue: new(tc.accuracy),
 				},
 			}
 
 			metricsArtifact := &modelcatalogmodels.CatalogMetricsArtifactImpl{
-				TypeID: apiutils.Of(int32(metricsArtifactTypeID)),
+				TypeID: new(int32(metricsArtifactTypeID)),
 				Attributes: &modelcatalogmodels.CatalogMetricsArtifactAttributes{
-					Name:         apiutils.Of(tc.name),
-					ExternalID:   apiutils.Of(fmt.Sprintf("custom-prop-test-%s", tc.name)),
+					Name:         new(tc.name),
+					ExternalID:   new(fmt.Sprintf("custom-prop-test-%s", tc.name)),
 					MetricsType:  modelcatalogmodels.MetricsTypeAccuracy,
-					ArtifactType: apiutils.Of("metrics-artifact"),
+					ArtifactType: new("metrics-artifact"),
 				},
 				CustomProperties: &customProps,
 			}
@@ -740,10 +740,10 @@ func TestCatalogArtifactRepository(t *testing.T) {
 		listOptions := models.CatalogArtifactListOptions{
 			ParentResourceID: savedTestModel.GetID(),
 			Pagination: dbmodels.Pagination{
-				OrderBy: apiutils.Of(
+				OrderBy: new(
 					fmt.Sprintf("%s.%s", testPropertyAccuracy, testValueTypeDouble),
 				),
-				SortOrder: apiutils.Of(testSortOrderASC),
+				SortOrder: new(testSortOrderASC),
 			},
 		}
 		result, err := repo.List(listOptions)
@@ -795,10 +795,10 @@ func TestCatalogArtifactRepository(t *testing.T) {
 		listOptions = models.CatalogArtifactListOptions{
 			ParentResourceID: savedTestModel.GetID(),
 			Pagination: dbmodels.Pagination{
-				OrderBy: apiutils.Of(
+				OrderBy: new(
 					fmt.Sprintf("%s.%s", testPropertyAccuracy, testValueTypeDouble),
 				),
-				SortOrder: apiutils.Of(testSortOrderDESC),
+				SortOrder: new(testSortOrderDESC),
 			},
 		}
 		result, err = repo.List(listOptions)
@@ -843,10 +843,10 @@ func TestCatalogArtifactRepository(t *testing.T) {
 	t.Run("TestCustomPropertyOrdering_StringValue", func(t *testing.T) {
 		// Create a new model for this test
 		testModel := &modelcatalogmodels.CatalogModelImpl{
-			TypeID: apiutils.Of(int32(catalogModelTypeID)),
+			TypeID: new(int32(catalogModelTypeID)),
 			Attributes: &modelcatalogmodels.CatalogModelAttributes{
-				Name:       apiutils.Of("test-model-string-property-ordering"),
-				ExternalID: apiutils.Of("test-model-string-property-ext"),
+				Name:       new("test-model-string-property-ordering"),
+				ExternalID: new("test-model-string-property-ext"),
 			},
 		}
 		savedTestModel, err := catalogModelRepo.Save(testModel)
@@ -868,17 +868,17 @@ func TestCatalogArtifactRepository(t *testing.T) {
 			customProps := []dbmodels.Properties{
 				{
 					Name:        testPropertyTimestamp,
-					StringValue: apiutils.Of(tc.timestamp),
+					StringValue: new(tc.timestamp),
 				},
 			}
 
 			metricsArtifact := &modelcatalogmodels.CatalogMetricsArtifactImpl{
-				TypeID: apiutils.Of(int32(metricsArtifactTypeID)),
+				TypeID: new(int32(metricsArtifactTypeID)),
 				Attributes: &modelcatalogmodels.CatalogMetricsArtifactAttributes{
-					Name:         apiutils.Of(tc.name),
-					ExternalID:   apiutils.Of(fmt.Sprintf("string-prop-test-%s", tc.name)),
+					Name:         new(tc.name),
+					ExternalID:   new(fmt.Sprintf("string-prop-test-%s", tc.name)),
 					MetricsType:  modelcatalogmodels.MetricsTypePerformance,
-					ArtifactType: apiutils.Of("metrics-artifact"),
+					ArtifactType: new("metrics-artifact"),
 				},
 				CustomProperties: &customProps,
 			}
@@ -890,10 +890,10 @@ func TestCatalogArtifactRepository(t *testing.T) {
 		listOptions := models.CatalogArtifactListOptions{
 			ParentResourceID: savedTestModel.GetID(),
 			Pagination: dbmodels.Pagination{
-				OrderBy: apiutils.Of(
+				OrderBy: new(
 					fmt.Sprintf("%s.%s", testPropertyTimestamp, testValueTypeString),
 				),
-				SortOrder: apiutils.Of(testSortOrderASC),
+				SortOrder: new(testSortOrderASC),
 			},
 		}
 		result, err := repo.List(listOptions)
@@ -938,8 +938,8 @@ func TestCatalogArtifactRepository(t *testing.T) {
 		listOptions = models.CatalogArtifactListOptions{
 			ParentResourceID: savedTestModel.GetID(),
 			Pagination: dbmodels.Pagination{
-				OrderBy:   apiutils.Of("timestamp.string_value"),
-				SortOrder: apiutils.Of("DESC"),
+				OrderBy:   new("timestamp.string_value"),
+				SortOrder: new("DESC"),
 			},
 		}
 		result, err = repo.List(listOptions)
@@ -984,10 +984,10 @@ func TestCatalogArtifactRepository(t *testing.T) {
 	t.Run("TestCustomPropertyOrdering_IntValue", func(t *testing.T) {
 		// Create a new model for this test
 		testModel := &modelcatalogmodels.CatalogModelImpl{
-			TypeID: apiutils.Of(int32(catalogModelTypeID)),
+			TypeID: new(int32(catalogModelTypeID)),
 			Attributes: &modelcatalogmodels.CatalogModelAttributes{
-				Name:       apiutils.Of("test-model-int-property-ordering"),
-				ExternalID: apiutils.Of("test-model-int-property-ext"),
+				Name:       new("test-model-int-property-ordering"),
+				ExternalID: new("test-model-int-property-ext"),
 			},
 		}
 		savedTestModel, err := catalogModelRepo.Save(testModel)
@@ -1009,17 +1009,17 @@ func TestCatalogArtifactRepository(t *testing.T) {
 			customProps := []dbmodels.Properties{
 				{
 					Name:     "version",
-					IntValue: apiutils.Of(tc.version),
+					IntValue: new(tc.version),
 				},
 			}
 
 			metricsArtifact := &modelcatalogmodels.CatalogMetricsArtifactImpl{
-				TypeID: apiutils.Of(int32(metricsArtifactTypeID)),
+				TypeID: new(int32(metricsArtifactTypeID)),
 				Attributes: &modelcatalogmodels.CatalogMetricsArtifactAttributes{
-					Name:         apiutils.Of(tc.name),
-					ExternalID:   apiutils.Of(fmt.Sprintf("int-prop-test-%s", tc.name)),
+					Name:         new(tc.name),
+					ExternalID:   new(fmt.Sprintf("int-prop-test-%s", tc.name)),
 					MetricsType:  modelcatalogmodels.MetricsTypePerformance,
-					ArtifactType: apiutils.Of("metrics-artifact"),
+					ArtifactType: new("metrics-artifact"),
 				},
 				CustomProperties: &customProps,
 			}
@@ -1031,8 +1031,8 @@ func TestCatalogArtifactRepository(t *testing.T) {
 		listOptions := models.CatalogArtifactListOptions{
 			ParentResourceID: savedTestModel.GetID(),
 			Pagination: dbmodels.Pagination{
-				OrderBy:   apiutils.Of("version.int_value"),
-				SortOrder: apiutils.Of("ASC"),
+				OrderBy:   new("version.int_value"),
+				SortOrder: new("ASC"),
 			},
 		}
 		result, err := repo.List(listOptions)
@@ -1077,8 +1077,8 @@ func TestCatalogArtifactRepository(t *testing.T) {
 		listOptions = models.CatalogArtifactListOptions{
 			ParentResourceID: savedTestModel.GetID(),
 			Pagination: dbmodels.Pagination{
-				OrderBy:   apiutils.Of("version.int_value"),
-				SortOrder: apiutils.Of("DESC"),
+				OrderBy:   new("version.int_value"),
+				SortOrder: new("DESC"),
 			},
 		}
 		result, err = repo.List(listOptions)
@@ -1123,10 +1123,10 @@ func TestCatalogArtifactRepository(t *testing.T) {
 	t.Run("TestCustomPropertyOrderingWithPagination", func(t *testing.T) {
 		// Create a new model for this test
 		testModel := &modelcatalogmodels.CatalogModelImpl{
-			TypeID: apiutils.Of(int32(catalogModelTypeID)),
+			TypeID: new(int32(catalogModelTypeID)),
 			Attributes: &modelcatalogmodels.CatalogModelAttributes{
-				Name:       apiutils.Of("test-model-custom-pagination-unique"),
-				ExternalID: apiutils.Of("test-model-custom-pagination-unique-ext"),
+				Name:       new("test-model-custom-pagination-unique"),
+				ExternalID: new("test-model-custom-pagination-unique-ext"),
 			},
 		}
 		savedTestModel, err := catalogModelRepo.Save(testModel)
@@ -1137,17 +1137,17 @@ func TestCatalogArtifactRepository(t *testing.T) {
 			customProps := []dbmodels.Properties{
 				{
 					Name:        "score",
-					DoubleValue: apiutils.Of(float64(i) * 10.0),
+					DoubleValue: new(float64(i) * 10.0),
 				},
 			}
 
 			metricsArtifact := &modelcatalogmodels.CatalogMetricsArtifactImpl{
-				TypeID: apiutils.Of(int32(metricsArtifactTypeID)),
+				TypeID: new(int32(metricsArtifactTypeID)),
 				Attributes: &modelcatalogmodels.CatalogMetricsArtifactAttributes{
-					Name:         apiutils.Of(fmt.Sprintf("pagination-artifact-unique-%d", i)),
-					ExternalID:   apiutils.Of(fmt.Sprintf("pagination-unique-ext-%d", i)),
+					Name:         new(fmt.Sprintf("pagination-artifact-unique-%d", i)),
+					ExternalID:   new(fmt.Sprintf("pagination-unique-ext-%d", i)),
 					MetricsType:  modelcatalogmodels.MetricsTypeAccuracy,
-					ArtifactType: apiutils.Of("metrics-artifact"),
+					ArtifactType: new("metrics-artifact"),
 				},
 				CustomProperties: &customProps,
 			}
@@ -1160,8 +1160,8 @@ func TestCatalogArtifactRepository(t *testing.T) {
 		listOptions := models.CatalogArtifactListOptions{
 			ParentResourceID: savedTestModel.GetID(),
 			Pagination: dbmodels.Pagination{
-				OrderBy:   apiutils.Of("score.double_value"),
-				SortOrder: apiutils.Of("ASC"),
+				OrderBy:   new("score.double_value"),
+				SortOrder: new("ASC"),
 				PageSize:  &pageSize,
 			},
 		}
@@ -1243,10 +1243,10 @@ func TestCatalogArtifactRepository(t *testing.T) {
 	t.Run("TestEmptyPropertyName_Error", func(t *testing.T) {
 		// Create a new model for this test
 		testModel := &modelcatalogmodels.CatalogModelImpl{
-			TypeID: apiutils.Of(int32(catalogModelTypeID)),
+			TypeID: new(int32(catalogModelTypeID)),
 			Attributes: &modelcatalogmodels.CatalogModelAttributes{
-				Name:       apiutils.Of("test-model-invalid-property-name"),
-				ExternalID: apiutils.Of("test-model-invalid-property-name-ext"),
+				Name:       new("test-model-invalid-property-name"),
+				ExternalID: new("test-model-invalid-property-name-ext"),
 			},
 		}
 		savedTestModel, err := catalogModelRepo.Save(testModel)
@@ -1254,12 +1254,12 @@ func TestCatalogArtifactRepository(t *testing.T) {
 
 		// Create an artifact
 		metricsArtifact := &modelcatalogmodels.CatalogMetricsArtifactImpl{
-			TypeID: apiutils.Of(int32(metricsArtifactTypeID)),
+			TypeID: new(int32(metricsArtifactTypeID)),
 			Attributes: &modelcatalogmodels.CatalogMetricsArtifactAttributes{
-				Name:         apiutils.Of("test-artifact"),
-				ExternalID:   apiutils.Of("test-artifact-ext"),
+				Name:         new("test-artifact"),
+				ExternalID:   new("test-artifact-ext"),
 				MetricsType:  modelcatalogmodels.MetricsTypeAccuracy,
-				ArtifactType: apiutils.Of("metrics-artifact"),
+				ArtifactType: new("metrics-artifact"),
 			},
 		}
 		_, err = metricsArtifactRepo.Save(metricsArtifact, savedTestModel.GetID())
@@ -1283,8 +1283,8 @@ func TestCatalogArtifactRepository(t *testing.T) {
 				listOptions := models.CatalogArtifactListOptions{
 					ParentResourceID: savedTestModel.GetID(),
 					Pagination: dbmodels.Pagination{
-						OrderBy:   apiutils.Of(tc.orderBy),
-						SortOrder: apiutils.Of("ASC"),
+						OrderBy:   new(tc.orderBy),
+						SortOrder: new("ASC"),
 					},
 				}
 				_, err := repo.List(listOptions)
@@ -1310,8 +1310,8 @@ func TestCatalogArtifactRepository(t *testing.T) {
 				listOptions := models.CatalogArtifactListOptions{
 					ParentResourceID: savedTestModel.GetID(),
 					Pagination: dbmodels.Pagination{
-						OrderBy:   apiutils.Of(validOrderBy),
-						SortOrder: apiutils.Of("ASC"),
+						OrderBy:   new(validOrderBy),
+						SortOrder: new("ASC"),
 					},
 				}
 				_, err := repo.List(listOptions)
@@ -1324,10 +1324,10 @@ func TestCatalogArtifactRepository(t *testing.T) {
 	t.Run("TestInvalidCustomPropertyValueType_Error", func(t *testing.T) {
 		// Create a new model for this test
 		testModel := &modelcatalogmodels.CatalogModelImpl{
-			TypeID: apiutils.Of(int32(catalogModelTypeID)),
+			TypeID: new(int32(catalogModelTypeID)),
 			Attributes: &modelcatalogmodels.CatalogModelAttributes{
-				Name:       apiutils.Of("test-model-invalid-value-type"),
-				ExternalID: apiutils.Of("test-model-invalid-value-type-ext"),
+				Name:       new("test-model-invalid-value-type"),
+				ExternalID: new("test-model-invalid-value-type-ext"),
 			},
 		}
 		savedTestModel, err := catalogModelRepo.Save(testModel)
@@ -1335,12 +1335,12 @@ func TestCatalogArtifactRepository(t *testing.T) {
 
 		// Create an artifact
 		metricsArtifact := &modelcatalogmodels.CatalogMetricsArtifactImpl{
-			TypeID: apiutils.Of(int32(metricsArtifactTypeID)),
+			TypeID: new(int32(metricsArtifactTypeID)),
 			Attributes: &modelcatalogmodels.CatalogMetricsArtifactAttributes{
-				Name:         apiutils.Of("test-artifact"),
-				ExternalID:   apiutils.Of("test-artifact-ext"),
+				Name:         new("test-artifact"),
+				ExternalID:   new("test-artifact-ext"),
 				MetricsType:  modelcatalogmodels.MetricsTypeAccuracy,
-				ArtifactType: apiutils.Of("metrics-artifact"),
+				ArtifactType: new("metrics-artifact"),
 			},
 		}
 		_, err = metricsArtifactRepo.Save(metricsArtifact, savedTestModel.GetID())
@@ -1382,8 +1382,8 @@ func TestCatalogArtifactRepository(t *testing.T) {
 				listOptions := models.CatalogArtifactListOptions{
 					ParentResourceID: savedTestModel.GetID(),
 					Pagination: dbmodels.Pagination{
-						OrderBy:   apiutils.Of(tc.orderBy),
-						SortOrder: apiutils.Of("ASC"),
+						OrderBy:   new(tc.orderBy),
+						SortOrder: new("ASC"),
 					},
 				}
 				_, err := repo.List(listOptions)
@@ -1396,10 +1396,10 @@ func TestCatalogArtifactRepository(t *testing.T) {
 	t.Run("TestInvalidCustomPropertyFormat_FallbackToID", func(t *testing.T) {
 		// Create a new model for this test
 		testModel := &modelcatalogmodels.CatalogModelImpl{
-			TypeID: apiutils.Of(int32(catalogModelTypeID)),
+			TypeID: new(int32(catalogModelTypeID)),
 			Attributes: &modelcatalogmodels.CatalogModelAttributes{
-				Name:       apiutils.Of("test-model-invalid-property-format"),
-				ExternalID: apiutils.Of("test-model-invalid-property-ext"),
+				Name:       new("test-model-invalid-property-format"),
+				ExternalID: new("test-model-invalid-property-ext"),
 			},
 		}
 		savedTestModel, err := catalogModelRepo.Save(testModel)
@@ -1410,17 +1410,17 @@ func TestCatalogArtifactRepository(t *testing.T) {
 			customProps := []dbmodels.Properties{
 				{
 					Name:        "accuracy",
-					DoubleValue: apiutils.Of(float64(i) * 0.1),
+					DoubleValue: new(float64(i) * 0.1),
 				},
 			}
 
 			metricsArtifact := &modelcatalogmodels.CatalogMetricsArtifactImpl{
-				TypeID: apiutils.Of(int32(metricsArtifactTypeID)),
+				TypeID: new(int32(metricsArtifactTypeID)),
 				Attributes: &modelcatalogmodels.CatalogMetricsArtifactAttributes{
-					Name:         apiutils.Of(fmt.Sprintf("invalid-format-artifact-%d", i)),
-					ExternalID:   apiutils.Of(fmt.Sprintf("invalid-format-ext-%d", i)),
+					Name:         new(fmt.Sprintf("invalid-format-artifact-%d", i)),
+					ExternalID:   new(fmt.Sprintf("invalid-format-ext-%d", i)),
 					MetricsType:  modelcatalogmodels.MetricsTypeAccuracy,
-					ArtifactType: apiutils.Of("metrics-artifact"),
+					ArtifactType: new("metrics-artifact"),
 				},
 				CustomProperties: &customProps,
 			}
@@ -1432,8 +1432,8 @@ func TestCatalogArtifactRepository(t *testing.T) {
 		listOptions := models.CatalogArtifactListOptions{
 			ParentResourceID: savedTestModel.GetID(),
 			Pagination: dbmodels.Pagination{
-				OrderBy:   apiutils.Of("accuracy"), // Invalid: missing .double_value
-				SortOrder: apiutils.Of("ASC"),
+				OrderBy:   new("accuracy"), // Invalid: missing .double_value
+				SortOrder: new("ASC"),
 			},
 		}
 		result, err := repo.List(listOptions)
@@ -1463,8 +1463,8 @@ func TestCatalogArtifactRepository(t *testing.T) {
 		listOptions = models.CatalogArtifactListOptions{
 			ParentResourceID: savedTestModel.GetID(),
 			Pagination: dbmodels.Pagination{
-				OrderBy:   apiutils.Of("nonexistent_property"),
-				SortOrder: apiutils.Of("ASC"),
+				OrderBy:   new("nonexistent_property"),
+				SortOrder: new("ASC"),
 			},
 		}
 		result, err = repo.List(listOptions)
@@ -1494,10 +1494,10 @@ func TestCatalogArtifactRepository(t *testing.T) {
 	t.Run("TestCustomPropertyOrdering_WithAndWithoutProperty", func(t *testing.T) {
 		// Create a new model for this test
 		testModel := &modelcatalogmodels.CatalogModelImpl{
-			TypeID: apiutils.Of(int32(catalogModelTypeID)),
+			TypeID: new(int32(catalogModelTypeID)),
 			Attributes: &modelcatalogmodels.CatalogModelAttributes{
-				Name:       apiutils.Of("test-model-mixed-properties"),
-				ExternalID: apiutils.Of("test-model-mixed-properties-ext"),
+				Name:       new("test-model-mixed-properties"),
+				ExternalID: new("test-model-mixed-properties-ext"),
 			},
 		}
 		savedTestModel, err := catalogModelRepo.Save(testModel)
@@ -1508,11 +1508,11 @@ func TestCatalogArtifactRepository(t *testing.T) {
 			name     string
 			accuracy *float64 // nil means no property
 		}{
-			{"artifact-with-high-accuracy", apiutils.Of(0.95)},
+			{"artifact-with-high-accuracy", new(0.95)},
 			{"artifact-without-property-1", nil}, // No accuracy property
-			{"artifact-with-low-accuracy", apiutils.Of(0.60)},
+			{"artifact-with-low-accuracy", new(0.60)},
 			{"artifact-without-property-2", nil}, // No accuracy property
-			{"artifact-with-medium-accuracy", apiutils.Of(0.80)},
+			{"artifact-with-medium-accuracy", new(0.80)},
 			{"artifact-without-property-3", nil}, // No accuracy property
 		}
 
@@ -1529,12 +1529,12 @@ func TestCatalogArtifactRepository(t *testing.T) {
 			}
 
 			metricsArtifact := &modelcatalogmodels.CatalogMetricsArtifactImpl{
-				TypeID: apiutils.Of(int32(metricsArtifactTypeID)),
+				TypeID: new(int32(metricsArtifactTypeID)),
 				Attributes: &modelcatalogmodels.CatalogMetricsArtifactAttributes{
-					Name:         apiutils.Of(tc.name),
-					ExternalID:   apiutils.Of(fmt.Sprintf("mixed-prop-test-%s", tc.name)),
+					Name:         new(tc.name),
+					ExternalID:   new(fmt.Sprintf("mixed-prop-test-%s", tc.name)),
 					MetricsType:  modelcatalogmodels.MetricsTypeAccuracy,
-					ArtifactType: apiutils.Of("metrics-artifact"),
+					ArtifactType: new("metrics-artifact"),
 				},
 				CustomProperties: customProps,
 			}
@@ -1554,8 +1554,8 @@ func TestCatalogArtifactRepository(t *testing.T) {
 		listOptions := models.CatalogArtifactListOptions{
 			ParentResourceID: savedTestModel.GetID(),
 			Pagination: dbmodels.Pagination{
-				OrderBy:   apiutils.Of("accuracy.double_value"),
-				SortOrder: apiutils.Of("ASC"),
+				OrderBy:   new("accuracy.double_value"),
+				SortOrder: new("ASC"),
 			},
 		}
 		result, err := repo.List(listOptions)
@@ -1629,8 +1629,8 @@ func TestCatalogArtifactRepository(t *testing.T) {
 		listOptions = models.CatalogArtifactListOptions{
 			ParentResourceID: savedTestModel.GetID(),
 			Pagination: dbmodels.Pagination{
-				OrderBy:   apiutils.Of("accuracy.double_value"),
-				SortOrder: apiutils.Of("DESC"),
+				OrderBy:   new("accuracy.double_value"),
+				SortOrder: new("DESC"),
 			},
 		}
 		result, err = repo.List(listOptions)

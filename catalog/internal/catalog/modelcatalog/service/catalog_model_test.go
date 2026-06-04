@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/kubeflow/hub/catalog/internal/catalog/modelcatalog/models"
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	dbmodels "github.com/kubeflow/hub/internal/platform/db/entity"
 	"github.com/kubeflow/hub/internal/platform/db/schema"
 	"github.com/kubeflow/hub/internal/testutils"
@@ -27,19 +26,19 @@ func TestCatalogModelRepository(t *testing.T) {
 		// Test creating a new catalog model
 		catalogModel := &models.CatalogModelImpl{
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("test-catalog-model"),
-				ExternalID: apiutils.Of("catalog-ext-123"),
+				Name:       new("test-catalog-model"),
+				ExternalID: new("catalog-ext-123"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Test catalog model description"),
+					StringValue: new("Test catalog model description"),
 				},
 			},
 			CustomProperties: &[]dbmodels.Properties{
 				{
 					Name:        "custom-prop",
-					StringValue: apiutils.Of("custom-value"),
+					StringValue: new("custom-value"),
 				},
 			},
 		}
@@ -53,7 +52,7 @@ func TestCatalogModelRepository(t *testing.T) {
 
 		// Test updating the same model
 		catalogModel.ID = saved.GetID()
-		catalogModel.GetAttributes().Name = apiutils.Of("updated-catalog-model")
+		catalogModel.GetAttributes().Name = new("updated-catalog-model")
 		// Preserve CreateTimeSinceEpoch from the saved entity
 		catalogModel.GetAttributes().CreateTimeSinceEpoch = saved.GetAttributes().CreateTimeSinceEpoch
 
@@ -68,8 +67,8 @@ func TestCatalogModelRepository(t *testing.T) {
 		// First create a model to retrieve
 		catalogModel := &models.CatalogModelImpl{
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("get-test-catalog-model"),
-				ExternalID: apiutils.Of("get-catalog-ext-123"),
+				Name:       new("get-test-catalog-model"),
+				ExternalID: new("get-catalog-ext-123"),
 			},
 		}
 
@@ -95,14 +94,14 @@ func TestCatalogModelRepository(t *testing.T) {
 		testModels := []*models.CatalogModelImpl{
 			{
 				Attributes: &models.CatalogModelAttributes{
-					Name:       apiutils.Of("list-catalog-model-1"),
-					ExternalID: apiutils.Of("list-catalog-ext-1"),
+					Name:       new("list-catalog-model-1"),
+					ExternalID: new("list-catalog-ext-1"),
 				},
 			},
 			{
 				Attributes: &models.CatalogModelAttributes{
-					Name:       apiutils.Of("list-catalog-model-2"),
-					ExternalID: apiutils.Of("list-catalog-ext-2"),
+					Name:       new("list-catalog-model-2"),
+					ExternalID: new("list-catalog-ext-2"),
 				},
 			},
 		}
@@ -149,8 +148,8 @@ func TestCatalogModelRepository(t *testing.T) {
 		// First create a model to retrieve by name
 		catalogModel := &models.CatalogModelImpl{
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("get-by-name-test-model"),
-				ExternalID: apiutils.Of("get-by-name-ext-123"),
+				Name:       new("get-by-name-test-model"),
+				ExternalID: new("get-by-name-ext-123"),
 			},
 		}
 
@@ -176,20 +175,20 @@ func TestCatalogModelRepository(t *testing.T) {
 		sharedName := "shared-model-name"
 		modelA := &models.CatalogModelImpl{
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of(sharedName),
-				ExternalID: apiutils.Of("ext-a"),
+				Name:       new(sharedName),
+				ExternalID: new("ext-a"),
 			},
 			Properties: &[]dbmodels.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("source-a")},
+				{Name: "source_id", StringValue: new("source-a")},
 			},
 		}
 		modelB := &models.CatalogModelImpl{
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of(sharedName),
-				ExternalID: apiutils.Of("ext-b"),
+				Name:       new(sharedName),
+				ExternalID: new("ext-b"),
 			},
 			Properties: &[]dbmodels.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("source-b")},
+				{Name: "source_id", StringValue: new("source-b")},
 			},
 		}
 
@@ -222,20 +221,20 @@ func TestCatalogModelRepository(t *testing.T) {
 		sharedExternalID := "Qwen/Qwen3.5-9B"
 		modelSource1 := &models.CatalogModelImpl{
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of(sharedName),
-				ExternalID: apiutils.Of(sharedExternalID),
+				Name:       new(sharedName),
+				ExternalID: new(sharedExternalID),
 			},
 			Properties: &[]dbmodels.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("hugging_face_models")},
+				{Name: "source_id", StringValue: new("hugging_face_models")},
 			},
 		}
 		modelSource2 := &models.CatalogModelImpl{
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of(sharedName),
-				ExternalID: apiutils.Of(sharedExternalID),
+				Name:       new(sharedName),
+				ExternalID: new(sharedExternalID),
 			},
 			Properties: &[]dbmodels.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("hugging_face_models_2")},
+				{Name: "source_id", StringValue: new("hugging_face_models_2")},
 			},
 		}
 
@@ -276,20 +275,20 @@ func TestCatalogModelRepository(t *testing.T) {
 		sharedExtID := "shared-ext-list-test"
 		model1 := &models.CatalogModelImpl{
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("list-ext-model-a"),
-				ExternalID: apiutils.Of(sharedExtID),
+				Name:       new("list-ext-model-a"),
+				ExternalID: new(sharedExtID),
 			},
 			Properties: &[]dbmodels.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("src-list-1")},
+				{Name: "source_id", StringValue: new("src-list-1")},
 			},
 		}
 		model2 := &models.CatalogModelImpl{
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("list-ext-model-b"),
-				ExternalID: apiutils.Of(sharedExtID),
+				Name:       new("list-ext-model-b"),
+				ExternalID: new(sharedExtID),
 			},
 			Properties: &[]dbmodels.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("src-list-2")},
+				{Name: "source_id", StringValue: new("src-list-2")},
 			},
 		}
 		_, err := repo.Save(model1)
@@ -317,20 +316,20 @@ func TestCatalogModelRepository(t *testing.T) {
 		sharedExtID := "filterquery-ext-shared"
 		model1 := &models.CatalogModelImpl{
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("fq-ext-model-a"),
-				ExternalID: apiutils.Of(sharedExtID),
+				Name:       new("fq-ext-model-a"),
+				ExternalID: new(sharedExtID),
 			},
 			Properties: &[]dbmodels.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("src-fq-1")},
+				{Name: "source_id", StringValue: new("src-fq-1")},
 			},
 		}
 		model2 := &models.CatalogModelImpl{
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("fq-ext-model-b"),
-				ExternalID: apiutils.Of(sharedExtID),
+				Name:       new("fq-ext-model-b"),
+				ExternalID: new(sharedExtID),
 			},
 			Properties: &[]dbmodels.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("src-fq-2")},
+				{Name: "source_id", StringValue: new("src-fq-2")},
 			},
 		}
 		_, err := repo.Save(model1)
@@ -358,19 +357,19 @@ func TestCatalogModelRepository(t *testing.T) {
 		// First create a model
 		catalogModel := &models.CatalogModelImpl{
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("update-test-model"),
-				ExternalID: apiutils.Of("update-ext-123"),
+				Name:       new("update-test-model"),
+				ExternalID: new("update-ext-123"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "version",
-					StringValue: apiutils.Of("1.0.0"),
+					StringValue: new("1.0.0"),
 				},
 			},
 			CustomProperties: &[]dbmodels.Properties{
 				{
 					Name:        "environment",
-					StringValue: apiutils.Of("dev"),
+					StringValue: new("dev"),
 				},
 			},
 		}
@@ -383,24 +382,24 @@ func TestCatalogModelRepository(t *testing.T) {
 		updateModel := &models.CatalogModelImpl{
 			ID: saved.GetID(), // Specify the ID for update
 			Attributes: &models.CatalogModelAttributes{
-				Name:                 apiutils.Of("updated-test-model"),
-				ExternalID:           apiutils.Of("updated-ext-456"),
+				Name:                 new("updated-test-model"),
+				ExternalID:           new("updated-ext-456"),
 				CreateTimeSinceEpoch: saved.GetAttributes().CreateTimeSinceEpoch, // Preserve create time
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "version",
-					StringValue: apiutils.Of("2.0.0"), // Updated version
+					StringValue: new("2.0.0"), // Updated version
 				},
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Updated description"), // New property
+					StringValue: new("Updated description"), // New property
 				},
 			},
 			CustomProperties: &[]dbmodels.Properties{
 				{
 					Name:        "environment",
-					StringValue: apiutils.Of("prod"), // Updated environment
+					StringValue: new("prod"), // Updated environment
 				},
 			},
 		}
@@ -427,13 +426,13 @@ func TestCatalogModelRepository(t *testing.T) {
 		// First create a model
 		catalogModel := &models.CatalogModelImpl{
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("update-by-name-model"),
-				ExternalID: apiutils.Of("update-by-name-ext-123"),
+				Name:       new("update-by-name-model"),
+				ExternalID: new("update-by-name-ext-123"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "status",
-					StringValue: apiutils.Of("draft"),
+					StringValue: new("draft"),
 				},
 			},
 		}
@@ -446,17 +445,17 @@ func TestCatalogModelRepository(t *testing.T) {
 		updateModel := &models.CatalogModelImpl{
 			// No ID specified - should trigger name lookup in Save method
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("update-by-name-model"), // Same name to trigger lookup
-				ExternalID: apiutils.Of("updated-by-name-ext-789"),
+				Name:       new("update-by-name-model"), // Same name to trigger lookup
+				ExternalID: new("updated-by-name-ext-789"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "status",
-					StringValue: apiutils.Of("published"), // Updated status
+					StringValue: new("published"), // Updated status
 				},
 				{
 					Name:        "category",
-					StringValue: apiutils.Of("ml-model"), // New property
+					StringValue: new("ml-model"), // New property
 				},
 			},
 		}
@@ -479,27 +478,27 @@ func TestCatalogModelRepository(t *testing.T) {
 		// Create a model with both properties and custom properties
 		catalogModel := &models.CatalogModelImpl{
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("props-test-catalog-model"),
-				ExternalID: apiutils.Of("props-catalog-ext-123"),
+				Name:       new("props-test-catalog-model"),
+				ExternalID: new("props-catalog-ext-123"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "version",
-					StringValue: apiutils.Of("1.0.0"),
+					StringValue: new("1.0.0"),
 				},
 				{
 					Name:     "priority",
-					IntValue: apiutils.Of(int32(5)),
+					IntValue: new(int32(5)),
 				},
 			},
 			CustomProperties: &[]dbmodels.Properties{
 				{
 					Name:        "team",
-					StringValue: apiutils.Of("ml-team"),
+					StringValue: new("ml-team"),
 				},
 				{
 					Name:      "active",
-					BoolValue: apiutils.Of(true),
+					BoolValue: new(true),
 				},
 			},
 		}
@@ -532,11 +531,11 @@ func TestCatalogModelRepository(t *testing.T) {
 			name     string
 			accuracy *float64 // nil means no accuracy score
 		}{
-			{"high-accuracy-model", apiutils.Of(95.5)},
-			{"medium-accuracy-model", apiutils.Of(75.0)},
-			{"low-accuracy-model", apiutils.Of(45.2)},
+			{"high-accuracy-model", new(95.5)},
+			{"medium-accuracy-model", new(75.0)},
+			{"low-accuracy-model", new(45.2)},
 			{"no-accuracy-model", nil},
-			{"zero-accuracy-model", apiutils.Of(0.0)},
+			{"zero-accuracy-model", new(0.0)},
 		}
 
 		var savedModels []models.CatalogModel
@@ -544,8 +543,8 @@ func TestCatalogModelRepository(t *testing.T) {
 			// Create the model
 			catalogModel := &models.CatalogModelImpl{
 				Attributes: &models.CatalogModelAttributes{
-					Name:       apiutils.Of(testModel.name),
-					ExternalID: apiutils.Of(testModel.name + "-ext"),
+					Name:       new(testModel.name),
+					ExternalID: new(testModel.name + "-ext"),
 				},
 			}
 
@@ -557,8 +556,8 @@ func TestCatalogModelRepository(t *testing.T) {
 			if testModel.accuracy != nil {
 				metricsArtifact := &models.CatalogMetricsArtifactImpl{
 					Attributes: &models.CatalogMetricsArtifactAttributes{
-						Name:        apiutils.Of(fmt.Sprintf("accuracy-metrics-%s", testModel.name)),
-						ExternalID:  apiutils.Of(fmt.Sprintf("accuracy-metrics-%s", testModel.name)),
+						Name:        new(fmt.Sprintf("accuracy-metrics-%s", testModel.name)),
+						ExternalID:  new(fmt.Sprintf("accuracy-metrics-%s", testModel.name)),
 						MetricsType: models.MetricsTypeAccuracy,
 					},
 					CustomProperties: &[]dbmodels.Properties{
@@ -568,11 +567,11 @@ func TestCatalogModelRepository(t *testing.T) {
 						},
 						{
 							Name:        "benchmark1",
-							DoubleValue: apiutils.Of(*testModel.accuracy + 1.0), // Individual benchmark score
+							DoubleValue: new(*testModel.accuracy + 1.0), // Individual benchmark score
 						},
 						{
 							Name:        "benchmark2",
-							DoubleValue: apiutils.Of(*testModel.accuracy - 1.0), // Individual benchmark score
+							DoubleValue: new(*testModel.accuracy - 1.0), // Individual benchmark score
 						},
 					},
 				}
@@ -585,8 +584,8 @@ func TestCatalogModelRepository(t *testing.T) {
 		// Test ACCURACY sorting DESC (default)
 		listOptions := models.CatalogModelListOptions{
 			Pagination: dbmodels.Pagination{
-				OrderBy:   apiutils.Of("artifacts.overall_average.double_value"),
-				SortOrder: apiutils.Of("DESC"),
+				OrderBy:   new("artifacts.overall_average.double_value"),
+				SortOrder: new("DESC"),
 			},
 		}
 		result, err := repo.List(listOptions)
@@ -628,8 +627,8 @@ func TestCatalogModelRepository(t *testing.T) {
 		// Test ACCURACY sorting ASC
 		listOptions = models.CatalogModelListOptions{
 			Pagination: dbmodels.Pagination{
-				OrderBy:   apiutils.Of("artifacts.overall_average.double_value"),
-				SortOrder: apiutils.Of("ASC"),
+				OrderBy:   new("artifacts.overall_average.double_value"),
+				SortOrder: new("ASC"),
 			},
 		}
 		result, err = repo.List(listOptions)
@@ -662,8 +661,8 @@ func TestCatalogModelRepository(t *testing.T) {
 		// Test fallback to standard sorting for non-ACCURACY orderBy
 		listOptions = models.CatalogModelListOptions{
 			Pagination: dbmodels.Pagination{
-				OrderBy:   apiutils.Of("ID"),
-				SortOrder: apiutils.Of("ASC"),
+				OrderBy:   new("ID"),
+				SortOrder: new("ASC"),
 			},
 		}
 		result, err = repo.List(listOptions)
@@ -696,8 +695,8 @@ func TestCatalogModelRepository(t *testing.T) {
 			// Create the model
 			catalogModel := &models.CatalogModelImpl{
 				Attributes: &models.CatalogModelAttributes{
-					Name:       apiutils.Of(testModel.name),
-					ExternalID: apiutils.Of(testModel.name + "-ext"),
+					Name:       new(testModel.name),
+					ExternalID: new(testModel.name + "-ext"),
 				},
 			}
 
@@ -708,8 +707,8 @@ func TestCatalogModelRepository(t *testing.T) {
 			// Create accuracy metrics artifact
 			metricsArtifact := &models.CatalogMetricsArtifactImpl{
 				Attributes: &models.CatalogMetricsArtifactAttributes{
-					Name:        apiutils.Of(fmt.Sprintf("accuracy-metrics-%s", testModel.name)),
-					ExternalID:  apiutils.Of(fmt.Sprintf("accuracy-metrics-%s", testModel.name)),
+					Name:        new(fmt.Sprintf("accuracy-metrics-%s", testModel.name)),
+					ExternalID:  new(fmt.Sprintf("accuracy-metrics-%s", testModel.name)),
 					MetricsType: models.MetricsTypeAccuracy,
 				},
 				CustomProperties: &[]dbmodels.Properties{
@@ -728,9 +727,9 @@ func TestCatalogModelRepository(t *testing.T) {
 		// This approach is more robust and less sensitive to test interference
 		listOptions := models.CatalogModelListOptions{
 			Pagination: dbmodels.Pagination{
-				OrderBy:   apiutils.Of("artifacts.overall_average.double_value"),
-				SortOrder: apiutils.Of("DESC"),
-				PageSize:  apiutils.Of(int32(2)),
+				OrderBy:   new("artifacts.overall_average.double_value"),
+				SortOrder: new("DESC"),
+				PageSize:  new(int32(2)),
 			},
 		}
 
@@ -813,9 +812,9 @@ func TestCatalogModelRepository(t *testing.T) {
 		// Test ASC pagination briefly to verify token generation works in both directions
 		listOptions = models.CatalogModelListOptions{
 			Pagination: dbmodels.Pagination{
-				OrderBy:   apiutils.Of("artifacts.overall_average.double_value"),
-				SortOrder: apiutils.Of("ASC"),
-				PageSize:  apiutils.Of(int32(3)),
+				OrderBy:   new("artifacts.overall_average.double_value"),
+				SortOrder: new("ASC"),
+				PageSize:  new(int32(3)),
 			},
 		}
 
@@ -852,11 +851,11 @@ func TestCatalogModelRepository(t *testing.T) {
 		for _, spec := range testModels {
 			catalogModel := &models.CatalogModelImpl{
 				Attributes: &models.CatalogModelAttributes{
-					Name:       apiutils.Of(spec.displayName),
-					ExternalID: apiutils.Of(spec.displayName + "-ord-ext"),
+					Name:       new(spec.displayName),
+					ExternalID: new(spec.displayName + "-ord-ext"),
 				},
 				Properties: &[]dbmodels.Properties{
-					{Name: "source_id", StringValue: apiutils.Of(spec.sourceID)},
+					{Name: "source_id", StringValue: new(spec.sourceID)},
 				},
 			}
 
@@ -867,8 +866,8 @@ func TestCatalogModelRepository(t *testing.T) {
 		// Test NAME ordering ASC
 		listOptions := models.CatalogModelListOptions{
 			Pagination: dbmodels.Pagination{
-				OrderBy:   apiutils.Of("NAME"),
-				SortOrder: apiutils.Of("ASC"),
+				OrderBy:   new("NAME"),
+				SortOrder: new("ASC"),
 			},
 		}
 		result, err := repo.List(listOptions)
@@ -922,8 +921,8 @@ func TestCatalogModelRepository(t *testing.T) {
 		// Test NAME ordering DESC
 		listOptions = models.CatalogModelListOptions{
 			Pagination: dbmodels.Pagination{
-				OrderBy:   apiutils.Of("NAME"),
-				SortOrder: apiutils.Of("DESC"),
+				OrderBy:   new("NAME"),
+				SortOrder: new("DESC"),
 			},
 		}
 		result, err = repo.List(listOptions)
@@ -967,8 +966,8 @@ func TestCatalogModelRepository(t *testing.T) {
 		for _, name := range testModels {
 			catalogModel := &models.CatalogModelImpl{
 				Attributes: &models.CatalogModelAttributes{
-					Name:       apiutils.Of(name),
-					ExternalID: apiutils.Of(name + "-ext"),
+					Name:       new(name),
+					ExternalID: new(name + "-ext"),
 				},
 			}
 
@@ -979,9 +978,9 @@ func TestCatalogModelRepository(t *testing.T) {
 		// Test pagination with NAME ordering
 		listOptions := models.CatalogModelListOptions{
 			Pagination: dbmodels.Pagination{
-				OrderBy:   apiutils.Of("NAME"),
-				SortOrder: apiutils.Of("ASC"),
-				PageSize:  apiutils.Of(int32(2)),
+				OrderBy:   new("NAME"),
+				SortOrder: new("ASC"),
+				PageSize:  new(int32(2)),
 			},
 		}
 
@@ -1066,11 +1065,11 @@ func TestCatalogModelRepository(t *testing.T) {
 		for _, spec := range multiColonModels {
 			catalogModel := &models.CatalogModelImpl{
 				Attributes: &models.CatalogModelAttributes{
-					Name:       apiutils.Of(spec.displayName),
-					ExternalID: apiutils.Of(spec.displayName + "-mc-ext"),
+					Name:       new(spec.displayName),
+					ExternalID: new(spec.displayName + "-mc-ext"),
 				},
 				Properties: &[]dbmodels.Properties{
-					{Name: "source_id", StringValue: apiutils.Of(spec.sourceID)},
+					{Name: "source_id", StringValue: new(spec.sourceID)},
 				},
 			}
 			_, err := repo.Save(catalogModel)
@@ -1080,9 +1079,9 @@ func TestCatalogModelRepository(t *testing.T) {
 		// Paginate through all 4 models 2 at a time; verify ordering is stable across pages.
 		listOptions := models.CatalogModelListOptions{
 			Pagination: dbmodels.Pagination{
-				OrderBy:   apiutils.Of("NAME"),
-				SortOrder: apiutils.Of("ASC"),
-				PageSize:  apiutils.Of(int32(2)),
+				OrderBy:   new("NAME"),
+				SortOrder: new("ASC"),
+				PageSize:  new(int32(2)),
 			},
 		}
 
@@ -1135,7 +1134,7 @@ func TestCatalogModelRepository(t *testing.T) {
 
 		model1 := &models.CatalogModelImpl{
 			Attributes: &models.CatalogModelAttributes{
-				Name: apiutils.Of("model-source-1"),
+				Name: new("model-source-1"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
@@ -1147,7 +1146,7 @@ func TestCatalogModelRepository(t *testing.T) {
 
 		model2 := &models.CatalogModelImpl{
 			Attributes: &models.CatalogModelAttributes{
-				Name: apiutils.Of("model-source-1-second"),
+				Name: new("model-source-1-second"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
@@ -1159,7 +1158,7 @@ func TestCatalogModelRepository(t *testing.T) {
 
 		model3 := &models.CatalogModelImpl{
 			Attributes: &models.CatalogModelAttributes{
-				Name: apiutils.Of("model-source-2"),
+				Name: new("model-source-2"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
@@ -1201,12 +1200,12 @@ func TestCatalogModelRepository(t *testing.T) {
 		// Setup: Create a model
 		model := &models.CatalogModelImpl{
 			Attributes: &models.CatalogModelAttributes{
-				Name: apiutils.Of("model-to-delete"),
+				Name: new("model-to-delete"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Model that will be deleted"),
+					StringValue: new("Model that will be deleted"),
 				},
 			},
 		}
@@ -1272,7 +1271,7 @@ func TestCatalogModelRepository(t *testing.T) {
 		// Create a test model with source_id
 		model := &models.CatalogModelImpl{
 			Attributes: &models.CatalogModelAttributes{
-				Name: apiutils.Of("model-with-artifacts"),
+				Name: new("model-with-artifacts"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
@@ -1334,7 +1333,7 @@ func TestCatalogModelRepository(t *testing.T) {
 		// Create a test model
 		model := &models.CatalogModelImpl{
 			Attributes: &models.CatalogModelAttributes{
-				Name: apiutils.Of("model-for-id-deletion"),
+				Name: new("model-for-id-deletion"),
 			},
 		}
 
@@ -1392,7 +1391,7 @@ func TestCatalogModelRepository(t *testing.T) {
 		// Create two models with the same source_id
 		model1 := &models.CatalogModelImpl{
 			Attributes: &models.CatalogModelAttributes{
-				Name: apiutils.Of("model-1-multi-source"),
+				Name: new("model-1-multi-source"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
@@ -1404,7 +1403,7 @@ func TestCatalogModelRepository(t *testing.T) {
 
 		model2 := &models.CatalogModelImpl{
 			Attributes: &models.CatalogModelAttributes{
-				Name: apiutils.Of("model-2-multi-source"),
+				Name: new("model-2-multi-source"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
@@ -1469,15 +1468,15 @@ func TestCatalogModelRepository(t *testing.T) {
 		uniqueTerm := "xyzspecialvalidated"
 
 		modelWithValidatedTask := &models.CatalogModelImpl{
-			TypeID: apiutils.Of(typeID),
+			TypeID: new(typeID),
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("query-vtask-model"),
-				ExternalID: apiutils.Of("query-vtask-ext"),
+				Name:       new("query-vtask-model"),
+				ExternalID: new("query-vtask-ext"),
 			},
 			Properties: &[]dbmodels.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("query-vtask-source")},
-				{Name: "tasks", StringValue: apiutils.Of(`["text-generation"]`)},
-				{Name: "validated_tasks", StringValue: apiutils.Of(fmt.Sprintf(`["%s"]`, uniqueTerm))},
+				{Name: "source_id", StringValue: new("query-vtask-source")},
+				{Name: "tasks", StringValue: new(`["text-generation"]`)},
+				{Name: "validated_tasks", StringValue: new(fmt.Sprintf(`["%s"]`, uniqueTerm))},
 			},
 		}
 
@@ -1499,7 +1498,7 @@ func TestCatalogModelRepository(t *testing.T) {
 func createTestCatalogModelWithSourceID(t *testing.T, sourceID string) models.CatalogModel {
 	model := &models.CatalogModelImpl{
 		Attributes: &models.CatalogModelAttributes{
-			Name: apiutils.Of(fmt.Sprintf("test-model-%s", sourceID)),
+			Name: new(fmt.Sprintf("test-model-%s", sourceID)),
 		},
 	}
 
@@ -1529,15 +1528,15 @@ func TestCatalogModelRepository_TimestampPreservation(t *testing.T) {
 
 		catalogModel := &models.CatalogModelImpl{
 			Attributes: &models.CatalogModelAttributes{
-				Name:                     apiutils.Of("yaml-loaded-model"),
-				ExternalID:               apiutils.Of("yaml-model-123"),
+				Name:                     new("yaml-loaded-model"),
+				ExternalID:               new("yaml-model-123"),
 				CreateTimeSinceEpoch:     &historicalCreateTime,
 				LastUpdateTimeSinceEpoch: &historicalUpdateTime,
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Model loaded from YAML"),
+					StringValue: new("Model loaded from YAML"),
 				},
 			},
 		}
@@ -1571,14 +1570,14 @@ func TestCatalogModelRepository_TimestampPreservation(t *testing.T) {
 		// Model created via API without timestamps
 		catalogModel := &models.CatalogModelImpl{
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("api-created-model"),
-				ExternalID: apiutils.Of("api-model-456"),
+				Name:       new("api-created-model"),
+				ExternalID: new("api-model-456"),
 				// No timestamps set - should be auto-generated
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Model created via API"),
+					StringValue: new("Model created via API"),
 				},
 			},
 		}
@@ -1605,8 +1604,8 @@ func TestCatalogModelRepository_TimestampPreservation(t *testing.T) {
 
 		catalogModel := &models.CatalogModelImpl{
 			Attributes: &models.CatalogModelAttributes{
-				Name:                     apiutils.Of("yaml-updated-model"),
-				ExternalID:               apiutils.Of("yaml-updated-123"),
+				Name:                     new("yaml-updated-model"),
+				ExternalID:               new("yaml-updated-123"),
 				CreateTimeSinceEpoch:     &historicalCreateTime,
 				LastUpdateTimeSinceEpoch: &firstUpdateTime,
 			},
@@ -1667,8 +1666,8 @@ func TestSortingFilteringInconsistency(t *testing.T) {
 		// Create Model A
 		modelA := &models.CatalogModelImpl{
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("model-a-bug-test"),
-				ExternalID: apiutils.Of("model-a-ext-123"),
+				Name:       new("model-a-bug-test"),
+				ExternalID: new("model-a-ext-123"),
 			},
 		}
 		savedModelA, err := modelRepo.Save(modelA)
@@ -1677,8 +1676,8 @@ func TestSortingFilteringInconsistency(t *testing.T) {
 		// Create Model B
 		modelB := &models.CatalogModelImpl{
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("model-b-bug-test"),
-				ExternalID: apiutils.Of("model-b-ext-456"),
+				Name:       new("model-b-bug-test"),
+				ExternalID: new("model-b-ext-456"),
 			},
 		}
 		savedModelB, err := modelRepo.Save(modelB)
@@ -1688,17 +1687,17 @@ func TestSortingFilteringInconsistency(t *testing.T) {
 		// 1. High accuracy artifact (0.95) with status="deprecated"
 		artifactA1 := &models.CatalogModelArtifactImpl{
 			Attributes: &models.CatalogModelArtifactAttributes{
-				Name:       apiutils.Of("model-a-deprecated-artifact"),
-				ExternalID: apiutils.Of("model-a-deprecated-ext"),
+				Name:       new("model-a-deprecated-artifact"),
+				ExternalID: new("model-a-deprecated-ext"),
 			},
 			CustomProperties: &[]dbmodels.Properties{
 				{
 					Name:        "accuracy",
-					DoubleValue: apiutils.Of(0.95),
+					DoubleValue: new(0.95),
 				},
 				{
 					Name:        "status",
-					StringValue: apiutils.Of("deprecated"),
+					StringValue: new("deprecated"),
 				},
 			},
 		}
@@ -1708,17 +1707,17 @@ func TestSortingFilteringInconsistency(t *testing.T) {
 		// 2. Low accuracy artifact (0.65) with status="active"
 		artifactA2 := &models.CatalogModelArtifactImpl{
 			Attributes: &models.CatalogModelArtifactAttributes{
-				Name:       apiutils.Of("model-a-active-artifact"),
-				ExternalID: apiutils.Of("model-a-active-ext"),
+				Name:       new("model-a-active-artifact"),
+				ExternalID: new("model-a-active-ext"),
 			},
 			CustomProperties: &[]dbmodels.Properties{
 				{
 					Name:        "accuracy",
-					DoubleValue: apiutils.Of(0.65),
+					DoubleValue: new(0.65),
 				},
 				{
 					Name:        "status",
-					StringValue: apiutils.Of("active"),
+					StringValue: new("active"),
 				},
 			},
 		}
@@ -1729,17 +1728,17 @@ func TestSortingFilteringInconsistency(t *testing.T) {
 		// 1. Medium accuracy artifact (0.75) with status="active"
 		artifactB1 := &models.CatalogModelArtifactImpl{
 			Attributes: &models.CatalogModelArtifactAttributes{
-				Name:       apiutils.Of("model-b-active-artifact"),
-				ExternalID: apiutils.Of("model-b-active-ext"),
+				Name:       new("model-b-active-artifact"),
+				ExternalID: new("model-b-active-ext"),
 			},
 			CustomProperties: &[]dbmodels.Properties{
 				{
 					Name:        "accuracy",
-					DoubleValue: apiutils.Of(0.75),
+					DoubleValue: new(0.75),
 				},
 				{
 					Name:        "status",
-					StringValue: apiutils.Of("active"),
+					StringValue: new("active"),
 				},
 			},
 		}
@@ -1749,9 +1748,9 @@ func TestSortingFilteringInconsistency(t *testing.T) {
 		// Test the bug: Filter by active status + sort by accuracy DESC
 		listOptions := models.CatalogModelListOptions{
 			Pagination: dbmodels.Pagination{
-				FilterQuery: apiutils.Of("artifacts.status.string_value='active'"),
-				OrderBy:     apiutils.Of("artifacts.accuracy.double_value"),
-				SortOrder:   apiutils.Of("DESC"),
+				FilterQuery: new("artifacts.status.string_value='active'"),
+				OrderBy:     new("artifacts.accuracy.double_value"),
+				SortOrder:   new("DESC"),
 			},
 		}
 
@@ -1819,19 +1818,19 @@ func TestSortingFilteringEdgeCases(t *testing.T) {
 	// Create test models with various artifact scenarios
 	modelA := &models.CatalogModelImpl{
 		Attributes: &models.CatalogModelAttributes{
-			Name: apiutils.Of("Edge Test Model A"),
+			Name: new("Edge Test Model A"),
 		},
 		Properties: &[]dbmodels.Properties{
-			{Name: "provider", StringValue: apiutils.Of("edge-provider-a")},
+			{Name: "provider", StringValue: new("edge-provider-a")},
 		},
 	}
 
 	modelB := &models.CatalogModelImpl{
 		Attributes: &models.CatalogModelAttributes{
-			Name: apiutils.Of("Edge Test Model B"),
+			Name: new("Edge Test Model B"),
 		},
 		Properties: &[]dbmodels.Properties{
-			{Name: "provider", StringValue: apiutils.Of("edge-provider-b")},
+			{Name: "provider", StringValue: new("edge-provider-b")},
 		},
 	}
 
@@ -1844,32 +1843,32 @@ func TestSortingFilteringEdgeCases(t *testing.T) {
 	// Create artifacts for Model A
 	artifactA1 := &models.CatalogModelArtifactImpl{
 		Attributes: &models.CatalogModelArtifactAttributes{
-			Name: apiutils.Of("edge-artifact-a1"),
+			Name: new("edge-artifact-a1"),
 		},
 		CustomProperties: &[]dbmodels.Properties{
-			{Name: "accuracy", DoubleValue: apiutils.Of(0.95)},
-			{Name: "status", StringValue: apiutils.Of("deprecated")},
+			{Name: "accuracy", DoubleValue: new(0.95)},
+			{Name: "status", StringValue: new("deprecated")},
 		},
 	}
 
 	artifactA2 := &models.CatalogModelArtifactImpl{
 		Attributes: &models.CatalogModelArtifactAttributes{
-			Name: apiutils.Of("edge-artifact-a2"),
+			Name: new("edge-artifact-a2"),
 		},
 		CustomProperties: &[]dbmodels.Properties{
-			{Name: "accuracy", DoubleValue: apiutils.Of(0.65)},
-			{Name: "status", StringValue: apiutils.Of("active")},
+			{Name: "accuracy", DoubleValue: new(0.65)},
+			{Name: "status", StringValue: new("active")},
 		},
 	}
 
 	// Create artifacts for Model B
 	artifactB1 := &models.CatalogModelArtifactImpl{
 		Attributes: &models.CatalogModelArtifactAttributes{
-			Name: apiutils.Of("edge-artifact-b1"),
+			Name: new("edge-artifact-b1"),
 		},
 		CustomProperties: &[]dbmodels.Properties{
-			{Name: "accuracy", DoubleValue: apiutils.Of(0.75)},
-			{Name: "status", StringValue: apiutils.Of("active")},
+			{Name: "accuracy", DoubleValue: new(0.75)},
+			{Name: "status", StringValue: new("active")},
 		},
 	}
 
@@ -1885,9 +1884,9 @@ func TestSortingFilteringEdgeCases(t *testing.T) {
 		// Test filtering for artifacts that don't exist
 		listOptions := models.CatalogModelListOptions{
 			Pagination: dbmodels.Pagination{
-				FilterQuery: apiutils.Of("artifacts.nonexistent.string_value='missing'"),
-				OrderBy:     apiutils.Of("artifacts.accuracy.double_value"),
-				SortOrder:   apiutils.Of("DESC"),
+				FilterQuery: new("artifacts.nonexistent.string_value='missing'"),
+				OrderBy:     new("artifacts.accuracy.double_value"),
+				SortOrder:   new("DESC"),
 			},
 		}
 
@@ -1900,9 +1899,9 @@ func TestSortingFilteringEdgeCases(t *testing.T) {
 		// Test with multiple AND filter conditions
 		listOptions := models.CatalogModelListOptions{
 			Pagination: dbmodels.Pagination{
-				FilterQuery: apiutils.Of("artifacts.status.string_value='active' AND artifacts.accuracy.double_value>0.6"),
-				OrderBy:     apiutils.Of("artifacts.accuracy.double_value"),
-				SortOrder:   apiutils.Of("DESC"),
+				FilterQuery: new("artifacts.status.string_value='active' AND artifacts.accuracy.double_value>0.6"),
+				OrderBy:     new("artifacts.accuracy.double_value"),
+				SortOrder:   new("DESC"),
 			},
 		}
 
@@ -1932,9 +1931,9 @@ func TestSortingFilteringEdgeCases(t *testing.T) {
 		// Test filter that matches no artifacts
 		listOptions := models.CatalogModelListOptions{
 			Pagination: dbmodels.Pagination{
-				FilterQuery: apiutils.Of("artifacts.accuracy.double_value>1.0"), // No accuracy > 1.0
-				OrderBy:     apiutils.Of("artifacts.accuracy.double_value"),
-				SortOrder:   apiutils.Of("DESC"),
+				FilterQuery: new("artifacts.accuracy.double_value>1.0"), // No accuracy > 1.0
+				OrderBy:     new("artifacts.accuracy.double_value"),
+				SortOrder:   new("DESC"),
 			},
 		}
 
@@ -1947,9 +1946,9 @@ func TestSortingFilteringEdgeCases(t *testing.T) {
 		// Test filter that matches only one model
 		listOptions := models.CatalogModelListOptions{
 			Pagination: dbmodels.Pagination{
-				FilterQuery: apiutils.Of("artifacts.status.string_value='deprecated'"),
-				OrderBy:     apiutils.Of("artifacts.accuracy.double_value"),
-				SortOrder:   apiutils.Of("DESC"),
+				FilterQuery: new("artifacts.status.string_value='deprecated'"),
+				OrderBy:     new("artifacts.accuracy.double_value"),
+				SortOrder:   new("DESC"),
 			},
 		}
 
@@ -1965,9 +1964,9 @@ func TestSortingFilteringEdgeCases(t *testing.T) {
 		// Test string property sorting with numeric filter
 		listOptions := models.CatalogModelListOptions{
 			Pagination: dbmodels.Pagination{
-				FilterQuery: apiutils.Of("artifacts.accuracy.double_value>0.6"),
-				OrderBy:     apiutils.Of("artifacts.status.string_value"),
-				SortOrder:   apiutils.Of("ASC"), // Should sort: active, active, deprecated
+				FilterQuery: new("artifacts.accuracy.double_value>0.6"),
+				OrderBy:     new("artifacts.status.string_value"),
+				SortOrder:   new("ASC"), // Should sort: active, active, deprecated
 			},
 		}
 

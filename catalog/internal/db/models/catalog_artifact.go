@@ -3,8 +3,8 @@ package models
 import (
 	"sync"
 
-	dbfilter "github.com/kubeflow/hub/internal/platform/db/filter"
 	models "github.com/kubeflow/hub/internal/platform/db/entity"
+	dbfilter "github.com/kubeflow/hub/internal/platform/db/filter"
 	"github.com/kubeflow/hub/internal/platform/db/schema"
 )
 
@@ -24,7 +24,7 @@ func (c *CatalogArtifactListOptions) GetRestEntityType() dbfilter.RestEntityType
 }
 
 // ArtifactMapperFunc defines the signature for artifact mapping functions
-type ArtifactMapperFunc func(artifact schema.Artifact, properties []schema.ArtifactProperty) interface{}
+type ArtifactMapperFunc func(artifact schema.Artifact, properties []schema.ArtifactProperty) any
 
 // Global registry for artifact mappers
 var (

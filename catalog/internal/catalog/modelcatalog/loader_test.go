@@ -12,7 +12,6 @@ import (
 	"github.com/kubeflow/hub/catalog/internal/catalog/modelcatalog/models"
 	sharedmodels "github.com/kubeflow/hub/catalog/internal/db/models"
 	apimodels "github.com/kubeflow/hub/catalog/pkg/openapi"
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"k8s.io/apimachinery/pkg/util/yaml"
@@ -36,8 +35,8 @@ func TestRemoveModelsFromMissingSources(t *testing.T) {
 		{
 			name: "removes models from sources not in config",
 			enabledSources: map[string]*bool{
-				"source1": apiutils.Of(true),
-				"source2": apiutils.Of(true),
+				"source1": new(true),
+				"source2": new(true),
 			},
 			existingSourceIDs:      []string{"source1", "source2", "source3", "source4"},
 			expectedDeletedSources: []string{"source3", "source4"}, // source3 and source4 not in config
@@ -45,9 +44,9 @@ func TestRemoveModelsFromMissingSources(t *testing.T) {
 		{
 			name: "no deletion when all database sources are in config",
 			enabledSources: map[string]*bool{
-				"source1": apiutils.Of(true),
-				"source2": apiutils.Of(true),
-				"source3": apiutils.Of(true),
+				"source1": new(true),
+				"source2": new(true),
+				"source3": new(true),
 			},
 			existingSourceIDs:      []string{"source1", "source2"},
 			expectedDeletedSources: []string{}, // no deletions - all database sources are in config
@@ -55,7 +54,7 @@ func TestRemoveModelsFromMissingSources(t *testing.T) {
 		{
 			name: "handles empty existing sources",
 			enabledSources: map[string]*bool{
-				"source1": apiutils.Of(true),
+				"source1": new(true),
 			},
 			existingSourceIDs:      []string{},
 			expectedDeletedSources: []string{}, // no deletions needed - no existing sources
@@ -69,8 +68,8 @@ func TestRemoveModelsFromMissingSources(t *testing.T) {
 		{
 			name: "correctly handles default enabled sources",
 			enabledSources: map[string]*bool{
-				"source1": nil,               // default enabled - converted to true by applyDefaults
-				"source2": apiutils.Of(true), // explicitly enabled
+				"source1": nil,       // default enabled - converted to true by applyDefaults
+				"source2": new(true), // explicitly enabled
 			},
 			existingSourceIDs:      []string{"source1", "source2", "source3"},
 			expectedDeletedSources: []string{"source3"}, // only source3 (not in config) gets deleted
@@ -78,7 +77,7 @@ func TestRemoveModelsFromMissingSources(t *testing.T) {
 		{
 			name: "handles repository error on GetDistinctSourceIDs",
 			enabledSources: map[string]*bool{
-				"source1": apiutils.Of(true),
+				"source1": new(true),
 			},
 			existingSourceIDs: []string{"source1"},
 			repositoryError:   "get_distinct_source_ids_error",
@@ -87,7 +86,7 @@ func TestRemoveModelsFromMissingSources(t *testing.T) {
 		{
 			name: "handles repository error on DeleteBySource",
 			enabledSources: map[string]*bool{
-				"source1": apiutils.Of(true),
+				"source1": new(true),
 			},
 			existingSourceIDs:      []string{"source1", "source2"},
 			repositoryError:        "delete_by_source_error",
@@ -340,7 +339,7 @@ func TestLoader_StartWithLeaderElection(t *testing.T) {
 				CatalogSource: apimodels.CatalogSource{
 					Id:      "test-catalog",
 					Name:    "Test Catalog",
-					Enabled: apiutils.Of(true),
+					Enabled: new(true),
 				},
 				Type: testProviderName,
 			},
@@ -531,7 +530,7 @@ func TestSourceStatusPartialVsFull(t *testing.T) {
 						CatalogSource: apimodels.CatalogSource{
 							Id:      sourceID,
 							Name:    "Test",
-							Enabled: apiutils.Of(true),
+							Enabled: new(true),
 						},
 						Type: providerName,
 					},
