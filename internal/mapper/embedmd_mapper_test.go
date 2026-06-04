@@ -3,7 +3,6 @@ package mapper_test
 import (
 	"testing"
 
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	"github.com/kubeflow/hub/internal/db/models"
 	"github.com/kubeflow/hub/internal/defaults"
 	"github.com/kubeflow/hub/internal/mapper"
@@ -44,10 +43,10 @@ func TestEmbedMDMapFromRegisteredModel(t *testing.T) {
 
 	openAPIModel := &openapi.RegisteredModel{
 		Name:        "test-registered-model",
-		Description: apiutils.Of("Test description"),
-		Owner:       apiutils.Of("test-owner"),
-		ExternalId:  apiutils.Of("ext-123"),
-		State:       apiutils.Of(openapi.REGISTEREDMODELSTATE_LIVE),
+		Description: new("Test description"),
+		Owner:       new("test-owner"),
+		ExternalId:  new("ext-123"),
+		State:       new(openapi.REGISTEREDMODELSTATE_LIVE),
 	}
 
 	result, err := mapper.MapFromRegisteredModel(openAPIModel)
@@ -92,10 +91,10 @@ func TestEmbedMDMapFromModelVersion(t *testing.T) {
 
 	openAPIModel := &openapi.ModelVersion{
 		Name:              "test-model-version",
-		Description:       apiutils.Of("Test version description"),
-		Author:            apiutils.Of("test-author"),
-		ExternalId:        apiutils.Of("version-ext-123"),
-		State:             apiutils.Of(openapi.MODELVERSIONSTATE_LIVE),
+		Description:       new("Test version description"),
+		Author:            new("test-author"),
+		ExternalId:        new("version-ext-123"),
+		State:             new(openapi.MODELVERSIONSTATE_LIVE),
 		RegisteredModelId: "1",
 	}
 
@@ -144,8 +143,8 @@ func TestEmbedMDMapFromServingEnvironment(t *testing.T) {
 
 	openAPIModel := &openapi.ServingEnvironment{
 		Name:        "test-serving-env",
-		Description: apiutils.Of("Test serving environment"),
-		ExternalId:  apiutils.Of("env-ext-123"),
+		Description: new("Test serving environment"),
+		ExternalId:  new("env-ext-123"),
 	}
 
 	result, err := mapper.MapFromServingEnvironment(openAPIModel)
@@ -166,14 +165,14 @@ func TestEmbedMDMapFromInferenceService(t *testing.T) {
 	assertion, mapper := setupEmbedMDMapper(t)
 
 	openAPIModel := &openapi.InferenceService{
-		Name:                 apiutils.Of("test-inference-service"),
-		Description:          apiutils.Of("Test inference service"),
-		ExternalId:           apiutils.Of("inf-ext-123"),
+		Name:                 new("test-inference-service"),
+		Description:          new("Test inference service"),
+		ExternalId:           new("inf-ext-123"),
 		ServingEnvironmentId: "5",
 		RegisteredModelId:    "1",
-		ModelVersionId:       apiutils.Of("2"),
-		Runtime:              apiutils.Of("tensorflow"),
-		DesiredState:         apiutils.Of(openapi.INFERENCESERVICESTATE_DEPLOYED),
+		ModelVersionId:       new("2"),
+		Runtime:              new("tensorflow"),
+		DesiredState:         new(openapi.INFERENCESERVICESTATE_DEPLOYED),
 	}
 
 	result, err := mapper.MapFromInferenceService(openAPIModel, "5")
@@ -224,15 +223,15 @@ func TestEmbedMDMapFromModelArtifact(t *testing.T) {
 	assertion, mapper := setupEmbedMDMapper(t)
 
 	openAPIModel := &openapi.ModelArtifact{
-		Name:               apiutils.Of("test-model-artifact"),
-		Description:        apiutils.Of("Test model artifact"),
-		ExternalId:         apiutils.Of("model-art-ext-123"),
-		Uri:                apiutils.Of("s3://bucket/model.pkl"),
-		State:              apiutils.Of(openapi.ARTIFACTSTATE_LIVE),
-		ModelFormatName:    apiutils.Of("pickle"),
-		ModelFormatVersion: apiutils.Of("1.0"),
-		StorageKey:         apiutils.Of("storage-key"),
-		StoragePath:        apiutils.Of("/path/to/model"),
+		Name:               new("test-model-artifact"),
+		Description:        new("Test model artifact"),
+		ExternalId:         new("model-art-ext-123"),
+		Uri:                new("s3://bucket/model.pkl"),
+		State:              new(openapi.ARTIFACTSTATE_LIVE),
+		ModelFormatName:    new("pickle"),
+		ModelFormatVersion: new("1.0"),
+		StorageKey:         new("storage-key"),
+		StoragePath:        new("/path/to/model"),
 	}
 
 	t.Run("with parent ID", func(t *testing.T) {
@@ -285,11 +284,11 @@ func TestEmbedMDMapFromDocArtifact(t *testing.T) {
 	assertion, mapper := setupEmbedMDMapper(t)
 
 	openAPIModel := &openapi.DocArtifact{
-		Name:        apiutils.Of("test-doc-artifact"),
-		Description: apiutils.Of("Test doc artifact"),
-		ExternalId:  apiutils.Of("doc-art-ext-123"),
-		Uri:         apiutils.Of("s3://bucket/doc.pdf"),
-		State:       apiutils.Of(openapi.ARTIFACTSTATE_LIVE),
+		Name:        new("test-doc-artifact"),
+		Description: new("Test doc artifact"),
+		ExternalId:  new("doc-art-ext-123"),
+		Uri:         new("s3://bucket/doc.pdf"),
+		State:       new(openapi.ARTIFACTSTATE_LIVE),
 	}
 
 	t.Run("with parent ID", func(t *testing.T) {
@@ -342,11 +341,11 @@ func TestEmbedMDMapFromServeModel(t *testing.T) {
 	assertion, mapper := setupEmbedMDMapper(t)
 
 	openAPIModel := &openapi.ServeModel{
-		Name:           apiutils.Of("test-serve-model"),
-		Description:    apiutils.Of("Test serve model"),
-		ExternalId:     apiutils.Of("serve-ext-123"),
+		Name:           new("test-serve-model"),
+		Description:    new("Test serve model"),
+		ExternalId:     new("serve-ext-123"),
 		ModelVersionId: "2",
-		LastKnownState: apiutils.Of(openapi.EXECUTIONSTATE_RUNNING),
+		LastKnownState: new(openapi.EXECUTIONSTATE_RUNNING),
 	}
 
 	// ServeModel always requires a parent ID (InferenceService)
@@ -389,32 +388,32 @@ func TestEmbedMDMapToRegisteredModel(t *testing.T) {
 	assertion, mapper := setupEmbedMDMapper(t)
 
 	embedMDModel := &models.RegisteredModelImpl{
-		ID:     apiutils.Of(int32(1)),
-		TypeID: apiutils.Of(int32(testRegisteredModelTypeId)),
+		ID:     new(int32(1)),
+		TypeID: new(int32(testRegisteredModelTypeId)),
 		Attributes: &models.RegisteredModelAttributes{
-			Name:                     apiutils.Of("test-registered-model"),
-			ExternalID:               apiutils.Of("ext-123"),
-			CreateTimeSinceEpoch:     apiutils.Of(int64(1234567890)),
-			LastUpdateTimeSinceEpoch: apiutils.Of(int64(1234567891)),
+			Name:                     new("test-registered-model"),
+			ExternalID:               new("ext-123"),
+			CreateTimeSinceEpoch:     new(int64(1234567890)),
+			LastUpdateTimeSinceEpoch: new(int64(1234567891)),
 		},
 		Properties: &[]models.Properties{
 			{
 				Name:        "description",
-				StringValue: apiutils.Of("Test description"),
+				StringValue: new("Test description"),
 			},
 			{
 				Name:        "owner",
-				StringValue: apiutils.Of("test-owner"),
+				StringValue: new("test-owner"),
 			},
 			{
 				Name:        "state",
-				StringValue: apiutils.Of("LIVE"),
+				StringValue: new("LIVE"),
 			},
 		},
 		CustomProperties: &[]models.Properties{
 			{
 				Name:             "custom-prop",
-				StringValue:      apiutils.Of("custom-value"),
+				StringValue:      new("custom-value"),
 				IsCustomProperty: true,
 			},
 		},
@@ -456,30 +455,30 @@ func TestEmbedMDMapToModelVersion(t *testing.T) {
 	assertion, mapper := setupEmbedMDMapper(t)
 
 	embedMDModel := &models.ModelVersionImpl{
-		ID:     apiutils.Of(int32(2)),
-		TypeID: apiutils.Of(int32(testModelVersionTypeId)),
+		ID:     new(int32(2)),
+		TypeID: new(int32(testModelVersionTypeId)),
 		Attributes: &models.ModelVersionAttributes{
-			Name:                     apiutils.Of("test-model-version"),
-			ExternalID:               apiutils.Of("version-ext-123"),
-			CreateTimeSinceEpoch:     apiutils.Of(int64(1234567890)),
-			LastUpdateTimeSinceEpoch: apiutils.Of(int64(1234567891)),
+			Name:                     new("test-model-version"),
+			ExternalID:               new("version-ext-123"),
+			CreateTimeSinceEpoch:     new(int64(1234567890)),
+			LastUpdateTimeSinceEpoch: new(int64(1234567891)),
 		},
 		Properties: &[]models.Properties{
 			{
 				Name:        "description",
-				StringValue: apiutils.Of("Test version description"),
+				StringValue: new("Test version description"),
 			},
 			{
 				Name:        "author",
-				StringValue: apiutils.Of("test-author"),
+				StringValue: new("test-author"),
 			},
 			{
 				Name:        "state",
-				StringValue: apiutils.Of("LIVE"),
+				StringValue: new("LIVE"),
 			},
 			{
 				Name:     "registered_model_id",
-				IntValue: apiutils.Of(int32(1)),
+				IntValue: new(int32(1)),
 			},
 		},
 	}
@@ -506,18 +505,18 @@ func TestEmbedMDMapToServingEnvironment(t *testing.T) {
 	assertion, mapper := setupEmbedMDMapper(t)
 
 	embedMDModel := &models.ServingEnvironmentImpl{
-		ID:     apiutils.Of(int32(5)),
-		TypeID: apiutils.Of(int32(testServingEnvironmentTypeId)),
+		ID:     new(int32(5)),
+		TypeID: new(int32(testServingEnvironmentTypeId)),
 		Attributes: &models.ServingEnvironmentAttributes{
-			Name:                     apiutils.Of("test-serving-env"),
-			ExternalID:               apiutils.Of("env-ext-123"),
-			CreateTimeSinceEpoch:     apiutils.Of(int64(1234567890)),
-			LastUpdateTimeSinceEpoch: apiutils.Of(int64(1234567891)),
+			Name:                     new("test-serving-env"),
+			ExternalID:               new("env-ext-123"),
+			CreateTimeSinceEpoch:     new(int64(1234567890)),
+			LastUpdateTimeSinceEpoch: new(int64(1234567891)),
 		},
 		Properties: &[]models.Properties{
 			{
 				Name:        "description",
-				StringValue: apiutils.Of("Test serving environment"),
+				StringValue: new("Test serving environment"),
 			},
 		},
 	}
@@ -541,38 +540,38 @@ func TestEmbedMDMapToInferenceService(t *testing.T) {
 	assertion, mapper := setupEmbedMDMapper(t)
 
 	embedMDModel := &models.InferenceServiceImpl{
-		ID:     apiutils.Of(int32(6)),
-		TypeID: apiutils.Of(int32(testInferenceServiceTypeId)),
+		ID:     new(int32(6)),
+		TypeID: new(int32(testInferenceServiceTypeId)),
 		Attributes: &models.InferenceServiceAttributes{
-			Name:                     apiutils.Of("test-inference-service"),
-			ExternalID:               apiutils.Of("inf-ext-123"),
-			CreateTimeSinceEpoch:     apiutils.Of(int64(1234567890)),
-			LastUpdateTimeSinceEpoch: apiutils.Of(int64(1234567891)),
+			Name:                     new("test-inference-service"),
+			ExternalID:               new("inf-ext-123"),
+			CreateTimeSinceEpoch:     new(int64(1234567890)),
+			LastUpdateTimeSinceEpoch: new(int64(1234567891)),
 		},
 		Properties: &[]models.Properties{
 			{
 				Name:        "description",
-				StringValue: apiutils.Of("Test inference service"),
+				StringValue: new("Test inference service"),
 			},
 			{
 				Name:     "serving_environment_id",
-				IntValue: apiutils.Of(int32(5)),
+				IntValue: new(int32(5)),
 			},
 			{
 				Name:     "registered_model_id",
-				IntValue: apiutils.Of(int32(1)),
+				IntValue: new(int32(1)),
 			},
 			{
 				Name:     "model_version_id",
-				IntValue: apiutils.Of(int32(2)),
+				IntValue: new(int32(2)),
 			},
 			{
 				Name:        "runtime",
-				StringValue: apiutils.Of("tensorflow"),
+				StringValue: new("tensorflow"),
 			},
 			{
 				Name:        "desired_state",
-				StringValue: apiutils.Of("DEPLOYED"),
+				StringValue: new("DEPLOYED"),
 			},
 		},
 	}
@@ -601,29 +600,29 @@ func TestEmbedMDMapToModelArtifact(t *testing.T) {
 	assertion, mapper := setupEmbedMDMapper(t)
 
 	embedMDModel := &models.ModelArtifactImpl{
-		ID:     apiutils.Of(int32(3)),
-		TypeID: apiutils.Of(int32(testModelArtifactTypeId)),
+		ID:     new(int32(3)),
+		TypeID: new(int32(testModelArtifactTypeId)),
 		Attributes: &models.ModelArtifactAttributes{
-			Name:                     apiutils.Of("test-model-artifact"),
-			ExternalID:               apiutils.Of("model-art-ext-123"),
-			URI:                      apiutils.Of("s3://bucket/model.pkl"),
-			State:                    apiutils.Of("LIVE"),
-			ArtifactType:             apiutils.Of("model-artifact"),
-			CreateTimeSinceEpoch:     apiutils.Of(int64(1234567890)),
-			LastUpdateTimeSinceEpoch: apiutils.Of(int64(1234567891)),
+			Name:                     new("test-model-artifact"),
+			ExternalID:               new("model-art-ext-123"),
+			URI:                      new("s3://bucket/model.pkl"),
+			State:                    new("LIVE"),
+			ArtifactType:             new("model-artifact"),
+			CreateTimeSinceEpoch:     new(int64(1234567890)),
+			LastUpdateTimeSinceEpoch: new(int64(1234567891)),
 		},
 		Properties: &[]models.Properties{
 			{
 				Name:        "description",
-				StringValue: apiutils.Of("Test model artifact"),
+				StringValue: new("Test model artifact"),
 			},
 			{
 				Name:        "model_format_name",
-				StringValue: apiutils.Of("pickle"),
+				StringValue: new("pickle"),
 			},
 			{
 				Name:        "model_format_version",
-				StringValue: apiutils.Of("1.0"),
+				StringValue: new("1.0"),
 			},
 		},
 	}
@@ -652,21 +651,21 @@ func TestEmbedMDMapToDocArtifact(t *testing.T) {
 	assertion, mapper := setupEmbedMDMapper(t)
 
 	embedMDModel := &models.DocArtifactImpl{
-		ID:     apiutils.Of(int32(4)),
-		TypeID: apiutils.Of(int32(testDocArtifactTypeId)),
+		ID:     new(int32(4)),
+		TypeID: new(int32(testDocArtifactTypeId)),
 		Attributes: &models.DocArtifactAttributes{
-			Name:                     apiutils.Of("test-doc-artifact"),
-			ExternalID:               apiutils.Of("doc-art-ext-123"),
-			URI:                      apiutils.Of("s3://bucket/doc.pdf"),
-			State:                    apiutils.Of("LIVE"),
-			ArtifactType:             apiutils.Of("doc-artifact"),
-			CreateTimeSinceEpoch:     apiutils.Of(int64(1234567890)),
-			LastUpdateTimeSinceEpoch: apiutils.Of(int64(1234567891)),
+			Name:                     new("test-doc-artifact"),
+			ExternalID:               new("doc-art-ext-123"),
+			URI:                      new("s3://bucket/doc.pdf"),
+			State:                    new("LIVE"),
+			ArtifactType:             new("doc-artifact"),
+			CreateTimeSinceEpoch:     new(int64(1234567890)),
+			LastUpdateTimeSinceEpoch: new(int64(1234567891)),
 		},
 		Properties: &[]models.Properties{
 			{
 				Name:        "description",
-				StringValue: apiutils.Of("Test doc artifact"),
+				StringValue: new("Test doc artifact"),
 			},
 		},
 	}
@@ -693,23 +692,23 @@ func TestEmbedMDMapToServeModel(t *testing.T) {
 	assertion, mapper := setupEmbedMDMapper(t)
 
 	embedMDModel := &models.ServeModelImpl{
-		ID:     apiutils.Of(int32(7)),
-		TypeID: apiutils.Of(int32(testServeModelTypeId)),
+		ID:     new(int32(7)),
+		TypeID: new(int32(testServeModelTypeId)),
 		Attributes: &models.ServeModelAttributes{
-			Name:                     apiutils.Of("test-serve-model"),
-			ExternalID:               apiutils.Of("serve-ext-123"),
-			LastKnownState:           apiutils.Of("RUNNING"),
-			CreateTimeSinceEpoch:     apiutils.Of(int64(1234567890)),
-			LastUpdateTimeSinceEpoch: apiutils.Of(int64(1234567891)),
+			Name:                     new("test-serve-model"),
+			ExternalID:               new("serve-ext-123"),
+			LastKnownState:           new("RUNNING"),
+			CreateTimeSinceEpoch:     new(int64(1234567890)),
+			LastUpdateTimeSinceEpoch: new(int64(1234567891)),
 		},
 		Properties: &[]models.Properties{
 			{
 				Name:        "description",
-				StringValue: apiutils.Of("Test serve model"),
+				StringValue: new("Test serve model"),
 			},
 			{
 				Name:     "model_version_id",
-				IntValue: apiutils.Of(int32(2)),
+				IntValue: new(int32(2)),
 			},
 		},
 	}
@@ -825,10 +824,10 @@ func TestEmbedMDRoundTripConversion(t *testing.T) {
 	// Create an OpenAPI model
 	originalOpenAPI := &openapi.RegisteredModel{
 		Name:        "roundtrip-test",
-		Description: apiutils.Of("Test roundtrip conversion"),
-		Owner:       apiutils.Of("test-owner"),
-		ExternalId:  apiutils.Of("roundtrip-ext-123"),
-		State:       apiutils.Of(openapi.REGISTEREDMODELSTATE_LIVE),
+		Description: new("Test roundtrip conversion"),
+		Owner:       new("test-owner"),
+		ExternalId:  new("roundtrip-ext-123"),
+		State:       new(openapi.REGISTEREDMODELSTATE_LIVE),
 	}
 
 	// Convert to EmbedMD
@@ -836,9 +835,9 @@ func TestEmbedMDRoundTripConversion(t *testing.T) {
 	require.NoError(t, err)
 
 	// Set ID for the conversion back (simulating saved model)
-	embedMDModel.(*models.RegisteredModelImpl).ID = apiutils.Of(int32(1))
-	embedMDModel.(*models.RegisteredModelImpl).Attributes.CreateTimeSinceEpoch = apiutils.Of(int64(1234567890))
-	embedMDModel.(*models.RegisteredModelImpl).Attributes.LastUpdateTimeSinceEpoch = apiutils.Of(int64(1234567891))
+	embedMDModel.(*models.RegisteredModelImpl).ID = new(int32(1))
+	embedMDModel.(*models.RegisteredModelImpl).Attributes.CreateTimeSinceEpoch = new(int64(1234567890))
+	embedMDModel.(*models.RegisteredModelImpl).Attributes.LastUpdateTimeSinceEpoch = new(int64(1234567891))
 
 	// Convert back to OpenAPI
 	resultOpenAPI, err := mapper.MapToRegisteredModel(embedMDModel)

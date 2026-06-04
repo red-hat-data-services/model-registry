@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/kubeflow/hub/catalog/internal/catalog/modelcatalog/models"
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	dbmodels "github.com/kubeflow/hub/internal/platform/db/entity"
 	"github.com/kubeflow/hub/internal/testutils"
 	"github.com/stretchr/testify/assert"
@@ -28,10 +27,10 @@ func TestCatalogModelArtifactRepository(t *testing.T) {
 	t.Run("TestSave", func(t *testing.T) {
 		// First create a catalog model for attribution
 		catalogModel := &models.CatalogModelImpl{
-			TypeID: apiutils.Of(int32(catalogModelTypeID)),
+			TypeID: new(int32(catalogModelTypeID)),
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("test-catalog-model-for-artifact"),
-				ExternalID: apiutils.Of("catalog-model-ext-123"),
+				Name:       new("test-catalog-model-for-artifact"),
+				ExternalID: new("catalog-model-ext-123"),
 			},
 		}
 		savedCatalogModel, err := catalogModelRepo.Save(catalogModel)
@@ -39,22 +38,22 @@ func TestCatalogModelArtifactRepository(t *testing.T) {
 
 		// Test creating a new catalog model artifact
 		catalogModelArtifact := &models.CatalogModelArtifactImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.CatalogModelArtifactAttributes{
-				Name:       apiutils.Of("test-catalog-model-artifact"),
-				ExternalID: apiutils.Of("catalog-artifact-ext-123"),
-				URI:        apiutils.Of("s3://catalog-bucket/model.pkl"),
+				Name:       new("test-catalog-model-artifact"),
+				ExternalID: new("catalog-artifact-ext-123"),
+				URI:        new("s3://catalog-bucket/model.pkl"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Test catalog model artifact description"),
+					StringValue: new("Test catalog model artifact description"),
 				},
 			},
 			CustomProperties: &[]dbmodels.Properties{
 				{
 					Name:        "custom-catalog-prop",
-					StringValue: apiutils.Of("custom-catalog-value"),
+					StringValue: new("custom-catalog-value"),
 				},
 			},
 		}
@@ -69,8 +68,8 @@ func TestCatalogModelArtifactRepository(t *testing.T) {
 
 		// Test updating the same catalog model artifact
 		catalogModelArtifact.ID = saved.GetID()
-		catalogModelArtifact.GetAttributes().Name = apiutils.Of("updated-catalog-model-artifact")
-		catalogModelArtifact.GetAttributes().URI = apiutils.Of("s3://catalog-bucket/updated-model.pkl")
+		catalogModelArtifact.GetAttributes().Name = new("updated-catalog-model-artifact")
+		catalogModelArtifact.GetAttributes().URI = new("s3://catalog-bucket/updated-model.pkl")
 		// Preserve CreateTimeSinceEpoch from the saved entity
 		catalogModelArtifact.GetAttributes().CreateTimeSinceEpoch = saved.GetAttributes().CreateTimeSinceEpoch
 
@@ -85,10 +84,10 @@ func TestCatalogModelArtifactRepository(t *testing.T) {
 	t.Run("TestGetByID", func(t *testing.T) {
 		// First create a catalog model
 		catalogModel := &models.CatalogModelImpl{
-			TypeID: apiutils.Of(int32(catalogModelTypeID)),
+			TypeID: new(int32(catalogModelTypeID)),
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("test-catalog-model-for-getbyid"),
-				ExternalID: apiutils.Of("catalog-model-getbyid-ext"),
+				Name:       new("test-catalog-model-for-getbyid"),
+				ExternalID: new("catalog-model-getbyid-ext"),
 			},
 		}
 		savedCatalogModel, err := catalogModelRepo.Save(catalogModel)
@@ -96,11 +95,11 @@ func TestCatalogModelArtifactRepository(t *testing.T) {
 
 		// Create a catalog model artifact to retrieve
 		catalogModelArtifact := &models.CatalogModelArtifactImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.CatalogModelArtifactAttributes{
-				Name:       apiutils.Of("get-test-catalog-model-artifact"),
-				ExternalID: apiutils.Of("get-catalog-artifact-ext-123"),
-				URI:        apiutils.Of("s3://catalog-bucket/get-model.pkl"),
+				Name:       new("get-test-catalog-model-artifact"),
+				ExternalID: new("get-catalog-artifact-ext-123"),
+				URI:        new("s3://catalog-bucket/get-model.pkl"),
 			},
 		}
 
@@ -125,10 +124,10 @@ func TestCatalogModelArtifactRepository(t *testing.T) {
 	t.Run("TestList", func(t *testing.T) {
 		// Create a catalog model for the artifacts
 		catalogModel := &models.CatalogModelImpl{
-			TypeID: apiutils.Of(int32(catalogModelTypeID)),
+			TypeID: new(int32(catalogModelTypeID)),
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("test-catalog-model-for-list"),
-				ExternalID: apiutils.Of("catalog-model-list-ext"),
+				Name:       new("test-catalog-model-for-list"),
+				ExternalID: new("catalog-model-list-ext"),
 			},
 		}
 		savedCatalogModel, err := catalogModelRepo.Save(catalogModel)
@@ -137,27 +136,27 @@ func TestCatalogModelArtifactRepository(t *testing.T) {
 		// Create multiple catalog model artifacts for listing
 		testArtifacts := []*models.CatalogModelArtifactImpl{
 			{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.CatalogModelArtifactAttributes{
-					Name:       apiutils.Of("list-catalog-artifact-1"),
-					ExternalID: apiutils.Of("list-catalog-artifact-ext-1"),
-					URI:        apiutils.Of("s3://catalog-bucket/list-model-1.pkl"),
+					Name:       new("list-catalog-artifact-1"),
+					ExternalID: new("list-catalog-artifact-ext-1"),
+					URI:        new("s3://catalog-bucket/list-model-1.pkl"),
 				},
 			},
 			{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.CatalogModelArtifactAttributes{
-					Name:       apiutils.Of("list-catalog-artifact-2"),
-					ExternalID: apiutils.Of("list-catalog-artifact-ext-2"),
-					URI:        apiutils.Of("s3://catalog-bucket/list-model-2.pkl"),
+					Name:       new("list-catalog-artifact-2"),
+					ExternalID: new("list-catalog-artifact-ext-2"),
+					URI:        new("s3://catalog-bucket/list-model-2.pkl"),
 				},
 			},
 			{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.CatalogModelArtifactAttributes{
-					Name:       apiutils.Of("list-catalog-artifact-3"),
-					ExternalID: apiutils.Of("list-catalog-artifact-ext-3"),
-					URI:        apiutils.Of("s3://catalog-bucket/list-model-3.pkl"),
+					Name:       new("list-catalog-artifact-3"),
+					ExternalID: new("list-catalog-artifact-ext-3"),
+					URI:        new("s3://catalog-bucket/list-model-3.pkl"),
 				},
 			},
 		}
@@ -216,10 +215,10 @@ func TestCatalogModelArtifactRepository(t *testing.T) {
 	t.Run("TestListWithPropertiesAndCustomProperties", func(t *testing.T) {
 		// Create a catalog model
 		catalogModel := &models.CatalogModelImpl{
-			TypeID: apiutils.Of(int32(catalogModelTypeID)),
+			TypeID: new(int32(catalogModelTypeID)),
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("test-catalog-model-for-props"),
-				ExternalID: apiutils.Of("catalog-model-props-ext"),
+				Name:       new("test-catalog-model-for-props"),
+				ExternalID: new("catalog-model-props-ext"),
 			},
 		}
 		savedCatalogModel, err := catalogModelRepo.Save(catalogModel)
@@ -227,30 +226,30 @@ func TestCatalogModelArtifactRepository(t *testing.T) {
 
 		// Create a catalog model artifact with both properties and custom properties
 		catalogModelArtifact := &models.CatalogModelArtifactImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.CatalogModelArtifactAttributes{
-				Name:       apiutils.Of("props-test-catalog-artifact"),
-				ExternalID: apiutils.Of("props-catalog-artifact-ext-123"),
-				URI:        apiutils.Of("s3://catalog-bucket/props-model.pkl"),
+				Name:       new("props-test-catalog-artifact"),
+				ExternalID: new("props-catalog-artifact-ext-123"),
+				URI:        new("s3://catalog-bucket/props-model.pkl"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "version",
-					StringValue: apiutils.Of("1.0.0"),
+					StringValue: new("1.0.0"),
 				},
 				{
 					Name:     "size_bytes",
-					IntValue: apiutils.Of(int32(2048000)),
+					IntValue: new(int32(2048000)),
 				},
 			},
 			CustomProperties: &[]dbmodels.Properties{
 				{
 					Name:        "team",
-					StringValue: apiutils.Of("catalog-ml-team"),
+					StringValue: new("catalog-ml-team"),
 				},
 				{
 					Name:      "is_public",
-					BoolValue: apiutils.Of(true),
+					BoolValue: new(true),
 				},
 			},
 		}
@@ -308,16 +307,16 @@ func TestCatalogModelArtifactRepository(t *testing.T) {
 	t.Run("TestSaveWithoutParentResource", func(t *testing.T) {
 		// Test creating a catalog model artifact without parent resource attribution
 		catalogModelArtifact := &models.CatalogModelArtifactImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.CatalogModelArtifactAttributes{
-				Name:       apiutils.Of("standalone-catalog-artifact"),
-				ExternalID: apiutils.Of("standalone-catalog-artifact-ext"),
-				URI:        apiutils.Of("s3://catalog-bucket/standalone-model.pkl"),
+				Name:       new("standalone-catalog-artifact"),
+				ExternalID: new("standalone-catalog-artifact-ext"),
+				URI:        new("s3://catalog-bucket/standalone-model.pkl"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Standalone catalog artifact without parent"),
+					StringValue: new("Standalone catalog artifact without parent"),
 				},
 			},
 		}
@@ -338,10 +337,10 @@ func TestCatalogModelArtifactRepository(t *testing.T) {
 	t.Run("TestListOrdering", func(t *testing.T) {
 		// Create a catalog model
 		catalogModel := &models.CatalogModelImpl{
-			TypeID: apiutils.Of(int32(catalogModelTypeID)),
+			TypeID: new(int32(catalogModelTypeID)),
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("test-catalog-model-for-ordering"),
-				ExternalID: apiutils.Of("catalog-model-ordering-ext"),
+				Name:       new("test-catalog-model-for-ordering"),
+				ExternalID: new("catalog-model-ordering-ext"),
 			},
 		}
 		savedCatalogModel, err := catalogModelRepo.Save(catalogModel)
@@ -349,11 +348,11 @@ func TestCatalogModelArtifactRepository(t *testing.T) {
 
 		// Create artifacts sequentially with time delays to ensure deterministic ordering
 		artifact1 := &models.CatalogModelArtifactImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.CatalogModelArtifactAttributes{
-				Name:       apiutils.Of("time-test-catalog-artifact-1"),
-				ExternalID: apiutils.Of("time-catalog-artifact-ext-1"),
-				URI:        apiutils.Of("s3://catalog-bucket/time-model-1.pkl"),
+				Name:       new("time-test-catalog-artifact-1"),
+				ExternalID: new("time-catalog-artifact-ext-1"),
+				URI:        new("s3://catalog-bucket/time-model-1.pkl"),
 			},
 		}
 		saved1, err := repo.Save(artifact1, savedCatalogModel.GetID())
@@ -363,11 +362,11 @@ func TestCatalogModelArtifactRepository(t *testing.T) {
 		time.Sleep(10 * time.Millisecond)
 
 		artifact2 := &models.CatalogModelArtifactImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.CatalogModelArtifactAttributes{
-				Name:       apiutils.Of("time-test-catalog-artifact-2"),
-				ExternalID: apiutils.Of("time-catalog-artifact-ext-2"),
-				URI:        apiutils.Of("s3://catalog-bucket/time-model-2.pkl"),
+				Name:       new("time-test-catalog-artifact-2"),
+				ExternalID: new("time-catalog-artifact-ext-2"),
+				URI:        new("s3://catalog-bucket/time-model-2.pkl"),
 			},
 		}
 		saved2, err := repo.Save(artifact2, savedCatalogModel.GetID())
@@ -376,7 +375,7 @@ func TestCatalogModelArtifactRepository(t *testing.T) {
 		// Test ordering by CREATE_TIME
 		listOptions := models.CatalogModelArtifactListOptions{
 			Pagination: dbmodels.Pagination{
-				OrderBy: apiutils.Of("CREATE_TIME"),
+				OrderBy: new("CREATE_TIME"),
 			},
 		}
 
@@ -409,10 +408,10 @@ func TestCatalogModelArtifactRepository(t *testing.T) {
 	t.Run("TestListPagination", func(t *testing.T) {
 		// Create a catalog model
 		catalogModel := &models.CatalogModelImpl{
-			TypeID: apiutils.Of(int32(catalogModelTypeID)),
+			TypeID: new(int32(catalogModelTypeID)),
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("test-catalog-model-for-pagination"),
-				ExternalID: apiutils.Of("catalog-model-pagination-ext"),
+				Name:       new("test-catalog-model-for-pagination"),
+				ExternalID: new("catalog-model-pagination-ext"),
 			},
 		}
 		savedCatalogModel, err := catalogModelRepo.Save(catalogModel)
@@ -421,11 +420,11 @@ func TestCatalogModelArtifactRepository(t *testing.T) {
 		// Create multiple artifacts for pagination testing
 		for i := range 5 {
 			artifact := &models.CatalogModelArtifactImpl{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.CatalogModelArtifactAttributes{
-					Name:       apiutils.Of(fmt.Sprintf("pagination-artifact-%d", i)),
-					ExternalID: apiutils.Of(fmt.Sprintf("pagination-artifact-ext-%d", i)),
-					URI:        apiutils.Of(fmt.Sprintf("s3://catalog-bucket/pagination-model-%d.pkl", i)),
+					Name:       new(fmt.Sprintf("pagination-artifact-%d", i)),
+					ExternalID: new(fmt.Sprintf("pagination-artifact-ext-%d", i)),
+					URI:        new(fmt.Sprintf("s3://catalog-bucket/pagination-model-%d.pkl", i)),
 				},
 			}
 			_, err := repo.Save(artifact, savedCatalogModel.GetID())
@@ -438,7 +437,7 @@ func TestCatalogModelArtifactRepository(t *testing.T) {
 			ParentResourceID: savedCatalogModel.GetID(),
 			Pagination: dbmodels.Pagination{
 				PageSize: &pageSize,
-				OrderBy:  apiutils.Of("ID"),
+				OrderBy:  new("ID"),
 			},
 		}
 
@@ -452,10 +451,10 @@ func TestCatalogModelArtifactRepository(t *testing.T) {
 	t.Run("TestSaveWithTypeIDSetting", func(t *testing.T) {
 		// Create a catalog model
 		catalogModel := &models.CatalogModelImpl{
-			TypeID: apiutils.Of(int32(catalogModelTypeID)),
+			TypeID: new(int32(catalogModelTypeID)),
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("test-catalog-model-for-typeid"),
-				ExternalID: apiutils.Of("catalog-model-typeid-ext"),
+				Name:       new("test-catalog-model-for-typeid"),
+				ExternalID: new("catalog-model-typeid-ext"),
 			},
 		}
 		savedCatalogModel, err := catalogModelRepo.Save(catalogModel)
@@ -465,9 +464,9 @@ func TestCatalogModelArtifactRepository(t *testing.T) {
 		catalogModelArtifact := &models.CatalogModelArtifactImpl{
 			// Intentionally not setting TypeID to test auto-setting
 			Attributes: &models.CatalogModelArtifactAttributes{
-				Name:       apiutils.Of("typeid-test-artifact"),
-				ExternalID: apiutils.Of("typeid-artifact-ext-123"),
-				URI:        apiutils.Of("s3://catalog-bucket/typeid-model.pkl"),
+				Name:       new("typeid-test-artifact"),
+				ExternalID: new("typeid-artifact-ext-123"),
+				URI:        new("s3://catalog-bucket/typeid-model.pkl"),
 			},
 		}
 
@@ -483,9 +482,9 @@ func TestCatalogModelArtifactRepository(t *testing.T) {
 		catalogModelArtifact2 := &models.CatalogModelArtifactImpl{
 			TypeID: &explicitTypeID,
 			Attributes: &models.CatalogModelArtifactAttributes{
-				Name:       apiutils.Of("explicit-typeid-artifact"),
-				ExternalID: apiutils.Of("explicit-typeid-ext-123"),
-				URI:        apiutils.Of("s3://catalog-bucket/explicit-model.pkl"),
+				Name:       new("explicit-typeid-artifact"),
+				ExternalID: new("explicit-typeid-ext-123"),
+				URI:        new("s3://catalog-bucket/explicit-model.pkl"),
 			},
 		}
 
@@ -499,10 +498,10 @@ func TestCatalogModelArtifactRepository(t *testing.T) {
 	t.Run("TestSaveWithNameMatching", func(t *testing.T) {
 		// Create a catalog model
 		catalogModel := &models.CatalogModelImpl{
-			TypeID: apiutils.Of(int32(catalogModelTypeID)),
+			TypeID: new(int32(catalogModelTypeID)),
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("test-catalog-model-for-name-matching"),
-				ExternalID: apiutils.Of("catalog-model-name-match-ext"),
+				Name:       new("test-catalog-model-for-name-matching"),
+				ExternalID: new("catalog-model-name-match-ext"),
 			},
 		}
 		savedCatalogModel, err := catalogModelRepo.Save(catalogModel)
@@ -511,16 +510,16 @@ func TestCatalogModelArtifactRepository(t *testing.T) {
 		// Create initial artifact
 		artifactName := "name-matching-artifact"
 		catalogModelArtifact1 := &models.CatalogModelArtifactImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.CatalogModelArtifactAttributes{
-				Name:       apiutils.Of(artifactName),
-				ExternalID: apiutils.Of("name-match-ext-123"),
-				URI:        apiutils.Of("s3://catalog-bucket/original.pkl"),
+				Name:       new(artifactName),
+				ExternalID: new("name-match-ext-123"),
+				URI:        new("s3://catalog-bucket/original.pkl"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "version",
-					StringValue: apiutils.Of("1.0.0"),
+					StringValue: new("1.0.0"),
 				},
 			},
 		}
@@ -534,16 +533,16 @@ func TestCatalogModelArtifactRepository(t *testing.T) {
 
 		// Create second artifact with same name (should update existing)
 		catalogModelArtifact2 := &models.CatalogModelArtifactImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.CatalogModelArtifactAttributes{
-				Name:       apiutils.Of(artifactName), // Same name
-				ExternalID: apiutils.Of("name-match-ext-456"),
-				URI:        apiutils.Of("s3://catalog-bucket/updated.pkl"),
+				Name:       new(artifactName), // Same name
+				ExternalID: new("name-match-ext-456"),
+				URI:        new("s3://catalog-bucket/updated.pkl"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "version",
-					StringValue: apiutils.Of("2.0.0"),
+					StringValue: new("2.0.0"),
 				},
 			},
 		}
@@ -579,11 +578,11 @@ func TestCatalogModelArtifactRepository(t *testing.T) {
 
 		// Test that artifact with different name creates new entity
 		catalogModelArtifact3 := &models.CatalogModelArtifactImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.CatalogModelArtifactAttributes{
-				Name:       apiutils.Of("different-name-artifact"),
-				ExternalID: apiutils.Of("different-name-ext-789"),
-				URI:        apiutils.Of("s3://catalog-bucket/different.pkl"),
+				Name:       new("different-name-artifact"),
+				ExternalID: new("different-name-ext-789"),
+				URI:        new("s3://catalog-bucket/different.pkl"),
 			},
 		}
 
@@ -599,10 +598,10 @@ func TestCatalogModelArtifactRepository(t *testing.T) {
 	t.Run("TestSaveWithNameMatchingNoExistingName", func(t *testing.T) {
 		// Create a catalog model
 		catalogModel := &models.CatalogModelImpl{
-			TypeID: apiutils.Of(int32(catalogModelTypeID)),
+			TypeID: new(int32(catalogModelTypeID)),
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("test-catalog-model-for-no-match"),
-				ExternalID: apiutils.Of("catalog-model-no-match-ext"),
+				Name:       new("test-catalog-model-for-no-match"),
+				ExternalID: new("catalog-model-no-match-ext"),
 			},
 		}
 		savedCatalogModel, err := catalogModelRepo.Save(catalogModel)
@@ -610,11 +609,11 @@ func TestCatalogModelArtifactRepository(t *testing.T) {
 
 		// Test saving artifact when no existing artifact with same name exists
 		catalogModelArtifact := &models.CatalogModelArtifactImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.CatalogModelArtifactAttributes{
-				Name:       apiutils.Of("unique-artifact-name"),
-				ExternalID: apiutils.Of("unique-ext-123"),
-				URI:        apiutils.Of("s3://catalog-bucket/unique.pkl"),
+				Name:       new("unique-artifact-name"),
+				ExternalID: new("unique-ext-123"),
+				URI:        new("s3://catalog-bucket/unique.pkl"),
 			},
 		}
 

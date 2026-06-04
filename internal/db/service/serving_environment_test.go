@@ -4,7 +4,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	"github.com/kubeflow/hub/internal/db/models"
 	"github.com/kubeflow/hub/internal/db/service"
 	"github.com/kubeflow/hub/internal/testutils"
@@ -23,21 +22,21 @@ func TestServingEnvironmentRepository(t *testing.T) {
 	t.Run("TestSave", func(t *testing.T) {
 		// Test creating a new serving environment
 		servingEnvironment := &models.ServingEnvironmentImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.ServingEnvironmentAttributes{
-				Name:       apiutils.Of("test-serving-env"),
-				ExternalID: apiutils.Of("serving-ext-123"),
+				Name:       new("test-serving-env"),
+				ExternalID: new("serving-ext-123"),
 			},
 			Properties: &[]models.Properties{
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Test serving environment description"),
+					StringValue: new("Test serving environment description"),
 				},
 			},
 			CustomProperties: &[]models.Properties{
 				{
 					Name:        "custom-serving-prop",
-					StringValue: apiutils.Of("custom-serving-value"),
+					StringValue: new("custom-serving-value"),
 				},
 			},
 		}
@@ -51,7 +50,7 @@ func TestServingEnvironmentRepository(t *testing.T) {
 
 		// Test updating the same serving environment
 		servingEnvironment.ID = saved.GetID()
-		servingEnvironment.GetAttributes().Name = apiutils.Of("updated-serving-env")
+		servingEnvironment.GetAttributes().Name = new("updated-serving-env")
 		// Preserve CreateTimeSinceEpoch from the saved entity (simulating what OpenAPI converter would do)
 		servingEnvironment.GetAttributes().CreateTimeSinceEpoch = saved.GetAttributes().CreateTimeSinceEpoch
 
@@ -65,10 +64,10 @@ func TestServingEnvironmentRepository(t *testing.T) {
 	t.Run("TestGetByID", func(t *testing.T) {
 		// First create a serving environment to retrieve
 		servingEnvironment := &models.ServingEnvironmentImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.ServingEnvironmentAttributes{
-				Name:       apiutils.Of("get-test-serving-env"),
-				ExternalID: apiutils.Of("get-serving-ext-123"),
+				Name:       new("get-test-serving-env"),
+				ExternalID: new("get-serving-ext-123"),
 			},
 		}
 
@@ -93,24 +92,24 @@ func TestServingEnvironmentRepository(t *testing.T) {
 		// Create multiple serving environments for listing
 		testEnvironments := []*models.ServingEnvironmentImpl{
 			{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.ServingEnvironmentAttributes{
-					Name:       apiutils.Of("list-serving-env-1"),
-					ExternalID: apiutils.Of("list-serving-ext-1"),
+					Name:       new("list-serving-env-1"),
+					ExternalID: new("list-serving-ext-1"),
 				},
 			},
 			{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.ServingEnvironmentAttributes{
-					Name:       apiutils.Of("list-serving-env-2"),
-					ExternalID: apiutils.Of("list-serving-ext-2"),
+					Name:       new("list-serving-env-2"),
+					ExternalID: new("list-serving-ext-2"),
 				},
 			},
 			{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.ServingEnvironmentAttributes{
-					Name:       apiutils.Of("list-serving-env-3"),
-					ExternalID: apiutils.Of("list-serving-ext-3"),
+					Name:       new("list-serving-env-3"),
+					ExternalID: new("list-serving-ext-3"),
 				},
 			},
 		}
@@ -132,7 +131,7 @@ func TestServingEnvironmentRepository(t *testing.T) {
 
 		// Test listing by name
 		listOptions = models.ServingEnvironmentListOptions{
-			Name: apiutils.Of("list-serving-env-1"),
+			Name: new("list-serving-env-1"),
 		}
 		listOptions.PageSize = &pageSize
 
@@ -146,7 +145,7 @@ func TestServingEnvironmentRepository(t *testing.T) {
 
 		// Test listing by external ID
 		listOptions = models.ServingEnvironmentListOptions{
-			ExternalID: apiutils.Of("list-serving-ext-2"),
+			ExternalID: new("list-serving-ext-2"),
 		}
 		listOptions.PageSize = &pageSize
 
@@ -161,7 +160,7 @@ func TestServingEnvironmentRepository(t *testing.T) {
 		// Test ordering by ID (deterministic)
 		listOptions = models.ServingEnvironmentListOptions{
 			Pagination: models.Pagination{
-				OrderBy: apiutils.Of("ID"),
+				OrderBy: new("ID"),
 			},
 		}
 		listOptions.PageSize = &pageSize
@@ -182,9 +181,9 @@ func TestServingEnvironmentRepository(t *testing.T) {
 	t.Run("TestListOrdering", func(t *testing.T) {
 		// Create environments sequentially with time delays to ensure deterministic ordering
 		env1 := &models.ServingEnvironmentImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.ServingEnvironmentAttributes{
-				Name: apiutils.Of("time-test-serving-env-1"),
+				Name: new("time-test-serving-env-1"),
 			},
 		}
 		saved1, err := repo.Save(env1)
@@ -194,9 +193,9 @@ func TestServingEnvironmentRepository(t *testing.T) {
 		time.Sleep(10 * time.Millisecond)
 
 		env2 := &models.ServingEnvironmentImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.ServingEnvironmentAttributes{
-				Name: apiutils.Of("time-test-serving-env-2"),
+				Name: new("time-test-serving-env-2"),
 			},
 		}
 		saved2, err := repo.Save(env2)
@@ -206,7 +205,7 @@ func TestServingEnvironmentRepository(t *testing.T) {
 		pageSize := int32(100) // Increased page size to ensure all test entities are included
 		listOptions := models.ServingEnvironmentListOptions{
 			Pagination: models.Pagination{
-				OrderBy: apiutils.Of("CREATE_TIME"),
+				OrderBy: new("CREATE_TIME"),
 			},
 		}
 		listOptions.PageSize = &pageSize
@@ -239,28 +238,28 @@ func TestServingEnvironmentRepository(t *testing.T) {
 
 	t.Run("TestSaveWithProperties", func(t *testing.T) {
 		servingEnvironment := &models.ServingEnvironmentImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.ServingEnvironmentAttributes{
-				Name: apiutils.Of("props-test-serving-env"),
+				Name: new("props-test-serving-env"),
 			},
 			Properties: &[]models.Properties{
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Environment with properties"),
+					StringValue: new("Environment with properties"),
 				},
 				{
 					Name:     "capacity",
-					IntValue: apiutils.Of(int32(100)),
+					IntValue: new(int32(100)),
 				},
 			},
 			CustomProperties: &[]models.Properties{
 				{
 					Name:        "team",
-					StringValue: apiutils.Of("ml-team"),
+					StringValue: new("ml-team"),
 				},
 				{
 					Name:     "priority",
-					IntValue: apiutils.Of(int32(5)),
+					IntValue: new(int32(5)),
 				},
 			},
 		}

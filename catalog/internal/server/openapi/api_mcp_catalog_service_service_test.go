@@ -12,7 +12,6 @@ import (
 	"github.com/kubeflow/hub/catalog/internal/catalog/basecatalog"
 	"github.com/kubeflow/hub/catalog/internal/catalog/mcpcatalog"
 	model "github.com/kubeflow/hub/catalog/pkg/openapi"
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	"github.com/kubeflow/hub/pkg/api"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -197,19 +196,15 @@ func timeToStringPointer(t time.Time) *string {
 	return &s
 }
 
-func stringPointer(s string) *string {
-	return &s
-}
-
 func TestFindMCPServers(t *testing.T) {
 	time1 := time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC)
 	time2 := time.Date(2023, 1, 2, 0, 0, 0, 0, time.UTC)
 
 	openAIServer := &model.MCPServer{
 		Name:                     "openai-assistant",
-		Description:              stringPointer("OpenAI Assistant MCP server"),
-		Provider:                 stringPointer("OpenAI"),
-		Version:                  stringPointer("1.2.0"),
+		Description:              new("OpenAI Assistant MCP server"),
+		Provider:                 new("OpenAI"),
+		Version:                  new("1.2.0"),
 		CreateTimeSinceEpoch:     timeToStringPointer(time1),
 		LastUpdateTimeSinceEpoch: timeToStringPointer(time1),
 		ToolCount:                0,
@@ -217,9 +212,9 @@ func TestFindMCPServers(t *testing.T) {
 
 	githubServer := &model.MCPServer{
 		Name:                     "github-integration",
-		Description:              stringPointer("GitHub MCP server"),
-		Provider:                 stringPointer("GitHub Inc"),
-		Version:                  stringPointer("2.1.3"),
+		Description:              new("GitHub MCP server"),
+		Provider:                 new("GitHub Inc"),
+		Version:                  new("2.1.3"),
 		CreateTimeSinceEpoch:     timeToStringPointer(time2),
 		LastUpdateTimeSinceEpoch: timeToStringPointer(time2),
 		ToolCount:                0,
@@ -254,8 +249,8 @@ func TestFindMCPServers(t *testing.T) {
 			expectedStatus: http.StatusOK,
 			expectedServerList: &model.MCPServerList{
 				Items: []model.MCPServer{
-					func() model.MCPServer { s := *openAIServer; s.Id = stringPointer("1"); return s }(),
-					func() model.MCPServer { s := *githubServer; s.Id = stringPointer("2"); return s }(),
+					func() model.MCPServer { s := *openAIServer; s.Id = new("1"); return s }(),
+					func() model.MCPServer { s := *githubServer; s.Id = new("2"); return s }(),
 				},
 				Size:          2,
 				PageSize:      10,
@@ -273,7 +268,7 @@ func TestFindMCPServers(t *testing.T) {
 			expectedStatus: http.StatusOK,
 			expectedServerList: &model.MCPServerList{
 				Items: []model.MCPServer{
-					func() model.MCPServer { s := *openAIServer; s.Id = stringPointer("1"); return s }(),
+					func() model.MCPServer { s := *openAIServer; s.Id = new("1"); return s }(),
 				},
 				Size:          1,
 				PageSize:      10,
@@ -286,7 +281,7 @@ func TestFindMCPServers(t *testing.T) {
 				provider.addServer("1", openAIServer)
 				provider.addTool("1", "chat_completion", &model.MCPTool{
 					AccessType:  "read_only",
-					Description: stringPointer("Generate chat completions"),
+					Description: new("Generate chat completions"),
 				})
 			},
 			includeTools:   true,
@@ -296,11 +291,11 @@ func TestFindMCPServers(t *testing.T) {
 				Items: []model.MCPServer{
 					func() model.MCPServer {
 						s := *openAIServer
-						s.Id = stringPointer("1")
+						s.Id = new("1")
 						s.Tools = []model.MCPTool{{
 							Name:        "chat_completion",
 							AccessType:  "read_only",
-							Description: stringPointer("Generate chat completions"),
+							Description: new("Generate chat completions"),
 						}}
 						s.ToolCount = 1
 						return s
@@ -368,7 +363,7 @@ func TestFindMCPServers(t *testing.T) {
 			expectedStatus: http.StatusOK,
 			expectedServerList: &model.MCPServerList{
 				Items: []model.MCPServer{
-					func() model.MCPServer { s := *openAIServer; s.Id = stringPointer("1"); return s }(),
+					func() model.MCPServer { s := *openAIServer; s.Id = new("1"); return s }(),
 				},
 				Size:          1,
 				PageSize:      10,
@@ -388,7 +383,7 @@ func TestFindMCPServers(t *testing.T) {
 			expectedStatus: http.StatusOK,
 			expectedServerList: &model.MCPServerList{
 				Items: []model.MCPServer{
-					func() model.MCPServer { s := *openAIServer; s.Id = stringPointer("1"); return s }(),
+					func() model.MCPServer { s := *openAIServer; s.Id = new("1"); return s }(),
 				},
 				Size:          1,
 				PageSize:      10,
@@ -434,9 +429,9 @@ func TestGetMCPServer(t *testing.T) {
 
 	openAIServer := &model.MCPServer{
 		Name:                     "openai-assistant",
-		Description:              stringPointer("OpenAI Assistant MCP server"),
-		Provider:                 stringPointer("OpenAI"),
-		Version:                  stringPointer("1.2.0"),
+		Description:              new("OpenAI Assistant MCP server"),
+		Provider:                 new("OpenAI"),
+		Version:                  new("1.2.0"),
 		CreateTimeSinceEpoch:     timeToStringPointer(time1),
 		LastUpdateTimeSinceEpoch: timeToStringPointer(time1),
 		ToolCount:                0,
@@ -461,7 +456,7 @@ func TestGetMCPServer(t *testing.T) {
 			expectedStatus: http.StatusOK,
 			expectedServer: func() *model.MCPServer {
 				s := *openAIServer
-				s.Id = stringPointer("1")
+				s.Id = new("1")
 				return &s
 			}(),
 		},
@@ -471,7 +466,7 @@ func TestGetMCPServer(t *testing.T) {
 				provider.addServer("1", openAIServer)
 				provider.addTool("1", "chat_completion", &model.MCPTool{
 					AccessType:  "read_only",
-					Description: stringPointer("Generate chat completions"),
+					Description: new("Generate chat completions"),
 				})
 			},
 			serverID:       "1",
@@ -479,11 +474,11 @@ func TestGetMCPServer(t *testing.T) {
 			expectedStatus: http.StatusOK,
 			expectedServer: func() *model.MCPServer {
 				s := *openAIServer
-				s.Id = stringPointer("1")
+				s.Id = new("1")
 				s.Tools = []model.MCPTool{{
 					Name:        "chat_completion",
 					AccessType:  "read_only",
-					Description: stringPointer("Generate chat completions"),
+					Description: new("Generate chat completions"),
 				}}
 				s.ToolCount = 1
 				return &s
@@ -544,11 +539,11 @@ func TestFindMCPServerTools(t *testing.T) {
 	openAIServer := &model.MCPServer{Name: "openai-assistant"}
 	chatTool := &model.MCPTool{
 		AccessType:  "read_only",
-		Description: stringPointer("Generate chat completions"),
+		Description: new("Generate chat completions"),
 	}
 	embedTool := &model.MCPTool{
 		AccessType:  "read_write",
-		Description: stringPointer("Generate embeddings"),
+		Description: new("Generate embeddings"),
 	}
 
 	testCases := []struct {
@@ -573,8 +568,8 @@ func TestFindMCPServerTools(t *testing.T) {
 			expectedStatus: http.StatusOK,
 			expectedToolList: &model.MCPToolsList{
 				Items: []model.MCPTool{
-					{Name: "chat_completion", AccessType: "read_only", Description: stringPointer("Generate chat completions")},
-					{Name: "embeddings", AccessType: "read_write", Description: stringPointer("Generate embeddings")},
+					{Name: "chat_completion", AccessType: "read_only", Description: new("Generate chat completions")},
+					{Name: "embeddings", AccessType: "read_write", Description: new("Generate embeddings")},
 				},
 				Size:          2,
 				PageSize:      10,
@@ -594,7 +589,7 @@ func TestFindMCPServerTools(t *testing.T) {
 			expectedStatus: http.StatusOK,
 			expectedToolList: &model.MCPToolsList{
 				Items: []model.MCPTool{
-					{Name: "chat_completion", AccessType: "read_only", Description: stringPointer("Generate chat completions")},
+					{Name: "chat_completion", AccessType: "read_only", Description: new("Generate chat completions")},
 				},
 				Size:          1,
 				PageSize:      10,
@@ -668,7 +663,7 @@ func TestGetMCPServerTool(t *testing.T) {
 	openAIServer := &model.MCPServer{Name: "openai-assistant"}
 	chatTool := &model.MCPTool{
 		AccessType:  "read_only",
-		Description: stringPointer("Generate chat completions"),
+		Description: new("Generate chat completions"),
 	}
 
 	testCases := []struct {
@@ -692,7 +687,7 @@ func TestGetMCPServerTool(t *testing.T) {
 			expectedTool: &model.MCPTool{
 				Name:        "chat_completion",
 				AccessType:  "read_only",
-				Description: stringPointer("Generate chat completions"),
+				Description: new("Generate chat completions"),
 			},
 		},
 		{
@@ -822,12 +817,12 @@ func makeMCPSources(sources map[string]basecatalog.MCPSource) *catalog.MCPSource
 func TestFindMCPServers_SourceLabel(t *testing.T) {
 	openAIServer := &model.MCPServer{
 		Name:     "openai-assistant",
-		Provider: stringPointer("OpenAI"),
+		Provider: new("OpenAI"),
 	}
 
 	t.Run("matching label passes source ID to provider", func(t *testing.T) {
 		mcpSources := makeMCPSources(map[string]basecatalog.MCPSource{
-			"src-openai": {ID: "src-openai", Labels: []string{"openai"}, Enabled: apiutils.Of(true)},
+			"src-openai": {ID: "src-openai", Labels: []string{"openai"}, Enabled: new(true)},
 		})
 
 		mockProvider := newMockMCPProvider()
@@ -844,7 +839,7 @@ func TestFindMCPServers_SourceLabel(t *testing.T) {
 
 	t.Run("non-matching label returns empty list without calling provider", func(t *testing.T) {
 		mcpSources := makeMCPSources(map[string]basecatalog.MCPSource{
-			"src-openai": {ID: "src-openai", Labels: []string{"openai"}, Enabled: apiutils.Of(true)},
+			"src-openai": {ID: "src-openai", Labels: []string{"openai"}, Enabled: new(true)},
 		})
 
 		mockProvider := newMockMCPProvider()
@@ -863,7 +858,7 @@ func TestFindMCPServers_SourceLabel(t *testing.T) {
 
 	t.Run("empty sourceLabel string is treated as no filter", func(t *testing.T) {
 		mcpSources := makeMCPSources(map[string]basecatalog.MCPSource{
-			"src-openai": {ID: "src-openai", Labels: []string{"openai"}, Enabled: apiutils.Of(true)},
+			"src-openai": {ID: "src-openai", Labels: []string{"openai"}, Enabled: new(true)},
 		})
 
 		mockProvider := newMockMCPProvider()

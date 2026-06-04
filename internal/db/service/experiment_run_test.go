@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	"github.com/kubeflow/hub/internal/db/models"
 	"github.com/kubeflow/hub/internal/db/service"
 	"github.com/stretchr/testify/assert"
@@ -27,10 +26,10 @@ func TestExperimentRunRepository(t *testing.T) {
 	t.Run("TestSave", func(t *testing.T) {
 		// First create a parent experiment
 		experiment := &models.ExperimentImpl{
-			TypeID: apiutils.Of(int32(experimentTypeID)),
+			TypeID: new(int32(experimentTypeID)),
 			Attributes: &models.ExperimentAttributes{
-				Name:       apiutils.Of("parent-experiment"),
-				ExternalID: apiutils.Of("parent-experiment-ext-123"),
+				Name:       new("parent-experiment"),
+				ExternalID: new("parent-experiment-ext-123"),
 			},
 		}
 		savedExperiment, err := experimentRepo.Save(experiment)
@@ -38,29 +37,29 @@ func TestExperimentRunRepository(t *testing.T) {
 
 		// Test creating a new experiment run
 		experimentRun := &models.ExperimentRunImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.ExperimentRunAttributes{
-				Name:       apiutils.Of(fmt.Sprintf("%d:test-experiment-run", *savedExperiment.GetID())),
-				ExternalID: apiutils.Of("experiment-run-ext-123"),
+				Name:       new(fmt.Sprintf("%d:test-experiment-run", *savedExperiment.GetID())),
+				ExternalID: new("experiment-run-ext-123"),
 			},
 			Properties: &[]models.Properties{
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Test experiment run description"),
+					StringValue: new("Test experiment run description"),
 				},
 				{
 					Name:        "owner",
-					StringValue: apiutils.Of("test-user"),
+					StringValue: new("test-user"),
 				},
 				{
 					Name:        "experiment_id",
-					StringValue: apiutils.Of(fmt.Sprintf("%d", *savedExperiment.GetID())),
+					StringValue: new(fmt.Sprintf("%d", *savedExperiment.GetID())),
 				},
 			},
 			CustomProperties: &[]models.Properties{
 				{
 					Name:             "custom-run-prop",
-					StringValue:      apiutils.Of("custom-run-value"),
+					StringValue:      new("custom-run-value"),
 					IsCustomProperty: true,
 				},
 			},
@@ -77,8 +76,8 @@ func TestExperimentRunRepository(t *testing.T) {
 
 		// Test updating the same experiment run
 		experimentRun.ID = saved.GetID()
-		experimentRun.GetAttributes().Name = apiutils.Of(fmt.Sprintf("%d:updated-experiment-run", *savedExperiment.GetID()))
-		experimentRun.GetAttributes().ExternalID = apiutils.Of("updated-experiment-run-ext-123")
+		experimentRun.GetAttributes().Name = new(fmt.Sprintf("%d:updated-experiment-run", *savedExperiment.GetID()))
+		experimentRun.GetAttributes().ExternalID = new("updated-experiment-run-ext-123")
 		// Preserve CreateTimeSinceEpoch from the saved entity (simulating what OpenAPI converter would do)
 		experimentRun.GetAttributes().CreateTimeSinceEpoch = saved.GetAttributes().CreateTimeSinceEpoch
 
@@ -95,10 +94,10 @@ func TestExperimentRunRepository(t *testing.T) {
 	t.Run("TestGetByID", func(t *testing.T) {
 		// First create a parent experiment
 		experiment := &models.ExperimentImpl{
-			TypeID: apiutils.Of(int32(experimentTypeID)),
+			TypeID: new(int32(experimentTypeID)),
 			Attributes: &models.ExperimentAttributes{
-				Name:       apiutils.Of("parent-experiment-get"),
-				ExternalID: apiutils.Of("parent-experiment-get-ext-123"),
+				Name:       new("parent-experiment-get"),
+				ExternalID: new("parent-experiment-get-ext-123"),
 			},
 		}
 		savedExperiment, err := experimentRepo.Save(experiment)
@@ -106,19 +105,19 @@ func TestExperimentRunRepository(t *testing.T) {
 
 		// Create an experiment run to retrieve
 		experimentRun := &models.ExperimentRunImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.ExperimentRunAttributes{
-				Name:       apiutils.Of(fmt.Sprintf("%d:get-test-experiment-run", *savedExperiment.GetID())),
-				ExternalID: apiutils.Of("get-experiment-run-ext-123"),
+				Name:       new(fmt.Sprintf("%d:get-test-experiment-run", *savedExperiment.GetID())),
+				ExternalID: new("get-experiment-run-ext-123"),
 			},
 			Properties: &[]models.Properties{
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Experiment run for get test"),
+					StringValue: new("Experiment run for get test"),
 				},
 				{
 					Name:        "experiment_id",
-					StringValue: apiutils.Of(fmt.Sprintf("%d", *savedExperiment.GetID())),
+					StringValue: new(fmt.Sprintf("%d", *savedExperiment.GetID())),
 				},
 			},
 		}
@@ -144,10 +143,10 @@ func TestExperimentRunRepository(t *testing.T) {
 	t.Run("TestList", func(t *testing.T) {
 		// First create a parent experiment
 		experiment := &models.ExperimentImpl{
-			TypeID: apiutils.Of(int32(experimentTypeID)),
+			TypeID: new(int32(experimentTypeID)),
 			Attributes: &models.ExperimentAttributes{
-				Name:       apiutils.Of("parent-experiment-list"),
-				ExternalID: apiutils.Of("parent-experiment-list-ext-123"),
+				Name:       new("parent-experiment-list"),
+				ExternalID: new("parent-experiment-list-ext-123"),
 			},
 		}
 		savedExperiment, err := experimentRepo.Save(experiment)
@@ -156,53 +155,53 @@ func TestExperimentRunRepository(t *testing.T) {
 		// Create multiple experiment runs for listing
 		testExperimentRuns := []*models.ExperimentRunImpl{
 			{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.ExperimentRunAttributes{
-					Name:       apiutils.Of(fmt.Sprintf("%d:list-experiment-run-1", *savedExperiment.GetID())),
-					ExternalID: apiutils.Of("list-experiment-run-ext-1"),
+					Name:       new(fmt.Sprintf("%d:list-experiment-run-1", *savedExperiment.GetID())),
+					ExternalID: new("list-experiment-run-ext-1"),
 				},
 				Properties: &[]models.Properties{
 					{
 						Name:        "description",
-						StringValue: apiutils.Of("First experiment run"),
+						StringValue: new("First experiment run"),
 					},
 					{
 						Name:        "experiment_id",
-						StringValue: apiutils.Of(fmt.Sprintf("%d", *savedExperiment.GetID())),
+						StringValue: new(fmt.Sprintf("%d", *savedExperiment.GetID())),
 					},
 				},
 			},
 			{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.ExperimentRunAttributes{
-					Name:       apiutils.Of(fmt.Sprintf("%d:list-experiment-run-2", *savedExperiment.GetID())),
-					ExternalID: apiutils.Of("list-experiment-run-ext-2"),
+					Name:       new(fmt.Sprintf("%d:list-experiment-run-2", *savedExperiment.GetID())),
+					ExternalID: new("list-experiment-run-ext-2"),
 				},
 				Properties: &[]models.Properties{
 					{
 						Name:        "description",
-						StringValue: apiutils.Of("Second experiment run"),
+						StringValue: new("Second experiment run"),
 					},
 					{
 						Name:        "experiment_id",
-						StringValue: apiutils.Of(fmt.Sprintf("%d", *savedExperiment.GetID())),
+						StringValue: new(fmt.Sprintf("%d", *savedExperiment.GetID())),
 					},
 				},
 			},
 			{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.ExperimentRunAttributes{
-					Name:       apiutils.Of(fmt.Sprintf("%d:list-experiment-run-3", *savedExperiment.GetID())),
-					ExternalID: apiutils.Of("list-experiment-run-ext-3"),
+					Name:       new(fmt.Sprintf("%d:list-experiment-run-3", *savedExperiment.GetID())),
+					ExternalID: new("list-experiment-run-ext-3"),
 				},
 				Properties: &[]models.Properties{
 					{
 						Name:        "description",
-						StringValue: apiutils.Of("Third experiment run"),
+						StringValue: new("Third experiment run"),
 					},
 					{
 						Name:        "experiment_id",
-						StringValue: apiutils.Of(fmt.Sprintf("%d", *savedExperiment.GetID())),
+						StringValue: new(fmt.Sprintf("%d", *savedExperiment.GetID())),
 					},
 				},
 			},
@@ -225,7 +224,7 @@ func TestExperimentRunRepository(t *testing.T) {
 
 		// Test listing by name
 		listOptions = models.ExperimentRunListOptions{
-			Name: apiutils.Of("list-experiment-run-1"),
+			Name: new("list-experiment-run-1"),
 		}
 		listOptions.PageSize = &pageSize
 
@@ -239,7 +238,7 @@ func TestExperimentRunRepository(t *testing.T) {
 
 		// Test listing by external ID
 		listOptions = models.ExperimentRunListOptions{
-			ExternalID: apiutils.Of("list-experiment-run-ext-2"),
+			ExternalID: new("list-experiment-run-ext-2"),
 		}
 		listOptions.PageSize = &pageSize
 
@@ -265,7 +264,7 @@ func TestExperimentRunRepository(t *testing.T) {
 		// Test ordering by ID (deterministic)
 		listOptions = models.ExperimentRunListOptions{
 			Pagination: models.Pagination{
-				OrderBy: apiutils.Of("ID"),
+				OrderBy: new("ID"),
 			},
 		}
 		listOptions.PageSize = &pageSize
@@ -286,10 +285,10 @@ func TestExperimentRunRepository(t *testing.T) {
 	t.Run("TestListOrdering", func(t *testing.T) {
 		// First create a parent experiment
 		experiment := &models.ExperimentImpl{
-			TypeID: apiutils.Of(int32(experimentTypeID)),
+			TypeID: new(int32(experimentTypeID)),
 			Attributes: &models.ExperimentAttributes{
-				Name:       apiutils.Of("parent-experiment-ordering"),
-				ExternalID: apiutils.Of("parent-experiment-ordering-ext-123"),
+				Name:       new("parent-experiment-ordering"),
+				ExternalID: new("parent-experiment-ordering-ext-123"),
 			},
 		}
 		savedExperiment, err := experimentRepo.Save(experiment)
@@ -297,15 +296,15 @@ func TestExperimentRunRepository(t *testing.T) {
 
 		// Create experiment runs sequentially with time delays to ensure deterministic ordering
 		experimentRun1 := &models.ExperimentRunImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.ExperimentRunAttributes{
-				Name:       apiutils.Of(fmt.Sprintf("%d:time-test-experiment-run-1", *savedExperiment.GetID())),
-				ExternalID: apiutils.Of("time-experiment-run-ext-1"),
+				Name:       new(fmt.Sprintf("%d:time-test-experiment-run-1", *savedExperiment.GetID())),
+				ExternalID: new("time-experiment-run-ext-1"),
 			},
 			Properties: &[]models.Properties{
 				{
 					Name:        "experiment_id",
-					StringValue: apiutils.Of(fmt.Sprintf("%d", *savedExperiment.GetID())),
+					StringValue: new(fmt.Sprintf("%d", *savedExperiment.GetID())),
 				},
 			},
 		}
@@ -316,15 +315,15 @@ func TestExperimentRunRepository(t *testing.T) {
 		time.Sleep(10 * time.Millisecond)
 
 		experimentRun2 := &models.ExperimentRunImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.ExperimentRunAttributes{
-				Name:       apiutils.Of(fmt.Sprintf("%d:time-test-experiment-run-2", *savedExperiment.GetID())),
-				ExternalID: apiutils.Of("time-experiment-run-ext-2"),
+				Name:       new(fmt.Sprintf("%d:time-test-experiment-run-2", *savedExperiment.GetID())),
+				ExternalID: new("time-experiment-run-ext-2"),
 			},
 			Properties: &[]models.Properties{
 				{
 					Name:        "experiment_id",
-					StringValue: apiutils.Of(fmt.Sprintf("%d", *savedExperiment.GetID())),
+					StringValue: new(fmt.Sprintf("%d", *savedExperiment.GetID())),
 				},
 			},
 		}
@@ -335,7 +334,7 @@ func TestExperimentRunRepository(t *testing.T) {
 		pageSize := int32(10)
 		listOptions := models.ExperimentRunListOptions{
 			Pagination: models.Pagination{
-				OrderBy: apiutils.Of("CREATE_TIME"),
+				OrderBy: new("CREATE_TIME"),
 			},
 		}
 		listOptions.PageSize = &pageSize
@@ -369,48 +368,48 @@ func TestExperimentRunRepository(t *testing.T) {
 	t.Run("TestSaveWithProperties", func(t *testing.T) {
 		// First create a parent experiment
 		experiment := &models.ExperimentImpl{
-			TypeID: apiutils.Of(int32(experimentTypeID)),
+			TypeID: new(int32(experimentTypeID)),
 			Attributes: &models.ExperimentAttributes{
-				Name:       apiutils.Of("parent-experiment-props"),
-				ExternalID: apiutils.Of("parent-experiment-props-ext-123"),
+				Name:       new("parent-experiment-props"),
+				ExternalID: new("parent-experiment-props-ext-123"),
 			},
 		}
 		savedExperiment, err := experimentRepo.Save(experiment)
 		require.NoError(t, err)
 
 		experimentRun := &models.ExperimentRunImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.ExperimentRunAttributes{
-				Name:       apiutils.Of(fmt.Sprintf("%d:props-test-experiment-run", *savedExperiment.GetID())),
-				ExternalID: apiutils.Of("props-experiment-run-ext-123"),
+				Name:       new(fmt.Sprintf("%d:props-test-experiment-run", *savedExperiment.GetID())),
+				ExternalID: new("props-experiment-run-ext-123"),
 			},
 			Properties: &[]models.Properties{
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Experiment run with properties"),
+					StringValue: new("Experiment run with properties"),
 				},
 				{
 					Name:        "owner",
-					StringValue: apiutils.Of("test-user"),
+					StringValue: new("test-user"),
 				},
 				{
 					Name:        "status",
-					StringValue: apiutils.Of("RUNNING"),
+					StringValue: new("RUNNING"),
 				},
 				{
 					Name:        "experiment_id",
-					StringValue: apiutils.Of(fmt.Sprintf("%d", *savedExperiment.GetID())),
+					StringValue: new(fmt.Sprintf("%d", *savedExperiment.GetID())),
 				},
 			},
 			CustomProperties: &[]models.Properties{
 				{
 					Name:             "team",
-					StringValue:      apiutils.Of("ml-team"),
+					StringValue:      new("ml-team"),
 					IsCustomProperty: true,
 				},
 				{
 					Name:             "priority",
-					IntValue:         apiutils.Of(int32(5)),
+					IntValue:         new(int32(5)),
 					IsCustomProperty: true,
 				},
 			},
@@ -476,15 +475,15 @@ func TestExperimentRunRepository(t *testing.T) {
 	t.Run("TestSaveWithoutExperiment", func(t *testing.T) {
 		// Test creating an experiment run without parent experiment (should still work)
 		experimentRun := &models.ExperimentRunImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.ExperimentRunAttributes{
-				Name:       apiutils.Of("standalone-experiment-run"),
-				ExternalID: apiutils.Of("standalone-experiment-run-ext-123"),
+				Name:       new("standalone-experiment-run"),
+				ExternalID: new("standalone-experiment-run-ext-123"),
 			},
 			Properties: &[]models.Properties{
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Standalone experiment run without parent experiment"),
+					StringValue: new("Standalone experiment run without parent experiment"),
 				},
 			},
 		}
@@ -505,10 +504,10 @@ func TestExperimentRunRepository(t *testing.T) {
 	t.Run("TestPagination", func(t *testing.T) {
 		// First create a parent experiment
 		experiment := &models.ExperimentImpl{
-			TypeID: apiutils.Of(int32(experimentTypeID)),
+			TypeID: new(int32(experimentTypeID)),
 			Attributes: &models.ExperimentAttributes{
-				Name:       apiutils.Of("parent-experiment-pagination"),
-				ExternalID: apiutils.Of("parent-experiment-pagination-ext-123"),
+				Name:       new("parent-experiment-pagination"),
+				ExternalID: new("parent-experiment-pagination-ext-123"),
 			},
 		}
 		savedExperiment, err := experimentRepo.Save(experiment)
@@ -517,15 +516,15 @@ func TestExperimentRunRepository(t *testing.T) {
 		// Create multiple experiment runs for pagination testing
 		for i := range 5 {
 			experimentRun := &models.ExperimentRunImpl{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.ExperimentRunAttributes{
-					Name:       apiutils.Of(fmt.Sprintf("page-experiment-run-%d", i)),
-					ExternalID: apiutils.Of(fmt.Sprintf("page-experiment-run-ext-%d", i)),
+					Name:       new(fmt.Sprintf("page-experiment-run-%d", i)),
+					ExternalID: new(fmt.Sprintf("page-experiment-run-ext-%d", i)),
 				},
 				Properties: &[]models.Properties{
 					{
 						Name:        "experiment_id",
-						StringValue: apiutils.Of(fmt.Sprintf("%d", *savedExperiment.GetID())),
+						StringValue: new(fmt.Sprintf("%d", *savedExperiment.GetID())),
 					},
 				},
 			}
@@ -559,7 +558,7 @@ func TestExperimentRunRepository(t *testing.T) {
 	t.Run("TestEmptyResults", func(t *testing.T) {
 		// Test listing with filter that returns no results
 		listOptions := models.ExperimentRunListOptions{
-			Name: apiutils.Of("non-existent-experiment-run"),
+			Name: new("non-existent-experiment-run"),
 		}
 
 		result, err := repo.List(listOptions)
@@ -584,9 +583,9 @@ func TestExperimentRunRepository_FilterQuery(t *testing.T) {
 
 	// Create a parent experiment
 	experiment := &models.ExperimentImpl{
-		TypeID: apiutils.Of(int32(experimentTypeID)),
+		TypeID: new(int32(experimentTypeID)),
 		Attributes: &models.ExperimentAttributes{
-			Name: apiutils.Of("test-parent-experiment"),
+			Name: new("test-parent-experiment"),
 		},
 	}
 	savedExperiment, err := experimentRepo.Save(experiment)
@@ -595,34 +594,34 @@ func TestExperimentRunRepository_FilterQuery(t *testing.T) {
 
 	// Create multiple experiment runs with different properties for filtering
 	experimentRun1 := &models.ExperimentRunImpl{
-		TypeID: apiutils.Of(int32(experimentRunTypeID)),
+		TypeID: new(int32(experimentRunTypeID)),
 		Attributes: &models.ExperimentRunAttributes{
-			Name: apiutils.Of(fmt.Sprintf("%d:pytorch-experiment-run", *experimentID)),
+			Name: new(fmt.Sprintf("%d:pytorch-experiment-run", *experimentID)),
 		},
 		Properties: &[]models.Properties{
 			{
 				Name:        "status",
-				StringValue: apiutils.Of("RUNNING"),
+				StringValue: new("RUNNING"),
 			},
 			{
 				Name:     "startTimeSinceEpoch",
-				IntValue: apiutils.Of(int32(1640995200)), // 2022-01-01
+				IntValue: new(int32(1640995200)), // 2022-01-01
 			},
 		},
 		CustomProperties: &[]models.Properties{
 			{
 				Name:             "framework",
-				StringValue:      apiutils.Of("pytorch"),
+				StringValue:      new("pytorch"),
 				IsCustomProperty: true,
 			},
 			{
 				Name:             "epochs",
-				IntValue:         apiutils.Of(int32(100)),
+				IntValue:         new(int32(100)),
 				IsCustomProperty: true,
 			},
 			{
 				Name:             "learning_rate",
-				DoubleValue:      apiutils.Of(0.001),
+				DoubleValue:      new(0.001),
 				IsCustomProperty: true,
 			},
 		},
@@ -631,34 +630,34 @@ func TestExperimentRunRepository_FilterQuery(t *testing.T) {
 	require.NoError(t, err)
 
 	experimentRun2 := &models.ExperimentRunImpl{
-		TypeID: apiutils.Of(int32(experimentRunTypeID)),
+		TypeID: new(int32(experimentRunTypeID)),
 		Attributes: &models.ExperimentRunAttributes{
-			Name: apiutils.Of(fmt.Sprintf("%d:tensorflow-experiment-run", *experimentID)),
+			Name: new(fmt.Sprintf("%d:tensorflow-experiment-run", *experimentID)),
 		},
 		Properties: &[]models.Properties{
 			{
 				Name:        "status",
-				StringValue: apiutils.Of("COMPLETED"),
+				StringValue: new("COMPLETED"),
 			},
 			{
 				Name:     "startTimeSinceEpoch",
-				IntValue: apiutils.Of(int32(1641081600)), // 2022-01-02
+				IntValue: new(int32(1641081600)), // 2022-01-02
 			},
 		},
 		CustomProperties: &[]models.Properties{
 			{
 				Name:             "framework",
-				StringValue:      apiutils.Of("tensorflow"),
+				StringValue:      new("tensorflow"),
 				IsCustomProperty: true,
 			},
 			{
 				Name:             "epochs",
-				IntValue:         apiutils.Of(int32(50)),
+				IntValue:         new(int32(50)),
 				IsCustomProperty: true,
 			},
 			{
 				Name:             "learning_rate",
-				DoubleValue:      apiutils.Of(0.01),
+				DoubleValue:      new(0.01),
 				IsCustomProperty: true,
 			},
 		},
@@ -667,34 +666,34 @@ func TestExperimentRunRepository_FilterQuery(t *testing.T) {
 	require.NoError(t, err)
 
 	experimentRun3 := &models.ExperimentRunImpl{
-		TypeID: apiutils.Of(int32(experimentRunTypeID)),
+		TypeID: new(int32(experimentRunTypeID)),
 		Attributes: &models.ExperimentRunAttributes{
-			Name: apiutils.Of(fmt.Sprintf("%d:sklearn-experiment-run", *experimentID)),
+			Name: new(fmt.Sprintf("%d:sklearn-experiment-run", *experimentID)),
 		},
 		Properties: &[]models.Properties{
 			{
 				Name:        "status",
-				StringValue: apiutils.Of("FAILED"),
+				StringValue: new("FAILED"),
 			},
 			{
 				Name:     "startTimeSinceEpoch",
-				IntValue: apiutils.Of(int32(1641168000)), // 2022-01-03
+				IntValue: new(int32(1641168000)), // 2022-01-03
 			},
 		},
 		CustomProperties: &[]models.Properties{
 			{
 				Name:             "framework",
-				StringValue:      apiutils.Of("sklearn"),
+				StringValue:      new("sklearn"),
 				IsCustomProperty: true,
 			},
 			{
 				Name:             "epochs",
-				IntValue:         apiutils.Of(int32(10)),
+				IntValue:         new(int32(10)),
 				IsCustomProperty: true,
 			},
 			{
 				Name:             "learning_rate",
-				DoubleValue:      apiutils.Of(0.1),
+				DoubleValue:      new(0.1),
 				IsCustomProperty: true,
 			},
 		},

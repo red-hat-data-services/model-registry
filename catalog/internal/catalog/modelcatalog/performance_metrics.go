@@ -15,7 +15,6 @@ import (
 	"github.com/golang/glog"
 	dbmodels "github.com/kubeflow/hub/catalog/internal/catalog/modelcatalog/models"
 	"github.com/kubeflow/hub/catalog/internal/db/service"
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	models "github.com/kubeflow/hub/internal/platform/db/entity"
 )
 
@@ -578,7 +577,7 @@ func createPerformanceArtifact(perfRecord performanceRecord, modelID int32, type
 		}
 	}
 	if createTime == nil {
-		createTime = apiutils.Of(time.Now().UnixMilli())
+		createTime = new(time.Now().UnixMilli())
 	}
 
 	if updatedAtNum, ok := perfRecord.CustomProperties["updated_at"].(json.Number); ok {
@@ -590,7 +589,7 @@ func createPerformanceArtifact(perfRecord performanceRecord, modelID int32, type
 		}
 	}
 	if updateTime == nil {
-		updateTime = apiutils.Of(time.Now().UnixMilli())
+		updateTime = new(time.Now().UnixMilli())
 	}
 	delete(perfRecord.CustomProperties, "updated_at")
 	delete(perfRecord.CustomProperties, "created_at")

@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/google/uuid"
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	"github.com/kubeflow/hub/internal/db/models"
 	"github.com/kubeflow/hub/pkg/api"
 	"github.com/kubeflow/hub/pkg/openapi"
@@ -16,7 +15,7 @@ import (
 )
 
 func GenerateNewName() *string {
-	return apiutils.Of(uuid.New().String())
+	return new(uuid.New().String())
 }
 
 // Int32ToString converts int32 to string-based one
@@ -132,7 +131,7 @@ func MapRegisteredModelPropertiesEmbedMD(source *openapi.RegisteredModel) (*[]mo
 			props = append(props, models.Properties{
 				Name:             "state",
 				IsCustomProperty: false,
-				StringValue:      apiutils.Of(string(*source.State)),
+				StringValue:      new(string(*source.State)),
 			})
 		}
 
@@ -277,7 +276,7 @@ func MapModelVersionPropertiesEmbedMD(source *openapi.ModelVersion) (*[]models.P
 			props = append(props, models.Properties{
 				Name:             "state",
 				IsCustomProperty: false,
-				StringValue:      apiutils.Of(string(*source.State)),
+				StringValue:      new(string(*source.State)),
 			})
 		}
 
@@ -408,7 +407,7 @@ func MapInferenceServicePropertiesEmbedMD(source *openapi.InferenceService) (*[]
 			props = append(props, models.Properties{
 				Name:             "desired_state",
 				IsCustomProperty: false,
-				StringValue:      apiutils.Of(string(*source.DesiredState)),
+				StringValue:      new(string(*source.DesiredState)),
 			})
 		}
 
@@ -761,7 +760,7 @@ func MapExperimentPropertiesEmbedMD(source *openapi.Experiment) (*[]models.Prope
 			props = append(props, models.Properties{
 				Name:             "state",
 				IsCustomProperty: false,
-				StringValue:      apiutils.Of(string(*source.State)),
+				StringValue:      new(string(*source.State)),
 			})
 		}
 	}
@@ -824,7 +823,7 @@ func MapExperimentRunPropertiesEmbedMD(source *openapi.ExperimentRun) (*[]models
 			props = append(props, models.Properties{
 				Name:             "state",
 				IsCustomProperty: false,
-				StringValue:      apiutils.Of(string(*source.State)),
+				StringValue:      new(string(*source.State)),
 			})
 		}
 
@@ -832,7 +831,7 @@ func MapExperimentRunPropertiesEmbedMD(source *openapi.ExperimentRun) (*[]models
 			props = append(props, models.Properties{
 				Name:             "status",
 				IsCustomProperty: false,
-				StringValue:      apiutils.Of(string(*source.Status)),
+				StringValue:      new(string(*source.Status)),
 			})
 		}
 
@@ -1169,7 +1168,7 @@ func mapEntityNameWithUUIDGeneration(parentResourceId *string, providedName *str
 	} else {
 		entityName = uuid.New().String()
 	}
-	return apiutils.Of(PrefixWhenOwned(parentResourceId, entityName))
+	return new(PrefixWhenOwned(parentResourceId, entityName))
 }
 
 // MapInferenceServiceNameEmbedMD maps the user-provided name into EmbedMD one, i.e., prefixing it with
@@ -1193,7 +1192,7 @@ func MapExperimentRunNameEmbedMD(source *OpenAPIModelWrapper[openapi.ExperimentR
 // MapModelVersionNameEmbedMD maps the user-provided name into EmbedMD one, i.e., prefixing it with
 // either the parent resource id or a generated uuid
 func MapModelVersionNameEmbedMD(source *OpenAPIModelWrapper[openapi.ModelVersion]) *string {
-	return apiutils.Of(PrefixWhenOwned(source.ParentResourceId, (*source).Model.Name))
+	return new(PrefixWhenOwned(source.ParentResourceId, (*source).Model.Name))
 }
 
 // MapModelArtifactNameEmbedMD maps the user-provided name into EmbedMD one, i.e., prefixing it with

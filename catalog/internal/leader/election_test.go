@@ -8,7 +8,7 @@ import (
 	"time"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
-	"github.com/kubeflow/hub/catalog/internal/db/service"
+	"github.com/kubeflow/hub/catalog/internal/testhelpers"
 	"github.com/kubeflow/hub/catalog/internal/leader"
 	"github.com/kubeflow/hub/internal/testutils"
 	"github.com/stretchr/testify/assert"
@@ -20,7 +20,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestLeaderElector_Run(t *testing.T) {
-	db, cleanup := testutils.SetupPostgresWithMigrations(t, service.DatastoreSpec())
+	db, cleanup := testutils.SetupPostgresWithMigrations(t, testhelpers.MustDatastoreSpec(t))
 	defer cleanup()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -66,7 +66,7 @@ func TestLeaderElector_Run(t *testing.T) {
 // - Only one pod becomes leader at a time
 // - When the leader releases the lock, another pod can acquire it
 func TestMultiPodLeaderElection(t *testing.T) {
-	db, cleanup := testutils.SetupPostgresWithMigrations(t, service.DatastoreSpec())
+	db, cleanup := testutils.SetupPostgresWithMigrations(t, testhelpers.MustDatastoreSpec(t))
 	defer cleanup()
 
 	// Use a longer timeout to account for container startup and leader transitions
@@ -165,7 +165,7 @@ func TestMultiPodLeaderElection(t *testing.T) {
 // TestLeaderElector_MultipleCallbacks verifies that multiple registered callbacks
 // are all invoked concurrently when leadership is acquired.
 func TestLeaderElector_MultipleCallbacks(t *testing.T) {
-	db, cleanup := testutils.SetupPostgresWithMigrations(t, service.DatastoreSpec())
+	db, cleanup := testutils.SetupPostgresWithMigrations(t, testhelpers.MustDatastoreSpec(t))
 	defer cleanup()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -227,7 +227,7 @@ func TestLeaderElector_MultipleCallbacks(t *testing.T) {
 // TestLeaderElector_CallbackPanic verifies that a panic in one callback
 // doesn't affect other callbacks or crash the leader elector.
 func TestLeaderElector_CallbackPanic(t *testing.T) {
-	db, cleanup := testutils.SetupPostgresWithMigrations(t, service.DatastoreSpec())
+	db, cleanup := testutils.SetupPostgresWithMigrations(t, testhelpers.MustDatastoreSpec(t))
 	defer cleanup()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -276,7 +276,7 @@ func TestLeaderElector_CallbackPanic(t *testing.T) {
 // leadership continues (keeps the lock) until context is cancelled.
 // This is the new behavior per the plan - no longer releases lock when callbacks exit.
 func TestLeaderElector_CallbackEarlyExit(t *testing.T) {
-	db, cleanup := testutils.SetupPostgresWithMigrations(t, service.DatastoreSpec())
+	db, cleanup := testutils.SetupPostgresWithMigrations(t, testhelpers.MustDatastoreSpec(t))
 	defer cleanup()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -321,7 +321,7 @@ func TestLeaderElector_CallbackEarlyExit(t *testing.T) {
 // TestLeaderElector_CallbackRegisteredAfterLeadership verifies that callbacks
 // registered after leadership is already acquired are invoked immediately.
 func TestLeaderElector_CallbackRegisteredAfterLeadership(t *testing.T) {
-	db, cleanup := testutils.SetupPostgresWithMigrations(t, service.DatastoreSpec())
+	db, cleanup := testutils.SetupPostgresWithMigrations(t, testhelpers.MustDatastoreSpec(t))
 	defer cleanup()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -382,7 +382,7 @@ func TestLeaderElector_CallbackRegisteredAfterLeadership(t *testing.T) {
 // TestLeaderElector_WaitReturnsCorrectError verifies that Wait() returns
 // the correct error from the background goroutine.
 func TestLeaderElector_WaitReturnsCorrectError(t *testing.T) {
-	db, cleanup := testutils.SetupPostgresWithMigrations(t, service.DatastoreSpec())
+	db, cleanup := testutils.SetupPostgresWithMigrations(t, testhelpers.MustDatastoreSpec(t))
 	defer cleanup()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -408,7 +408,7 @@ func TestLeaderElector_WaitReturnsCorrectError(t *testing.T) {
 // TestLeaderElector_GoroutineStartsImmediately verifies that the background
 // goroutine starts immediately from the constructor.
 func TestLeaderElector_GoroutineStartsImmediately(t *testing.T) {
-	db, cleanup := testutils.SetupPostgresWithMigrations(t, service.DatastoreSpec())
+	db, cleanup := testutils.SetupPostgresWithMigrations(t, testhelpers.MustDatastoreSpec(t))
 	defer cleanup()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	"github.com/kubeflow/hub/pkg/api"
 	"github.com/kubeflow/hub/pkg/openapi"
 	"github.com/stretchr/testify/assert"
@@ -18,15 +17,15 @@ func TestGetExperimentRunMetricHistory(t *testing.T) {
 	// Create experiment
 	experiment := &openapi.Experiment{
 		Name:        "test-experiment",
-		Description: apiutils.Of("Test experiment for metric history"),
+		Description: new("Test experiment for metric history"),
 	}
 	savedExperiment, err := service.UpsertExperiment(experiment)
 	require.NoError(t, err)
 
 	// Create experiment run
 	experimentRun := &openapi.ExperimentRun{
-		Name:        apiutils.Of("test-experiment-run"),
-		Description: apiutils.Of("Test experiment run for metric history"),
+		Name:        new("test-experiment-run"),
+		Description: new("Test experiment run for metric history"),
 	}
 	savedExperimentRun, err := service.UpsertExperimentRun(experimentRun, savedExperiment.Id)
 	require.NoError(t, err)
@@ -34,21 +33,21 @@ func TestGetExperimentRunMetricHistory(t *testing.T) {
 	// Create metrics via UpsertExperimentRunArtifact (this should populate experiment fields and create metric history)
 	metricArtifact1 := &openapi.Artifact{
 		Metric: &openapi.Metric{
-			Name:        apiutils.Of("accuracy"),
-			Value:       apiutils.Of(0.95),
-			Timestamp:   apiutils.Of("1234567890"),
-			Step:        apiutils.Of(int64(1)),
-			Description: apiutils.Of("Test accuracy metric"),
+			Name:        new("accuracy"),
+			Value:       new(0.95),
+			Timestamp:   new("1234567890"),
+			Step:        new(int64(1)),
+			Description: new("Test accuracy metric"),
 		},
 	}
 
 	metricArtifact2 := &openapi.Artifact{
 		Metric: &openapi.Metric{
-			Name:        apiutils.Of("loss"),
-			Value:       apiutils.Of(0.05),
-			Timestamp:   apiutils.Of("1234567891"),
-			Step:        apiutils.Of(int64(2)),
-			Description: apiutils.Of("Test loss metric"),
+			Name:        new("loss"),
+			Value:       new(0.05),
+			Timestamp:   new("1234567891"),
+			Step:        new(int64(2)),
+			Description: new("Test loss metric"),
 		},
 	}
 
@@ -102,15 +101,15 @@ func TestGetExperimentRunMetricHistoryWithNameFilter(t *testing.T) {
 	// Create experiment
 	experiment := &openapi.Experiment{
 		Name:        "test-experiment-filter",
-		Description: apiutils.Of("Test experiment for metric history name filter"),
+		Description: new("Test experiment for metric history name filter"),
 	}
 	savedExperiment, err := service.UpsertExperiment(experiment)
 	require.NoError(t, err)
 
 	// Create experiment run
 	experimentRun := &openapi.ExperimentRun{
-		Name:        apiutils.Of("test-experiment-run-filter"),
-		Description: apiutils.Of("Test experiment run for metric history name filter"),
+		Name:        new("test-experiment-run-filter"),
+		Description: new("Test experiment run for metric history name filter"),
 	}
 	savedExperimentRun, err := service.UpsertExperimentRun(experimentRun, savedExperiment.Id)
 	require.NoError(t, err)
@@ -118,19 +117,19 @@ func TestGetExperimentRunMetricHistoryWithNameFilter(t *testing.T) {
 	// Create metrics via UpsertExperimentRunArtifact (this should populate experiment fields and create metric history)
 	metricArtifact1 := &openapi.Artifact{
 		Metric: &openapi.Metric{
-			Name:      apiutils.Of("accuracy"),
-			Value:     apiutils.Of(0.95),
-			Timestamp: apiutils.Of("1234567890"),
-			Step:      apiutils.Of(int64(1)),
+			Name:      new("accuracy"),
+			Value:     new(0.95),
+			Timestamp: new("1234567890"),
+			Step:      new(int64(1)),
 		},
 	}
 
 	metricArtifact2 := &openapi.Artifact{
 		Metric: &openapi.Metric{
-			Name:      apiutils.Of("loss"),
-			Value:     apiutils.Of(0.05),
-			Timestamp: apiutils.Of("1234567891"),
-			Step:      apiutils.Of(int64(2)),
+			Name:      new("loss"),
+			Value:     new(0.05),
+			Timestamp: new("1234567891"),
+			Step:      new(int64(2)),
 		},
 	}
 
@@ -167,26 +166,26 @@ func TestInsertMetricHistory(t *testing.T) {
 	// Create experiment
 	experiment := &openapi.Experiment{
 		Name:        "test-experiment-insert",
-		Description: apiutils.Of("Test experiment for metric history insert"),
+		Description: new("Test experiment for metric history insert"),
 	}
 	savedExperiment, err := service.UpsertExperiment(experiment)
 	require.NoError(t, err)
 
 	// Create experiment run
 	experimentRun := &openapi.ExperimentRun{
-		Name:        apiutils.Of("test-experiment-run-insert"),
-		Description: apiutils.Of("Test experiment run for metric history insert"),
+		Name:        new("test-experiment-run-insert"),
+		Description: new("Test experiment run for metric history insert"),
 	}
 	savedExperimentRun, err := service.UpsertExperimentRun(experimentRun, savedExperiment.Id)
 	require.NoError(t, err)
 
 	// Test 1: Basic metric history insertion
 	metric := &openapi.Metric{
-		Name:            apiutils.Of("test_metric"),
-		Value:           apiutils.Of(42.5),
-		Timestamp:       apiutils.Of("1234567890"),
-		Step:            apiutils.Of(int64(1)),
-		Description:     apiutils.Of("Test metric description"),
+		Name:            new("test_metric"),
+		Value:           new(42.5),
+		Timestamp:       new("1234567890"),
+		Step:            new(int64(1)),
+		Description:     new("Test metric description"),
 		ExperimentId:    savedExperiment.Id,
 		ExperimentRunId: savedExperimentRun.Id,
 		CustomProperties: map[string]openapi.MetadataValue{
@@ -262,15 +261,15 @@ func TestUpsertExperimentRunArtifactTriggersMetricHistory(t *testing.T) {
 	// Create experiment
 	experiment := &openapi.Experiment{
 		Name:        "test-experiment-upsert",
-		Description: apiutils.Of("Test experiment for metric history upsert"),
+		Description: new("Test experiment for metric history upsert"),
 	}
 	savedExperiment, err := service.UpsertExperiment(experiment)
 	require.NoError(t, err)
 
 	// Create experiment run
 	experimentRun := &openapi.ExperimentRun{
-		Name:        apiutils.Of("test-experiment-run-upsert"),
-		Description: apiutils.Of("Test experiment run for metric history upsert"),
+		Name:        new("test-experiment-run-upsert"),
+		Description: new("Test experiment run for metric history upsert"),
 	}
 	savedExperimentRun, err := service.UpsertExperimentRun(experimentRun, savedExperiment.Id)
 	require.NoError(t, err)
@@ -278,10 +277,10 @@ func TestUpsertExperimentRunArtifactTriggersMetricHistory(t *testing.T) {
 	// Create a metric artifact
 	metricArtifact := &openapi.Artifact{
 		Metric: &openapi.Metric{
-			Name:      apiutils.Of("test_metric"),
-			Value:     apiutils.Of(42.5),
-			Timestamp: apiutils.Of("1234567890"),
-			Step:      apiutils.Of(int64(1)),
+			Name:      new("test_metric"),
+			Value:     new(42.5),
+			Timestamp: new("1234567890"),
+			Step:      new(int64(1)),
 		},
 	}
 
@@ -316,15 +315,15 @@ func TestGetExperimentRunMetricHistoryEmptyResult(t *testing.T) {
 	// Create experiment
 	experiment := &openapi.Experiment{
 		Name:        "test-experiment-empty",
-		Description: apiutils.Of("Test experiment for empty metric history"),
+		Description: new("Test experiment for empty metric history"),
 	}
 	savedExperiment, err := service.UpsertExperiment(experiment)
 	require.NoError(t, err)
 
 	// Create experiment run
 	experimentRun := &openapi.ExperimentRun{
-		Name:        apiutils.Of("test-experiment-run-empty"),
-		Description: apiutils.Of("Test experiment run for empty metric history"),
+		Name:        new("test-experiment-run-empty"),
+		Description: new("Test experiment run for empty metric history"),
 	}
 	savedExperimentRun, err := service.UpsertExperimentRun(experimentRun, savedExperiment.Id)
 	require.NoError(t, err)
@@ -343,15 +342,15 @@ func TestGetExperimentRunMetricHistoryWithPagination(t *testing.T) {
 	// Create experiment
 	experiment := &openapi.Experiment{
 		Name:        "test-experiment-pagination",
-		Description: apiutils.Of("Test experiment for metric history pagination"),
+		Description: new("Test experiment for metric history pagination"),
 	}
 	savedExperiment, err := service.UpsertExperiment(experiment)
 	require.NoError(t, err)
 
 	// Create experiment run
 	experimentRun := &openapi.ExperimentRun{
-		Name:        apiutils.Of("test-experiment-run-pagination"),
-		Description: apiutils.Of("Test experiment run for metric history pagination"),
+		Name:        new("test-experiment-run-pagination"),
+		Description: new("Test experiment run for metric history pagination"),
 	}
 	savedExperimentRun, err := service.UpsertExperimentRun(experimentRun, savedExperiment.Id)
 	require.NoError(t, err)
@@ -359,10 +358,10 @@ func TestGetExperimentRunMetricHistoryWithPagination(t *testing.T) {
 	// Create multiple metrics for pagination test
 	for i := range 5 {
 		metric := &openapi.Metric{
-			Name:      apiutils.Of(fmt.Sprintf("metric_%d", i)),
-			Value:     apiutils.Of(float64(i) * 0.1),
-			Timestamp: apiutils.Of(fmt.Sprintf("123456789%d", i)),
-			Step:      apiutils.Of(int64(i)),
+			Name:      new(fmt.Sprintf("metric_%d", i)),
+			Value:     new(float64(i) * 0.1),
+			Timestamp: new(fmt.Sprintf("123456789%d", i)),
+			Step:      new(int64(i)),
 		}
 		err = service.InsertMetricHistory(metric, *savedExperimentRun.Id)
 		require.NoError(t, err, "error inserting metric history %d", i)
@@ -409,25 +408,25 @@ func TestInsertMetricHistoryWithLastUpdateTime(t *testing.T) {
 	// Create experiment
 	experiment := &openapi.Experiment{
 		Name:        "test-experiment-last-update",
-		Description: apiutils.Of("Test experiment for metric history with last update time"),
+		Description: new("Test experiment for metric history with last update time"),
 	}
 	savedExperiment, err := service.UpsertExperiment(experiment)
 	require.NoError(t, err)
 
 	// Create experiment run
 	experimentRun := &openapi.ExperimentRun{
-		Name:        apiutils.Of("test-experiment-run-last-update"),
-		Description: apiutils.Of("Test experiment run for metric history with last update time"),
+		Name:        new("test-experiment-run-last-update"),
+		Description: new("Test experiment run for metric history with last update time"),
 	}
 	savedExperimentRun, err := service.UpsertExperimentRun(experimentRun, savedExperiment.Id)
 	require.NoError(t, err)
 
 	// Test insertion with last update time but no timestamp
 	metricWithLastUpdate := &openapi.Metric{
-		Name:                     apiutils.Of("test_metric_last_update"),
-		Value:                    apiutils.Of(42.5),
-		LastUpdateTimeSinceEpoch: apiutils.Of("9876543210"),
-		Step:                     apiutils.Of(int64(1)),
+		Name:                     new("test_metric_last_update"),
+		Value:                    new(42.5),
+		LastUpdateTimeSinceEpoch: new("9876543210"),
+		Step:                     new(int64(1)),
 	}
 
 	// Insert metric history with last update time
@@ -452,26 +451,26 @@ func TestGetExperimentRunMetricHistoryReturnsCorrectArtifactType(t *testing.T) {
 	// Create experiment
 	experiment := &openapi.Experiment{
 		Name:        "test-experiment-artifact-type",
-		Description: apiutils.Of("Test experiment for metric history artifact type validation"),
+		Description: new("Test experiment for metric history artifact type validation"),
 	}
 	savedExperiment, err := service.UpsertExperiment(experiment)
 	require.NoError(t, err)
 
 	// Create experiment run
 	experimentRun := &openapi.ExperimentRun{
-		Name:        apiutils.Of("test-experiment-run-artifact-type"),
-		Description: apiutils.Of("Test experiment run for metric history artifact type validation"),
+		Name:        new("test-experiment-run-artifact-type"),
+		Description: new("Test experiment run for metric history artifact type validation"),
 	}
 	savedExperimentRun, err := service.UpsertExperimentRun(experimentRun, savedExperiment.Id)
 	require.NoError(t, err)
 
 	// Create a metric for the experiment run
 	metric := &openapi.Metric{
-		Name:        apiutils.Of("test_metric"),
-		Value:       apiutils.Of(0.95),
-		Timestamp:   apiutils.Of("1234567890"),
-		Step:        apiutils.Of(int64(1)),
-		Description: apiutils.Of("Test metric for artifact type validation"),
+		Name:        new("test_metric"),
+		Value:       new(0.95),
+		Timestamp:   new("1234567890"),
+		Step:        new(int64(1)),
+		Description: new("Test metric for artifact type validation"),
 	}
 
 	// Insert metric history (this stores as 'metric-history' in database)
@@ -505,15 +504,15 @@ func TestGetExperimentRunMetricHistoryWithStepIdsFilter(t *testing.T) {
 	// Create experiment
 	experiment := &openapi.Experiment{
 		Name:        "test-experiment-stepids",
-		Description: apiutils.Of("Test experiment for metric history stepIds filter"),
+		Description: new("Test experiment for metric history stepIds filter"),
 	}
 	savedExperiment, err := service.UpsertExperiment(experiment)
 	require.NoError(t, err)
 
 	// Create experiment run
 	experimentRun := &openapi.ExperimentRun{
-		Name:        apiutils.Of("test-experiment-run-stepids"),
-		Description: apiutils.Of("Test experiment run for metric history stepIds filter"),
+		Name:        new("test-experiment-run-stepids"),
+		Description: new("Test experiment run for metric history stepIds filter"),
 	}
 	savedExperimentRun, err := service.UpsertExperimentRun(experimentRun, savedExperiment.Id)
 	require.NoError(t, err)
@@ -521,34 +520,34 @@ func TestGetExperimentRunMetricHistoryWithStepIdsFilter(t *testing.T) {
 	// Create metrics with different step values
 	metrics := []*openapi.Metric{
 		{
-			Name:      apiutils.Of("accuracy"),
-			Value:     apiutils.Of(0.85),
-			Timestamp: apiutils.Of("1234567890"),
-			Step:      apiutils.Of(int64(1)),
+			Name:      new("accuracy"),
+			Value:     new(0.85),
+			Timestamp: new("1234567890"),
+			Step:      new(int64(1)),
 		},
 		{
-			Name:      apiutils.Of("accuracy"),
-			Value:     apiutils.Of(0.90),
-			Timestamp: apiutils.Of("1234567891"),
-			Step:      apiutils.Of(int64(2)),
+			Name:      new("accuracy"),
+			Value:     new(0.90),
+			Timestamp: new("1234567891"),
+			Step:      new(int64(2)),
 		},
 		{
-			Name:      apiutils.Of("accuracy"),
-			Value:     apiutils.Of(0.95),
-			Timestamp: apiutils.Of("1234567892"),
-			Step:      apiutils.Of(int64(3)),
+			Name:      new("accuracy"),
+			Value:     new(0.95),
+			Timestamp: new("1234567892"),
+			Step:      new(int64(3)),
 		},
 		{
-			Name:      apiutils.Of("loss"),
-			Value:     apiutils.Of(0.15),
-			Timestamp: apiutils.Of("1234567893"),
-			Step:      apiutils.Of(int64(1)),
+			Name:      new("loss"),
+			Value:     new(0.15),
+			Timestamp: new("1234567893"),
+			Step:      new(int64(1)),
 		},
 		{
-			Name:      apiutils.Of("loss"),
-			Value:     apiutils.Of(0.10),
-			Timestamp: apiutils.Of("1234567894"),
-			Step:      apiutils.Of(int64(2)),
+			Name:      new("loss"),
+			Value:     new(0.10),
+			Timestamp: new("1234567894"),
+			Step:      new(int64(2)),
 		},
 	}
 
@@ -636,52 +635,52 @@ func TestGetExperimentRunsMetricHistoryBulk(t *testing.T) {
 	// Create experiment
 	experiment := &openapi.Experiment{
 		Name:        "test-experiment-bulk",
-		Description: apiutils.Of("Test experiment for bulk metric history"),
+		Description: new("Test experiment for bulk metric history"),
 	}
 	savedExperiment, err := service.UpsertExperiment(experiment)
 	require.NoError(t, err)
 
 	// Create two experiment runs
 	experimentRun1 := &openapi.ExperimentRun{
-		Name:        apiutils.Of("test-experiment-run-1"),
-		Description: apiutils.Of("Test experiment run 1 for bulk metric history"),
+		Name:        new("test-experiment-run-1"),
+		Description: new("Test experiment run 1 for bulk metric history"),
 	}
 	savedExperimentRun1, err := service.UpsertExperimentRun(experimentRun1, savedExperiment.Id)
 	require.NoError(t, err)
 
 	experimentRun2 := &openapi.ExperimentRun{
-		Name:        apiutils.Of("test-experiment-run-2"),
-		Description: apiutils.Of("Test experiment run 2 for bulk metric history"),
+		Name:        new("test-experiment-run-2"),
+		Description: new("Test experiment run 2 for bulk metric history"),
 	}
 	savedExperimentRun2, err := service.UpsertExperimentRun(experimentRun2, savedExperiment.Id)
 	require.NoError(t, err)
 
 	// Create metrics for first experiment run
 	metric1Run1 := &openapi.Metric{
-		Name:      apiutils.Of("accuracy"),
-		Value:     apiutils.Of(0.85),
-		Timestamp: apiutils.Of("1234567890"),
-		Step:      apiutils.Of(int64(1)),
+		Name:      new("accuracy"),
+		Value:     new(0.85),
+		Timestamp: new("1234567890"),
+		Step:      new(int64(1)),
 	}
 	metric2Run1 := &openapi.Metric{
-		Name:      apiutils.Of("loss"),
-		Value:     apiutils.Of(0.15),
-		Timestamp: apiutils.Of("1234567891"),
-		Step:      apiutils.Of(int64(1)),
+		Name:      new("loss"),
+		Value:     new(0.15),
+		Timestamp: new("1234567891"),
+		Step:      new(int64(1)),
 	}
 
 	// Create metrics for second experiment run
 	metric1Run2 := &openapi.Metric{
-		Name:      apiutils.Of("accuracy"),
-		Value:     apiutils.Of(0.90),
-		Timestamp: apiutils.Of("1234567892"),
-		Step:      apiutils.Of(int64(2)),
+		Name:      new("accuracy"),
+		Value:     new(0.90),
+		Timestamp: new("1234567892"),
+		Step:      new(int64(2)),
 	}
 	metric2Run2 := &openapi.Metric{
-		Name:      apiutils.Of("loss"),
-		Value:     apiutils.Of(0.10),
-		Timestamp: apiutils.Of("1234567893"),
-		Step:      apiutils.Of(int64(2)),
+		Name:      new("loss"),
+		Value:     new(0.10),
+		Timestamp: new("1234567893"),
+		Step:      new(int64(2)),
 	}
 
 	// Insert metric history for both runs
@@ -767,15 +766,15 @@ func TestGetExperimentRunMetricHistoryExperimentFields(t *testing.T) {
 	// Create experiment
 	experiment := &openapi.Experiment{
 		Name:        "test-experiment-fields",
-		Description: apiutils.Of("Test experiment for validating experiment fields in metric history"),
+		Description: new("Test experiment for validating experiment fields in metric history"),
 	}
 	savedExperiment, err := service.UpsertExperiment(experiment)
 	require.NoError(t, err)
 
 	// Create experiment run
 	experimentRun := &openapi.ExperimentRun{
-		Name:        apiutils.Of("test-experiment-run-fields"),
-		Description: apiutils.Of("Test experiment run for validating experiment fields in metric history"),
+		Name:        new("test-experiment-run-fields"),
+		Description: new("Test experiment run for validating experiment fields in metric history"),
 	}
 	savedExperimentRun, err := service.UpsertExperimentRun(experimentRun, savedExperiment.Id)
 	require.NoError(t, err)
@@ -783,21 +782,21 @@ func TestGetExperimentRunMetricHistoryExperimentFields(t *testing.T) {
 	// Create metrics via UpsertExperimentRunArtifact (this should populate experiment fields)
 	metricArtifact1 := &openapi.Artifact{
 		Metric: &openapi.Metric{
-			Name:        apiutils.Of("accuracy"),
-			Value:       apiutils.Of(0.95),
-			Timestamp:   apiutils.Of("1234567890"),
-			Step:        apiutils.Of(int64(1)),
-			Description: apiutils.Of("Test accuracy metric"),
+			Name:        new("accuracy"),
+			Value:       new(0.95),
+			Timestamp:   new("1234567890"),
+			Step:        new(int64(1)),
+			Description: new("Test accuracy metric"),
 		},
 	}
 
 	metricArtifact2 := &openapi.Artifact{
 		Metric: &openapi.Metric{
-			Name:        apiutils.Of("precision"),
-			Value:       apiutils.Of(0.87),
-			Timestamp:   apiutils.Of("1234567891"),
-			Step:        apiutils.Of(int64(2)),
-			Description: apiutils.Of("Test precision metric"),
+			Name:        new("precision"),
+			Value:       new(0.87),
+			Timestamp:   new("1234567891"),
+			Step:        new(int64(2)),
+			Description: new("Test precision metric"),
 		},
 	}
 

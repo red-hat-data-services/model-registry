@@ -6,7 +6,6 @@ import (
 
 	"github.com/kubeflow/hub/catalog/internal/catalog/basecatalog"
 	model "github.com/kubeflow/hub/catalog/pkg/openapi"
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -35,7 +34,7 @@ func TestMCPSourceCollection_MergeOverride(t *testing.T) {
 							ID:      "mcp_github",
 							Name:    "GitHub MCP Server",
 							Type:    "sse",
-							Enabled: apiutils.Of(true),
+							Enabled: new(true),
 							Labels:  []string{"community"},
 							Properties: map[string]any{
 								"url": "https://community.example.com/github",
@@ -50,7 +49,7 @@ func TestMCPSourceCollection_MergeOverride(t *testing.T) {
 							ID:      "mcp_github",
 							Name:    "GitHub MCP Server Enterprise",
 							Type:    "sse",
-							Enabled: apiutils.Of(true),
+							Enabled: new(true),
 							Labels:  []string{"enterprise"},
 							Properties: map[string]any{
 								"url": "https://org.example.com/github",
@@ -64,7 +63,7 @@ func TestMCPSourceCollection_MergeOverride(t *testing.T) {
 					ID:      "mcp_github",
 					Name:    "GitHub MCP Server Enterprise",
 					Type:    "sse",
-					Enabled: apiutils.Of(true),
+					Enabled: new(true),
 					Labels:  []string{"enterprise"},
 					Properties: map[string]any{
 						"url": "https://org.example.com/github",
@@ -86,7 +85,7 @@ func TestMCPSourceCollection_MergeOverride(t *testing.T) {
 							ID:      "mcp_slack",
 							Name:    "Slack MCP Server",
 							Type:    "stdio",
-							Enabled: apiutils.Of(true),
+							Enabled: new(true),
 							Labels:  []string{"community"},
 							Properties: map[string]any{
 								"command": "slack-mcp",
@@ -100,7 +99,7 @@ func TestMCPSourceCollection_MergeOverride(t *testing.T) {
 					ID:      "mcp_slack",
 					Name:    "Slack MCP Server",
 					Type:    "stdio",
-					Enabled: apiutils.Of(true),
+					Enabled: new(true),
 					Labels:  []string{"community"},
 					Properties: map[string]any{
 						"command": "slack-mcp",
@@ -122,14 +121,14 @@ func TestMCPSourceCollection_MergeOverride(t *testing.T) {
 							ID:      "mcp_github",
 							Name:    "GitHub MCP Server",
 							Type:    "sse",
-							Enabled: apiutils.Of(true),
+							Enabled: new(true),
 							Labels:  []string{"community"},
 						},
 						"mcp_slack": {
 							ID:      "mcp_slack",
 							Name:    "Slack MCP Server",
 							Type:    "stdio",
-							Enabled: apiutils.Of(true),
+							Enabled: new(true),
 							Labels:  []string{"community"},
 						},
 					},
@@ -141,7 +140,7 @@ func TestMCPSourceCollection_MergeOverride(t *testing.T) {
 							ID:      "mcp_github",
 							Name:    "GitHub MCP Server Enterprise",
 							Type:    "sse",
-							Enabled: apiutils.Of(true),
+							Enabled: new(true),
 							Labels:  []string{"enterprise"},
 						},
 					},
@@ -152,14 +151,14 @@ func TestMCPSourceCollection_MergeOverride(t *testing.T) {
 					ID:      "mcp_github",
 					Name:    "GitHub MCP Server Enterprise",
 					Type:    "sse",
-					Enabled: apiutils.Of(true),
+					Enabled: new(true),
 					Labels:  []string{"enterprise"},
 				},
 				"mcp_slack": {
 					ID:      "mcp_slack",
 					Name:    "Slack MCP Server",
 					Type:    "stdio",
-					Enabled: apiutils.Of(true),
+					Enabled: new(true),
 					Labels:  []string{"community"},
 				},
 			},
@@ -178,7 +177,7 @@ func TestMCPSourceCollection_MergeOverride(t *testing.T) {
 							ID:      "mcp_github",
 							Name:    "Community GitHub",
 							Type:    "sse",
-							Enabled: apiutils.Of(true),
+							Enabled: new(true),
 							Labels:  []string{"community"},
 						},
 					},
@@ -190,7 +189,7 @@ func TestMCPSourceCollection_MergeOverride(t *testing.T) {
 							ID:      "mcp_github",
 							Name:    "Org GitHub",
 							Type:    "sse",
-							Enabled: apiutils.Of(true),
+							Enabled: new(true),
 							Labels:  []string{"org"},
 						},
 					},
@@ -202,7 +201,7 @@ func TestMCPSourceCollection_MergeOverride(t *testing.T) {
 							ID:      "mcp_github",
 							Name:    "Team GitHub",
 							Type:    "sse",
-							Enabled: apiutils.Of(true),
+							Enabled: new(true),
 							Labels:  []string{"team"},
 						},
 					},
@@ -213,7 +212,7 @@ func TestMCPSourceCollection_MergeOverride(t *testing.T) {
 					ID:      "mcp_github",
 					Name:    "Team GitHub",
 					Type:    "sse",
-					Enabled: apiutils.Of(true),
+					Enabled: new(true),
 					Labels:  []string{"team"},
 				},
 			},
@@ -232,7 +231,7 @@ func TestMCPSourceCollection_MergeOverride(t *testing.T) {
 							ID:      "mcp_github",
 							Name:    "GitHub MCP Server",
 							Type:    "sse",
-							Enabled: apiutils.Of(true),
+							Enabled: new(true),
 							Labels:  []string{},
 						},
 					},
@@ -244,7 +243,7 @@ func TestMCPSourceCollection_MergeOverride(t *testing.T) {
 							ID:      "mcp_github",
 							Name:    "GitHub MCP Server",
 							Type:    "sse",
-							Enabled: apiutils.Of(false), // Disable it
+							Enabled: new(false), // Disable it
 							Labels:  []string{},
 						},
 					},
@@ -255,7 +254,7 @@ func TestMCPSourceCollection_MergeOverride(t *testing.T) {
 					ID:      "mcp_github",
 					Name:    "GitHub MCP Server",
 					Type:    "sse",
-					Enabled: apiutils.Of(false),
+					Enabled: new(false),
 					Labels:  []string{},
 				},
 			},
@@ -274,7 +273,7 @@ func TestMCPSourceCollection_MergeOverride(t *testing.T) {
 							ID:      "mcp_github",
 							Name:    "GitHub MCP Server",
 							Type:    "sse",
-							Enabled: apiutils.Of(false), // Disabled in base
+							Enabled: new(false), // Disabled in base
 							Labels:  []string{"community", "certified"},
 							Properties: map[string]any{
 								"url": "https://community.example.com/github",
@@ -287,7 +286,7 @@ func TestMCPSourceCollection_MergeOverride(t *testing.T) {
 					sources: map[string]basecatalog.MCPSource{
 						"mcp_github": {
 							ID:      "mcp_github",
-							Enabled: apiutils.Of(true), // Only enable it
+							Enabled: new(true), // Only enable it
 							// Name, Type, Labels, Properties all empty/nil -> inherited
 						},
 					},
@@ -298,7 +297,7 @@ func TestMCPSourceCollection_MergeOverride(t *testing.T) {
 					ID:      "mcp_github",
 					Name:    "GitHub MCP Server",                // Inherited
 					Type:    "sse",                              // Inherited
-					Enabled: apiutils.Of(true),                  // Overridden
+					Enabled: new(true),                          // Overridden
 					Labels:  []string{"community", "certified"}, // Inherited
 					Properties: map[string]any{ // Inherited
 						"url": "https://community.example.com/github",
@@ -320,7 +319,7 @@ func TestMCPSourceCollection_MergeOverride(t *testing.T) {
 							ID:      "mcp_github",
 							Name:    "GitHub MCP Server",
 							Type:    "sse",
-							Enabled: apiutils.Of(true),
+							Enabled: new(true),
 							Labels:  []string{"community"},
 						},
 					},
@@ -340,7 +339,7 @@ func TestMCPSourceCollection_MergeOverride(t *testing.T) {
 					ID:      "mcp_github",
 					Name:    "GitHub MCP Server",                 // Inherited
 					Type:    "sse",                               // Inherited
-					Enabled: apiutils.Of(true),                   // Inherited
+					Enabled: new(true),                           // Inherited
 					Labels:  []string{"enterprise", "validated"}, // Overridden
 				},
 			},
@@ -359,7 +358,7 @@ func TestMCPSourceCollection_MergeOverride(t *testing.T) {
 							ID:      "mcp_github",
 							Name:    "GitHub MCP Server",
 							Type:    "sse",
-							Enabled: apiutils.Of(true),
+							Enabled: new(true),
 							Labels:  []string{"community", "public"},
 						},
 					},
@@ -379,7 +378,7 @@ func TestMCPSourceCollection_MergeOverride(t *testing.T) {
 					ID:      "mcp_github",
 					Name:    "GitHub MCP Server", // Inherited
 					Type:    "sse",               // Inherited
-					Enabled: apiutils.Of(true),   // Inherited
+					Enabled: new(true),           // Inherited
 					Labels:  []string{},          // Overridden to empty
 				},
 			},
@@ -408,7 +407,7 @@ func TestMCPSourceCollection_MergeOverride(t *testing.T) {
 					ID:        "mcp_github",
 					Name:      "GitHub MCP Server",
 					Type:      "sse",
-					Enabled:   apiutils.Of(true),                        // Default applied
+					Enabled:   new(true),                                // Default applied
 					Labels:    []string{},                               // Default applied
 					AssetType: model.CATALOGASSETTYPE_MCP_SERVERS.Ptr(), // Default applied
 				},
@@ -428,7 +427,7 @@ func TestMCPSourceCollection_MergeOverride(t *testing.T) {
 							ID:      "mcp_github",
 							Name:    "GitHub MCP Server",
 							Type:    "sse",
-							Enabled: apiutils.Of(false),
+							Enabled: new(false),
 							Labels:  []string{"community"},
 							Properties: map[string]any{
 								"url":     "https://example.com/mcp",
@@ -442,7 +441,7 @@ func TestMCPSourceCollection_MergeOverride(t *testing.T) {
 					sources: map[string]basecatalog.MCPSource{
 						"mcp_github": {
 							ID:      "mcp_github",
-							Enabled: apiutils.Of(true), // Only enable it; Type and Properties not set
+							Enabled: new(true), // Only enable it; Type and Properties not set
 						},
 					},
 				},
@@ -452,7 +451,7 @@ func TestMCPSourceCollection_MergeOverride(t *testing.T) {
 					ID:      "mcp_github",
 					Name:    "GitHub MCP Server",   // Inherited
 					Type:    "sse",                 // Inherited
-					Enabled: apiutils.Of(true),     // Overridden
+					Enabled: new(true),             // Overridden
 					Labels:  []string{"community"}, // Inherited
 					Properties: map[string]any{ // Inherited
 						"url":     "https://example.com/mcp",
@@ -542,7 +541,7 @@ func TestMCPSourceCollection_MergeOverride_Origin(t *testing.T) {
 							ID:      "mcp_github",
 							Name:    "GitHub MCP Server",
 							Type:    "sse",
-							Enabled: apiutils.Of(true),
+							Enabled: new(true),
 							Properties: map[string]any{
 								"url": "https://community.example.com/github",
 							},
@@ -556,7 +555,7 @@ func TestMCPSourceCollection_MergeOverride_Origin(t *testing.T) {
 						"mcp_github": {
 							ID:      "mcp_github",
 							Name:    "GitHub MCP Server Custom",
-							Enabled: apiutils.Of(true),
+							Enabled: new(true),
 							// Properties not set -> Origin should stay with base
 							Origin: "/config/org.yaml",
 						},
@@ -581,7 +580,7 @@ func TestMCPSourceCollection_MergeOverride_Origin(t *testing.T) {
 							ID:      "mcp_local",
 							Name:    "Local MCP Server",
 							Type:    "stdio",
-							Enabled: apiutils.Of(true),
+							Enabled: new(true),
 							Properties: map[string]any{
 								"command": "community-mcp",
 							},
@@ -594,7 +593,7 @@ func TestMCPSourceCollection_MergeOverride_Origin(t *testing.T) {
 					sources: map[string]basecatalog.MCPSource{
 						"mcp_local": {
 							ID:      "mcp_local",
-							Enabled: apiutils.Of(true),
+							Enabled: new(true),
 							// Override Properties -> Origin should change
 							Properties: map[string]any{
 								"command": "org-mcp",
@@ -622,7 +621,7 @@ func TestMCPSourceCollection_MergeOverride_Origin(t *testing.T) {
 							ID:      "mcp_admin",
 							Name:    "Admin MCP Server",
 							Type:    "sse",
-							Enabled: apiutils.Of(true),
+							Enabled: new(true),
 							Properties: map[string]any{
 								"url": "https://admin.example.com/mcp",
 							},
@@ -637,7 +636,7 @@ func TestMCPSourceCollection_MergeOverride_Origin(t *testing.T) {
 							ID:      "mcp_user",
 							Name:    "User MCP Server",
 							Type:    "stdio",
-							Enabled: apiutils.Of(true),
+							Enabled: new(true),
 							Properties: map[string]any{
 								"command": "user-mcp",
 							},
@@ -686,7 +685,7 @@ func TestMCPSourceCollection_MergeOverride_DynamicOrigin(t *testing.T) {
 	msc := NewMCPSourceCollection("community.yaml")
 
 	err := msc.Merge("community.yaml", map[string]basecatalog.MCPSource{
-		"mcp_github": {ID: "mcp_github", Name: "Community", Enabled: apiutils.Of(true), Labels: []string{}},
+		"mcp_github": {ID: "mcp_github", Name: "Community", Enabled: new(true), Labels: []string{}},
 	})
 	if err != nil {
 		t.Fatalf("Merge(community.yaml) failed: %v", err)
@@ -694,7 +693,7 @@ func TestMCPSourceCollection_MergeOverride_DynamicOrigin(t *testing.T) {
 
 	// Dynamic origin not in initial order - should be appended and take precedence
 	err = msc.Merge("extra.yaml", map[string]basecatalog.MCPSource{
-		"mcp_github": {ID: "mcp_github", Name: "Extra Override", Enabled: apiutils.Of(true), Labels: []string{}},
+		"mcp_github": {ID: "mcp_github", Name: "Extra Override", Enabled: new(true), Labels: []string{}},
 	})
 	if err != nil {
 		t.Fatalf("Merge(extra.yaml) failed: %v", err)
@@ -871,8 +870,8 @@ func TestMCPSourceCollection_ByLabel(t *testing.T) {
 
 	t.Run("returns source with matching label", func(t *testing.T) {
 		coll := makeCollection(map[string]basecatalog.MCPSource{
-			"src1": {ID: "src1", Labels: []string{"openai"}, Enabled: apiutils.Of(true)},
-			"src2": {ID: "src2", Labels: []string{"github"}, Enabled: apiutils.Of(true)},
+			"src1": {ID: "src1", Labels: []string{"openai"}, Enabled: new(true)},
+			"src2": {ID: "src2", Labels: []string{"github"}, Enabled: new(true)},
 		})
 
 		result := coll.ByLabel([]string{"openai"})
@@ -882,9 +881,9 @@ func TestMCPSourceCollection_ByLabel(t *testing.T) {
 
 	t.Run("returns multiple sources matching any label (OR semantics)", func(t *testing.T) {
 		coll := makeCollection(map[string]basecatalog.MCPSource{
-			"src1": {ID: "src1", Labels: []string{"openai"}, Enabled: apiutils.Of(true)},
-			"src2": {ID: "src2", Labels: []string{"github"}, Enabled: apiutils.Of(true)},
-			"src3": {ID: "src3", Labels: []string{"other"}, Enabled: apiutils.Of(true)},
+			"src1": {ID: "src1", Labels: []string{"openai"}, Enabled: new(true)},
+			"src2": {ID: "src2", Labels: []string{"github"}, Enabled: new(true)},
+			"src3": {ID: "src3", Labels: []string{"other"}, Enabled: new(true)},
 		})
 
 		result := coll.ByLabel([]string{"openai", "github"})
@@ -893,7 +892,7 @@ func TestMCPSourceCollection_ByLabel(t *testing.T) {
 
 	t.Run("matching is case insensitive", func(t *testing.T) {
 		coll := makeCollection(map[string]basecatalog.MCPSource{
-			"src1": {ID: "src1", Labels: []string{"OpenAI"}, Enabled: apiutils.Of(true)},
+			"src1": {ID: "src1", Labels: []string{"OpenAI"}, Enabled: new(true)},
 		})
 
 		result := coll.ByLabel([]string{"openai"})
@@ -903,7 +902,7 @@ func TestMCPSourceCollection_ByLabel(t *testing.T) {
 
 	t.Run("skips disabled sources", func(t *testing.T) {
 		coll := makeCollection(map[string]basecatalog.MCPSource{
-			"src1": {ID: "src1", Labels: []string{"openai"}, Enabled: apiutils.Of(false)},
+			"src1": {ID: "src1", Labels: []string{"openai"}, Enabled: new(false)},
 		})
 
 		result := coll.ByLabel([]string{"openai"})
@@ -912,8 +911,8 @@ func TestMCPSourceCollection_ByLabel(t *testing.T) {
 
 	t.Run("null label matches sources with no labels", func(t *testing.T) {
 		coll := makeCollection(map[string]basecatalog.MCPSource{
-			"src1": {ID: "src1", Labels: []string{}, Enabled: apiutils.Of(true)},
-			"src2": {ID: "src2", Labels: []string{"openai"}, Enabled: apiutils.Of(true)},
+			"src1": {ID: "src1", Labels: []string{}, Enabled: new(true)},
+			"src2": {ID: "src2", Labels: []string{"openai"}, Enabled: new(true)},
 		})
 
 		result := coll.ByLabel([]string{"null"})
@@ -923,7 +922,7 @@ func TestMCPSourceCollection_ByLabel(t *testing.T) {
 
 	t.Run("non-matching label returns empty slice", func(t *testing.T) {
 		coll := makeCollection(map[string]basecatalog.MCPSource{
-			"src1": {ID: "src1", Labels: []string{"openai"}, Enabled: apiutils.Of(true)},
+			"src1": {ID: "src1", Labels: []string{"openai"}, Enabled: new(true)},
 		})
 
 		result := coll.ByLabel([]string{"no-match"})
@@ -932,7 +931,7 @@ func TestMCPSourceCollection_ByLabel(t *testing.T) {
 
 	t.Run("deduplicates by source ID", func(t *testing.T) {
 		coll := makeCollection(map[string]basecatalog.MCPSource{
-			"src1": {ID: "src1", Labels: []string{"openai", "ai"}, Enabled: apiutils.Of(true)},
+			"src1": {ID: "src1", Labels: []string{"openai", "ai"}, Enabled: new(true)},
 		})
 
 		result := coll.ByLabel([]string{"openai", "ai"})

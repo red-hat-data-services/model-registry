@@ -3,7 +3,6 @@ package core_test
 import (
 	"testing"
 
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	"github.com/kubeflow/hub/internal/core"
 	"github.com/kubeflow/hub/pkg/openapi"
 	"github.com/stretchr/testify/assert"
@@ -36,10 +35,10 @@ func testExperimentPartialUpdate(t *testing.T, service *core.ModelRegistryServic
 	// Create experiment with all fields populated
 	experiment := &openapi.Experiment{
 		Name:        "test-partial-experiment",
-		Description: apiutils.Of("Original description"),
-		Owner:       apiutils.Of("original-owner"),
-		ExternalId:  apiutils.Of("original-ext-id"),
-		State:       (*openapi.ExperimentState)(apiutils.Of(string(openapi.EXPERIMENTSTATE_LIVE))),
+		Description: new("Original description"),
+		Owner:       new("original-owner"),
+		ExternalId:  new("original-ext-id"),
+		State:       (*openapi.ExperimentState)(new(string(openapi.EXPERIMENTSTATE_LIVE))),
 		CustomProperties: map[string]openapi.MetadataValue{
 			"team": {
 				MetadataStringValue: &openapi.MetadataStringValue{
@@ -63,7 +62,7 @@ func testExperimentPartialUpdate(t *testing.T, service *core.ModelRegistryServic
 		// Update only description
 		partialUpdate := &openapi.Experiment{
 			Id:          created.Id,
-			Description: apiutils.Of("Updated description only"),
+			Description: new("Updated description only"),
 		}
 
 		updated, err := service.UpsertExperiment(partialUpdate)
@@ -118,7 +117,7 @@ func testExperimentPartialUpdate(t *testing.T, service *core.ModelRegistryServic
 		// Update with some nil fields - they should be ignored
 		partialUpdate := &openapi.Experiment{
 			Id:          created.Id,
-			Owner:       apiutils.Of("new-owner"),
+			Owner:       new("new-owner"),
 			Description: nil, // This should be ignored
 			ExternalId:  nil, // This should be ignored
 		}
@@ -139,10 +138,10 @@ func testRegisteredModelPartialUpdate(t *testing.T, service *core.ModelRegistryS
 	// Create registered model with all fields
 	model := &openapi.RegisteredModel{
 		Name:        "test-partial-model",
-		Description: apiutils.Of("Original model description"),
-		Owner:       apiutils.Of("original-model-owner"),
-		ExternalId:  apiutils.Of("original-model-ext-id"),
-		State:       (*openapi.RegisteredModelState)(apiutils.Of(string(openapi.REGISTEREDMODELSTATE_LIVE))),
+		Description: new("Original model description"),
+		Owner:       new("original-model-owner"),
+		ExternalId:  new("original-model-ext-id"),
+		State:       (*openapi.RegisteredModelState)(new(string(openapi.REGISTEREDMODELSTATE_LIVE))),
 		CustomProperties: map[string]openapi.MetadataValue{
 			"framework": {
 				MetadataStringValue: &openapi.MetadataStringValue{
@@ -159,7 +158,7 @@ func testRegisteredModelPartialUpdate(t *testing.T, service *core.ModelRegistryS
 	// Test partial update - only description
 	partialUpdate := &openapi.RegisteredModel{
 		Id:          created.Id,
-		Description: apiutils.Of("Updated model description"),
+		Description: new("Updated model description"),
 	}
 
 	updated, err := service.UpsertRegisteredModel(partialUpdate)
@@ -184,10 +183,10 @@ func testModelVersionPartialUpdate(t *testing.T, service *core.ModelRegistryServ
 	// Create model version with all fields
 	mv := &openapi.ModelVersion{
 		Name:        "v1.0",
-		Description: apiutils.Of("Original version description"),
-		Author:      apiutils.Of("original-author"),
-		ExternalId:  apiutils.Of("original-mv-ext-id"),
-		State:       (*openapi.ModelVersionState)(apiutils.Of(string(openapi.MODELVERSIONSTATE_LIVE))),
+		Description: new("Original version description"),
+		Author:      new("original-author"),
+		ExternalId:  new("original-mv-ext-id"),
+		State:       (*openapi.ModelVersionState)(new(string(openapi.MODELVERSIONSTATE_LIVE))),
 		CustomProperties: map[string]openapi.MetadataValue{
 			"accuracy": {
 				MetadataDoubleValue: &openapi.MetadataDoubleValue{
@@ -204,7 +203,7 @@ func testModelVersionPartialUpdate(t *testing.T, service *core.ModelRegistryServ
 	// Test partial update - only author
 	partialUpdate := &openapi.ModelVersion{
 		Id:     created.Id,
-		Author: apiutils.Of("updated-author"),
+		Author: new("updated-author"),
 	}
 
 	updated, err := service.UpsertModelVersion(partialUpdate, nil)
@@ -224,11 +223,11 @@ func testArtifactPartialUpdate(t *testing.T, service *core.ModelRegistryService)
 	// Create model artifact with all fields
 	artifact := &openapi.Artifact{
 		ModelArtifact: &openapi.ModelArtifact{
-			Name:        apiutils.Of("test-partial-artifact"),
-			Description: apiutils.Of("Original artifact description"),
-			Uri:         apiutils.Of("s3://original/path"),
-			ExternalId:  apiutils.Of("original-artifact-ext-id"),
-			State:       (*openapi.ArtifactState)(apiutils.Of(string(openapi.ARTIFACTSTATE_LIVE))),
+			Name:        new("test-partial-artifact"),
+			Description: new("Original artifact description"),
+			Uri:         new("s3://original/path"),
+			ExternalId:  new("original-artifact-ext-id"),
+			State:       (*openapi.ArtifactState)(new(string(openapi.ARTIFACTSTATE_LIVE))),
 			CustomProperties: map[string]openapi.MetadataValue{
 				"size": {
 					MetadataIntValue: &openapi.MetadataIntValue{
@@ -247,7 +246,7 @@ func testArtifactPartialUpdate(t *testing.T, service *core.ModelRegistryService)
 	partialUpdate := &openapi.Artifact{
 		ModelArtifact: &openapi.ModelArtifact{
 			Id:  created.ModelArtifact.Id,
-			Uri: apiutils.Of("s3://updated/path"),
+			Uri: new("s3://updated/path"),
 		},
 	}
 
@@ -273,8 +272,8 @@ func TestEmptyStringVsNilBehavior(t *testing.T) {
 	// Create experiment with description
 	experiment := &openapi.Experiment{
 		Name:        "test-empty-vs-nil",
-		Description: apiutils.Of("Original description"),
-		Owner:       apiutils.Of("original-owner"),
+		Description: new("Original description"),
+		Owner:       new("original-owner"),
 	}
 
 	created, err := service.UpsertExperiment(experiment)
@@ -285,7 +284,7 @@ func TestEmptyStringVsNilBehavior(t *testing.T) {
 		updateWithNil := &openapi.Experiment{
 			Id:          created.Id,
 			Description: nil, // This should be ignored
-			Owner:       apiutils.Of("updated-owner"),
+			Owner:       new("updated-owner"),
 		}
 
 		updated, err := service.UpsertExperiment(updateWithNil)
@@ -299,7 +298,7 @@ func TestEmptyStringVsNilBehavior(t *testing.T) {
 		// Update with empty string - should actually update to empty
 		updateWithEmpty := &openapi.Experiment{
 			Id:          created.Id,
-			Description: apiutils.Of(""), // This should update to empty string
+			Description: new(""), // This should update to empty string
 		}
 
 		updated, err := service.UpsertExperiment(updateWithEmpty)

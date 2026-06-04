@@ -1,8 +1,9 @@
 package service
 
 import (
-	mcpcatalogservice "github.com/kubeflow/hub/catalog/internal/catalog/mcpcatalog/service"
-	modelcatalogservice "github.com/kubeflow/hub/catalog/internal/catalog/modelcatalog/service"
+	"fmt"
+
+	"github.com/kubeflow/hub/catalog/internal/plugin"
 	"github.com/kubeflow/hub/internal/platform/datastore"
 )
 
@@ -15,58 +16,49 @@ const (
 	MCPServerToolTypeName          = "kf.MCPServerTool"
 )
 
-func DatastoreSpec() *datastore.Spec {
-	return datastore.NewSpec().
-		AddContext(CatalogModelTypeName, datastore.NewSpecType(modelcatalogservice.NewCatalogModelRepository).
-			AddString("source_id").
-			AddString("description").
-			AddString("owner").
-			AddString("state").
-			AddStruct("language").
-			AddString("library_name").
-			AddString("license_link").
-			AddString("license").
-			AddString("logo").
-			AddString("maturity").
-			AddString("provider").
-			AddString("readme").
-			AddStruct("tasks"),
-		).
+func DatastoreSpec() (*datastore.Spec, error) {
+	spec := datastore.NewSpec().
 		AddContext(CatalogSourceTypeName, datastore.NewSpecType(NewCatalogSourceRepository).
 			AddString("status").
 			AddString("error"),
 		).
-		AddContext(MCPServerTypeName, datastore.NewSpecType(mcpcatalogservice.NewMCPServerRepository).
-			AddString("source_id").
-			AddString("base_name").
-			AddString("description").
-			AddString("provider").
-			AddString("license").
-			AddString("license_link").
-			AddString("logo").
-			AddString("readme").
-			AddString("version").
-			AddStruct("tags").
-			AddStruct("transports").
-			AddString("deploymentMode").
-			AddBoolean("verifiedSource").
-			AddBoolean("secureEndpoint").
-			AddBoolean("sast").
-			AddBoolean("readOnlyTools"),
-		).
-		AddExecution(MCPServerToolTypeName, datastore.NewSpecType(mcpcatalogservice.NewMCPServerToolRepository).
-			AddString("accessType").
-			AddString("description").
-			AddString("externalId").
-			AddString("parameters"),
-		).
-		AddArtifact(CatalogModelArtifactTypeName, datastore.NewSpecType(modelcatalogservice.NewCatalogModelArtifactRepository).
-			AddString("uri"),
-		).
-		AddArtifact(CatalogMetricsArtifactTypeName, datastore.NewSpecType(modelcatalogservice.NewCatalogMetricsArtifactRepository).
-			AddString("metricsType"),
-		).
 		AddOther(NewCatalogArtifactRepository).
 		AddOther(NewPropertyOptionsRepository)
+
+	if err := applyEntries(spec, plugin.All(), plugin.ExtraDatastoreEntries()); err != nil {
+		return nil, err
+	}
+	return spec, nil
 }
 
+func applyEntries(spec *datastore.Spec, plugins []plugin.CatalogPlugin, extra []plugin.DatastoreEntry) error {
+	for _, p := range plugins {
+		if dsp, ok := p.(plugin.DatastoreSpecProvider); ok {
+			for _, e := range dsp.DatastoreEntries() {
+				if err := addEntry(spec, e); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	for _, e := range extra {
+		if err := addEntry(spec, e); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func addEntry(spec *datastore.Spec, e plugin.DatastoreEntry) error {
+	switch e.Category {
+	case "context":
+		spec.AddContext(e.TypeName, e.Spec)
+	case "artifact":
+		spec.AddArtifact(e.TypeName, e.Spec)
+	case "execution":
+		spec.AddExecution(e.TypeName, e.Spec)
+	default:
+		return fmt.Errorf("unknown datastore entry category %q for type %q", e.Category, e.TypeName)
+	}
+	return nil
+}

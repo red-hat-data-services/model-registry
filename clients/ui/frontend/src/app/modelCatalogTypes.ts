@@ -28,6 +28,13 @@ import {
   McpToolList,
 } from './mcpServerCatalogTypes';
 
+export type HardwareConfiguration = {
+  gpu_type: string;
+  gpu_count: number;
+  cold_start_time_to_load_seconds: number;
+  runtime_command: string;
+};
+
 export type CatalogSource = {
   id: string;
   name: string;

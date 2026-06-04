@@ -15,11 +15,6 @@ func ZeroIfNil[T any](input *T) T {
 	return *new(T)
 }
 
-// Of returns a pointer to the provided literal/const input
-func Of[E any](e E) *E {
-	return &e
-}
-
 func StrPtr(notEmpty string) *string {
 	if notEmpty == "" {
 		return nil

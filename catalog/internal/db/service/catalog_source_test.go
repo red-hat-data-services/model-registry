@@ -6,7 +6,7 @@ import (
 
 	"github.com/kubeflow/hub/catalog/internal/db/models"
 	"github.com/kubeflow/hub/catalog/internal/db/service"
-	"github.com/kubeflow/hub/internal/platform/apiutils"
+	"github.com/kubeflow/hub/catalog/internal/testhelpers"
 	dbmodels "github.com/kubeflow/hub/internal/platform/db/entity"
 	"github.com/kubeflow/hub/internal/platform/db/schema"
 	"github.com/kubeflow/hub/internal/testutils"
@@ -16,7 +16,7 @@ import (
 )
 
 func TestCatalogSourceRepository(t *testing.T) {
-	sharedDB, cleanup := testutils.SetupPostgresWithMigrations(t, service.DatastoreSpec())
+	sharedDB, cleanup := testutils.SetupPostgresWithMigrations(t, testhelpers.MustDatastoreSpec(t))
 	defer cleanup()
 
 	// Get the CatalogSource type ID
@@ -27,12 +27,12 @@ func TestCatalogSourceRepository(t *testing.T) {
 		// Test creating a new catalog source
 		source := &models.CatalogSourceImpl{
 			Attributes: &models.CatalogSourceAttributes{
-				Name: apiutils.Of("test-source-create"),
+				Name: new("test-source-create"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "status",
-					StringValue: apiutils.Of("available"),
+					StringValue: new("available"),
 				},
 			},
 		}
@@ -54,12 +54,12 @@ func TestCatalogSourceRepository(t *testing.T) {
 		// First create a source
 		source := &models.CatalogSourceImpl{
 			Attributes: &models.CatalogSourceAttributes{
-				Name: apiutils.Of("test-source-update"),
+				Name: new("test-source-update"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "status",
-					StringValue: apiutils.Of("available"),
+					StringValue: new("available"),
 				},
 			},
 		}
@@ -71,16 +71,16 @@ func TestCatalogSourceRepository(t *testing.T) {
 		// Update the same source (by name)
 		updatedSource := &models.CatalogSourceImpl{
 			Attributes: &models.CatalogSourceAttributes{
-				Name: apiutils.Of("test-source-update"),
+				Name: new("test-source-update"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "status",
-					StringValue: apiutils.Of("error"),
+					StringValue: new("error"),
 				},
 				{
 					Name:        "error",
-					StringValue: apiutils.Of("connection failed"),
+					StringValue: new("connection failed"),
 				},
 			},
 		}
@@ -117,12 +117,12 @@ func TestCatalogSourceRepository(t *testing.T) {
 		// First create a source
 		source := &models.CatalogSourceImpl{
 			Attributes: &models.CatalogSourceAttributes{
-				Name: apiutils.Of("test-source-get"),
+				Name: new("test-source-get"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "status",
-					StringValue: apiutils.Of("available"),
+					StringValue: new("available"),
 				},
 			},
 		}
@@ -152,12 +152,12 @@ func TestCatalogSourceRepository(t *testing.T) {
 		// First create a source
 		source := &models.CatalogSourceImpl{
 			Attributes: &models.CatalogSourceAttributes{
-				Name: apiutils.Of("test-source-delete"),
+				Name: new("test-source-delete"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "status",
-					StringValue: apiutils.Of("available"),
+					StringValue: new("available"),
 				},
 			},
 		}
@@ -208,12 +208,12 @@ func TestCatalogSourceRepository(t *testing.T) {
 		for _, name := range sources {
 			source := &models.CatalogSourceImpl{
 				Attributes: &models.CatalogSourceAttributes{
-					Name: apiutils.Of(name),
+					Name: new(name),
 				},
 				Properties: &[]dbmodels.Properties{
 					{
 						Name:        "status",
-						StringValue: apiutils.Of("available"),
+						StringValue: new("available"),
 					},
 				},
 			}
@@ -274,19 +274,19 @@ func TestCatalogSourceRepository(t *testing.T) {
 			props := []dbmodels.Properties{
 				{
 					Name:        "status",
-					StringValue: apiutils.Of(tc.status),
+					StringValue: new(tc.status),
 				},
 			}
 			if tc.hasError {
 				props = append(props, dbmodels.Properties{
 					Name:        "error",
-					StringValue: apiutils.Of(tc.errorMsg),
+					StringValue: new(tc.errorMsg),
 				})
 			}
 
 			source := &models.CatalogSourceImpl{
 				Attributes: &models.CatalogSourceAttributes{
-					Name: apiutils.Of(tc.name),
+					Name: new(tc.name),
 				},
 				Properties: &props,
 			}
@@ -311,20 +311,20 @@ func TestCatalogSourceRepository(t *testing.T) {
 		// Test that status is correctly extracted from properties
 		source := &models.CatalogSourceImpl{
 			Attributes: &models.CatalogSourceAttributes{
-				Name: apiutils.Of("status-extraction-test"),
+				Name: new("status-extraction-test"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "status",
-					StringValue: apiutils.Of("error"),
+					StringValue: new("error"),
 				},
 				{
 					Name:        "error",
-					StringValue: apiutils.Of("detailed error message here"),
+					StringValue: new("detailed error message here"),
 				},
 				{
 					Name:        "other_prop",
-					StringValue: apiutils.Of("should be ignored"),
+					StringValue: new("should be ignored"),
 				},
 			},
 		}
@@ -345,20 +345,20 @@ func TestCatalogSourceRepository(t *testing.T) {
 		// Test that all properties are correctly saved and retrieved
 		source := &models.CatalogSourceImpl{
 			Attributes: &models.CatalogSourceAttributes{
-				Name: apiutils.Of("props-test-source"),
+				Name: new("props-test-source"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "status",
-					StringValue: apiutils.Of("available"),
+					StringValue: new("available"),
 				},
 				{
 					Name:     "count",
-					IntValue: apiutils.Of(int32(42)),
+					IntValue: new(int32(42)),
 				},
 				{
 					Name:      "enabled",
-					BoolValue: apiutils.Of(true),
+					BoolValue: new(true),
 				},
 			},
 		}

@@ -8,10 +8,10 @@ import (
 	"time"
 
 	"github.com/golang/glog"
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	"github.com/kubeflow/hub/internal/converter"
 	"github.com/kubeflow/hub/internal/db/models"
 	"github.com/kubeflow/hub/internal/defaults"
+	"github.com/kubeflow/hub/internal/platform/apiutils"
 	"github.com/kubeflow/hub/pkg/api"
 	"github.com/kubeflow/hub/pkg/openapi"
 	"gorm.io/gorm"
@@ -355,7 +355,7 @@ func (b *ModelRegistryService) InsertMetricHistory(metric *openapi.Metric, exper
 	timestamp := metric.LastUpdateTimeSinceEpoch
 	if timestamp == nil {
 		// fallback to the current time if the last update time since epoch is not set
-		timestamp = apiutils.Of(strconv.FormatInt(time.Now().UnixMilli(), 10))
+		timestamp = new(strconv.FormatInt(time.Now().UnixMilli(), 10))
 	}
 	metricHistory.Name = apiutils.StrPtr(fmt.Sprintf("%s:%s__%s", experimentRunId, *metric.Name, *timestamp))
 
@@ -383,7 +383,7 @@ func (b *ModelRegistryService) InsertMetricHistory(metric *openapi.Metric, exper
 	}
 
 	metricHistoryEntity := &models.MetricHistoryImpl{
-		TypeID: apiutils.Of(int32(metricHistoryTypeID)),
+		TypeID: new(int32(metricHistoryTypeID)),
 		Attributes: &models.MetricHistoryAttributes{
 			Name:         metricHistory.Name,
 			URI:          nil, // Metric doesn't have URI field
