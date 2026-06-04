@@ -30,6 +30,7 @@ import text from '@patternfly/react-styles/css/utilities/Text/text';
 import { CatalogArtifactList, CatalogModel } from '~/app/modelCatalogTypes';
 import {
   getLabels,
+  getValueLabels,
   getValidatedOnPlatforms,
   getValidatedDeploymentResources,
   getCustomPropString,
@@ -46,9 +47,13 @@ import {
   hasValidatedToolCalling,
   getToolCallingArgs,
   formatModelTypeDisplay,
+  getModelSizeFromCustomProperties,
+  getMinimumVramFromCustomProperties,
 } from '~/app/pages/modelCatalog/utils/modelCatalogUtils';
-import { CatalogModelCustomPropertyKey } from '~/concepts/modelCatalog/const';
-import { useTempDevFeatureAvailable, TempDevFeature } from '~/app/hooks/useTempDevFeatureAvailable';
+import {
+  CatalogModelCustomPropertyKey,
+  CATALOG_VALUE_LABEL_KEYS,
+} from '~/concepts/modelCatalog/const';
 import CodeBlockComponent from '~/app/shared/markdown/components/CodeBlockComponent';
 
 type ModelDetailsViewProps = {
@@ -65,9 +70,11 @@ const ModelDetailsView: React.FC<ModelDetailsViewProps> = ({
   artifactsLoadError,
 }) => {
   const allLabels = model.customProperties ? getLabels(model.customProperties) : [];
+  const valueLabels = model.customProperties
+    ? getValueLabels(model.customProperties, CATALOG_VALUE_LABEL_KEYS)
+    : [];
   const isValidated = isModelValidated(model);
-  const isToolCallingEnabled = useTempDevFeatureAvailable(TempDevFeature.ToolCallingConfiguration);
-  const isToolCallingValidated = isToolCallingEnabled && hasValidatedToolCalling(model);
+  const isToolCallingValidated = hasValidatedToolCalling(model);
 
   const validatedOnPlatforms = getValidatedOnPlatforms(model.customProperties);
   const validatedDeploymentResources = getValidatedDeploymentResources(model.customProperties);
@@ -87,6 +94,8 @@ const ModelDetailsView: React.FC<ModelDetailsViewProps> = ({
   const size = model.customProperties
     ? getCustomPropString(model.customProperties, CatalogModelCustomPropertyKey.SIZE)
     : '';
+  const modelSize = getModelSizeFromCustomProperties(model.customProperties);
+  const minimumVram = getMinimumVramFromCustomProperties(model.customProperties);
 
   const architectures = React.useMemo(
     () => (artifactLoaded ? getArchitecturesFromArtifacts(artifacts.items) : []),
@@ -232,8 +241,11 @@ const ModelDetailsView: React.FC<ModelDetailsViewProps> = ({
                       <DescriptionListDescription>
                         <ModelCatalogLabels
                           tasks={model.tasks ?? []}
-                          validatedTasks={isToolCallingEnabled ? model.validatedTasks : undefined}
-                          labels={allLabels.filter((label) => label !== 'validated')}
+                          validatedTasks={model.validatedTasks}
+                          labels={[
+                            ...allLabels.filter((label) => label !== 'validated'),
+                            ...valueLabels,
+                          ]}
                           numLabels={isValidated ? 2 : 3}
                         />
                       </DescriptionListDescription>
@@ -252,6 +264,14 @@ const ModelDetailsView: React.FC<ModelDetailsViewProps> = ({
                       <DescriptionListTerm>Size</DescriptionListTerm>
                       <DescriptionListDescription>{size || 'N/A'}</DescriptionListDescription>
                     </DescriptionListGroup>
+                    {minimumVram && (
+                      <DescriptionListGroup>
+                        <DescriptionListTerm>Minimum vRAM</DescriptionListTerm>
+                        <DescriptionListDescription data-testid="minimum-vram">
+                          {minimumVram}
+                        </DescriptionListDescription>
+                      </DescriptionListGroup>
+                    )}
                     <DescriptionListGroup>
                       <DescriptionListTerm>License</DescriptionListTerm>
                       <DescriptionListDescription>
@@ -293,6 +313,14 @@ const ModelDetailsView: React.FC<ModelDetailsViewProps> = ({
                               </Label>
                             ))}
                           </LabelGroup>
+                        </DescriptionListDescription>
+                      </DescriptionListGroup>
+                    )}
+                    {modelSize && (
+                      <DescriptionListGroup>
+                        <DescriptionListTerm>Image size</DescriptionListTerm>
+                        <DescriptionListDescription data-testid="image-size">
+                          {modelSize}
                         </DescriptionListDescription>
                       </DescriptionListGroup>
                     )}

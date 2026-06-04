@@ -6,7 +6,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	"github.com/kubeflow/hub/pkg/api"
 	"github.com/kubeflow/hub/pkg/openapi"
 	"github.com/stretchr/testify/assert"
@@ -20,9 +19,9 @@ func TestUpsertExperiment(t *testing.T) {
 	t.Run("successful create", func(t *testing.T) {
 		experiment := &openapi.Experiment{
 			Name:        "test-experiment",
-			Description: apiutils.Of("Test experiment description"),
-			Owner:       apiutils.Of("test-owner"),
-			ExternalId:  apiutils.Of("exp-ext-123"),
+			Description: new("Test experiment description"),
+			Owner:       new("test-owner"),
+			ExternalId:  new("exp-ext-123"),
 			CustomProperties: map[string]openapi.MetadataValue{
 				"project": {
 					MetadataStringValue: &openapi.MetadataStringValue{
@@ -52,16 +51,16 @@ func TestUpsertExperiment(t *testing.T) {
 		// Create initial experiment
 		experiment := &openapi.Experiment{
 			Name:        "update-test-experiment",
-			Description: apiutils.Of("Original description"),
-			Owner:       apiutils.Of("original-owner"),
+			Description: new("Original description"),
+			Owner:       new("original-owner"),
 		}
 
 		created, err := service.UpsertExperiment(experiment)
 		require.NoError(t, err)
 
 		// Update the experiment
-		created.Description = apiutils.Of("Updated description")
-		created.Owner = apiutils.Of("updated-owner")
+		created.Description = new("Updated description")
+		created.Owner = new("updated-owner")
 
 		updated, err := service.UpsertExperiment(created)
 
@@ -104,8 +103,8 @@ func TestGetExperimentById(t *testing.T) {
 		// Create an experiment
 		experiment := &openapi.Experiment{
 			Name:        "get-test-experiment",
-			Description: apiutils.Of("Get test description"),
-			Owner:       apiutils.Of("get-test-owner"),
+			Description: new("Get test description"),
+			Owner:       new("get-test-owner"),
 		}
 
 		created, err := service.UpsertExperiment(experiment)
@@ -141,27 +140,27 @@ func TestGetExperimentByParams(t *testing.T) {
 	// Create test experiments
 	experiment1 := &openapi.Experiment{
 		Name:       "params-test-experiment-1",
-		ExternalId: apiutils.Of("params-exp-ext-1"),
+		ExternalId: new("params-exp-ext-1"),
 	}
 	created1, err := service.UpsertExperiment(experiment1)
 	require.NoError(t, err)
 
 	experiment2 := &openapi.Experiment{
 		Name:       "params-test-experiment-2",
-		ExternalId: apiutils.Of("params-exp-ext-2"),
+		ExternalId: new("params-exp-ext-2"),
 	}
 	created2, err := service.UpsertExperiment(experiment2)
 	require.NoError(t, err)
 
 	t.Run("get by name", func(t *testing.T) {
-		result, err := service.GetExperimentByParams(apiutils.Of("params-test-experiment-1"), nil)
+		result, err := service.GetExperimentByParams(new("params-test-experiment-1"), nil)
 		require.NoError(t, err)
 		assert.Equal(t, *created1.Id, *result.Id)
 		assert.Equal(t, "params-test-experiment-1", result.Name)
 	})
 
 	t.Run("get by external id", func(t *testing.T) {
-		result, err := service.GetExperimentByParams(nil, apiutils.Of("params-exp-ext-2"))
+		result, err := service.GetExperimentByParams(nil, new("params-exp-ext-2"))
 		require.NoError(t, err)
 		assert.Equal(t, *created2.Id, *result.Id)
 		assert.Equal(t, "params-exp-ext-2", *result.ExternalId)
@@ -174,7 +173,7 @@ func TestGetExperimentByParams(t *testing.T) {
 	})
 
 	t.Run("error on not found", func(t *testing.T) {
-		_, err := service.GetExperimentByParams(apiutils.Of("non-existent-experiment"), nil)
+		_, err := service.GetExperimentByParams(new("non-existent-experiment"), nil)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "not found")
 	})
@@ -188,8 +187,8 @@ func TestGetExperiments(t *testing.T) {
 	for i := range 5 {
 		experiment := &openapi.Experiment{
 			Name:        fmt.Sprintf("list-test-experiment-%d", i),
-			Description: apiutils.Of(fmt.Sprintf("List test description %d", i)),
-			Owner:       apiutils.Of("list-test-owner"),
+			Description: new(fmt.Sprintf("List test description %d", i)),
+			Owner:       new("list-test-owner"),
 		}
 		_, err := service.UpsertExperiment(experiment)
 		require.NoError(t, err)
@@ -242,9 +241,9 @@ func TestExperimentNonEditableFieldsProtection(t *testing.T) {
 		// Create initial experiment
 		experiment := &openapi.Experiment{
 			Name:        "test-non-editable",
-			Description: apiutils.Of("Original description"),
-			Owner:       apiutils.Of("original-owner"),
-			ExternalId:  apiutils.Of("original-ext-id"),
+			Description: new("Original description"),
+			Owner:       new("original-owner"),
+			ExternalId:  new("original-ext-id"),
 			CustomProperties: map[string]openapi.MetadataValue{
 				"original_prop": {
 					MetadataStringValue: &openapi.MetadataStringValue{
@@ -269,13 +268,13 @@ func TestExperimentNonEditableFieldsProtection(t *testing.T) {
 
 		// Attempt to update non-editable fields along with editable fields
 		updateRequest := &openapi.Experiment{
-			Id:                       created.Id,                         // This should be preserved
-			Name:                     "HACKED_NAME",                      // This should be ignored (non-editable)
-			CreateTimeSinceEpoch:     apiutils.Of("9999999999"),          // This should be ignored (non-editable)
-			LastUpdateTimeSinceEpoch: apiutils.Of("8888888888"),          // This should be ignored (non-editable)
-			Description:              apiutils.Of("Updated description"), // This should be updated (editable)
-			Owner:                    apiutils.Of("updated-owner"),       // This should be updated (editable)
-			ExternalId:               apiutils.Of("updated-ext-id"),      // This should be updated (editable)
+			Id:                       created.Id,                 // This should be preserved
+			Name:                     "HACKED_NAME",              // This should be ignored (non-editable)
+			CreateTimeSinceEpoch:     new("9999999999"),          // This should be ignored (non-editable)
+			LastUpdateTimeSinceEpoch: new("8888888888"),          // This should be ignored (non-editable)
+			Description:              new("Updated description"), // This should be updated (editable)
+			Owner:                    new("updated-owner"),       // This should be updated (editable)
+			ExternalId:               new("updated-ext-id"),      // This should be updated (editable)
 			CustomProperties: map[string]openapi.MetadataValue{
 				"updated_prop": {
 					MetadataStringValue: &openapi.MetadataStringValue{
@@ -309,9 +308,9 @@ func TestExperimentNonEditableFieldsProtection(t *testing.T) {
 		// Create initial experiment with multiple editable fields
 		experiment := &openapi.Experiment{
 			Name:        "test-partial-update",
-			Description: apiutils.Of("Original description"),
-			Owner:       apiutils.Of("original-owner"),
-			ExternalId:  apiutils.Of("original-ext-id"),
+			Description: new("Original description"),
+			Owner:       new("original-owner"),
+			ExternalId:  new("original-ext-id"),
 			CustomProperties: map[string]openapi.MetadataValue{
 				"keep_this": {
 					MetadataStringValue: &openapi.MetadataStringValue{
@@ -328,7 +327,7 @@ func TestExperimentNonEditableFieldsProtection(t *testing.T) {
 		// Partial update - only update description, should preserve other editable fields
 		partialUpdate := &openapi.Experiment{
 			Id:          created.Id,
-			Description: apiutils.Of("Updated description only"),
+			Description: new("Updated description only"),
 		}
 
 		updated, err := service.UpsertExperiment(partialUpdate)
@@ -353,9 +352,9 @@ func TestGetExperimentsWithFilterQuery(t *testing.T) {
 		{
 			experiment: &openapi.Experiment{
 				Name:        "nlp-experiment-1",
-				Description: apiutils.Of("Natural Language Processing experiment"),
-				ExternalId:  apiutils.Of("ext-nlp-001"),
-				Owner:       apiutils.Of("alice"),
+				Description: new("Natural Language Processing experiment"),
+				ExternalId:  new("ext-nlp-001"),
+				Owner:       new("alice"),
 				CustomProperties: map[string]openapi.MetadataValue{
 					"project": {
 						MetadataStringValue: &openapi.MetadataStringValue{
@@ -387,9 +386,9 @@ func TestGetExperimentsWithFilterQuery(t *testing.T) {
 		{
 			experiment: &openapi.Experiment{
 				Name:        "cv-experiment-2",
-				Description: apiutils.Of("Computer Vision experiment with object detection"),
-				ExternalId:  apiutils.Of("ext-cv-002"),
-				Owner:       apiutils.Of("bob"),
+				Description: new("Computer Vision experiment with object detection"),
+				ExternalId:  new("ext-cv-002"),
+				Owner:       new("bob"),
 				CustomProperties: map[string]openapi.MetadataValue{
 					"project": {
 						MetadataStringValue: &openapi.MetadataStringValue{
@@ -427,9 +426,9 @@ func TestGetExperimentsWithFilterQuery(t *testing.T) {
 		{
 			experiment: &openapi.Experiment{
 				Name:        "nlp-experiment-2",
-				Description: apiutils.Of("NLP sentiment analysis experiment"),
-				ExternalId:  apiutils.Of("ext-nlp-003"),
-				Owner:       apiutils.Of("alice"),
+				Description: new("NLP sentiment analysis experiment"),
+				ExternalId:  new("ext-nlp-003"),
+				Owner:       new("alice"),
 				CustomProperties: map[string]openapi.MetadataValue{
 					"project": {
 						MetadataStringValue: &openapi.MetadataStringValue{
@@ -461,9 +460,9 @@ func TestGetExperimentsWithFilterQuery(t *testing.T) {
 		{
 			experiment: &openapi.Experiment{
 				Name:        "rl-experiment",
-				Description: apiutils.Of("Reinforcement Learning experiment"),
-				ExternalId:  apiutils.Of("ext-rl-004"),
-				Owner:       apiutils.Of("charlie"),
+				Description: new("Reinforcement Learning experiment"),
+				ExternalId:  new("ext-rl-004"),
+				Owner:       new("charlie"),
 				CustomProperties: map[string]openapi.MetadataValue{
 					"project": {
 						MetadataStringValue: &openapi.MetadataStringValue{

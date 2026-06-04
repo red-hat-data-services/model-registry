@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	"github.com/kubeflow/hub/internal/db/models"
 	"github.com/kubeflow/hub/internal/db/service"
 	"github.com/stretchr/testify/assert"
@@ -30,28 +29,28 @@ func TestMetricHistoryRepository(t *testing.T) {
 	t.Run("TestSave", func(t *testing.T) {
 		// Test creating a new metric history
 		metricHistory := &models.MetricHistoryImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.MetricHistoryAttributes{
-				Name:         apiutils.Of("test-metric-history"),
-				ExternalID:   apiutils.Of("metric-history-ext-123"),
-				URI:          apiutils.Of("s3://bucket/metric-history.json"),
-				State:        apiutils.Of("LIVE"),
-				ArtifactType: apiutils.Of("metric-history"),
+				Name:         new("test-metric-history"),
+				ExternalID:   new("metric-history-ext-123"),
+				URI:          new("s3://bucket/metric-history.json"),
+				State:        new("LIVE"),
+				ArtifactType: new("metric-history"),
 			},
 			Properties: &[]models.Properties{
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Test metric history description"),
+					StringValue: new("Test metric history description"),
 				},
 				{
 					Name:     "step",
-					IntValue: apiutils.Of(int32(100)),
+					IntValue: new(int32(100)),
 				},
 			},
 			CustomProperties: &[]models.Properties{
 				{
 					Name:             "custom-metric-history-prop",
-					StringValue:      apiutils.Of("custom-metric-history-value"),
+					StringValue:      new("custom-metric-history-value"),
 					IsCustomProperty: true,
 				},
 			},
@@ -71,8 +70,8 @@ func TestMetricHistoryRepository(t *testing.T) {
 
 		// Test updating the same metric history
 		metricHistory.ID = saved.GetID()
-		metricHistory.GetAttributes().Name = apiutils.Of("updated-metric-history")
-		metricHistory.GetAttributes().State = apiutils.Of("PENDING")
+		metricHistory.GetAttributes().Name = new("updated-metric-history")
+		metricHistory.GetAttributes().State = new("PENDING")
 		// Preserve CreateTimeSinceEpoch from the saved entity (simulating what OpenAPI converter would do)
 		metricHistory.GetAttributes().CreateTimeSinceEpoch = saved.GetAttributes().CreateTimeSinceEpoch
 
@@ -89,18 +88,18 @@ func TestMetricHistoryRepository(t *testing.T) {
 	t.Run("TestGetByID", func(t *testing.T) {
 		// First create a metric history to retrieve
 		metricHistory := &models.MetricHistoryImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.MetricHistoryAttributes{
-				Name:         apiutils.Of("get-test-metric-history"),
-				ExternalID:   apiutils.Of("get-metric-history-ext-123"),
-				URI:          apiutils.Of("s3://bucket/get-metric-history.json"),
-				State:        apiutils.Of("LIVE"),
-				ArtifactType: apiutils.Of("metric-history"),
+				Name:         new("get-test-metric-history"),
+				ExternalID:   new("get-metric-history-ext-123"),
+				URI:          new("s3://bucket/get-metric-history.json"),
+				State:        new("LIVE"),
+				ArtifactType: new("metric-history"),
 			},
 			Properties: &[]models.Properties{
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Metric history for get test"),
+					StringValue: new("Metric history for get test"),
 				},
 			},
 		}
@@ -129,50 +128,50 @@ func TestMetricHistoryRepository(t *testing.T) {
 		// Create multiple metric histories for listing
 		testMetricHistories := []*models.MetricHistoryImpl{
 			{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.MetricHistoryAttributes{
-					Name:         apiutils.Of("list-metric-history-1"),
-					ExternalID:   apiutils.Of("list-metric-history-ext-1"),
-					URI:          apiutils.Of("s3://bucket/list-metric-history-1.json"),
-					State:        apiutils.Of("LIVE"),
-					ArtifactType: apiutils.Of("metric-history"),
+					Name:         new("list-metric-history-1"),
+					ExternalID:   new("list-metric-history-ext-1"),
+					URI:          new("s3://bucket/list-metric-history-1.json"),
+					State:        new("LIVE"),
+					ArtifactType: new("metric-history"),
 				},
 				Properties: &[]models.Properties{
 					{
 						Name:        "description",
-						StringValue: apiutils.Of("First metric history"),
+						StringValue: new("First metric history"),
 					},
 				},
 			},
 			{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.MetricHistoryAttributes{
-					Name:         apiutils.Of("list-metric-history-2"),
-					ExternalID:   apiutils.Of("list-metric-history-ext-2"),
-					URI:          apiutils.Of("s3://bucket/list-metric-history-2.json"),
-					State:        apiutils.Of("PENDING"),
-					ArtifactType: apiutils.Of("metric-history"),
+					Name:         new("list-metric-history-2"),
+					ExternalID:   new("list-metric-history-ext-2"),
+					URI:          new("s3://bucket/list-metric-history-2.json"),
+					State:        new("PENDING"),
+					ArtifactType: new("metric-history"),
 				},
 				Properties: &[]models.Properties{
 					{
 						Name:        "description",
-						StringValue: apiutils.Of("Second metric history"),
+						StringValue: new("Second metric history"),
 					},
 				},
 			},
 			{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.MetricHistoryAttributes{
-					Name:         apiutils.Of("list-metric-history-3"),
-					ExternalID:   apiutils.Of("list-metric-history-ext-3"),
-					URI:          apiutils.Of("s3://bucket/list-metric-history-3.json"),
-					State:        apiutils.Of("LIVE"),
-					ArtifactType: apiutils.Of("metric-history"),
+					Name:         new("list-metric-history-3"),
+					ExternalID:   new("list-metric-history-ext-3"),
+					URI:          new("s3://bucket/list-metric-history-3.json"),
+					State:        new("LIVE"),
+					ArtifactType: new("metric-history"),
 				},
 				Properties: &[]models.Properties{
 					{
 						Name:        "description",
-						StringValue: apiutils.Of("Third metric history"),
+						StringValue: new("Third metric history"),
 					},
 				},
 			},
@@ -195,7 +194,7 @@ func TestMetricHistoryRepository(t *testing.T) {
 
 		// Test listing by name
 		listOptions = models.MetricHistoryListOptions{
-			Name: apiutils.Of("list-metric-history-1"),
+			Name: new("list-metric-history-1"),
 		}
 		listOptions.PageSize = &pageSize
 
@@ -209,7 +208,7 @@ func TestMetricHistoryRepository(t *testing.T) {
 
 		// Test listing by external ID
 		listOptions = models.MetricHistoryListOptions{
-			ExternalID: apiutils.Of("list-metric-history-ext-2"),
+			ExternalID: new("list-metric-history-ext-2"),
 		}
 		listOptions.PageSize = &pageSize
 
@@ -224,7 +223,7 @@ func TestMetricHistoryRepository(t *testing.T) {
 		// Test ordering by ID (deterministic)
 		listOptions = models.MetricHistoryListOptions{
 			Pagination: models.Pagination{
-				OrderBy: apiutils.Of("ID"),
+				OrderBy: new("ID"),
 			},
 		}
 		listOptions.PageSize = &pageSize
@@ -245,12 +244,12 @@ func TestMetricHistoryRepository(t *testing.T) {
 	t.Run("TestListOrdering", func(t *testing.T) {
 		// Create metric histories sequentially with time delays to ensure deterministic ordering
 		metricHistory1 := &models.MetricHistoryImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.MetricHistoryAttributes{
-				Name:         apiutils.Of("time-test-metric-history-1"),
-				URI:          apiutils.Of("s3://bucket/time-metric-history-1.json"),
-				State:        apiutils.Of("LIVE"),
-				ArtifactType: apiutils.Of("metric-history"),
+				Name:         new("time-test-metric-history-1"),
+				URI:          new("s3://bucket/time-metric-history-1.json"),
+				State:        new("LIVE"),
+				ArtifactType: new("metric-history"),
 			},
 		}
 		saved1, err := repo.Save(metricHistory1, nil)
@@ -260,12 +259,12 @@ func TestMetricHistoryRepository(t *testing.T) {
 		time.Sleep(10 * time.Millisecond)
 
 		metricHistory2 := &models.MetricHistoryImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.MetricHistoryAttributes{
-				Name:         apiutils.Of("time-test-metric-history-2"),
-				URI:          apiutils.Of("s3://bucket/time-metric-history-2.json"),
-				State:        apiutils.Of("PENDING"),
-				ArtifactType: apiutils.Of("metric-history"),
+				Name:         new("time-test-metric-history-2"),
+				URI:          new("s3://bucket/time-metric-history-2.json"),
+				State:        new("PENDING"),
+				ArtifactType: new("metric-history"),
 			},
 		}
 		saved2, err := repo.Save(metricHistory2, nil)
@@ -275,7 +274,7 @@ func TestMetricHistoryRepository(t *testing.T) {
 		pageSize := int32(10)
 		listOptions := models.MetricHistoryListOptions{
 			Pagination: models.Pagination{
-				OrderBy: apiutils.Of("CREATE_TIME"),
+				OrderBy: new("CREATE_TIME"),
 			},
 		}
 		listOptions.PageSize = &pageSize
@@ -309,23 +308,23 @@ func TestMetricHistoryRepository(t *testing.T) {
 	t.Run("TestSaveWithExperimentRun", func(t *testing.T) {
 		// First create an experiment and experiment run
 		experiment := &models.ExperimentImpl{
-			TypeID: apiutils.Of(int32(experimentTypeID)),
+			TypeID: new(int32(experimentTypeID)),
 			Attributes: &models.ExperimentAttributes{
-				Name: apiutils.Of("test-experiment-for-metric-history"),
+				Name: new("test-experiment-for-metric-history"),
 			},
 		}
 		savedExperiment, err := experimentRepo.Save(experiment)
 		require.NoError(t, err)
 
 		experimentRun := &models.ExperimentRunImpl{
-			TypeID: apiutils.Of(int32(experimentRunTypeID)),
+			TypeID: new(int32(experimentRunTypeID)),
 			Attributes: &models.ExperimentRunAttributes{
-				Name: apiutils.Of("test-experiment-run-for-metric-history"),
+				Name: new("test-experiment-run-for-metric-history"),
 			},
 			Properties: &[]models.Properties{
 				{
 					Name:        "experiment_id",
-					StringValue: apiutils.Of(fmt.Sprintf("%d", *savedExperiment.GetID())),
+					StringValue: new(fmt.Sprintf("%d", *savedExperiment.GetID())),
 				},
 			},
 		}
@@ -334,21 +333,21 @@ func TestMetricHistoryRepository(t *testing.T) {
 
 		// Test creating a metric history with experiment run attribution
 		metricHistory := &models.MetricHistoryImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.MetricHistoryAttributes{
-				Name:         apiutils.Of(fmt.Sprintf("%d:experiment-run-metric-history", *savedExperimentRun.GetID())),
-				URI:          apiutils.Of("s3://bucket/experiment-run-metric-history.json"),
-				State:        apiutils.Of("LIVE"),
-				ArtifactType: apiutils.Of("metric-history"),
+				Name:         new(fmt.Sprintf("%d:experiment-run-metric-history", *savedExperimentRun.GetID())),
+				URI:          new("s3://bucket/experiment-run-metric-history.json"),
+				State:        new("LIVE"),
+				ArtifactType: new("metric-history"),
 			},
 			Properties: &[]models.Properties{
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Metric history associated with experiment run"),
+					StringValue: new("Metric history associated with experiment run"),
 				},
 				{
 					Name:     "step",
-					IntValue: apiutils.Of(int32(50)),
+					IntValue: new(int32(50)),
 				},
 			},
 		}
@@ -364,7 +363,7 @@ func TestMetricHistoryRepository(t *testing.T) {
 		listOptions := models.MetricHistoryListOptions{
 			ExperimentRunID: savedExperimentRun.GetID(),
 		}
-		listOptions.PageSize = apiutils.Of(int32(10))
+		listOptions.PageSize = new(int32(10))
 
 		result, err := repo.List(listOptions)
 		require.NoError(t, err)
@@ -384,37 +383,37 @@ func TestMetricHistoryRepository(t *testing.T) {
 
 	t.Run("TestSaveWithProperties", func(t *testing.T) {
 		metricHistory := &models.MetricHistoryImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.MetricHistoryAttributes{
-				Name:         apiutils.Of("props-test-metric-history"),
-				ExternalID:   apiutils.Of("props-metric-history-ext-123"),
-				URI:          apiutils.Of("s3://bucket/props-metric-history.json"),
-				State:        apiutils.Of("LIVE"),
-				ArtifactType: apiutils.Of("metric-history"),
+				Name:         new("props-test-metric-history"),
+				ExternalID:   new("props-metric-history-ext-123"),
+				URI:          new("s3://bucket/props-metric-history.json"),
+				State:        new("LIVE"),
+				ArtifactType: new("metric-history"),
 			},
 			Properties: &[]models.Properties{
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Metric history with properties"),
+					StringValue: new("Metric history with properties"),
 				},
 				{
 					Name:     "step",
-					IntValue: apiutils.Of(int32(100)),
+					IntValue: new(int32(100)),
 				},
 				{
 					Name:        "value",
-					DoubleValue: apiutils.Of(0.95),
+					DoubleValue: new(0.95),
 				},
 			},
 			CustomProperties: &[]models.Properties{
 				{
 					Name:             "team",
-					StringValue:      apiutils.Of("ml-team"),
+					StringValue:      new("ml-team"),
 					IsCustomProperty: true,
 				},
 				{
 					Name:             "priority",
-					IntValue:         apiutils.Of(int32(5)),
+					IntValue:         new(int32(5)),
 					IsCustomProperty: true,
 				},
 			},
@@ -476,12 +475,12 @@ func TestMetricHistoryRepository(t *testing.T) {
 		// Create multiple metric histories for pagination testing
 		for i := range 5 {
 			metricHistory := &models.MetricHistoryImpl{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.MetricHistoryAttributes{
-					Name:         apiutils.Of(fmt.Sprintf("page-metric-history-%d", i)),
-					URI:          apiutils.Of(fmt.Sprintf("s3://bucket/page-metric-history-%d.json", i)),
-					State:        apiutils.Of("LIVE"),
-					ArtifactType: apiutils.Of("metric-history"),
+					Name:         new(fmt.Sprintf("page-metric-history-%d", i)),
+					URI:          new(fmt.Sprintf("s3://bucket/page-metric-history-%d.json", i)),
+					State:        new("LIVE"),
+					ArtifactType: new("metric-history"),
 				},
 			}
 			_, err := repo.Save(metricHistory, nil)
@@ -510,7 +509,7 @@ func TestMetricHistoryRepository(t *testing.T) {
 			assert.NotEmpty(t, result.NextPageToken)
 
 			// Test getting the next page
-			listOptions.NextPageToken = apiutils.Of(result.NextPageToken)
+			listOptions.NextPageToken = new(result.NextPageToken)
 			nextResult, err := repo.List(listOptions)
 			require.NoError(t, err)
 			require.NotNil(t, nextResult)
@@ -527,27 +526,27 @@ func TestMetricHistoryRepository(t *testing.T) {
 	t.Run("TestUpdateExistingProperties", func(t *testing.T) {
 		// Create metric history with initial properties
 		metricHistory := &models.MetricHistoryImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.MetricHistoryAttributes{
-				Name:         apiutils.Of("update-props-metric-history"),
-				URI:          apiutils.Of("s3://bucket/update-props-metric-history.json"),
-				State:        apiutils.Of("LIVE"),
-				ArtifactType: apiutils.Of("metric-history"),
+				Name:         new("update-props-metric-history"),
+				URI:          new("s3://bucket/update-props-metric-history.json"),
+				State:        new("LIVE"),
+				ArtifactType: new("metric-history"),
 			},
 			Properties: &[]models.Properties{
 				{
 					Name:     "step",
-					IntValue: apiutils.Of(int32(1)),
+					IntValue: new(int32(1)),
 				},
 				{
 					Name:        "value",
-					DoubleValue: apiutils.Of(0.5),
+					DoubleValue: new(0.5),
 				},
 			},
 			CustomProperties: &[]models.Properties{
 				{
 					Name:             "team",
-					StringValue:      apiutils.Of("team-a"),
+					StringValue:      new("team-a"),
 					IsCustomProperty: true,
 				},
 			},
@@ -563,21 +562,21 @@ func TestMetricHistoryRepository(t *testing.T) {
 		metricHistory.Properties = &[]models.Properties{
 			{
 				Name:     "step",
-				IntValue: apiutils.Of(int32(2)), // Updated value
+				IntValue: new(int32(2)), // Updated value
 			},
 			{
 				Name:        "value",
-				DoubleValue: apiutils.Of(0.8), // Updated value
+				DoubleValue: new(0.8), // Updated value
 			},
 			{
 				Name:        "new_prop",
-				StringValue: apiutils.Of("new_value"), // New property
+				StringValue: new("new_value"), // New property
 			},
 		}
 		metricHistory.CustomProperties = &[]models.Properties{
 			{
 				Name:             "team",
-				StringValue:      apiutils.Of("team-b"), // Updated custom property
+				StringValue:      new("team-b"), // Updated custom property
 				IsCustomProperty: true,
 			},
 		}
@@ -615,62 +614,62 @@ func TestMetricHistoryRepository(t *testing.T) {
 		// Create metric histories with different step values
 		testMetricHistories := []*models.MetricHistoryImpl{
 			{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.MetricHistoryAttributes{
-					Name:         apiutils.Of("step-metric-history-1"),
-					ExternalID:   apiutils.Of("step-metric-history-ext-1"),
-					URI:          apiutils.Of("s3://bucket/step-metric-history-1.json"),
-					State:        apiutils.Of("LIVE"),
-					ArtifactType: apiutils.Of("metric-history"),
+					Name:         new("step-metric-history-1"),
+					ExternalID:   new("step-metric-history-ext-1"),
+					URI:          new("s3://bucket/step-metric-history-1.json"),
+					State:        new("LIVE"),
+					ArtifactType: new("metric-history"),
 				},
 				Properties: &[]models.Properties{
 					{
 						Name:     "step",
-						IntValue: apiutils.Of(int32(1)),
+						IntValue: new(int32(1)),
 					},
 					{
 						Name:        "description",
-						StringValue: apiutils.Of("Metric history for step 1"),
+						StringValue: new("Metric history for step 1"),
 					},
 				},
 			},
 			{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.MetricHistoryAttributes{
-					Name:         apiutils.Of("step-metric-history-2"),
-					ExternalID:   apiutils.Of("step-metric-history-ext-2"),
-					URI:          apiutils.Of("s3://bucket/step-metric-history-2.json"),
-					State:        apiutils.Of("LIVE"),
-					ArtifactType: apiutils.Of("metric-history"),
+					Name:         new("step-metric-history-2"),
+					ExternalID:   new("step-metric-history-ext-2"),
+					URI:          new("s3://bucket/step-metric-history-2.json"),
+					State:        new("LIVE"),
+					ArtifactType: new("metric-history"),
 				},
 				Properties: &[]models.Properties{
 					{
 						Name:     "step",
-						IntValue: apiutils.Of(int32(2)),
+						IntValue: new(int32(2)),
 					},
 					{
 						Name:        "description",
-						StringValue: apiutils.Of("Metric history for step 2"),
+						StringValue: new("Metric history for step 2"),
 					},
 				},
 			},
 			{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.MetricHistoryAttributes{
-					Name:         apiutils.Of("step-metric-history-3"),
-					ExternalID:   apiutils.Of("step-metric-history-ext-3"),
-					URI:          apiutils.Of("s3://bucket/step-metric-history-3.json"),
-					State:        apiutils.Of("LIVE"),
-					ArtifactType: apiutils.Of("metric-history"),
+					Name:         new("step-metric-history-3"),
+					ExternalID:   new("step-metric-history-ext-3"),
+					URI:          new("s3://bucket/step-metric-history-3.json"),
+					State:        new("LIVE"),
+					ArtifactType: new("metric-history"),
 				},
 				Properties: &[]models.Properties{
 					{
 						Name:     "step",
-						IntValue: apiutils.Of(int32(3)),
+						IntValue: new(int32(3)),
 					},
 					{
 						Name:        "description",
-						StringValue: apiutils.Of("Metric history for step 3"),
+						StringValue: new("Metric history for step 3"),
 					},
 				},
 			},

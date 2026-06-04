@@ -133,7 +133,7 @@ func (v *visitor) checkEntities() {
 	if len(errorMsgs) > 0 {
 		var missingFieldsMsg strings.Builder
 		for k, fields := range errorMsgs {
-			missingFieldsMsg.WriteString(fmt.Sprintf("%s: %v\n", k, fields))
+			fmt.Fprintf(&missingFieldsMsg, "%s: %v\n", k, fields)
 		}
 		v.t.Errorf("missing fields to be ignored for OverrideNotEditableFor* goverter methods:\n%v", missingFieldsMsg.String())
 	}
@@ -143,8 +143,7 @@ func (v *visitor) checkEntities() {
 func checkEntity(entity *oapiEntity) []string {
 	res := []string{}
 	objType := reflect.TypeOf(entity.obj)
-	for i := 0; i < objType.NumField(); i++ {
-		field := objType.Field(i)
+	for field := range objType.Fields() {
 		if !strings.Contains(entity.notEditableFields, field.Name) && !strings.Contains(entity.ignoredFields, field.Name) {
 			// check if the not editable field (first check) is not present in the ignored fields (second check)
 			// if this condition is true, we missed that field in the Override method ignore list

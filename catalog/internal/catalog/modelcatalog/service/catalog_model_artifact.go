@@ -8,15 +8,15 @@ import (
 	sharedmodels "github.com/kubeflow/hub/catalog/internal/db/models"
 	"github.com/kubeflow/hub/internal/platform/apiutils"
 	dbmodels "github.com/kubeflow/hub/internal/platform/db/entity"
-	"github.com/kubeflow/hub/internal/platform/db/schema"
 	service "github.com/kubeflow/hub/internal/platform/db/repository"
+	"github.com/kubeflow/hub/internal/platform/db/schema"
 	"github.com/kubeflow/hub/internal/platform/db/utils"
 	"gorm.io/gorm"
 )
 
 // Register the mapping function for CatalogModelArtifact
 func init() {
-	sharedmodels.RegisterArtifactMapper("kf.CatalogModelArtifact", func(artifact schema.Artifact, properties []schema.ArtifactProperty) interface{} {
+	sharedmodels.RegisterArtifactMapper("kf.CatalogModelArtifact", func(artifact schema.Artifact, properties []schema.ArtifactProperty) any {
 		return mapDataLayerToCatalogModelArtifact(artifact, properties)
 	})
 }
@@ -155,7 +155,7 @@ func mapDataLayerToCatalogModelArtifact(artifact schema.Artifact, artProperties 
 		Attributes: &models.CatalogModelArtifactAttributes{
 			Name:                     artifact.Name,
 			URI:                      artifact.URI,
-			ArtifactType:             apiutils.Of(models.CatalogModelArtifactType),
+			ArtifactType:             new(models.CatalogModelArtifactType),
 			ExternalID:               artifact.ExternalID,
 			CreateTimeSinceEpoch:     &artifact.CreateTimeSinceEpoch,
 			LastUpdateTimeSinceEpoch: &artifact.LastUpdateTimeSinceEpoch,

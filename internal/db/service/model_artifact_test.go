@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	"github.com/kubeflow/hub/internal/db/models"
 	"github.com/kubeflow/hub/internal/db/service"
 	"github.com/kubeflow/hub/internal/testutils"
@@ -31,18 +30,18 @@ func TestModelArtifactRepository(t *testing.T) {
 	t.Run("TestSave", func(t *testing.T) {
 		// First create a registered model and model version for attribution
 		registeredModel := &models.RegisteredModelImpl{
-			TypeID: apiutils.Of(int32(registeredModelTypeID)),
+			TypeID: new(int32(registeredModelTypeID)),
 			Attributes: &models.RegisteredModelAttributes{
-				Name: apiutils.Of("test-registered-model-for-artifact"),
+				Name: new("test-registered-model-for-artifact"),
 			},
 		}
 		savedRegisteredModel, err := registeredModelRepo.Save(registeredModel)
 		require.NoError(t, err)
 
 		modelVersion := &models.ModelVersionImpl{
-			TypeID: apiutils.Of(int32(modelVersionTypeID)),
+			TypeID: new(int32(modelVersionTypeID)),
 			Attributes: &models.ModelVersionAttributes{
-				Name: apiutils.Of("test-model-version-for-artifact"),
+				Name: new("test-model-version-for-artifact"),
 			},
 			Properties: &[]models.Properties{
 				{
@@ -56,24 +55,24 @@ func TestModelArtifactRepository(t *testing.T) {
 
 		// Test creating a new model artifact
 		modelArtifact := &models.ModelArtifactImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.ModelArtifactAttributes{
-				Name:         apiutils.Of(fmt.Sprintf("%d:test-model-artifact", *savedModelVersion.GetID())),
-				ExternalID:   apiutils.Of("artifact-ext-123"),
-				URI:          apiutils.Of("s3://bucket/model.pkl"),
-				State:        apiutils.Of("LIVE"),
-				ArtifactType: apiutils.Of("model-artifact"),
+				Name:         new(fmt.Sprintf("%d:test-model-artifact", *savedModelVersion.GetID())),
+				ExternalID:   new("artifact-ext-123"),
+				URI:          new("s3://bucket/model.pkl"),
+				State:        new("LIVE"),
+				ArtifactType: new("model-artifact"),
 			},
 			Properties: &[]models.Properties{
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Test model artifact description"),
+					StringValue: new("Test model artifact description"),
 				},
 			},
 			CustomProperties: &[]models.Properties{
 				{
 					Name:             "custom-artifact-prop",
-					StringValue:      apiutils.Of("custom-artifact-value"),
+					StringValue:      new("custom-artifact-value"),
 					IsCustomProperty: true,
 				},
 			},
@@ -90,8 +89,8 @@ func TestModelArtifactRepository(t *testing.T) {
 
 		// Test updating the same model artifact
 		modelArtifact.ID = saved.GetID()
-		modelArtifact.GetAttributes().Name = apiutils.Of(fmt.Sprintf("%d:updated-model-artifact", *savedModelVersion.GetID()))
-		modelArtifact.GetAttributes().State = apiutils.Of("PENDING")
+		modelArtifact.GetAttributes().Name = new(fmt.Sprintf("%d:updated-model-artifact", *savedModelVersion.GetID()))
+		modelArtifact.GetAttributes().State = new("PENDING")
 		// Preserve CreateTimeSinceEpoch from the saved entity (simulating what OpenAPI converter would do)
 		modelArtifact.GetAttributes().CreateTimeSinceEpoch = saved.GetAttributes().CreateTimeSinceEpoch
 
@@ -106,18 +105,18 @@ func TestModelArtifactRepository(t *testing.T) {
 	t.Run("TestGetByID", func(t *testing.T) {
 		// First create a registered model and model version
 		registeredModel := &models.RegisteredModelImpl{
-			TypeID: apiutils.Of(int32(registeredModelTypeID)),
+			TypeID: new(int32(registeredModelTypeID)),
 			Attributes: &models.RegisteredModelAttributes{
-				Name: apiutils.Of("test-registered-model-for-getbyid"),
+				Name: new("test-registered-model-for-getbyid"),
 			},
 		}
 		savedRegisteredModel, err := registeredModelRepo.Save(registeredModel)
 		require.NoError(t, err)
 
 		modelVersion := &models.ModelVersionImpl{
-			TypeID: apiutils.Of(int32(modelVersionTypeID)),
+			TypeID: new(int32(modelVersionTypeID)),
 			Attributes: &models.ModelVersionAttributes{
-				Name: apiutils.Of("test-model-version-for-getbyid"),
+				Name: new("test-model-version-for-getbyid"),
 			},
 			Properties: &[]models.Properties{
 				{
@@ -131,13 +130,13 @@ func TestModelArtifactRepository(t *testing.T) {
 
 		// First create a model artifact to retrieve
 		modelArtifact := &models.ModelArtifactImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.ModelArtifactAttributes{
-				Name:         apiutils.Of(fmt.Sprintf("%d:get-test-model-artifact", *savedModelVersion.GetID())),
-				ExternalID:   apiutils.Of("get-artifact-ext-123"),
-				URI:          apiutils.Of("s3://bucket/get-model.pkl"),
-				State:        apiutils.Of("LIVE"),
-				ArtifactType: apiutils.Of("model-artifact"),
+				Name:         new(fmt.Sprintf("%d:get-test-model-artifact", *savedModelVersion.GetID())),
+				ExternalID:   new("get-artifact-ext-123"),
+				URI:          new("s3://bucket/get-model.pkl"),
+				State:        new("LIVE"),
+				ArtifactType: new("model-artifact"),
 			},
 		}
 
@@ -163,18 +162,18 @@ func TestModelArtifactRepository(t *testing.T) {
 	t.Run("TestList", func(t *testing.T) {
 		// Create a registered model and model version for the artifacts
 		registeredModel := &models.RegisteredModelImpl{
-			TypeID: apiutils.Of(int32(registeredModelTypeID)),
+			TypeID: new(int32(registeredModelTypeID)),
 			Attributes: &models.RegisteredModelAttributes{
-				Name: apiutils.Of("test-registered-model-for-list"),
+				Name: new("test-registered-model-for-list"),
 			},
 		}
 		savedRegisteredModel, err := registeredModelRepo.Save(registeredModel)
 		require.NoError(t, err)
 
 		modelVersion := &models.ModelVersionImpl{
-			TypeID: apiutils.Of(int32(modelVersionTypeID)),
+			TypeID: new(int32(modelVersionTypeID)),
 			Attributes: &models.ModelVersionAttributes{
-				Name: apiutils.Of("test-model-version-for-list"),
+				Name: new("test-model-version-for-list"),
 			},
 			Properties: &[]models.Properties{
 				{
@@ -189,33 +188,33 @@ func TestModelArtifactRepository(t *testing.T) {
 		// Create multiple model artifacts for listing
 		testArtifacts := []*models.ModelArtifactImpl{
 			{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.ModelArtifactAttributes{
-					Name:         apiutils.Of(fmt.Sprintf("%d:list-artifact-1", *savedModelVersion.GetID())),
-					ExternalID:   apiutils.Of("list-artifact-ext-1"),
-					URI:          apiutils.Of("s3://bucket/list-model-1.pkl"),
-					State:        apiutils.Of("LIVE"),
-					ArtifactType: apiutils.Of("model-artifact"),
+					Name:         new(fmt.Sprintf("%d:list-artifact-1", *savedModelVersion.GetID())),
+					ExternalID:   new("list-artifact-ext-1"),
+					URI:          new("s3://bucket/list-model-1.pkl"),
+					State:        new("LIVE"),
+					ArtifactType: new("model-artifact"),
 				},
 			},
 			{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.ModelArtifactAttributes{
-					Name:         apiutils.Of(fmt.Sprintf("%d:list-artifact-2", *savedModelVersion.GetID())),
-					ExternalID:   apiutils.Of("list-artifact-ext-2"),
-					URI:          apiutils.Of("s3://bucket/list-model-2.pkl"),
-					State:        apiutils.Of("PENDING"),
-					ArtifactType: apiutils.Of("model-artifact"),
+					Name:         new(fmt.Sprintf("%d:list-artifact-2", *savedModelVersion.GetID())),
+					ExternalID:   new("list-artifact-ext-2"),
+					URI:          new("s3://bucket/list-model-2.pkl"),
+					State:        new("PENDING"),
+					ArtifactType: new("model-artifact"),
 				},
 			},
 			{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.ModelArtifactAttributes{
-					Name:         apiutils.Of(fmt.Sprintf("%d:list-artifact-3", *savedModelVersion.GetID())),
-					ExternalID:   apiutils.Of("list-artifact-ext-3"),
-					URI:          apiutils.Of("s3://bucket/list-model-3.pkl"),
-					State:        apiutils.Of("LIVE"),
-					ArtifactType: apiutils.Of("model-artifact"),
+					Name:         new(fmt.Sprintf("%d:list-artifact-3", *savedModelVersion.GetID())),
+					ExternalID:   new("list-artifact-ext-3"),
+					URI:          new("s3://bucket/list-model-3.pkl"),
+					State:        new("LIVE"),
+					ArtifactType: new("model-artifact"),
 				},
 			},
 		}
@@ -237,7 +236,7 @@ func TestModelArtifactRepository(t *testing.T) {
 
 		// Test listing by name
 		listOptions = models.ModelArtifactListOptions{
-			Name: apiutils.Of("list-artifact-1"),
+			Name: new("list-artifact-1"),
 		}
 		listOptions.PageSize = &pageSize
 
@@ -251,7 +250,7 @@ func TestModelArtifactRepository(t *testing.T) {
 
 		// Test listing by external ID
 		listOptions = models.ModelArtifactListOptions{
-			ExternalID: apiutils.Of("list-artifact-ext-2"),
+			ExternalID: new("list-artifact-ext-2"),
 		}
 		listOptions.PageSize = &pageSize
 
@@ -277,7 +276,7 @@ func TestModelArtifactRepository(t *testing.T) {
 		// Test ordering by ID (deterministic)
 		listOptions = models.ModelArtifactListOptions{
 			Pagination: models.Pagination{
-				OrderBy: apiutils.Of("ID"),
+				OrderBy: new("ID"),
 			},
 		}
 		listOptions.PageSize = &pageSize
@@ -298,18 +297,18 @@ func TestModelArtifactRepository(t *testing.T) {
 	t.Run("TestListOrdering", func(t *testing.T) {
 		// First create a registered model and model version
 		registeredModel := &models.RegisteredModelImpl{
-			TypeID: apiutils.Of(int32(registeredModelTypeID)),
+			TypeID: new(int32(registeredModelTypeID)),
 			Attributes: &models.RegisteredModelAttributes{
-				Name: apiutils.Of("test-registered-model-for-ordering"),
+				Name: new("test-registered-model-for-ordering"),
 			},
 		}
 		savedRegisteredModel, err := registeredModelRepo.Save(registeredModel)
 		require.NoError(t, err)
 
 		modelVersion := &models.ModelVersionImpl{
-			TypeID: apiutils.Of(int32(modelVersionTypeID)),
+			TypeID: new(int32(modelVersionTypeID)),
 			Attributes: &models.ModelVersionAttributes{
-				Name: apiutils.Of("test-model-version-for-ordering"),
+				Name: new("test-model-version-for-ordering"),
 			},
 			Properties: &[]models.Properties{
 				{
@@ -323,12 +322,12 @@ func TestModelArtifactRepository(t *testing.T) {
 
 		// Create artifacts sequentially with time delays to ensure deterministic ordering
 		artifact1 := &models.ModelArtifactImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.ModelArtifactAttributes{
-				Name:         apiutils.Of(fmt.Sprintf("%d:time-test-artifact-1", *savedModelVersion.GetID())),
-				URI:          apiutils.Of("s3://bucket/time-model-1.pkl"),
-				State:        apiutils.Of("LIVE"),
-				ArtifactType: apiutils.Of("model-artifact"),
+				Name:         new(fmt.Sprintf("%d:time-test-artifact-1", *savedModelVersion.GetID())),
+				URI:          new("s3://bucket/time-model-1.pkl"),
+				State:        new("LIVE"),
+				ArtifactType: new("model-artifact"),
 			},
 		}
 		saved1, err := repo.Save(artifact1, savedModelVersion.GetID())
@@ -338,12 +337,12 @@ func TestModelArtifactRepository(t *testing.T) {
 		time.Sleep(10 * time.Millisecond)
 
 		artifact2 := &models.ModelArtifactImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.ModelArtifactAttributes{
-				Name:         apiutils.Of(fmt.Sprintf("%d:time-test-artifact-2", *savedModelVersion.GetID())),
-				URI:          apiutils.Of("s3://bucket/time-model-2.pkl"),
-				State:        apiutils.Of("PENDING"),
-				ArtifactType: apiutils.Of("model-artifact"),
+				Name:         new(fmt.Sprintf("%d:time-test-artifact-2", *savedModelVersion.GetID())),
+				URI:          new("s3://bucket/time-model-2.pkl"),
+				State:        new("PENDING"),
+				ArtifactType: new("model-artifact"),
 			},
 		}
 		saved2, err := repo.Save(artifact2, savedModelVersion.GetID())
@@ -353,7 +352,7 @@ func TestModelArtifactRepository(t *testing.T) {
 		pageSize := int32(10)
 		listOptions := models.ModelArtifactListOptions{
 			Pagination: models.Pagination{
-				OrderBy: apiutils.Of("CREATE_TIME"),
+				OrderBy: new("CREATE_TIME"),
 			},
 		}
 		listOptions.PageSize = &pageSize
@@ -387,17 +386,17 @@ func TestModelArtifactRepository(t *testing.T) {
 	t.Run("TestSaveWithoutModelVersion", func(t *testing.T) {
 		// Test creating a model artifact without model version attribution
 		modelArtifact := &models.ModelArtifactImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.ModelArtifactAttributes{
-				Name:         apiutils.Of("standalone-artifact"),
-				URI:          apiutils.Of("s3://bucket/standalone-model.pkl"),
-				State:        apiutils.Of("LIVE"),
-				ArtifactType: apiutils.Of("model-artifact"),
+				Name:         new("standalone-artifact"),
+				URI:          new("s3://bucket/standalone-model.pkl"),
+				State:        new("LIVE"),
+				ArtifactType: new("model-artifact"),
 			},
 			Properties: &[]models.Properties{
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Standalone artifact without model version"),
+					StringValue: new("Standalone artifact without model version"),
 				},
 			},
 		}
@@ -418,18 +417,18 @@ func TestModelArtifactRepository(t *testing.T) {
 	t.Run("TestSaveWithProperties", func(t *testing.T) {
 		// First create a registered model and model version
 		registeredModel := &models.RegisteredModelImpl{
-			TypeID: apiutils.Of(int32(registeredModelTypeID)),
+			TypeID: new(int32(registeredModelTypeID)),
 			Attributes: &models.RegisteredModelAttributes{
-				Name: apiutils.Of("test-registered-model-for-props"),
+				Name: new("test-registered-model-for-props"),
 			},
 		}
 		savedRegisteredModel, err := registeredModelRepo.Save(registeredModel)
 		require.NoError(t, err)
 
 		modelVersion := &models.ModelVersionImpl{
-			TypeID: apiutils.Of(int32(modelVersionTypeID)),
+			TypeID: new(int32(modelVersionTypeID)),
 			Attributes: &models.ModelVersionAttributes{
-				Name: apiutils.Of("test-model-version-for-props"),
+				Name: new("test-model-version-for-props"),
 			},
 			Properties: &[]models.Properties{
 				{
@@ -442,36 +441,36 @@ func TestModelArtifactRepository(t *testing.T) {
 		require.NoError(t, err)
 
 		modelArtifact := &models.ModelArtifactImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.ModelArtifactAttributes{
-				Name:         apiutils.Of(fmt.Sprintf("%d:props-test-artifact", *savedModelVersion.GetID())),
-				URI:          apiutils.Of("s3://bucket/props-model.pkl"),
-				State:        apiutils.Of("LIVE"),
-				ArtifactType: apiutils.Of("model-artifact"),
+				Name:         new(fmt.Sprintf("%d:props-test-artifact", *savedModelVersion.GetID())),
+				URI:          new("s3://bucket/props-model.pkl"),
+				State:        new("LIVE"),
+				ArtifactType: new("model-artifact"),
 			},
 			Properties: &[]models.Properties{
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Artifact with properties"),
+					StringValue: new("Artifact with properties"),
 				},
 				{
 					Name:        "model_format",
-					StringValue: apiutils.Of("pickle"),
+					StringValue: new("pickle"),
 				},
 				{
 					Name:     "size_bytes",
-					IntValue: apiutils.Of(int32(1024000)),
+					IntValue: new(int32(1024000)),
 				},
 			},
 			CustomProperties: &[]models.Properties{
 				{
 					Name:             "team",
-					StringValue:      apiutils.Of("ml-team"),
+					StringValue:      new("ml-team"),
 					IsCustomProperty: true,
 				},
 				{
 					Name:             "priority",
-					IntValue:         apiutils.Of(int32(5)),
+					IntValue:         new(int32(5)),
 					IsCustomProperty: true,
 				},
 			},

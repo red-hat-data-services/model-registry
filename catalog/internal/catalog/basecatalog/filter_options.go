@@ -5,7 +5,6 @@ import (
 
 	sharedmodels "github.com/kubeflow/hub/catalog/internal/db/models"
 	apimodels "github.com/kubeflow/hub/catalog/pkg/openapi"
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 )
 
 // DbPropToAPIOption converts a database PropertyOption to an API FilterOption.
@@ -37,8 +36,8 @@ func DbPropToAPIOption(prop sharedmodels.PropertyOption) *apimodels.FilterOption
 
 		option.Type = "number"
 		option.Range = &apimodels.FilterOptionRange{
-			Min: apiutils.Of(float64(*prop.MinIntValue)),
-			Max: apiutils.Of(float64(*prop.MaxIntValue)),
+			Min: new(float64(*prop.MinIntValue)),
+			Max: new(float64(*prop.MaxIntValue)),
 		}
 
 	case sharedmodels.DoubleValueField:

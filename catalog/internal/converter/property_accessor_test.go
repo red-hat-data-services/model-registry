@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/kubeflow/hub/catalog/internal/converter"
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	dbmodels "github.com/kubeflow/hub/internal/platform/db/entity"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -13,8 +12,8 @@ import (
 func TestPropertyAccessor_GetString(t *testing.T) {
 	t.Run("ExistingProperty", func(t *testing.T) {
 		props := &[]dbmodels.Properties{
-			{Name: "key1", StringValue: apiutils.Of("value1")},
-			{Name: "key2", StringValue: apiutils.Of("value2")},
+			{Name: "key1", StringValue: new("value1")},
+			{Name: "key2", StringValue: new("value2")},
 		}
 
 		pa := converter.NewPropertyAccessor(props)
@@ -24,7 +23,7 @@ func TestPropertyAccessor_GetString(t *testing.T) {
 
 	t.Run("NonExistentProperty", func(t *testing.T) {
 		props := &[]dbmodels.Properties{
-			{Name: "key1", StringValue: apiutils.Of("value1")},
+			{Name: "key1", StringValue: new("value1")},
 		}
 
 		pa := converter.NewPropertyAccessor(props)
@@ -55,7 +54,7 @@ func TestPropertyAccessor_GetString(t *testing.T) {
 func TestPropertyAccessor_GetStringPtr(t *testing.T) {
 	t.Run("ExistingProperty", func(t *testing.T) {
 		props := &[]dbmodels.Properties{
-			{Name: "key1", StringValue: apiutils.Of("value1")},
+			{Name: "key1", StringValue: new("value1")},
 		}
 
 		pa := converter.NewPropertyAccessor(props)
@@ -66,7 +65,7 @@ func TestPropertyAccessor_GetStringPtr(t *testing.T) {
 
 	t.Run("NonExistentProperty_ReturnsNil", func(t *testing.T) {
 		props := &[]dbmodels.Properties{
-			{Name: "key1", StringValue: apiutils.Of("value1")},
+			{Name: "key1", StringValue: new("value1")},
 		}
 
 		pa := converter.NewPropertyAccessor(props)
@@ -75,7 +74,7 @@ func TestPropertyAccessor_GetStringPtr(t *testing.T) {
 
 	t.Run("EmptyString_ReturnsNil", func(t *testing.T) {
 		props := &[]dbmodels.Properties{
-			{Name: "key1", StringValue: apiutils.Of("")},
+			{Name: "key1", StringValue: new("")},
 		}
 
 		pa := converter.NewPropertyAccessor(props)
@@ -86,7 +85,7 @@ func TestPropertyAccessor_GetStringPtr(t *testing.T) {
 func TestPropertyAccessor_GetBoolPtr(t *testing.T) {
 	t.Run("TrueValue", func(t *testing.T) {
 		props := &[]dbmodels.Properties{
-			{Name: "enabled", BoolValue: apiutils.Of(true)},
+			{Name: "enabled", BoolValue: new(true)},
 		}
 
 		pa := converter.NewPropertyAccessor(props)
@@ -97,7 +96,7 @@ func TestPropertyAccessor_GetBoolPtr(t *testing.T) {
 
 	t.Run("FalseValue", func(t *testing.T) {
 		props := &[]dbmodels.Properties{
-			{Name: "disabled", BoolValue: apiutils.Of(false)},
+			{Name: "disabled", BoolValue: new(false)},
 		}
 
 		pa := converter.NewPropertyAccessor(props)
@@ -108,7 +107,7 @@ func TestPropertyAccessor_GetBoolPtr(t *testing.T) {
 
 	t.Run("NonExistentProperty", func(t *testing.T) {
 		props := &[]dbmodels.Properties{
-			{Name: "enabled", BoolValue: apiutils.Of(true)},
+			{Name: "enabled", BoolValue: new(true)},
 		}
 
 		pa := converter.NewPropertyAccessor(props)
@@ -193,8 +192,8 @@ func TestPropertyAccessor_GetStringArray(t *testing.T) {
 func TestPropertyAccessor_HasAny(t *testing.T) {
 	t.Run("OnePropertyExists", func(t *testing.T) {
 		props := &[]dbmodels.Properties{
-			{Name: "prop1", StringValue: apiutils.Of("value1")},
-			{Name: "prop2", StringValue: apiutils.Of("value2")},
+			{Name: "prop1", StringValue: new("value1")},
+			{Name: "prop2", StringValue: new("value2")},
 		}
 
 		pa := converter.NewPropertyAccessor(props)
@@ -203,8 +202,8 @@ func TestPropertyAccessor_HasAny(t *testing.T) {
 
 	t.Run("MultiplePropertiesExist", func(t *testing.T) {
 		props := &[]dbmodels.Properties{
-			{Name: "prop1", StringValue: apiutils.Of("value1")},
-			{Name: "prop2", StringValue: apiutils.Of("value2")},
+			{Name: "prop1", StringValue: new("value1")},
+			{Name: "prop2", StringValue: new("value2")},
 		}
 
 		pa := converter.NewPropertyAccessor(props)
@@ -213,7 +212,7 @@ func TestPropertyAccessor_HasAny(t *testing.T) {
 
 	t.Run("NoPropertiesExist", func(t *testing.T) {
 		props := &[]dbmodels.Properties{
-			{Name: "prop1", StringValue: apiutils.Of("value1")},
+			{Name: "prop1", StringValue: new("value1")},
 		}
 
 		pa := converter.NewPropertyAccessor(props)
@@ -222,7 +221,7 @@ func TestPropertyAccessor_HasAny(t *testing.T) {
 
 	t.Run("EmptyNamesList", func(t *testing.T) {
 		props := &[]dbmodels.Properties{
-			{Name: "prop1", StringValue: apiutils.Of("value1")},
+			{Name: "prop1", StringValue: new("value1")},
 		}
 
 		pa := converter.NewPropertyAccessor(props)
@@ -233,7 +232,7 @@ func TestPropertyAccessor_HasAny(t *testing.T) {
 func TestPropertyAccessor_MultipleAccesses(t *testing.T) {
 	t.Run("CanAccessSamePropertyMultipleTimes", func(t *testing.T) {
 		props := &[]dbmodels.Properties{
-			{Name: "key1", StringValue: apiutils.Of("value1")},
+			{Name: "key1", StringValue: new("value1")},
 		}
 
 		pa := converter.NewPropertyAccessor(props)
@@ -248,8 +247,8 @@ func TestPropertyAccessor_MultipleAccesses(t *testing.T) {
 		jsonArray := `["a","b","c"]`
 		intVal := int32(100)
 		props := &[]dbmodels.Properties{
-			{Name: "stringProp", StringValue: apiutils.Of("text")},
-			{Name: "boolProp", BoolValue: apiutils.Of(true)},
+			{Name: "stringProp", StringValue: new("text")},
+			{Name: "boolProp", BoolValue: new(true)},
 			{Name: "intProp", IntValue: &intVal},
 			{Name: "arrayProp", StringValue: &jsonArray},
 		}

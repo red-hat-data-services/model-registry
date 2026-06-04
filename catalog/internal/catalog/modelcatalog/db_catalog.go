@@ -14,7 +14,6 @@ import (
 	"github.com/kubeflow/hub/catalog/internal/catalog/modelcatalog/models"
 	sharedmodels "github.com/kubeflow/hub/catalog/internal/db/models"
 	apimodels "github.com/kubeflow/hub/catalog/pkg/openapi"
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	"github.com/kubeflow/hub/internal/converter"
 	mrmodels "github.com/kubeflow/hub/internal/platform/db/entity"
 	"github.com/kubeflow/hub/pkg/api"
@@ -622,7 +621,7 @@ func (d *dbCatalogImpl) FindModelsWithRecommendedLatency(
 		Query:     queryPtr,
 		Pagination: mrmodels.Pagination{
 			FilterQuery: pagination.FilterQuery,
-			PageSize:    apiutils.Of(int32(0)), // Get all models
+			PageSize:    new(int32(0)), // Get all models
 		},
 	})
 	if err != nil {

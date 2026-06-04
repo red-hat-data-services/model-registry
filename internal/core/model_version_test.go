@@ -6,7 +6,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	"github.com/kubeflow/hub/pkg/api"
 	"github.com/kubeflow/hub/pkg/openapi"
 	"github.com/stretchr/testify/assert"
@@ -21,7 +20,7 @@ func TestUpsertModelVersion(t *testing.T) {
 		// First create a registered model
 		registeredModel := &openapi.RegisteredModel{
 			Name:        "test-registered-model",
-			Description: apiutils.Of("Test registered model for version"),
+			Description: new("Test registered model for version"),
 		}
 		createdModel, err := _service.UpsertRegisteredModel(registeredModel)
 		require.NoError(t, err)
@@ -30,10 +29,10 @@ func TestUpsertModelVersion(t *testing.T) {
 		// Create a model version
 		inputVersion := &openapi.ModelVersion{
 			Name:              "test-version",
-			Description:       apiutils.Of("Test version description"),
-			Author:            apiutils.Of("test-author"),
-			ExternalId:        apiutils.Of("version-ext-123"),
-			State:             apiutils.Of(openapi.MODELVERSIONSTATE_LIVE),
+			Description:       new("Test version description"),
+			Author:            new("test-author"),
+			ExternalId:        new("version-ext-123"),
+			State:             new(openapi.MODELVERSIONSTATE_LIVE),
 			RegisteredModelId: *createdModel.Id,
 		}
 
@@ -63,7 +62,7 @@ func TestUpsertModelVersion(t *testing.T) {
 		// Create a model version
 		inputVersion := &openapi.ModelVersion{
 			Name:              "update-test-version",
-			Description:       apiutils.Of("Original description"),
+			Description:       new("Original description"),
 			RegisteredModelId: *createdModel.Id,
 		}
 
@@ -75,9 +74,9 @@ func TestUpsertModelVersion(t *testing.T) {
 		updateVersion := &openapi.ModelVersion{
 			Id:                created.Id,
 			Name:              "update-test-version", // Name should remain the same
-			Description:       apiutils.Of("Updated description"),
-			Author:            apiutils.Of("new-author"),
-			State:             apiutils.Of(openapi.MODELVERSIONSTATE_ARCHIVED),
+			Description:       new("Updated description"),
+			Author:            new("new-author"),
+			State:             new(openapi.MODELVERSIONSTATE_ARCHIVED),
 			RegisteredModelId: *createdModel.Id,
 		}
 
@@ -170,7 +169,7 @@ func TestUpsertModelVersion(t *testing.T) {
 	})
 
 	t.Run("nil model version error", func(t *testing.T) {
-		result, err := _service.UpsertModelVersion(nil, apiutils.Of("1"))
+		result, err := _service.UpsertModelVersion(nil, new("1"))
 
 		assert.Error(t, err)
 		assert.Nil(t, result)
@@ -222,8 +221,8 @@ func TestUpsertModelVersion(t *testing.T) {
 		unicodeName := "模型版本-тест-モデルバージョン-🚀"
 		inputVersion := &openapi.ModelVersion{
 			Name:              unicodeName,
-			Description:       apiutils.Of("Test model version with unicode characters"),
-			Author:            apiutils.Of("测试作者-тестовый автор-テスト作者"),
+			Description:       new("Test model version with unicode characters"),
+			Author:            new("测试作者-тестовый автор-テスト作者"),
 			RegisteredModelId: *createdModel.Id,
 		}
 
@@ -257,8 +256,8 @@ func TestUpsertModelVersion(t *testing.T) {
 		specialName := "!@#$%^&*()_+-=[]{}|;':\",./<>?"
 		inputVersion := &openapi.ModelVersion{
 			Name:              specialName,
-			Description:       apiutils.Of("Test model version with special characters"),
-			Author:            apiutils.Of("author@#$%^&*()"),
+			Description:       new("Test model version with special characters"),
+			Author:            new("author@#$%^&*()"),
 			RegisteredModelId: *createdModel.Id,
 		}
 
@@ -290,8 +289,8 @@ func TestUpsertModelVersion(t *testing.T) {
 		mixedName := "模型@#$%版本-тест!@#-モデル()バージョン-🚀[]"
 		inputVersion := &openapi.ModelVersion{
 			Name:              mixedName,
-			Description:       apiutils.Of("Test model version with mixed unicode and special characters"),
-			Author:            apiutils.Of("作者@#$%-автор!@#-作者()🚀"),
+			Description:       new("Test model version with mixed unicode and special characters"),
+			Author:            new("作者@#$%-автор!@#-作者()🚀"),
 			RegisteredModelId: *createdModel.Id,
 		}
 
@@ -325,8 +324,8 @@ func TestUpsertModelVersion(t *testing.T) {
 			versionName := "paging-test-model-version-" + fmt.Sprintf("%02d", i)
 			inputVersion := &openapi.ModelVersion{
 				Name:              versionName,
-				Description:       apiutils.Of("Pagination test model version " + fmt.Sprintf("%02d", i)),
-				Author:            apiutils.Of("test-author-" + fmt.Sprintf("%02d", i)),
+				Description:       new("Pagination test model version " + fmt.Sprintf("%02d", i)),
+				Author:            new("test-author-" + fmt.Sprintf("%02d", i)),
 				RegisteredModelId: *createdModel.Id,
 			}
 
@@ -441,9 +440,9 @@ func TestGetModelVersionById(t *testing.T) {
 		// Create a model version
 		inputVersion := &openapi.ModelVersion{
 			Name:              "get-test-version",
-			Description:       apiutils.Of("Test description"),
-			ExternalId:        apiutils.Of("get-ext-123"),
-			State:             apiutils.Of(openapi.MODELVERSIONSTATE_LIVE),
+			Description:       new("Test description"),
+			ExternalId:        new("get-ext-123"),
+			State:             new(openapi.MODELVERSIONSTATE_LIVE),
 			RegisteredModelId: *createdModel.Id,
 		}
 
@@ -510,7 +509,7 @@ func TestGetModelVersionByInferenceService(t *testing.T) {
 
 		// Create an inference service with specific model version
 		inferenceService := &openapi.InferenceService{
-			Name:                 apiutils.Of("test-inference-service"),
+			Name:                 new("test-inference-service"),
 			ServingEnvironmentId: *createdEnv.Id,
 			RegisteredModelId:    *createdModel.Id,
 			ModelVersionId:       createdVersion.Id,
@@ -559,7 +558,7 @@ func TestGetModelVersionByInferenceService(t *testing.T) {
 
 		// Create an inference service without specific model version (should get latest)
 		inferenceService := &openapi.InferenceService{
-			Name:                 apiutils.Of("latest-version-inference-service"),
+			Name:                 new("latest-version-inference-service"),
 			ServingEnvironmentId: *createdEnv.Id,
 			RegisteredModelId:    *createdModel.Id,
 			// ModelVersionId is nil, should get latest
@@ -608,7 +607,7 @@ func TestGetModelVersionByParams(t *testing.T) {
 		// Create a model version
 		inputVersion := &openapi.ModelVersion{
 			Name:              "params-test-version",
-			ExternalId:        apiutils.Of("params-ext-123"),
+			ExternalId:        new("params-ext-123"),
 			RegisteredModelId: *createdModel.Id,
 		}
 		created, err := _service.UpsertModelVersion(inputVersion, createdModel.Id)
@@ -636,7 +635,7 @@ func TestGetModelVersionByParams(t *testing.T) {
 		// Create a model version
 		inputVersion := &openapi.ModelVersion{
 			Name:              "params-ext-test-version",
-			ExternalId:        apiutils.Of("params-unique-ext-456"),
+			ExternalId:        new("params-unique-ext-456"),
 			RegisteredModelId: *createdModel.Id,
 		}
 		created, err := _service.UpsertModelVersion(inputVersion, createdModel.Id)
@@ -692,7 +691,7 @@ func TestGetModelVersionByParams(t *testing.T) {
 		version1 := &openapi.ModelVersion{
 			Name:              "shared-version-name-test",
 			RegisteredModelId: *createdModel1.Id,
-			Description:       apiutils.Of("Version for model 1"),
+			Description:       new("Version for model 1"),
 		}
 		createdVersion1, err := _service.UpsertModelVersion(version1, createdModel1.Id)
 		require.NoError(t, err)
@@ -701,7 +700,7 @@ func TestGetModelVersionByParams(t *testing.T) {
 		version2 := &openapi.ModelVersion{
 			Name:              "shared-version-name-test",
 			RegisteredModelId: *createdModel2.Id,
-			Description:       apiutils.Of("Version for model 2"),
+			Description:       new("Version for model 2"),
 		}
 		createdVersion2, err := _service.UpsertModelVersion(version2, createdModel2.Id)
 		require.NoError(t, err)
@@ -742,9 +741,9 @@ func TestGetModelVersions(t *testing.T) {
 
 		// Create multiple model versions
 		versions := []*openapi.ModelVersion{
-			{Name: "list-version-1", ExternalId: apiutils.Of("list-ext-1"), RegisteredModelId: *createdModel.Id},
-			{Name: "list-version-2", ExternalId: apiutils.Of("list-ext-2"), RegisteredModelId: *createdModel.Id},
-			{Name: "list-version-3", ExternalId: apiutils.Of("list-ext-3"), RegisteredModelId: *createdModel.Id},
+			{Name: "list-version-1", ExternalId: new("list-ext-1"), RegisteredModelId: *createdModel.Id},
+			{Name: "list-version-2", ExternalId: new("list-ext-2"), RegisteredModelId: *createdModel.Id},
+			{Name: "list-version-3", ExternalId: new("list-ext-3"), RegisteredModelId: *createdModel.Id},
 		}
 
 		var createdIds []string
@@ -815,7 +814,7 @@ func TestGetModelVersions(t *testing.T) {
 		for i := range 5 {
 			version := &openapi.ModelVersion{
 				Name:              "pagination-version-" + string(rune('A'+i)),
-				ExternalId:        apiutils.Of("pagination-ext-" + string(rune('A'+i))),
+				ExternalId:        new("pagination-ext-" + string(rune('A'+i))),
 				RegisteredModelId: *createdModel.Id,
 			}
 			_, err := _service.UpsertModelVersion(version, createdModel.Id)
@@ -860,7 +859,7 @@ func TestModelVersionRoundTrip(t *testing.T) {
 		// Create a registered model
 		registeredModel := &openapi.RegisteredModel{
 			Name:        "roundtrip-registered-model",
-			Description: apiutils.Of("Roundtrip test registered model"),
+			Description: new("Roundtrip test registered model"),
 		}
 		createdModel, err := _service.UpsertRegisteredModel(registeredModel)
 		require.NoError(t, err)
@@ -868,10 +867,10 @@ func TestModelVersionRoundTrip(t *testing.T) {
 		// Create a model version with all fields
 		originalVersion := &openapi.ModelVersion{
 			Name:              "roundtrip-version",
-			Description:       apiutils.Of("Roundtrip test description"),
-			Author:            apiutils.Of("roundtrip-author"),
-			ExternalId:        apiutils.Of("roundtrip-ext-123"),
-			State:             apiutils.Of(openapi.MODELVERSIONSTATE_LIVE),
+			Description:       new("Roundtrip test description"),
+			Author:            new("roundtrip-author"),
+			ExternalId:        new("roundtrip-ext-123"),
+			State:             new(openapi.MODELVERSIONSTATE_LIVE),
 			RegisteredModelId: *createdModel.Id,
 		}
 
@@ -894,8 +893,8 @@ func TestModelVersionRoundTrip(t *testing.T) {
 		assert.Equal(t, originalVersion.RegisteredModelId, retrieved.RegisteredModelId)
 
 		// Update
-		retrieved.Description = apiutils.Of("Updated description")
-		retrieved.State = apiutils.Of(openapi.MODELVERSIONSTATE_ARCHIVED)
+		retrieved.Description = new("Updated description")
+		retrieved.State = new(openapi.MODELVERSIONSTATE_ARCHIVED)
 
 		updated, err := _service.UpsertModelVersion(retrieved, createdModel.Id)
 		require.NoError(t, err)
@@ -931,10 +930,10 @@ func TestGetModelVersionsWithFilterQuery(t *testing.T) {
 		{
 			version: &openapi.ModelVersion{
 				Name:              "v1.0.0",
-				Description:       apiutils.Of("Initial release version"),
-				ExternalId:        apiutils.Of("ext-v1-001"),
-				Author:            apiutils.Of("alice"),
-				State:             (*openapi.ModelVersionState)(apiutils.Of("LIVE")),
+				Description:       new("Initial release version"),
+				ExternalId:        new("ext-v1-001"),
+				Author:            new("alice"),
+				State:             (*openapi.ModelVersionState)(new("LIVE")),
 				RegisteredModelId: *createdModel.Id,
 				CustomProperties: map[string]openapi.MetadataValue{
 					"stage": {
@@ -961,10 +960,10 @@ func TestGetModelVersionsWithFilterQuery(t *testing.T) {
 		{
 			version: &openapi.ModelVersion{
 				Name:              "v2.0.0",
-				Description:       apiutils.Of("Major update with improvements"),
-				ExternalId:        apiutils.Of("ext-v2-002"),
-				Author:            apiutils.Of("bob"),
-				State:             (*openapi.ModelVersionState)(apiutils.Of("ARCHIVED")),
+				Description:       new("Major update with improvements"),
+				ExternalId:        new("ext-v2-002"),
+				Author:            new("bob"),
+				State:             (*openapi.ModelVersionState)(new("ARCHIVED")),
 				RegisteredModelId: *createdModel.Id,
 				CustomProperties: map[string]openapi.MetadataValue{
 					"stage": {
@@ -991,9 +990,9 @@ func TestGetModelVersionsWithFilterQuery(t *testing.T) {
 		{
 			version: &openapi.ModelVersion{
 				Name:              "v1.1.0",
-				Description:       apiutils.Of("Minor update with bug fixes"),
-				ExternalId:        apiutils.Of("ext-v1-1-003"),
-				Author:            apiutils.Of("alice"),
+				Description:       new("Minor update with bug fixes"),
+				ExternalId:        new("ext-v1-1-003"),
+				Author:            new("alice"),
 				RegisteredModelId: *createdModel.Id,
 				CustomProperties: map[string]openapi.MetadataValue{
 					"stage": {
@@ -1026,9 +1025,9 @@ func TestGetModelVersionsWithFilterQuery(t *testing.T) {
 		{
 			version: &openapi.ModelVersion{
 				Name:              "v3.0.0-beta",
-				Description:       apiutils.Of("Beta version for testing"),
-				ExternalId:        apiutils.Of("ext-v3-beta-004"),
-				Author:            apiutils.Of("charlie"),
+				Description:       new("Beta version for testing"),
+				ExternalId:        new("ext-v3-beta-004"),
+				Author:            new("charlie"),
 				RegisteredModelId: *createdModel.Id,
 				CustomProperties: map[string]openapi.MetadataValue{
 					"stage": {
