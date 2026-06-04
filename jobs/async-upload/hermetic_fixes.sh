@@ -78,21 +78,7 @@ python -m pip install .
 #
 # Remove when: upstream ships an sdist/wheel with the correct build config.
 # -----------------------------------------------------------------------------
-tar -xzf /cachi2/output/deps/pip/rh_model_signing-0.1.0.tar.gz -C /tmp
-cd /tmp/rh_model_signing-0.1.0
+tar -xzf /cachi2/output/deps/pip/rh_model_signing-1.0.1.tar.gz -C /tmp
+cd /tmp/rh_model_signing-1.0.1
 sed -i 's|packages = \["src/model_signing"\]|packages = ["model_signing"]|' pyproject.toml
 python -m pip install .
-
-# -----------------------------------------------------------------------------
-# Fix #4 — hf-xet requires Rust ≥ 1.89.0, but the UBI9 base image ships 1.88.0
-#
-# hf-xet (and its transitive dependencies) enforce a minimum Rust toolchain
-# version of 1.89.0. The UBI9 base image currently provides only 1.88.0,
-# causing the build to abort with a toolchain version error.
-#
-# Workaround: Pass --ignore-rust-version to maturin via MATURIN_PEP517_ARGS so
-# the version check is skipped. The build proceeds successfully at 1.88.0.
-#
-# Remove when: the UBI9 base image is updated to Rust ≥ 1.89.0.
-# -----------------------------------------------------------------------------
-MATURIN_PEP517_ARGS="--ignore-rust-version" pip install hf-xet
