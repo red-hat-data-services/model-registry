@@ -6,7 +6,6 @@ import (
 
 	"github.com/kubeflow/hub/catalog/internal/converter"
 	"github.com/kubeflow/hub/catalog/pkg/openapi"
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	"github.com/kubeflow/hub/internal/testutils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -23,17 +22,17 @@ func TestMCPServerPrerequisites(t *testing.T) {
 		// Test case: MCP server with ServiceAccount, Secrets, and ConfigMaps
 		mcpServer := &openapi.MCPServer{
 			Name:      "kubernetes-mcp",
-			Version:   apiutils.Of("1.0.0"),
-			SourceId:  apiutils.Of("k8s-source"),
+			Version:   new("1.0.0"),
+			SourceId:  new("k8s-source"),
 			ToolCount: 5,
 			RuntimeMetadata: &openapi.MCPRuntimeMetadata{
-				DefaultPort: apiutils.Of(int32(8080)),
-				McpPath:     apiutils.Of("/mcp"),
+				DefaultPort: new(int32(8080)),
+				McpPath:     new("/mcp"),
 				Prerequisites: &openapi.MCPPrerequisites{
 					ServiceAccount: &openapi.MCPServiceAccountRequirement{
-						Required:      apiutils.Of(true),
-						Hint:          apiutils.Of("Needs 'view' ClusterRole for read-only K8s access"),
-						SuggestedName: apiutils.Of("mcp-viewer"),
+						Required:      new(true),
+						Hint:          new("Needs 'view' ClusterRole for read-only K8s access"),
+						SuggestedName: new("mcp-viewer"),
 					},
 					Secrets: []openapi.MCPSecretRequirement{
 						{
@@ -43,11 +42,11 @@ func TestMCPServerPrerequisites(t *testing.T) {
 								{
 									Key:         "api-key",
 									Description: "OpenAI API key for authentication",
-									EnvVarName:  apiutils.Of("OPENAI_API_KEY"),
-									Required:    apiutils.Of(true),
+									EnvVarName:  new("OPENAI_API_KEY"),
+									Required:    new(true),
 								},
 							},
-							MountAsFile: apiutils.Of(false),
+							MountAsFile: new(false),
 						},
 					},
 					ConfigMaps: []openapi.MCPConfigMapRequirement{
@@ -58,12 +57,12 @@ func TestMCPServerPrerequisites(t *testing.T) {
 								{
 									Key:            "config.toml",
 									Description:    "Main configuration file",
-									DefaultContent: apiutils.Of("log_level = \"info\"\nport = 8080\n"),
-									Required:       apiutils.Of(true),
+									DefaultContent: new("log_level = \"info\"\nport = 8080\n"),
+									Required:       new(true),
 								},
 							},
-							MountAsFile: apiutils.Of(true),
-							MountPath:   apiutils.Of("/etc/mcp-config"),
+							MountAsFile: new(true),
+							MountPath:   new("/etc/mcp-config"),
 						},
 					},
 				},
@@ -121,11 +120,11 @@ func TestMCPServerPrerequisites(t *testing.T) {
 		// Test case: Only Secrets, no ServiceAccount or ConfigMaps
 		mcpServer := &openapi.MCPServer{
 			Name:      "partial-prereqs",
-			Version:   apiutils.Of("1.0.0"),
-			SourceId:  apiutils.Of("partial-source"),
+			Version:   new("1.0.0"),
+			SourceId:  new("partial-source"),
 			ToolCount: 1,
 			RuntimeMetadata: &openapi.MCPRuntimeMetadata{
-				DefaultPort: apiutils.Of(int32(3000)),
+				DefaultPort: new(int32(3000)),
 				Prerequisites: &openapi.MCPPrerequisites{
 					Secrets: []openapi.MCPSecretRequirement{
 						{
@@ -135,7 +134,7 @@ func TestMCPServerPrerequisites(t *testing.T) {
 								{
 									Key:         "token",
 									Description: "Bearer token",
-									Required:    apiutils.Of(true),
+									Required:    new(true),
 								},
 							},
 						},
@@ -165,11 +164,11 @@ func TestMCPServerPrerequisites(t *testing.T) {
 		// Test case: Old-style MCP server without prerequisites field
 		mcpServer := &openapi.MCPServer{
 			Name:      "legacy-server",
-			Version:   apiutils.Of("1.0.0"),
-			SourceId:  apiutils.Of("legacy-source"),
+			Version:   new("1.0.0"),
+			SourceId:  new("legacy-source"),
 			ToolCount: 2,
 			RuntimeMetadata: &openapi.MCPRuntimeMetadata{
-				DefaultPort: apiutils.Of(int32(8080)),
+				DefaultPort: new(int32(8080)),
 				// No prerequisites field
 			},
 		}
@@ -193,12 +192,12 @@ func TestMCPServerPrerequisites(t *testing.T) {
 		// Test case: mcpPath with custom value
 		mcpServer := &openapi.MCPServer{
 			Name:      "custom-path-server",
-			Version:   apiutils.Of("1.0.0"),
-			SourceId:  apiutils.Of("custom-source"),
+			Version:   new("1.0.0"),
+			SourceId:  new("custom-source"),
 			ToolCount: 3,
 			RuntimeMetadata: &openapi.MCPRuntimeMetadata{
-				DefaultPort: apiutils.Of(int32(8080)),
-				McpPath:     apiutils.Of("/api/v1/mcp"),
+				DefaultPort: new(int32(8080)),
+				McpPath:     new("/api/v1/mcp"),
 			},
 		}
 
@@ -221,9 +220,9 @@ func TestMCPServerPrerequisites(t *testing.T) {
 		// Test case: Verify JSON serialization preserves all nested fields
 		prerequisites := &openapi.MCPPrerequisites{
 			ServiceAccount: &openapi.MCPServiceAccountRequirement{
-				Required:      apiutils.Of(true),
-				Hint:          apiutils.Of("Needs cluster admin"),
-				SuggestedName: apiutils.Of("mcp-admin"),
+				Required:      new(true),
+				Hint:          new("Needs cluster admin"),
+				SuggestedName: new("mcp-admin"),
 			},
 			Secrets: []openapi.MCPSecretRequirement{
 				{
@@ -243,18 +242,18 @@ func TestMCPServerPrerequisites(t *testing.T) {
 						{
 							Key:            "config.yaml",
 							Description:    "Main config",
-							DefaultContent: apiutils.Of("key: value\n"),
+							DefaultContent: new("key: value\n"),
 						},
 					},
-					MountAsFile: apiutils.Of(true),
-					MountPath:   apiutils.Of("/config"),
+					MountAsFile: new(true),
+					MountPath:   new("/config"),
 				},
 			},
 			EnvironmentVariables: []openapi.MCPEnvVarMetadata{
 				{
 					Name:        "ENV_VAR_1",
 					Description: "Environment variable 1",
-					Required:    apiutils.Of(true),
+					Required:    new(true),
 				},
 			},
 			CustomResources: []string{"PersistentVolumeClaim: data-pvc"},
@@ -283,25 +282,25 @@ func TestMCPServerPrerequisites(t *testing.T) {
 		// Test case: Prerequisites with environment variables persisted through database
 		mcpServer := &openapi.MCPServer{
 			Name:      "env-vars-server",
-			Version:   apiutils.Of("1.0.0"),
-			SourceId:  apiutils.Of("env-source"),
+			Version:   new("1.0.0"),
+			SourceId:  new("env-source"),
 			ToolCount: 1,
 			RuntimeMetadata: &openapi.MCPRuntimeMetadata{
-				DefaultPort: apiutils.Of(int32(8080)),
+				DefaultPort: new(int32(8080)),
 				Prerequisites: &openapi.MCPPrerequisites{
 					EnvironmentVariables: []openapi.MCPEnvVarMetadata{
 						{
 							Name:        "API_ENDPOINT",
 							Description: "Service API endpoint URL",
-							Required:    apiutils.Of(true),
-							Type:        apiutils.Of("string"),
+							Required:    new(true),
+							Type:        new("string"),
 						},
 						{
 							Name:         "LOG_LEVEL",
 							Description:  "Logging verbosity level",
-							Required:     apiutils.Of(false),
-							DefaultValue: apiutils.Of("info"),
-							Type:         apiutils.Of("string"),
+							Required:     new(false),
+							DefaultValue: new("info"),
+							Type:         new("string"),
 						},
 					},
 				},
@@ -331,11 +330,11 @@ func TestMCPServerPrerequisites(t *testing.T) {
 		// Test case: Prerequisites with empty arrays
 		mcpServer := &openapi.MCPServer{
 			Name:      "empty-arrays-server",
-			Version:   apiutils.Of("1.0.0"),
-			SourceId:  apiutils.Of("empty-source"),
+			Version:   new("1.0.0"),
+			SourceId:  new("empty-source"),
 			ToolCount: 1,
 			RuntimeMetadata: &openapi.MCPRuntimeMetadata{
-				DefaultPort: apiutils.Of(int32(8080)),
+				DefaultPort: new(int32(8080)),
 				Prerequisites: &openapi.MCPPrerequisites{
 					Secrets:              []openapi.MCPSecretRequirement{},
 					ConfigMaps:           []openapi.MCPConfigMapRequirement{},
@@ -367,16 +366,16 @@ func TestMCPServerPrerequisites(t *testing.T) {
 		// Test case: Special characters and unicode in hints/descriptions
 		mcpServer := &openapi.MCPServer{
 			Name:      "special-chars-server",
-			Version:   apiutils.Of("1.0.0"),
-			SourceId:  apiutils.Of("special-source"),
+			Version:   new("1.0.0"),
+			SourceId:  new("special-source"),
 			ToolCount: 1,
 			RuntimeMetadata: &openapi.MCPRuntimeMetadata{
-				DefaultPort: apiutils.Of(int32(8080)),
+				DefaultPort: new(int32(8080)),
 				Prerequisites: &openapi.MCPPrerequisites{
 					ServiceAccount: &openapi.MCPServiceAccountRequirement{
-						Required:      apiutils.Of(true),
-						Hint:          apiutils.Of("Requires RBAC: pods/list, pods/get, pods/watch → 'view' ClusterRole ✓"),
-						SuggestedName: apiutils.Of("mcp-server-sa"),
+						Required:      new(true),
+						Hint:          new("Requires RBAC: pods/list, pods/get, pods/watch → 'view' ClusterRole ✓"),
+						SuggestedName: new("mcp-server-sa"),
 					},
 					Secrets: []openapi.MCPSecretRequirement{
 						{
@@ -386,7 +385,7 @@ func TestMCPServerPrerequisites(t *testing.T) {
 								{
 									Key:         "special-key",
 									Description: "API key with special chars: !@#$%^&*()_+-=[]{}|;':\"<>?,./",
-									Required:    apiutils.Of(true),
+									Required:    new(true),
 								},
 							},
 						},
@@ -417,11 +416,11 @@ func TestMCPServerPrerequisites(t *testing.T) {
 		// Test case: Custom resources hints
 		mcpServer := &openapi.MCPServer{
 			Name:      "custom-resources-server",
-			Version:   apiutils.Of("1.0.0"),
-			SourceId:  apiutils.Of("custom-source"),
+			Version:   new("1.0.0"),
+			SourceId:  new("custom-source"),
 			ToolCount: 1,
 			RuntimeMetadata: &openapi.MCPRuntimeMetadata{
-				DefaultPort: apiutils.Of(int32(8080)),
+				DefaultPort: new(int32(8080)),
 				Prerequisites: &openapi.MCPPrerequisites{
 					CustomResources: []string{
 						"PersistentVolumeClaim: mcp-data-storage (100Gi)",

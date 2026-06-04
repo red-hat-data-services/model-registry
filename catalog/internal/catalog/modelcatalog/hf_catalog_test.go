@@ -63,13 +63,13 @@ func TestPopulateFromHFInfo(t *testing.T) {
 			sourceId:          "test-source-id",
 			originalModelName: "test-org/test-model",
 			expectedName:      "test-org/test-model",
-			expectedProvider:  stringPtr("test-author"),
-			expectedLicense:   stringPtr("MIT"),
-			expectedLibrary:   stringPtr("transformers"),
+			expectedProvider:  new("test-author"),
+			expectedLicense:   new("MIT"),
+			expectedLibrary:   new("transformers"),
 			hasTasks:          true,
 			hasCustomProps:    true,
 			hasReadme:         false, // No README fetching in unit tests
-			expectedModelType: stringPtr("generative"),
+			expectedModelType: new("generative"),
 		},
 		{
 			name: "model with ModelID fallback",
@@ -80,8 +80,8 @@ func TestPopulateFromHFInfo(t *testing.T) {
 			sourceId:          "source-2",
 			originalModelName: "original-name",
 			expectedName:      "fallback-model-id",
-			expectedProvider:  stringPtr("another-author"),
-			expectedModelType: stringPtr("unknown"),
+			expectedProvider:  new("another-author"),
+			expectedModelType: new("unknown"),
 		},
 		{
 			name: "model with original name fallback",
@@ -91,8 +91,8 @@ func TestPopulateFromHFInfo(t *testing.T) {
 			sourceId:          "source-3",
 			originalModelName: "fallback-original-name",
 			expectedName:      "fallback-original-name",
-			expectedProvider:  stringPtr("author-3"),
-			expectedModelType: stringPtr("unknown"),
+			expectedProvider:  new("author-3"),
+			expectedModelType: new("unknown"),
 		},
 		{
 			name: "model with license in tags",
@@ -103,9 +103,9 @@ func TestPopulateFromHFInfo(t *testing.T) {
 			sourceId:          "source-4",
 			originalModelName: "test/licensed-model",
 			expectedName:      "test/licensed-model",
-			expectedLicense:   stringPtr("Apache 2.0"),
+			expectedLicense:   new("Apache 2.0"),
 			hasCustomProps:    true,
-			expectedModelType: stringPtr("unknown"),
+			expectedModelType: new("unknown"),
 		},
 		{
 			name: "model with tasks",
@@ -119,7 +119,7 @@ func TestPopulateFromHFInfo(t *testing.T) {
 			expectedName:      "test/task-model",
 			hasTasks:          true,
 			hasCustomProps:    true,
-			expectedModelType: stringPtr("predictive"),
+			expectedModelType: new("predictive"),
 		},
 		{
 			name: "model with description in cardData",
@@ -135,7 +135,7 @@ func TestPopulateFromHFInfo(t *testing.T) {
 			originalModelName: "test/desc-model",
 			expectedName:      "test/desc-model",
 			hasDescription:    true,
-			expectedModelType: stringPtr("unknown"),
+			expectedModelType: new("unknown"),
 		},
 		{
 			name: "minimal model info",
@@ -146,7 +146,7 @@ func TestPopulateFromHFInfo(t *testing.T) {
 			originalModelName: "minimal/model",
 			expectedName:      "minimal/model",
 			hasCustomProps:    true,
-			expectedModelType: stringPtr("unknown"),
+			expectedModelType: new("unknown"),
 		},
 		{
 			name: "model with generative task - should classify as generative",
@@ -160,7 +160,7 @@ func TestPopulateFromHFInfo(t *testing.T) {
 			expectedName:      "test/generative-model",
 			hasTasks:          true,
 			hasCustomProps:    true,
-			expectedModelType: stringPtr("generative"),
+			expectedModelType: new("generative"),
 		},
 		{
 			name: "model with predictive task - should classify as predictive",
@@ -174,7 +174,7 @@ func TestPopulateFromHFInfo(t *testing.T) {
 			expectedName:      "test/predictive-model",
 			hasTasks:          true,
 			hasCustomProps:    true,
-			expectedModelType: stringPtr("predictive"),
+			expectedModelType: new("predictive"),
 		},
 		{
 			name: "model with both generative and predictive tasks - should prioritize generative",
@@ -188,7 +188,7 @@ func TestPopulateFromHFInfo(t *testing.T) {
 			expectedName:      "test/mixed-model",
 			hasTasks:          true,
 			hasCustomProps:    true,
-			expectedModelType: stringPtr("generative"),
+			expectedModelType: new("generative"),
 		},
 		{
 			name: "model with unknown task - should classify as unknown",
@@ -202,7 +202,7 @@ func TestPopulateFromHFInfo(t *testing.T) {
 			expectedName:      "test/unknown-model",
 			hasTasks:          true,
 			hasCustomProps:    true,
-			expectedModelType: stringPtr("unknown"),
+			expectedModelType: new("unknown"),
 		},
 	}
 
@@ -433,12 +433,12 @@ func TestConvertHFModelProperties(t *testing.T) {
 			name: "model with all properties",
 			catalogModel: &apimodels.CatalogModel{
 				Name:        "test-model",
-				Description: stringPtr("Test description"),
-				Readme:      stringPtr("# Test README"),
-				Provider:    stringPtr("test-provider"),
-				License:     stringPtr("MIT License"),
-				LibraryName: stringPtr("transformers"),
-				SourceId:    stringPtr("source-1"),
+				Description: new("Test description"),
+				Readme:      new("# Test README"),
+				Provider:    new("test-provider"),
+				License:     new("MIT License"),
+				LibraryName: new("transformers"),
+				SourceId:    new("source-1"),
 				Tasks:       []string{"text-generation"},
 			},
 			wantProps:  true,
@@ -654,11 +654,6 @@ func TestPopulateFromHFInfoWithCustomProperties(t *testing.T) {
 	} else if modelTypeVal.MetadataStringValue == nil || modelTypeVal.MetadataStringValue.StringValue != "bert" {
 		t.Errorf("hf_model_type = %v, want 'bert'", modelTypeVal.MetadataStringValue)
 	}
-}
-
-// Helper function to create string pointers
-func stringPtr(s string) *string {
-	return &s
 }
 
 func TestParseModelPattern(t *testing.T) {

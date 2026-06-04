@@ -3,7 +3,6 @@ package service_test
 import (
 	"testing"
 
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	"github.com/kubeflow/hub/internal/db/models"
 	"github.com/kubeflow/hub/internal/db/service"
 	"github.com/kubeflow/hub/internal/defaults"
@@ -306,7 +305,7 @@ func TestTypeRepository(t *testing.T) {
 		// Test saving type without name
 		noNameType := &models.TypeImpl{
 			Attributes: &models.TypeAttributes{
-				TypeKind: apiutils.Of(int32(1)),
+				TypeKind: new(int32(1)),
 			},
 		}
 		_, err = repo.Save(noNameType)
@@ -316,7 +315,7 @@ func TestTypeRepository(t *testing.T) {
 		// Test saving type without kind
 		noKindType := &models.TypeImpl{
 			Attributes: &models.TypeAttributes{
-				Name: apiutils.Of("test-no-kind"),
+				Name: new("test-no-kind"),
 			},
 		}
 		_, err = repo.Save(noKindType)

@@ -154,14 +154,10 @@ func emptyList() *internalmodels.ListWrapper[models.MCPServer] {
 	return &internalmodels.ListWrapper[models.MCPServer]{Items: []models.MCPServer{}}
 }
 
-func serverID(id int32) *int32 { return &id }
-
-func serverName(name string) *string { return &name }
-
 func listWithServer(id int32, name string) *internalmodels.ListWrapper[models.MCPServer] {
 	server := &models.MCPServerImpl{
-		ID:         serverID(id),
-		Attributes: &models.MCPServerAttributes{Name: serverName(name)},
+		ID:         new(id),
+		Attributes: &models.MCPServerAttributes{Name: new(name)},
 	}
 	return &internalmodels.ListWrapper[models.MCPServer]{Items: []models.MCPServer{server}}
 }
@@ -175,8 +171,8 @@ func listWithServers(servers ...serverStub) *internalmodels.ListWrapper[models.M
 	items := make([]models.MCPServer, 0, len(servers))
 	for _, s := range servers {
 		items = append(items, &models.MCPServerImpl{
-			ID:         serverID(s.id),
-			Attributes: &models.MCPServerAttributes{Name: serverName(s.name)},
+			ID:         new(s.id),
+			Attributes: &models.MCPServerAttributes{Name: new(s.name)},
 		})
 	}
 	return &internalmodels.ListWrapper[models.MCPServer]{Items: items}
@@ -184,7 +180,7 @@ func listWithServers(servers ...serverStub) *internalmodels.ListWrapper[models.M
 
 func makeTool(name string) models.MCPServerTool {
 	return &models.MCPServerToolImpl{
-		Attributes: &models.MCPServerToolAttributes{Name: serverName(name)},
+		Attributes: &models.MCPServerToolAttributes{Name: new(name)},
 	}
 }
 
@@ -378,8 +374,8 @@ func TestListMCPServers_CountByParentIDError(t *testing.T) {
 
 func TestGetMCPServer_ToolCountWithoutIncludeTools(t *testing.T) {
 	serverEntity := &models.MCPServerImpl{
-		ID:         serverID(1),
-		Attributes: &models.MCPServerAttributes{Name: serverName("test-server")},
+		ID:         new(int32(1)),
+		Attributes: &models.MCPServerAttributes{Name: new("test-server")},
 	}
 	repo := &mockMCPServerRepo{getResult: serverEntity}
 	toolRepo := &mockMCPServerToolRepo{countResult: 7}
@@ -394,8 +390,8 @@ func TestGetMCPServer_ToolCountWithoutIncludeTools(t *testing.T) {
 
 func TestGetMCPServer_CountByParentIDError(t *testing.T) {
 	serverEntity := &models.MCPServerImpl{
-		ID:         serverID(1),
-		Attributes: &models.MCPServerAttributes{Name: serverName("test-server")},
+		ID:         new(int32(1)),
+		Attributes: &models.MCPServerAttributes{Name: new("test-server")},
 	}
 	repo := &mockMCPServerRepo{getResult: serverEntity}
 	toolRepo := &mockMCPServerToolRepo{countErr: errors.New("db count error")}
@@ -499,8 +495,8 @@ func TestListMCPServers_ZeroToolLimitDoesNotSetPageSize(t *testing.T) {
 
 func TestGetMCPServer_ToolLimitSetsPageSize(t *testing.T) {
 	serverEntity := &models.MCPServerImpl{
-		ID:         serverID(1),
-		Attributes: &models.MCPServerAttributes{Name: serverName("test-server")},
+		ID:         new(int32(1)),
+		Attributes: &models.MCPServerAttributes{Name: new("test-server")},
 	}
 	repo := &mockMCPServerRepo{getResult: serverEntity}
 	toolRepo := &mockMCPServerToolRepo{
@@ -518,8 +514,8 @@ func TestGetMCPServer_ToolLimitSetsPageSize(t *testing.T) {
 
 func TestGetMCPServer_ZeroToolLimitOmitsPageSize(t *testing.T) {
 	serverEntity := &models.MCPServerImpl{
-		ID:         serverID(1),
-		Attributes: &models.MCPServerAttributes{Name: serverName("test-server")},
+		ID:         new(int32(1)),
+		Attributes: &models.MCPServerAttributes{Name: new("test-server")},
 	}
 	repo := &mockMCPServerRepo{getResult: serverEntity}
 	toolRepo := &mockMCPServerToolRepo{
@@ -536,8 +532,8 @@ func TestGetMCPServer_ZeroToolLimitOmitsPageSize(t *testing.T) {
 
 func TestGetMCPServerTool_StripsQualifiedPrefix(t *testing.T) {
 	serverEntity := &models.MCPServerImpl{
-		ID:         serverID(88),
-		Attributes: &models.MCPServerAttributes{Name: serverName("dynatrace-mcp")},
+		ID:         new(int32(88)),
+		Attributes: &models.MCPServerAttributes{Name: new("dynatrace-mcp")},
 	}
 	repo := &mockMCPServerRepo{getResult: serverEntity}
 	toolRepo := &mockMCPServerToolRepo{
@@ -553,8 +549,8 @@ func TestGetMCPServerTool_StripsQualifiedPrefix(t *testing.T) {
 
 func TestGetMCPServerTool_NotFound(t *testing.T) {
 	serverEntity := &models.MCPServerImpl{
-		ID:         serverID(88),
-		Attributes: &models.MCPServerAttributes{Name: serverName("dynatrace-mcp")},
+		ID:         new(int32(88)),
+		Attributes: &models.MCPServerAttributes{Name: new("dynatrace-mcp")},
 	}
 	repo := &mockMCPServerRepo{getResult: serverEntity}
 	// DB-level filter returns empty when tool name doesn't match.
@@ -570,8 +566,8 @@ func TestGetMCPServerTool_NotFound(t *testing.T) {
 
 func TestGetMCPServerTool_PassesToolNameFilter(t *testing.T) {
 	serverEntity := &models.MCPServerImpl{
-		ID:         serverID(88),
-		Attributes: &models.MCPServerAttributes{Name: serverName("dynatrace-mcp")},
+		ID:         new(int32(88)),
+		Attributes: &models.MCPServerAttributes{Name: new("dynatrace-mcp")},
 	}
 	repo := &mockMCPServerRepo{getResult: serverEntity}
 	toolRepo := &mockMCPServerToolRepo{
@@ -662,8 +658,8 @@ func TestListMCPServerTools_EmptyOrderByUsesDefault(t *testing.T) {
 	// Same bug applies to ListMCPServerTools — empty OrderBy/SortOrder must
 	// resolve to defaults for correct cursor-based pagination.
 	serverEntity := &models.MCPServerImpl{
-		ID:         serverID(1),
-		Attributes: &models.MCPServerAttributes{Name: serverName("test-server")},
+		ID:         new(int32(1)),
+		Attributes: &models.MCPServerAttributes{Name: new("test-server")},
 	}
 	repo := &mockMCPServerRepo{getResult: serverEntity}
 	toolRepo := &mockMCPServerToolRepo{listResult: toolList()}
@@ -685,8 +681,8 @@ func TestListMCPServerTools_EmptyOrderByUsesDefault(t *testing.T) {
 
 func TestGetMCPServer_IncludeToolsUsesAccurateCount(t *testing.T) {
 	serverEntity := &models.MCPServerImpl{
-		ID:         serverID(1),
-		Attributes: &models.MCPServerAttributes{Name: serverName("test-server")},
+		ID:         new(int32(1)),
+		Attributes: &models.MCPServerAttributes{Name: new("test-server")},
 	}
 	repo := &mockMCPServerRepo{getResult: serverEntity}
 	toolRepo := &mockMCPServerToolRepo{

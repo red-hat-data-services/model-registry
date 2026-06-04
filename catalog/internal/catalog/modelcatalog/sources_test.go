@@ -7,7 +7,6 @@ import (
 
 	"github.com/kubeflow/hub/catalog/internal/catalog/basecatalog"
 	model "github.com/kubeflow/hub/catalog/pkg/openapi"
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 )
 
 func TestSourceCollection_ByLabel(t *testing.T) {
@@ -18,7 +17,7 @@ func TestSourceCollection_ByLabel(t *testing.T) {
 			CatalogSource: model.CatalogSource{
 				Id:      "source1",
 				Name:    "Source 1",
-				Enabled: apiutils.Of(true),
+				Enabled: new(true),
 				Labels:  []string{"frontend", "production"},
 			},
 		},
@@ -26,7 +25,7 @@ func TestSourceCollection_ByLabel(t *testing.T) {
 			CatalogSource: model.CatalogSource{
 				Id:      "source2",
 				Name:    "Source 2",
-				Enabled: apiutils.Of(true),
+				Enabled: new(true),
 				Labels:  []string{"Backend", "Development"}, // Mixed case to test case insensitivity
 			},
 		},
@@ -34,7 +33,7 @@ func TestSourceCollection_ByLabel(t *testing.T) {
 			CatalogSource: model.CatalogSource{
 				Id:      "source3",
 				Name:    "Source 3",
-				Enabled: apiutils.Of(false),                  // Disabled - should not appear in results
+				Enabled: new(false),                          // Disabled - should not appear in results
 				Labels:  []string{"analytics", "PRODUCTION"}, // Mixed case
 			},
 		},
@@ -42,7 +41,7 @@ func TestSourceCollection_ByLabel(t *testing.T) {
 			CatalogSource: model.CatalogSource{
 				Id:      "source4",
 				Name:    "Source 4",
-				Enabled: apiutils.Of(true),
+				Enabled: new(true),
 				Labels:  []string{"testing", "staging", "analytics"}, // Added analytics to test this label with enabled source
 			},
 		},
@@ -50,7 +49,7 @@ func TestSourceCollection_ByLabel(t *testing.T) {
 			CatalogSource: model.CatalogSource{
 				Id:      "source5",
 				Name:    "Source 5",
-				Enabled: apiutils.Of(true),
+				Enabled: new(true),
 				Labels:  []string{}, // No labels
 			},
 		},
@@ -187,7 +186,7 @@ func TestSourceCollection_ByLabel_NilLabels(t *testing.T) {
 			CatalogSource: model.CatalogSource{
 				Id:      "source1",
 				Name:    "Source 1",
-				Enabled: apiutils.Of(true),
+				Enabled: new(true),
 				Labels:  nil, // nil labels
 			},
 		},
@@ -248,7 +247,7 @@ func TestSourceCollection_MergeOverride(t *testing.T) {
 						"hf": {CatalogSource: model.CatalogSource{
 							Id:             "hf",
 							Name:           "Hugging Face",
-							Enabled:        apiutils.Of(true),
+							Enabled:        new(true),
 							Labels:         []string{"default"},
 							ExcludedModels: []string{"model-a"},
 						}},
@@ -260,7 +259,7 @@ func TestSourceCollection_MergeOverride(t *testing.T) {
 						"hf": {CatalogSource: model.CatalogSource{
 							Id:             "hf",
 							Name:           "Hugging Face Custom",
-							Enabled:        apiutils.Of(true),
+							Enabled:        new(true),
 							Labels:         []string{"custom"},
 							ExcludedModels: []string{"model-a", "DeepSeek"},
 						}},
@@ -271,7 +270,7 @@ func TestSourceCollection_MergeOverride(t *testing.T) {
 				"hf": {
 					Id:             "hf",
 					Name:           "Hugging Face Custom",
-					Enabled:        apiutils.Of(true),
+					Enabled:        new(true),
 					Labels:         []string{"custom"},
 					ExcludedModels: []string{"model-a", "DeepSeek"},
 				},
@@ -290,7 +289,7 @@ func TestSourceCollection_MergeOverride(t *testing.T) {
 						"hf": {CatalogSource: model.CatalogSource{
 							Id:      "hf",
 							Name:    "Hugging Face",
-							Enabled: apiutils.Of(true),
+							Enabled: new(true),
 							Labels:  []string{"default"},
 						}},
 					},
@@ -304,7 +303,7 @@ func TestSourceCollection_MergeOverride(t *testing.T) {
 				"hf": {
 					Id:      "hf",
 					Name:    "Hugging Face",
-					Enabled: apiutils.Of(true),
+					Enabled: new(true),
 					Labels:  []string{"default"},
 				},
 			},
@@ -322,13 +321,13 @@ func TestSourceCollection_MergeOverride(t *testing.T) {
 						"hf": {CatalogSource: model.CatalogSource{
 							Id:      "hf",
 							Name:    "Hugging Face",
-							Enabled: apiutils.Of(true),
+							Enabled: new(true),
 							Labels:  []string{},
 						}},
 						"local": {CatalogSource: model.CatalogSource{
 							Id:      "local",
 							Name:    "Local Files",
-							Enabled: apiutils.Of(true),
+							Enabled: new(true),
 							Labels:  []string{},
 						}},
 					},
@@ -339,7 +338,7 @@ func TestSourceCollection_MergeOverride(t *testing.T) {
 						"hf": {CatalogSource: model.CatalogSource{
 							Id:             "hf",
 							Name:           "Hugging Face",
-							Enabled:        apiutils.Of(true),
+							Enabled:        new(true),
 							Labels:         []string{},
 							ExcludedModels: []string{"DeepSeek"},
 						}},
@@ -350,14 +349,14 @@ func TestSourceCollection_MergeOverride(t *testing.T) {
 				"hf": {
 					Id:             "hf",
 					Name:           "Hugging Face",
-					Enabled:        apiutils.Of(true),
+					Enabled:        new(true),
 					Labels:         []string{},
 					ExcludedModels: []string{"DeepSeek"},
 				},
 				"local": {
 					Id:      "local",
 					Name:    "Local Files",
-					Enabled: apiutils.Of(true),
+					Enabled: new(true),
 					Labels:  []string{},
 				},
 			},
@@ -375,7 +374,7 @@ func TestSourceCollection_MergeOverride(t *testing.T) {
 						"hf": {CatalogSource: model.CatalogSource{
 							Id:      "hf",
 							Name:    "Base HF",
-							Enabled: apiutils.Of(true),
+							Enabled: new(true),
 							Labels:  []string{"base"},
 						}},
 					},
@@ -386,7 +385,7 @@ func TestSourceCollection_MergeOverride(t *testing.T) {
 						"hf": {CatalogSource: model.CatalogSource{
 							Id:      "hf",
 							Name:    "Team HF",
-							Enabled: apiutils.Of(true),
+							Enabled: new(true),
 							Labels:  []string{"team"},
 						}},
 					},
@@ -397,7 +396,7 @@ func TestSourceCollection_MergeOverride(t *testing.T) {
 						"hf": {CatalogSource: model.CatalogSource{
 							Id:      "hf",
 							Name:    "User HF",
-							Enabled: apiutils.Of(true),
+							Enabled: new(true),
 							Labels:  []string{"user"},
 						}},
 					},
@@ -407,7 +406,7 @@ func TestSourceCollection_MergeOverride(t *testing.T) {
 				"hf": {
 					Id:      "hf",
 					Name:    "User HF",
-					Enabled: apiutils.Of(true),
+					Enabled: new(true),
 					Labels:  []string{"user"},
 				},
 			},
@@ -425,7 +424,7 @@ func TestSourceCollection_MergeOverride(t *testing.T) {
 						"hf": {CatalogSource: model.CatalogSource{
 							Id:      "hf",
 							Name:    "Hugging Face",
-							Enabled: apiutils.Of(true),
+							Enabled: new(true),
 							Labels:  []string{},
 						}},
 					},
@@ -436,7 +435,7 @@ func TestSourceCollection_MergeOverride(t *testing.T) {
 						"hf": {CatalogSource: model.CatalogSource{
 							Id:      "hf",
 							Name:    "Hugging Face",
-							Enabled: apiutils.Of(false),
+							Enabled: new(false),
 							Labels:  []string{},
 						}},
 					},
@@ -447,7 +446,7 @@ func TestSourceCollection_MergeOverride(t *testing.T) {
 				"hf": {
 					Id:      "hf",
 					Name:    "Hugging Face",
-					Enabled: apiutils.Of(false),
+					Enabled: new(false),
 					Labels:  []string{},
 				},
 			},
@@ -465,7 +464,7 @@ func TestSourceCollection_MergeOverride(t *testing.T) {
 						"models_x": {CatalogSource: model.CatalogSource{
 							Id:             "models_x",
 							Name:           "Models X Catalog",
-							Enabled:        apiutils.Of(false), // Disabled in default
+							Enabled:        new(false), // Disabled in default
 							Labels:         []string{"enterprise"},
 							IncludedModels: []string{"model-a", "model-b"},
 							ExcludedModels: []string{"model-c"},
@@ -478,7 +477,7 @@ func TestSourceCollection_MergeOverride(t *testing.T) {
 						// Sparse override: only id and enabled
 						"models_x": {CatalogSource: model.CatalogSource{
 							Id:      "models_x",
-							Enabled: apiutils.Of(true), // Enable it
+							Enabled: new(true), // Enable it
 							// Name, Labels, IncludedModels, ExcludedModels are nil/empty
 						}},
 					},
@@ -488,7 +487,7 @@ func TestSourceCollection_MergeOverride(t *testing.T) {
 				"models_x": {
 					Id:             "models_x",
 					Name:           "Models X Catalog",             // Inherited from default
-					Enabled:        apiutils.Of(true),              // Overridden by user
+					Enabled:        new(true),                      // Overridden by user
 					Labels:         []string{"enterprise"},         // Inherited from default
 					IncludedModels: []string{"model-a", "model-b"}, // Inherited from default
 					ExcludedModels: []string{"model-c"},            // Inherited from default
@@ -508,7 +507,7 @@ func TestSourceCollection_MergeOverride(t *testing.T) {
 						"hf": {CatalogSource: model.CatalogSource{
 							Id:             "hf",
 							Name:           "Hugging Face",
-							Enabled:        apiutils.Of(true),
+							Enabled:        new(true),
 							Labels:         []string{"public"},
 							ExcludedModels: []string{"model-a"},
 						}},
@@ -529,7 +528,7 @@ func TestSourceCollection_MergeOverride(t *testing.T) {
 				"hf": {
 					Id:             "hf",
 					Name:           "Hugging Face",                                  // Inherited
-					Enabled:        apiutils.Of(true),                               // Inherited
+					Enabled:        new(true),                                       // Inherited
 					Labels:         []string{"public"},                              // Inherited
 					ExcludedModels: []string{"model-a", "DeepSeek", "banned-model"}, // Overridden
 				},
@@ -548,7 +547,7 @@ func TestSourceCollection_MergeOverride(t *testing.T) {
 						"hf": {CatalogSource: model.CatalogSource{
 							Id:      "hf",
 							Name:    "Hugging Face",
-							Enabled: apiutils.Of(true),
+							Enabled: new(true),
 							Labels:  []string{"public", "ai"},
 						}},
 					},
@@ -566,9 +565,9 @@ func TestSourceCollection_MergeOverride(t *testing.T) {
 			expectedSources: map[string]model.CatalogSource{
 				"hf": {
 					Id:      "hf",
-					Name:    "Hugging Face",    // Inherited
-					Enabled: apiutils.Of(true), // Inherited
-					Labels:  []string{},        // Overridden to empty
+					Name:    "Hugging Face", // Inherited
+					Enabled: new(true),      // Inherited
+					Labels:  []string{},     // Overridden to empty
 				},
 			},
 		},
@@ -594,8 +593,8 @@ func TestSourceCollection_MergeOverride(t *testing.T) {
 				"hf": {
 					Id:      "hf",
 					Name:    "Hugging Face",
-					Enabled: apiutils.Of(true), // Default applied
-					Labels:  []string{},        // Default applied
+					Enabled: new(true),  // Default applied
+					Labels:  []string{}, // Default applied
 				},
 			},
 		},
@@ -613,7 +612,7 @@ func TestSourceCollection_MergeOverride(t *testing.T) {
 							CatalogSource: model.CatalogSource{
 								Id:      "models_x",
 								Name:    "Models X Catalog",
-								Enabled: apiutils.Of(false), // Disabled in default
+								Enabled: new(false), // Disabled in default
 								Labels:  []string{"enterprise"},
 							},
 							Type: "yaml",
@@ -630,7 +629,7 @@ func TestSourceCollection_MergeOverride(t *testing.T) {
 						"models_x": {
 							CatalogSource: model.CatalogSource{
 								Id:      "models_x",
-								Enabled: apiutils.Of(true), // Enable it
+								Enabled: new(true), // Enable it
 							},
 							// Type and Properties are empty/nil - should be inherited
 						},
@@ -641,7 +640,7 @@ func TestSourceCollection_MergeOverride(t *testing.T) {
 				"models_x": {
 					Id:      "models_x",
 					Name:    "Models X Catalog",     // Inherited from default
-					Enabled: apiutils.Of(true),      // Overridden by user
+					Enabled: new(true),              // Overridden by user
 					Labels:  []string{"enterprise"}, // Inherited from default
 				},
 			},
@@ -699,7 +698,7 @@ func TestSourceCollection_MergeOverride_Get(t *testing.T) {
 		"hf": {CatalogSource: model.CatalogSource{
 			Id:      "hf",
 			Name:    "Hugging Face Default",
-			Enabled: apiutils.Of(true),
+			Enabled: new(true),
 			Labels:  []string{},
 		}},
 	})
@@ -712,7 +711,7 @@ func TestSourceCollection_MergeOverride_Get(t *testing.T) {
 		"hf": {CatalogSource: model.CatalogSource{
 			Id:             "hf",
 			Name:           "Hugging Face User",
-			Enabled:        apiutils.Of(true),
+			Enabled:        new(true),
 			Labels:         []string{"user-managed"},
 			ExcludedModels: []string{"DeepSeek"},
 		}},
@@ -739,7 +738,7 @@ func TestSourceCollection_MergeOverride_DynamicOrigin(t *testing.T) {
 	sc := NewSourceCollection("default.yaml")
 
 	err := sc.Merge("default.yaml", map[string]basecatalog.ModelSource{
-		"hf": {CatalogSource: model.CatalogSource{Id: "hf", Name: "Default", Enabled: apiutils.Of(true), Labels: []string{}}},
+		"hf": {CatalogSource: model.CatalogSource{Id: "hf", Name: "Default", Enabled: new(true), Labels: []string{}}},
 	})
 	if err != nil {
 		t.Fatalf("Merge(default.yaml) failed: %v", err)
@@ -747,7 +746,7 @@ func TestSourceCollection_MergeOverride_DynamicOrigin(t *testing.T) {
 
 	// Dynamic origin not in initial order
 	err = sc.Merge("extra.yaml", map[string]basecatalog.ModelSource{
-		"hf": {CatalogSource: model.CatalogSource{Id: "hf", Name: "Extra", Enabled: apiutils.Of(true), Labels: []string{}}},
+		"hf": {CatalogSource: model.CatalogSource{Id: "hf", Name: "Extra", Enabled: new(true), Labels: []string{}}},
 	})
 	if err != nil {
 		t.Fatalf("Merge(extra.yaml) failed: %v", err)
@@ -769,7 +768,7 @@ func TestSourceCollection_MergeOverride_TypeAndProperties(t *testing.T) {
 			CatalogSource: model.CatalogSource{
 				Id:      "models_x",
 				Name:    "Models X Catalog",
-				Enabled: apiutils.Of(false), // Disabled
+				Enabled: new(false), // Disabled
 				Labels:  []string{"enterprise"},
 			},
 			Type: "yaml",
@@ -788,7 +787,7 @@ func TestSourceCollection_MergeOverride_TypeAndProperties(t *testing.T) {
 		"models_x": {
 			CatalogSource: model.CatalogSource{
 				Id:      "models_x",
-				Enabled: apiutils.Of(true), // Enable it
+				Enabled: new(true), // Enable it
 			},
 			// Type and Properties are empty - should be inherited
 		},
@@ -857,7 +856,7 @@ func TestSourceCollection_MergeOverride_Origin(t *testing.T) {
 							CatalogSource: model.CatalogSource{
 								Id:      "hf",
 								Name:    "Hugging Face",
-								Enabled: apiutils.Of(true),
+								Enabled: new(true),
 							},
 							Type: "yaml",
 							Properties: map[string]any{
@@ -875,7 +874,7 @@ func TestSourceCollection_MergeOverride_Origin(t *testing.T) {
 							CatalogSource: model.CatalogSource{
 								Id:      "hf",
 								Name:    "Hugging Face Custom",
-								Enabled: apiutils.Of(true),
+								Enabled: new(true),
 							},
 							Origin: "/user-config/user.yaml",
 							// Properties is nil, so Origin should stay with base
@@ -902,7 +901,7 @@ func TestSourceCollection_MergeOverride_Origin(t *testing.T) {
 							CatalogSource: model.CatalogSource{
 								Id:      "local",
 								Name:    "Local Catalog",
-								Enabled: apiutils.Of(true),
+								Enabled: new(true),
 							},
 							Type: "yaml",
 							Properties: map[string]any{
@@ -918,7 +917,7 @@ func TestSourceCollection_MergeOverride_Origin(t *testing.T) {
 						"local": {
 							CatalogSource: model.CatalogSource{
 								Id:      "local",
-								Enabled: apiutils.Of(true),
+								Enabled: new(true),
 							},
 							// Override Properties - this changes where relative paths resolve from
 							Properties: map[string]any{
@@ -948,7 +947,7 @@ func TestSourceCollection_MergeOverride_Origin(t *testing.T) {
 							CatalogSource: model.CatalogSource{
 								Id:      "admin-catalog",
 								Name:    "Admin Catalog",
-								Enabled: apiutils.Of(true),
+								Enabled: new(true),
 							},
 							Type: "yaml",
 							Properties: map[string]any{
@@ -965,7 +964,7 @@ func TestSourceCollection_MergeOverride_Origin(t *testing.T) {
 							CatalogSource: model.CatalogSource{
 								Id:      "user-catalog",
 								Name:    "User Catalog",
-								Enabled: apiutils.Of(true),
+								Enabled: new(true),
 							},
 							Type: "yaml",
 							Properties: map[string]any{
@@ -1019,7 +1018,7 @@ func TestSourceCollection_ByLabel_NullBehavior(t *testing.T) {
 			CatalogSource: model.CatalogSource{
 				Id:      "source_with_labels",
 				Name:    "Source With Labels",
-				Enabled: apiutils.Of(true),
+				Enabled: new(true),
 				Labels:  []string{"frontend", "production"},
 			},
 		},
@@ -1027,7 +1026,7 @@ func TestSourceCollection_ByLabel_NullBehavior(t *testing.T) {
 			CatalogSource: model.CatalogSource{
 				Id:      "source_empty_labels",
 				Name:    "Source Empty Labels",
-				Enabled: apiutils.Of(true),
+				Enabled: new(true),
 				Labels:  []string{}, // Empty labels slice
 			},
 		},
@@ -1035,7 +1034,7 @@ func TestSourceCollection_ByLabel_NullBehavior(t *testing.T) {
 			CatalogSource: model.CatalogSource{
 				Id:      "source_nil_labels",
 				Name:    "Source Nil Labels",
-				Enabled: apiutils.Of(true),
+				Enabled: new(true),
 				Labels:  nil, // Nil labels
 			},
 		},
@@ -1043,7 +1042,7 @@ func TestSourceCollection_ByLabel_NullBehavior(t *testing.T) {
 			CatalogSource: model.CatalogSource{
 				Id:      "source_another_with_labels",
 				Name:    "Another Source With Labels",
-				Enabled: apiutils.Of(true), // Changed to enabled
+				Enabled: new(true), // Changed to enabled
 				Labels:  []string{"backend", "testing"},
 			},
 		},

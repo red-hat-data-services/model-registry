@@ -5,10 +5,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	"github.com/kubeflow/hub/internal/db/models"
 	"github.com/kubeflow/hub/internal/db/service"
 	"github.com/kubeflow/hub/internal/defaults"
+	"github.com/kubeflow/hub/internal/platform/apiutils"
 	"github.com/kubeflow/hub/internal/testutils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -43,18 +43,18 @@ func TestArtifactRepository(t *testing.T) {
 
 	// Create shared test data
 	registeredModel := &models.RegisteredModelImpl{
-		TypeID: apiutils.Of(registeredModelTypeID),
+		TypeID: new(registeredModelTypeID),
 		Attributes: &models.RegisteredModelAttributes{
-			Name: apiutils.Of("test-registered-model-for-artifacts"),
+			Name: new("test-registered-model-for-artifacts"),
 		},
 	}
 	savedRegisteredModel, err := registeredModelRepo.Save(registeredModel)
 	require.NoError(t, err)
 
 	modelVersion := &models.ModelVersionImpl{
-		TypeID: apiutils.Of(modelVersionTypeID),
+		TypeID: new(modelVersionTypeID),
 		Attributes: &models.ModelVersionAttributes{
-			Name: apiutils.Of("test-model-version-for-artifacts"),
+			Name: new("test-model-version-for-artifacts"),
 		},
 		Properties: &[]models.Properties{
 			{
@@ -70,12 +70,12 @@ func TestArtifactRepository(t *testing.T) {
 		// Create a model artifact using the model artifact repository
 		modelArtifactRepo := service.NewModelArtifactRepository(sharedDB, modelArtifactTypeID)
 		modelArtifact := &models.ModelArtifactImpl{
-			TypeID: apiutils.Of(modelArtifactTypeID),
+			TypeID: new(modelArtifactTypeID),
 			Attributes: &models.ModelArtifactAttributes{
-				Name:         apiutils.Of(fmt.Sprintf("%d:test-model-artifact-for-getbyid", *savedModelVersion.GetID())),
-				URI:          apiutils.Of("s3://bucket/model.pkl"),
-				State:        apiutils.Of("LIVE"),
-				ArtifactType: apiutils.Of("model-artifact"),
+				Name:         new(fmt.Sprintf("%d:test-model-artifact-for-getbyid", *savedModelVersion.GetID())),
+				URI:          new("s3://bucket/model.pkl"),
+				State:        new("LIVE"),
+				ArtifactType: new("model-artifact"),
 			},
 		}
 		savedModelArtifact, err := modelArtifactRepo.Save(modelArtifact, savedModelVersion.GetID())
@@ -84,12 +84,12 @@ func TestArtifactRepository(t *testing.T) {
 		// Create a doc artifact using the doc artifact repository
 		docArtifactRepo := service.NewDocArtifactRepository(sharedDB, docArtifactTypeID)
 		docArtifact := &models.DocArtifactImpl{
-			TypeID: apiutils.Of(docArtifactTypeID),
+			TypeID: new(docArtifactTypeID),
 			Attributes: &models.DocArtifactAttributes{
-				Name:         apiutils.Of(fmt.Sprintf("%d:unified-test-doc-artifact-for-getbyid", *savedModelVersion.GetID())),
-				URI:          apiutils.Of("s3://bucket/doc.pdf"),
-				State:        apiutils.Of("LIVE"),
-				ArtifactType: apiutils.Of("doc-artifact"),
+				Name:         new(fmt.Sprintf("%d:unified-test-doc-artifact-for-getbyid", *savedModelVersion.GetID())),
+				URI:          new("s3://bucket/doc.pdf"),
+				State:        new("LIVE"),
+				ArtifactType: new("doc-artifact"),
 			},
 		}
 		savedDocArtifact, err := docArtifactRepo.Save(docArtifact, savedModelVersion.GetID())
@@ -126,23 +126,23 @@ func TestArtifactRepository(t *testing.T) {
 		// Create model artifacts
 		modelArtifacts := []*models.ModelArtifactImpl{
 			{
-				TypeID: apiutils.Of(modelArtifactTypeID),
+				TypeID: new(modelArtifactTypeID),
 				Attributes: &models.ModelArtifactAttributes{
-					Name:         apiutils.Of(fmt.Sprintf("%d:list-model-artifact-1", *savedModelVersion.GetID())),
-					ExternalID:   apiutils.Of("list-model-ext-1"),
-					URI:          apiutils.Of("s3://bucket/list-model-1.pkl"),
-					State:        apiutils.Of("LIVE"),
-					ArtifactType: apiutils.Of("model-artifact"),
+					Name:         new(fmt.Sprintf("%d:list-model-artifact-1", *savedModelVersion.GetID())),
+					ExternalID:   new("list-model-ext-1"),
+					URI:          new("s3://bucket/list-model-1.pkl"),
+					State:        new("LIVE"),
+					ArtifactType: new("model-artifact"),
 				},
 			},
 			{
-				TypeID: apiutils.Of(modelArtifactTypeID),
+				TypeID: new(modelArtifactTypeID),
 				Attributes: &models.ModelArtifactAttributes{
-					Name:         apiutils.Of(fmt.Sprintf("%d:list-model-artifact-2", *savedModelVersion.GetID())),
-					ExternalID:   apiutils.Of("list-model-ext-2"),
-					URI:          apiutils.Of("s3://bucket/list-model-2.pkl"),
-					State:        apiutils.Of("PENDING"),
-					ArtifactType: apiutils.Of("model-artifact"),
+					Name:         new(fmt.Sprintf("%d:list-model-artifact-2", *savedModelVersion.GetID())),
+					ExternalID:   new("list-model-ext-2"),
+					URI:          new("s3://bucket/list-model-2.pkl"),
+					State:        new("PENDING"),
+					ArtifactType: new("model-artifact"),
 				},
 			},
 		}
@@ -155,23 +155,23 @@ func TestArtifactRepository(t *testing.T) {
 		// Create doc artifacts
 		docArtifacts := []*models.DocArtifactImpl{
 			{
-				TypeID: apiutils.Of(docArtifactTypeID),
+				TypeID: new(docArtifactTypeID),
 				Attributes: &models.DocArtifactAttributes{
-					Name:         apiutils.Of(fmt.Sprintf("%d:unified-list-doc-artifact-1", *savedModelVersion.GetID())),
-					ExternalID:   apiutils.Of("unified-list-doc-ext-1"),
-					URI:          apiutils.Of("s3://bucket/list-doc-1.pdf"),
-					State:        apiutils.Of("LIVE"),
-					ArtifactType: apiutils.Of("doc-artifact"),
+					Name:         new(fmt.Sprintf("%d:unified-list-doc-artifact-1", *savedModelVersion.GetID())),
+					ExternalID:   new("unified-list-doc-ext-1"),
+					URI:          new("s3://bucket/list-doc-1.pdf"),
+					State:        new("LIVE"),
+					ArtifactType: new("doc-artifact"),
 				},
 			},
 			{
-				TypeID: apiutils.Of(docArtifactTypeID),
+				TypeID: new(docArtifactTypeID),
 				Attributes: &models.DocArtifactAttributes{
-					Name:         apiutils.Of(fmt.Sprintf("%d:unified-list-doc-artifact-2", *savedModelVersion.GetID())),
-					ExternalID:   apiutils.Of("unified-list-doc-ext-2"),
-					URI:          apiutils.Of("s3://bucket/list-doc-2.pdf"),
-					State:        apiutils.Of("PENDING"),
-					ArtifactType: apiutils.Of("doc-artifact"),
+					Name:         new(fmt.Sprintf("%d:unified-list-doc-artifact-2", *savedModelVersion.GetID())),
+					ExternalID:   new("unified-list-doc-ext-2"),
+					URI:          new("s3://bucket/list-doc-2.pdf"),
+					State:        new("PENDING"),
+					ArtifactType: new("doc-artifact"),
 				},
 			},
 		}
@@ -206,7 +206,7 @@ func TestArtifactRepository(t *testing.T) {
 
 		// Test listing by name (model artifact)
 		listOptions = models.ArtifactListOptions{
-			Name: apiutils.Of("list-model-artifact-1"),
+			Name: new("list-model-artifact-1"),
 		}
 		listOptions.PageSize = &pageSize
 
@@ -219,7 +219,7 @@ func TestArtifactRepository(t *testing.T) {
 
 		// Test listing by name (doc artifact)
 		listOptions = models.ArtifactListOptions{
-			Name: apiutils.Of("unified-list-doc-artifact-1"),
+			Name: new("unified-list-doc-artifact-1"),
 		}
 		listOptions.PageSize = &pageSize
 
@@ -232,7 +232,7 @@ func TestArtifactRepository(t *testing.T) {
 
 		// Test listing by external ID
 		listOptions = models.ArtifactListOptions{
-			ExternalID: apiutils.Of("list-model-ext-2"),
+			ExternalID: new("list-model-ext-2"),
 		}
 		listOptions.PageSize = &pageSize
 
@@ -257,7 +257,7 @@ func TestArtifactRepository(t *testing.T) {
 		// Test ordering by ID (deterministic)
 		listOptions = models.ArtifactListOptions{
 			Pagination: models.Pagination{
-				OrderBy: apiutils.Of("ID"),
+				OrderBy: new("ID"),
 			},
 		}
 		listOptions.PageSize = &pageSize
@@ -291,12 +291,12 @@ func TestArtifactRepository(t *testing.T) {
 
 		// Create first artifact (model artifact)
 		artifact1 := &models.ModelArtifactImpl{
-			TypeID: apiutils.Of(modelArtifactTypeID),
+			TypeID: new(modelArtifactTypeID),
 			Attributes: &models.ModelArtifactAttributes{
-				Name:         apiutils.Of("time-test-model-artifact-1"),
-				URI:          apiutils.Of("s3://bucket/time-model-1.pkl"),
-				State:        apiutils.Of("LIVE"),
-				ArtifactType: apiutils.Of("model-artifact"),
+				Name:         new("time-test-model-artifact-1"),
+				URI:          new("s3://bucket/time-model-1.pkl"),
+				State:        new("LIVE"),
+				ArtifactType: new("model-artifact"),
 			},
 		}
 		saved1, err := modelArtifactRepo.Save(artifact1, savedModelVersion.GetID())
@@ -307,12 +307,12 @@ func TestArtifactRepository(t *testing.T) {
 
 		// Create second artifact (doc artifact)
 		artifact2 := &models.DocArtifactImpl{
-			TypeID: apiutils.Of(docArtifactTypeID),
+			TypeID: new(docArtifactTypeID),
 			Attributes: &models.DocArtifactAttributes{
-				Name:         apiutils.Of("unified-time-test-doc-artifact-2"),
-				URI:          apiutils.Of("s3://bucket/time-doc-2.pdf"),
-				State:        apiutils.Of("PENDING"),
-				ArtifactType: apiutils.Of("doc-artifact"),
+				Name:         new("unified-time-test-doc-artifact-2"),
+				URI:          new("s3://bucket/time-doc-2.pdf"),
+				State:        new("PENDING"),
+				ArtifactType: new("doc-artifact"),
 			},
 		}
 		saved2, err := docArtifactRepo.Save(artifact2, savedModelVersion.GetID())
@@ -322,7 +322,7 @@ func TestArtifactRepository(t *testing.T) {
 		pageSize := int32(10)
 		listOptions := models.ArtifactListOptions{
 			Pagination: models.Pagination{
-				OrderBy: apiutils.Of("CREATE_TIME"),
+				OrderBy: new("CREATE_TIME"),
 			},
 		}
 		listOptions.PageSize = &pageSize
@@ -373,24 +373,24 @@ func TestArtifactRepository(t *testing.T) {
 
 		// Create artifacts with similar names but different types
 		modelArtifact := &models.ModelArtifactImpl{
-			TypeID: apiutils.Of(modelArtifactTypeID),
+			TypeID: new(modelArtifactTypeID),
 			Attributes: &models.ModelArtifactAttributes{
-				Name:         apiutils.Of("mixed-test-artifact"),
-				URI:          apiutils.Of("s3://bucket/mixed-model.pkl"),
-				State:        apiutils.Of("LIVE"),
-				ArtifactType: apiutils.Of("model-artifact"),
+				Name:         new("mixed-test-artifact"),
+				URI:          new("s3://bucket/mixed-model.pkl"),
+				State:        new("LIVE"),
+				ArtifactType: new("model-artifact"),
 			},
 		}
 		savedModelArtifact, err := modelArtifactRepo.Save(modelArtifact, savedModelVersion.GetID())
 		require.NoError(t, err)
 
 		docArtifact := &models.DocArtifactImpl{
-			TypeID: apiutils.Of(docArtifactTypeID),
+			TypeID: new(docArtifactTypeID),
 			Attributes: &models.DocArtifactAttributes{
-				Name:         apiutils.Of("unified-mixed-test-doc"),
-				URI:          apiutils.Of("s3://bucket/mixed-doc.pdf"),
-				State:        apiutils.Of("LIVE"),
-				ArtifactType: apiutils.Of("doc-artifact"),
+				Name:         new("unified-mixed-test-doc"),
+				URI:          new("s3://bucket/mixed-doc.pdf"),
+				State:        new("LIVE"),
+				ArtifactType: new("doc-artifact"),
 			},
 		}
 		savedDocArtifact, err := docArtifactRepo.Save(docArtifact, savedModelVersion.GetID())
@@ -431,24 +431,24 @@ func TestArtifactRepository(t *testing.T) {
 
 		// Create standalone artifacts (without model version attribution)
 		standaloneModelArtifact := &models.ModelArtifactImpl{
-			TypeID: apiutils.Of(modelArtifactTypeID),
+			TypeID: new(modelArtifactTypeID),
 			Attributes: &models.ModelArtifactAttributes{
-				Name:         apiutils.Of("standalone-model-artifact"),
-				URI:          apiutils.Of("s3://bucket/standalone-model.pkl"),
-				State:        apiutils.Of("LIVE"),
-				ArtifactType: apiutils.Of("model-artifact"),
+				Name:         new("standalone-model-artifact"),
+				URI:          new("s3://bucket/standalone-model.pkl"),
+				State:        new("LIVE"),
+				ArtifactType: new("model-artifact"),
 			},
 		}
 		savedStandaloneModel, err := modelArtifactRepo.Save(standaloneModelArtifact, nil)
 		require.NoError(t, err)
 
 		standaloneDocArtifact := &models.DocArtifactImpl{
-			TypeID: apiutils.Of(docArtifactTypeID),
+			TypeID: new(docArtifactTypeID),
 			Attributes: &models.DocArtifactAttributes{
-				Name:         apiutils.Of("unified-standalone-doc-artifact"),
-				URI:          apiutils.Of("s3://bucket/standalone-doc.pdf"),
-				State:        apiutils.Of("LIVE"),
-				ArtifactType: apiutils.Of("doc-artifact"),
+				Name:         new("unified-standalone-doc-artifact"),
+				URI:          new("s3://bucket/standalone-doc.pdf"),
+				State:        new("LIVE"),
+				ArtifactType: new("doc-artifact"),
 			},
 		}
 		savedStandaloneDoc, err := docArtifactRepo.Save(standaloneDocArtifact, nil)

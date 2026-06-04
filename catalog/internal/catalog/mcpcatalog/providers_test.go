@@ -17,13 +17,13 @@ import (
 func TestYamlMCPServerConversion(t *testing.T) {
 	yamlServer := &yamlMCPServer{
 		Name:        "test-server",
-		Description: strPtr("Test MCP server"),
-		Provider:    strPtr("Test Provider"),
-		Version:     strPtr("1.0.0"),
-		License:     strPtr("MIT"),
+		Description: new("Test MCP server"),
+		Provider:    new("Test Provider"),
+		Version:     new("1.0.0"),
+		License:     new("MIT"),
 		Tools: []*yamlMCPTool{
-			{Name: "tool1", Description: strPtr("First tool")},
-			{Name: "tool2", Description: strPtr("Second tool")},
+			{Name: "tool1", Description: new("First tool")},
+			{Name: "tool2", Description: new("Second tool")},
 		},
 	}
 
@@ -275,26 +275,26 @@ func TestYamlMCPEndpointsValidation(t *testing.T) {
 			name: "remote server with valid HTTP endpoint passes",
 			server: &yamlMCPServer{
 				Name:           "remote-http",
-				DeploymentMode: strPtr("remote"),
-				Endpoints:      &yamlMCPEndpoints{HTTP: strPtr("https://api.example.com/mcp")},
+				DeploymentMode: new("remote"),
+				Endpoints:      &yamlMCPEndpoints{HTTP: new("https://api.example.com/mcp")},
 			},
 		},
 		{
 			name: "remote server with valid SSE endpoint passes",
 			server: &yamlMCPServer{
 				Name:           "remote-sse",
-				DeploymentMode: strPtr("remote"),
-				Endpoints:      &yamlMCPEndpoints{SSE: strPtr("https://api.example.com/mcp/events")},
+				DeploymentMode: new("remote"),
+				Endpoints:      &yamlMCPEndpoints{SSE: new("https://api.example.com/mcp/events")},
 			},
 		},
 		{
 			name: "remote server with both endpoints passes",
 			server: &yamlMCPServer{
 				Name:           "remote-both",
-				DeploymentMode: strPtr("remote"),
+				DeploymentMode: new("remote"),
 				Endpoints: &yamlMCPEndpoints{
-					HTTP: strPtr("https://api.example.com/mcp"),
-					SSE:  strPtr("https://api.example.com/mcp/events"),
+					HTTP: new("https://api.example.com/mcp"),
+					SSE:  new("https://api.example.com/mcp/events"),
 				},
 			},
 		},
@@ -302,7 +302,7 @@ func TestYamlMCPEndpointsValidation(t *testing.T) {
 			name: "remote server with no endpoints is rejected",
 			server: &yamlMCPServer{
 				Name:           "remote-no-endpoints",
-				DeploymentMode: strPtr("remote"),
+				DeploymentMode: new("remote"),
 			},
 			wantErr:     true,
 			errContains: "no endpoints defined",
@@ -311,7 +311,7 @@ func TestYamlMCPEndpointsValidation(t *testing.T) {
 			name: "remote server with empty endpoints struct is rejected",
 			server: &yamlMCPServer{
 				Name:           "remote-empty-endpoints",
-				DeploymentMode: strPtr("remote"),
+				DeploymentMode: new("remote"),
 				Endpoints:      &yamlMCPEndpoints{},
 			},
 			wantErr:     true,
@@ -321,23 +321,23 @@ func TestYamlMCPEndpointsValidation(t *testing.T) {
 			name: "local server without endpoints passes",
 			server: &yamlMCPServer{
 				Name:           "local-no-endpoints",
-				DeploymentMode: strPtr("local"),
+				DeploymentMode: new("local"),
 			},
 		},
 		{
 			name: "local server with endpoints passes (hybrid)",
 			server: &yamlMCPServer{
 				Name:           "local-with-endpoints",
-				DeploymentMode: strPtr("local"),
-				Endpoints:      &yamlMCPEndpoints{HTTP: strPtr("https://api.example.com/mcp")},
+				DeploymentMode: new("local"),
+				Endpoints:      &yamlMCPEndpoints{HTTP: new("https://api.example.com/mcp")},
 			},
 		},
 		{
 			name: "non-HTTP URL in HTTP endpoint is rejected",
 			server: &yamlMCPServer{
 				Name:           "bad-url-scheme",
-				DeploymentMode: strPtr("remote"),
-				Endpoints:      &yamlMCPEndpoints{HTTP: strPtr("ftp://example.com/mcp")},
+				DeploymentMode: new("remote"),
+				Endpoints:      &yamlMCPEndpoints{HTTP: new("ftp://example.com/mcp")},
 			},
 			wantErr:     true,
 			errContains: "must be a valid URL",
@@ -346,8 +346,8 @@ func TestYamlMCPEndpointsValidation(t *testing.T) {
 			name: "malformed URL is rejected",
 			server: &yamlMCPServer{
 				Name:           "malformed-url",
-				DeploymentMode: strPtr("remote"),
-				Endpoints:      &yamlMCPEndpoints{HTTP: strPtr("not-a-url-at-all")},
+				DeploymentMode: new("remote"),
+				Endpoints:      &yamlMCPEndpoints{HTTP: new("not-a-url-at-all")},
 			},
 			wantErr:     true,
 			errContains: "must be a valid URL",
@@ -356,32 +356,32 @@ func TestYamlMCPEndpointsValidation(t *testing.T) {
 			name: "plain http URL is accepted",
 			server: &yamlMCPServer{
 				Name:           "plain-http",
-				DeploymentMode: strPtr("remote"),
-				Endpoints:      &yamlMCPEndpoints{HTTP: strPtr("http://api.example.com/mcp")},
+				DeploymentMode: new("remote"),
+				Endpoints:      &yamlMCPEndpoints{HTTP: new("http://api.example.com/mcp")},
 			},
 		},
 		{
 			name: "websocket-only remote server passes",
 			server: &yamlMCPServer{
 				Name:           "remote-ws",
-				DeploymentMode: strPtr("remote"),
-				Endpoints:      &yamlMCPEndpoints{WebSocket: strPtr("wss://api.example.com/ws")},
+				DeploymentMode: new("remote"),
+				Endpoints:      &yamlMCPEndpoints{WebSocket: new("wss://api.example.com/ws")},
 			},
 		},
 		{
 			name: "ws scheme accepted for websocket endpoint",
 			server: &yamlMCPServer{
 				Name:           "remote-ws-plain",
-				DeploymentMode: strPtr("remote"),
-				Endpoints:      &yamlMCPEndpoints{WebSocket: strPtr("ws://api.example.com/ws")},
+				DeploymentMode: new("remote"),
+				Endpoints:      &yamlMCPEndpoints{WebSocket: new("ws://api.example.com/ws")},
 			},
 		},
 		{
 			name: "ftp scheme rejected for websocket endpoint",
 			server: &yamlMCPServer{
 				Name:           "bad-ws-scheme",
-				DeploymentMode: strPtr("remote"),
-				Endpoints:      &yamlMCPEndpoints{WebSocket: strPtr("ftp://example.com/ws")},
+				DeploymentMode: new("remote"),
+				Endpoints:      &yamlMCPEndpoints{WebSocket: new("ftp://example.com/ws")},
 			},
 			wantErr:     true,
 			errContains: "must be a valid URL",
@@ -390,7 +390,7 @@ func TestYamlMCPEndpointsValidation(t *testing.T) {
 			name: "server with no deploymentMode and endpoints passes",
 			server: &yamlMCPServer{
 				Name:      "no-mode-with-endpoints",
-				Endpoints: &yamlMCPEndpoints{HTTP: strPtr("https://api.example.com/mcp")},
+				Endpoints: &yamlMCPEndpoints{HTTP: new("https://api.example.com/mcp")},
 			},
 		},
 	}
@@ -413,8 +413,8 @@ func TestYamlMCPEndpointsValidation(t *testing.T) {
 
 func TestYamlMCPEndpointsJSONKeys(t *testing.T) {
 	endpoints := &yamlMCPEndpoints{
-		HTTP: strPtr("https://api.example.com/mcp"),
-		SSE:  strPtr("https://api.example.com/mcp/events"),
+		HTTP: new("https://api.example.com/mcp"),
+		SSE:  new("https://api.example.com/mcp/events"),
 	}
 
 	jsonBytes, err := json.Marshal(endpoints)
@@ -664,13 +664,13 @@ func TestYamlMCPServerLicenseTransformation(t *testing.T) {
 				yamlServer = &yamlMCPServer{
 					Name:     "test-server",
 					License:  nil, // No license field
-					Provider: strPtr("Test Provider"),
+					Provider: new("Test Provider"),
 				}
 			} else {
 				yamlServer = &yamlMCPServer{
 					Name:     "test-server",
 					License:  &tt.inputLicense,
-					Provider: strPtr("Test Provider"),
+					Provider: new("Test Provider"),
 				}
 			}
 
@@ -1051,9 +1051,4 @@ func TestYamlMCPServerSecurityIndicatorsPartial(t *testing.T) {
 	assert.False(t, hasSast, "sast should not be present when unset")
 	_, hasReadOnlyTools := boolProps["readOnlyTools"]
 	assert.False(t, hasReadOnlyTools, "readOnlyTools should not be present when unset")
-}
-
-// Helper function
-func strPtr(s string) *string {
-	return &s
 }

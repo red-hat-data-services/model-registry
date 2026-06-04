@@ -7,7 +7,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	"github.com/kubeflow/hub/pkg/api"
 	"github.com/kubeflow/hub/pkg/openapi"
 	"github.com/stretchr/testify/assert"
@@ -27,14 +26,14 @@ func TestUpsertExperimentRun(t *testing.T) {
 
 	t.Run("successful create", func(t *testing.T) {
 		experimentRun := &openapi.ExperimentRun{
-			Name:                apiutils.Of("test-experiment-run"),
-			Description:         apiutils.Of("Test experiment run description"),
-			Owner:               apiutils.Of("test-owner"),
-			ExternalId:          apiutils.Of("exp-run-ext-123"),
-			State:               apiutils.Of(openapi.EXPERIMENTRUNSTATE_LIVE),
-			Status:              apiutils.Of(openapi.EXPERIMENTRUNSTATUS_RUNNING),
-			StartTimeSinceEpoch: apiutils.Of("1234567890"),
-			EndTimeSinceEpoch:   apiutils.Of("1234567999"),
+			Name:                new("test-experiment-run"),
+			Description:         new("Test experiment run description"),
+			Owner:               new("test-owner"),
+			ExternalId:          new("exp-run-ext-123"),
+			State:               new(openapi.EXPERIMENTRUNSTATE_LIVE),
+			Status:              new(openapi.EXPERIMENTRUNSTATUS_RUNNING),
+			StartTimeSinceEpoch: new("1234567890"),
+			EndTimeSinceEpoch:   new("1234567999"),
 			CustomProperties: map[string]openapi.MetadataValue{
 				"run_type": {
 					MetadataStringValue: &openapi.MetadataStringValue{
@@ -68,19 +67,19 @@ func TestUpsertExperimentRun(t *testing.T) {
 	t.Run("successful update", func(t *testing.T) {
 		// Create initial experiment run
 		experimentRun := &openapi.ExperimentRun{
-			Name:        apiutils.Of("update-test-run"),
-			Description: apiutils.Of("Original description"),
-			Owner:       apiutils.Of("original-owner"),
+			Name:        new("update-test-run"),
+			Description: new("Original description"),
+			Owner:       new("original-owner"),
 		}
 
 		created, err := service.UpsertExperimentRun(experimentRun, parentExperiment.Id)
 		require.NoError(t, err)
 
 		// Update the experiment run
-		created.Description = apiutils.Of("Updated description")
-		created.Owner = apiutils.Of("updated-owner")
-		created.State = apiutils.Of(openapi.EXPERIMENTRUNSTATE_ARCHIVED)
-		created.Status = apiutils.Of(openapi.EXPERIMENTRUNSTATUS_FINISHED)
+		created.Description = new("Updated description")
+		created.Owner = new("updated-owner")
+		created.State = new(openapi.EXPERIMENTRUNSTATE_ARCHIVED)
+		created.Status = new(openapi.EXPERIMENTRUNSTATUS_FINISHED)
 
 		updated, err := service.UpsertExperimentRun(created, parentExperiment.Id)
 
@@ -100,7 +99,7 @@ func TestUpsertExperimentRun(t *testing.T) {
 
 	t.Run("error on nil experiment id", func(t *testing.T) {
 		experimentRun := &openapi.ExperimentRun{
-			Name: apiutils.Of("test-run"),
+			Name: new("test-run"),
 		}
 		_, err := service.UpsertExperimentRun(experimentRun, nil)
 		assert.Error(t, err)
@@ -109,7 +108,7 @@ func TestUpsertExperimentRun(t *testing.T) {
 
 	t.Run("error on invalid experiment id", func(t *testing.T) {
 		experimentRun := &openapi.ExperimentRun{
-			Name: apiutils.Of("test-run"),
+			Name: new("test-run"),
 		}
 		invalidId := "invalid-id"
 		_, err := service.UpsertExperimentRun(experimentRun, &invalidId)
@@ -119,7 +118,7 @@ func TestUpsertExperimentRun(t *testing.T) {
 
 	t.Run("error on non-existent experiment id", func(t *testing.T) {
 		experimentRun := &openapi.ExperimentRun{
-			Name: apiutils.Of("test-run"),
+			Name: new("test-run"),
 		}
 		nonExistentId := "999999"
 		_, err := service.UpsertExperimentRun(experimentRun, &nonExistentId)
@@ -129,9 +128,9 @@ func TestUpsertExperimentRun(t *testing.T) {
 
 	t.Run("error on EndTimeSinceEpoch less than StartTimeSinceEpoch", func(t *testing.T) {
 		experimentRun := &openapi.ExperimentRun{
-			Name:                apiutils.Of("test-run-time-validation"),
-			StartTimeSinceEpoch: apiutils.Of("1234567890"), // Start time is later
-			EndTimeSinceEpoch:   apiutils.Of("1234567000"), // End time is earlier (invalid)
+			Name:                new("test-run-time-validation"),
+			StartTimeSinceEpoch: new("1234567890"), // Start time is later
+			EndTimeSinceEpoch:   new("1234567000"), // End time is earlier (invalid)
 		}
 		_, err := service.UpsertExperimentRun(experimentRun, parentExperiment.Id)
 		assert.Error(t, err)
@@ -141,14 +140,14 @@ func TestUpsertExperimentRun(t *testing.T) {
 	t.Run("successful update with valid timestamps", func(t *testing.T) {
 		// First create an experiment run
 		experimentRun := &openapi.ExperimentRun{
-			Name:                apiutils.Of("test-run-for-update"),
-			StartTimeSinceEpoch: apiutils.Of("1234567890"),
+			Name:                new("test-run-for-update"),
+			StartTimeSinceEpoch: new("1234567890"),
 		}
 		created, err := service.UpsertExperimentRun(experimentRun, parentExperiment.Id)
 		require.NoError(t, err)
 
 		// Update with valid end time
-		created.EndTimeSinceEpoch = apiutils.Of("1234568000") // End time is after start time
+		created.EndTimeSinceEpoch = new("1234568000") // End time is after start time
 		updated, err := service.UpsertExperimentRun(created, parentExperiment.Id)
 		require.NoError(t, err)
 		assert.Equal(t, "1234568000", *updated.EndTimeSinceEpoch)
@@ -157,14 +156,14 @@ func TestUpsertExperimentRun(t *testing.T) {
 	t.Run("error on update with invalid EndTimeSinceEpoch", func(t *testing.T) {
 		// First create an experiment run
 		experimentRun := &openapi.ExperimentRun{
-			Name:                apiutils.Of("test-run-for-invalid-update"),
-			StartTimeSinceEpoch: apiutils.Of("1234567890"),
+			Name:                new("test-run-for-invalid-update"),
+			StartTimeSinceEpoch: new("1234567890"),
 		}
 		created, err := service.UpsertExperimentRun(experimentRun, parentExperiment.Id)
 		require.NoError(t, err)
 
 		// Try to update with invalid end time
-		created.EndTimeSinceEpoch = apiutils.Of("1234567000") // End time is before start time
+		created.EndTimeSinceEpoch = new("1234567000") // End time is before start time
 		_, err = service.UpsertExperimentRun(created, parentExperiment.Id)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "EndTimeSinceEpoch (1234567000) cannot be less than StartTimeSinceEpoch (1234567890)")
@@ -185,11 +184,11 @@ func TestGetExperimentRunById(t *testing.T) {
 	t.Run("successful get", func(t *testing.T) {
 		// Create an experiment run
 		experimentRun := &openapi.ExperimentRun{
-			Name:        apiutils.Of("get-test-experiment-run"),
-			Description: apiutils.Of("Get test description"),
-			Owner:       apiutils.Of("get-test-owner"),
-			State:       apiutils.Of(openapi.EXPERIMENTRUNSTATE_LIVE),
-			Status:      apiutils.Of(openapi.EXPERIMENTRUNSTATUS_RUNNING),
+			Name:        new("get-test-experiment-run"),
+			Description: new("Get test description"),
+			Owner:       new("get-test-owner"),
+			State:       new(openapi.EXPERIMENTRUNSTATE_LIVE),
+			Status:      new(openapi.EXPERIMENTRUNSTATUS_RUNNING),
 		}
 
 		created, err := service.UpsertExperimentRun(experimentRun, parentExperiment.Id)
@@ -240,28 +239,28 @@ func TestGetExperimentRunByParams(t *testing.T) {
 
 	// Create test experiment runs
 	experimentRun1 := &openapi.ExperimentRun{
-		Name:       apiutils.Of("params-test-run-1"),
-		ExternalId: apiutils.Of("params-run-ext-1"),
+		Name:       new("params-test-run-1"),
+		ExternalId: new("params-run-ext-1"),
 	}
 	created1, err := service.UpsertExperimentRun(experimentRun1, parentExperiment1.Id)
 	require.NoError(t, err)
 
 	experimentRun2 := &openapi.ExperimentRun{
-		Name:       apiutils.Of("params-test-run-2"),
-		ExternalId: apiutils.Of("params-run-ext-2"),
+		Name:       new("params-test-run-2"),
+		ExternalId: new("params-run-ext-2"),
 	}
 	created2, err := service.UpsertExperimentRun(experimentRun2, parentExperiment2.Id)
 	require.NoError(t, err)
 
 	t.Run("get by name and experiment id", func(t *testing.T) {
-		result, err := service.GetExperimentRunByParams(apiutils.Of("params-test-run-1"), parentExperiment1.Id, nil)
+		result, err := service.GetExperimentRunByParams(new("params-test-run-1"), parentExperiment1.Id, nil)
 		require.NoError(t, err)
 		assert.Equal(t, *created1.Id, *result.Id)
 		assert.Contains(t, *result.Name, "params-test-run-1")
 	})
 
 	t.Run("get by external id", func(t *testing.T) {
-		result, err := service.GetExperimentRunByParams(nil, nil, apiutils.Of("params-run-ext-2"))
+		result, err := service.GetExperimentRunByParams(nil, nil, new("params-run-ext-2"))
 		require.NoError(t, err)
 		assert.Equal(t, *created2.Id, *result.Id)
 		assert.Equal(t, "params-run-ext-2", *result.ExternalId)
@@ -274,7 +273,7 @@ func TestGetExperimentRunByParams(t *testing.T) {
 	})
 
 	t.Run("error on not found", func(t *testing.T) {
-		_, err := service.GetExperimentRunByParams(apiutils.Of("non-existent"), parentExperiment1.Id, nil)
+		_, err := service.GetExperimentRunByParams(new("non-existent"), parentExperiment1.Id, nil)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "not found")
 	})
@@ -298,16 +297,16 @@ func TestGetExperimentRunByParams(t *testing.T) {
 
 		// Create experiment run "shared-run-name-test" for the first experiment
 		run1 := &openapi.ExperimentRun{
-			Name:        apiutils.Of("shared-run-name-test"),
-			Description: apiutils.Of("Run for experiment 1"),
+			Name:        new("shared-run-name-test"),
+			Description: new("Run for experiment 1"),
 		}
 		createdRun1, err := service.UpsertExperimentRun(run1, createdExperiment1.Id)
 		require.NoError(t, err)
 
 		// Create experiment run "shared-run-name-test" for the second experiment
 		run2 := &openapi.ExperimentRun{
-			Name:        apiutils.Of("shared-run-name-test"),
-			Description: apiutils.Of("Run for experiment 2"),
+			Name:        new("shared-run-name-test"),
+			Description: new("Run for experiment 2"),
 		}
 		createdRun2, err := service.UpsertExperimentRun(run2, createdExperiment2.Id)
 		require.NoError(t, err)
@@ -354,9 +353,9 @@ func TestGetExperimentRuns(t *testing.T) {
 	// Create multiple test experiment runs for first experiment
 	for i := range 3 {
 		experimentRun := &openapi.ExperimentRun{
-			Name:        apiutils.Of(fmt.Sprintf("list-test-run-exp1-%d", i)),
-			Description: apiutils.Of(fmt.Sprintf("List test description exp1-%d", i)),
-			Owner:       apiutils.Of("list-test-owner"),
+			Name:        new(fmt.Sprintf("list-test-run-exp1-%d", i)),
+			Description: new(fmt.Sprintf("List test description exp1-%d", i)),
+			Owner:       new("list-test-owner"),
 		}
 		_, err := service.UpsertExperimentRun(experimentRun, parentExperiment1.Id)
 		require.NoError(t, err)
@@ -365,9 +364,9 @@ func TestGetExperimentRuns(t *testing.T) {
 	// Create experiment runs for second experiment
 	for i := range 2 {
 		experimentRun := &openapi.ExperimentRun{
-			Name:        apiutils.Of(fmt.Sprintf("list-test-run-exp2-%d", i)),
-			Description: apiutils.Of(fmt.Sprintf("List test description exp2-%d", i)),
-			Owner:       apiutils.Of("list-test-owner"),
+			Name:        new(fmt.Sprintf("list-test-run-exp2-%d", i)),
+			Description: new(fmt.Sprintf("List test description exp2-%d", i)),
+			Owner:       new("list-test-owner"),
 		}
 		_, err := service.UpsertExperimentRun(experimentRun, parentExperiment2.Id)
 		require.NoError(t, err)
@@ -476,12 +475,12 @@ func TestGetExperimentRunsWithFilterQuery(t *testing.T) {
 	}{
 		{
 			run: &openapi.ExperimentRun{
-				Name:                apiutils.Of("pytorch-run-1"),
-				Description:         apiutils.Of("PyTorch training run with hyperparameter tuning"),
-				ExternalId:          apiutils.Of("ext-pytorch-run-001"),
-				Status:              (*openapi.ExperimentRunStatus)(apiutils.Of("FINISHED")),
-				StartTimeSinceEpoch: apiutils.Of("1700000000"),
-				EndTimeSinceEpoch:   apiutils.Of("1700003600"),
+				Name:                new("pytorch-run-1"),
+				Description:         new("PyTorch training run with hyperparameter tuning"),
+				ExternalId:          new("ext-pytorch-run-001"),
+				Status:              (*openapi.ExperimentRunStatus)(new("FINISHED")),
+				StartTimeSinceEpoch: new("1700000000"),
+				EndTimeSinceEpoch:   new("1700003600"),
 				ExperimentId:        *createdExperiment.Id,
 				CustomProperties: map[string]openapi.MetadataValue{
 					"framework": {
@@ -513,11 +512,11 @@ func TestGetExperimentRunsWithFilterQuery(t *testing.T) {
 		},
 		{
 			run: &openapi.ExperimentRun{
-				Name:                apiutils.Of("tensorflow-run-2"),
-				Description:         apiutils.Of("TensorFlow training run for NLP model"),
-				ExternalId:          apiutils.Of("ext-tf-run-002"),
-				Status:              (*openapi.ExperimentRunStatus)(apiutils.Of("FAILED")),
-				StartTimeSinceEpoch: apiutils.Of("1700010000"),
+				Name:                new("tensorflow-run-2"),
+				Description:         new("TensorFlow training run for NLP model"),
+				ExternalId:          new("ext-tf-run-002"),
+				Status:              (*openapi.ExperimentRunStatus)(new("FAILED")),
+				StartTimeSinceEpoch: new("1700010000"),
 				ExperimentId:        *createdExperiment.Id,
 				CustomProperties: map[string]openapi.MetadataValue{
 					"framework": {
@@ -549,11 +548,11 @@ func TestGetExperimentRunsWithFilterQuery(t *testing.T) {
 		},
 		{
 			run: &openapi.ExperimentRun{
-				Name:                apiutils.Of("pytorch-run-2"),
-				Description:         apiutils.Of("PyTorch run with distributed training"),
-				ExternalId:          apiutils.Of("ext-pytorch-run-003"),
-				Status:              (*openapi.ExperimentRunStatus)(apiutils.Of("RUNNING")),
-				StartTimeSinceEpoch: apiutils.Of("1700020000"),
+				Name:                new("pytorch-run-2"),
+				Description:         new("PyTorch run with distributed training"),
+				ExternalId:          new("ext-pytorch-run-003"),
+				Status:              (*openapi.ExperimentRunStatus)(new("RUNNING")),
+				StartTimeSinceEpoch: new("1700020000"),
 				ExperimentId:        *createdExperiment.Id,
 				CustomProperties: map[string]openapi.MetadataValue{
 					"framework": {
@@ -585,10 +584,10 @@ func TestGetExperimentRunsWithFilterQuery(t *testing.T) {
 		},
 		{
 			run: &openapi.ExperimentRun{
-				Name:         apiutils.Of("sklearn-run"),
-				Description:  apiutils.Of("Scikit-learn baseline model"),
-				ExternalId:   apiutils.Of("ext-sklearn-run-004"),
-				Status:       (*openapi.ExperimentRunStatus)(apiutils.Of("FINISHED")),
+				Name:         new("sklearn-run"),
+				Description:  new("Scikit-learn baseline model"),
+				ExternalId:   new("ext-sklearn-run-004"),
+				Status:       (*openapi.ExperimentRunStatus)(new("FINISHED")),
 				ExperimentId: *createdExperiment.Id,
 				CustomProperties: map[string]openapi.MetadataValue{
 					"framework": {
@@ -795,7 +794,7 @@ func TestGetExperimentRunsWithFilterQuery(t *testing.T) {
 		require.NoError(t, err)
 
 		anotherRun := &openapi.ExperimentRun{
-			Name:         apiutils.Of("another-pytorch-run"),
+			Name:         new("another-pytorch-run"),
 			ExperimentId: *anotherCreatedExperiment.Id,
 			CustomProperties: map[string]openapi.MetadataValue{
 				"framework": {

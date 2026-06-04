@@ -16,10 +16,12 @@ import { CheckCircleIcon } from '@patternfly/react-icons';
 import { Link } from 'react-router-dom';
 import { CatalogModel, CatalogSource } from '~/app/modelCatalogTypes';
 import { catalogModelDetailsFromModel } from '~/app/routes/modelCatalog/catalogModel';
-import { getLabels } from '~/app/pages/modelRegistry/screens/utils';
+import { getLabels, getValueLabels } from '~/app/pages/modelRegistry/screens/utils';
 import { isModelValidated, getModelName } from '~/app/pages/modelCatalog/utils/modelCatalogUtils';
-import { MODEL_CATALOG_POPOVER_MESSAGES } from '~/concepts/modelCatalog/const';
-import { useTempDevFeatureAvailable, TempDevFeature } from '~/app/hooks/useTempDevFeatureAvailable';
+import {
+  MODEL_CATALOG_POPOVER_MESSAGES,
+  CATALOG_VALUE_LABEL_KEYS,
+} from '~/concepts/modelCatalog/const';
 import ModelCatalogLabels from './ModelCatalogLabels';
 import ModelCatalogCardBody from './ModelCatalogCardBody';
 
@@ -30,8 +32,10 @@ type ModelCatalogCardProps = {
 
 const ModelCatalogCard: React.FC<ModelCatalogCardProps> = ({ model, source }) => {
   const allLabels = model.customProperties ? getLabels(model.customProperties) : [];
+  const valueLabels = model.customProperties
+    ? getValueLabels(model.customProperties, CATALOG_VALUE_LABEL_KEYS)
+    : [];
   const isValidated = isModelValidated(model);
-  const isToolCallingEnabled = useTempDevFeatureAvailable(TempDevFeature.ToolCallingConfiguration);
 
   return (
     <Card isFullHeight data-testid="model-catalog-card" key={`${model.name}/${model.source_id}`}>
@@ -82,9 +86,9 @@ const ModelCatalogCard: React.FC<ModelCatalogCardProps> = ({ model, source }) =>
       <CardFooter>
         <ModelCatalogLabels
           tasks={model.tasks ?? []}
-          validatedTasks={isToolCallingEnabled ? model.validatedTasks : undefined}
+          validatedTasks={model.validatedTasks}
           provider={model.provider}
-          labels={allLabels.filter((label) => label !== 'validated')}
+          labels={[...allLabels.filter((label) => label !== 'validated'), ...valueLabels]}
           numLabels={isValidated ? 2 : 3}
         />
       </CardFooter>

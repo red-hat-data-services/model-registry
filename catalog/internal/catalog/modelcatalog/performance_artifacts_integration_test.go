@@ -8,7 +8,6 @@ import (
 	modelservice "github.com/kubeflow/hub/catalog/internal/catalog/modelcatalog/service"
 	"github.com/kubeflow/hub/catalog/internal/db/service"
 	"github.com/kubeflow/hub/catalog/internal/testhelpers"
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	dbmodels "github.com/kubeflow/hub/internal/platform/db/entity"
 	"github.com/kubeflow/hub/internal/testutils"
 	"github.com/stretchr/testify/assert"
@@ -18,7 +17,7 @@ import (
 // TestIntegration_PreservedRecommendationAlgorithm verifies end-to-end functionality
 // with the exact preserved recommendations algorithm from db_catalog.go
 func TestIntegration_PreservedRecommendationAlgorithm(t *testing.T) {
-	sharedDB, cleanup := testutils.SetupPostgresWithMigrations(t, service.DatastoreSpec())
+	sharedDB, cleanup := testutils.SetupPostgresWithMigrations(t, testhelpers.MustDatastoreSpec(t))
 	defer cleanup()
 
 	// Get type IDs
@@ -50,13 +49,13 @@ func TestIntegration_PreservedRecommendationAlgorithm(t *testing.T) {
 
 	// Create test model (stored name must be namespaced: sourceId:modelName)
 	testModel := &models.CatalogModelImpl{
-		TypeID: apiutils.Of(catalogModelTypeID),
+		TypeID: new(catalogModelTypeID),
 		Attributes: &models.CatalogModelAttributes{
-			Name:       apiutils.Of("algorithm-test-source:algorithm-test-model"),
-			ExternalID: apiutils.Of("alg-test-model-789"),
+			Name:       new("algorithm-test-source:algorithm-test-model"),
+			ExternalID: new("alg-test-model-789"),
 		},
 		Properties: &[]dbmodels.Properties{
-			{Name: "source_id", StringValue: apiutils.Of("algorithm-test-source")},
+			{Name: "source_id", StringValue: new("algorithm-test-source")},
 		},
 	}
 	savedModel, err := services.CatalogModelRepository.Save(testModel)
@@ -66,54 +65,54 @@ func TestIntegration_PreservedRecommendationAlgorithm(t *testing.T) {
 	// These match the exact patterns expected by the preserved algorithm
 	artifacts := []*models.CatalogMetricsArtifactImpl{
 		{
-			TypeID: apiutils.Of(metricsArtifactTypeID),
+			TypeID: new(metricsArtifactTypeID),
 			Attributes: &models.CatalogMetricsArtifactAttributes{
-				Name:        apiutils.Of("fast-low-cost"),
-				ExternalID:  apiutils.Of("fast-low"),
+				Name:        new("fast-low-cost"),
+				ExternalID:  new("fast-low"),
 				MetricsType: models.MetricsTypePerformance,
 			},
 			Properties: &[]dbmodels.Properties{
-				{Name: "metricsType", StringValue: apiutils.Of("performance-metrics")},
+				{Name: "metricsType", StringValue: new("performance-metrics")},
 			},
 			CustomProperties: &[]dbmodels.Properties{
-				{Name: "requests_per_second", DoubleValue: apiutils.Of(250.0)},
-				{Name: "ttft_p90", DoubleValue: apiutils.Of(50.0)},
-				{Name: "hardware_count", IntValue: apiutils.Of(int32(2))},
-				{Name: "hardware_type", StringValue: apiutils.Of("gpu-a100")},
+				{Name: "requests_per_second", DoubleValue: new(250.0)},
+				{Name: "ttft_p90", DoubleValue: new(50.0)},
+				{Name: "hardware_count", IntValue: new(int32(2))},
+				{Name: "hardware_type", StringValue: new("gpu-a100")},
 			},
 		},
 		{
-			TypeID: apiutils.Of(metricsArtifactTypeID),
+			TypeID: new(metricsArtifactTypeID),
 			Attributes: &models.CatalogMetricsArtifactAttributes{
-				Name:        apiutils.Of("medium-medium-cost"),
-				ExternalID:  apiutils.Of("medium-med"),
+				Name:        new("medium-medium-cost"),
+				ExternalID:  new("medium-med"),
 				MetricsType: models.MetricsTypePerformance,
 			},
 			Properties: &[]dbmodels.Properties{
-				{Name: "metricsType", StringValue: apiutils.Of("performance-metrics")},
+				{Name: "metricsType", StringValue: new("performance-metrics")},
 			},
 			CustomProperties: &[]dbmodels.Properties{
-				{Name: "requests_per_second", DoubleValue: apiutils.Of(150.0)},
-				{Name: "ttft_p90", DoubleValue: apiutils.Of(120.0)}, // > 100, should use epsilon 0.1
-				{Name: "hardware_count", IntValue: apiutils.Of(int32(3))},
-				{Name: "hardware_type", StringValue: apiutils.Of("gpu-a100")},
+				{Name: "requests_per_second", DoubleValue: new(150.0)},
+				{Name: "ttft_p90", DoubleValue: new(120.0)}, // > 100, should use epsilon 0.1
+				{Name: "hardware_count", IntValue: new(int32(3))},
+				{Name: "hardware_type", StringValue: new("gpu-a100")},
 			},
 		},
 		{
-			TypeID: apiutils.Of(metricsArtifactTypeID),
+			TypeID: new(metricsArtifactTypeID),
 			Attributes: &models.CatalogMetricsArtifactAttributes{
-				Name:        apiutils.Of("slow-high-cost"),
-				ExternalID:  apiutils.Of("slow-high"),
+				Name:        new("slow-high-cost"),
+				ExternalID:  new("slow-high"),
 				MetricsType: models.MetricsTypePerformance,
 			},
 			Properties: &[]dbmodels.Properties{
-				{Name: "metricsType", StringValue: apiutils.Of("performance-metrics")},
+				{Name: "metricsType", StringValue: new("performance-metrics")},
 			},
 			CustomProperties: &[]dbmodels.Properties{
-				{Name: "requests_per_second", DoubleValue: apiutils.Of(100.0)},
-				{Name: "ttft_p90", DoubleValue: apiutils.Of(200.0)},
-				{Name: "hardware_count", IntValue: apiutils.Of(int32(5))}, // Should be filtered out by first pass
-				{Name: "hardware_type", StringValue: apiutils.Of("gpu-a100")},
+				{Name: "requests_per_second", DoubleValue: new(100.0)},
+				{Name: "ttft_p90", DoubleValue: new(200.0)},
+				{Name: "hardware_count", IntValue: new(int32(5))}, // Should be filtered out by first pass
+				{Name: "hardware_type", StringValue: new("gpu-a100")},
 			},
 		},
 	}
@@ -212,17 +211,17 @@ func TestIntegration_PreservedRecommendationAlgorithm(t *testing.T) {
 
 	t.Run("Repository_Filtering_PerformanceMetricsOnly", func(t *testing.T) {
 		nonPerfArtifact := &models.CatalogMetricsArtifactImpl{
-			TypeID: apiutils.Of(metricsArtifactTypeID),
+			TypeID: new(metricsArtifactTypeID),
 			Attributes: &models.CatalogMetricsArtifactAttributes{
-				Name:        apiutils.Of("quality-metrics"),
-				ExternalID:  apiutils.Of("quality-123"),
+				Name:        new("quality-metrics"),
+				ExternalID:  new("quality-123"),
 				MetricsType: models.MetricsTypeAccuracy,
 			},
 			Properties: &[]dbmodels.Properties{
-				{Name: "metricsType", StringValue: apiutils.Of("accuracy-metrics")},
+				{Name: "metricsType", StringValue: new("accuracy-metrics")},
 			},
 			CustomProperties: &[]dbmodels.Properties{
-				{Name: "accuracy", DoubleValue: apiutils.Of(0.95)},
+				{Name: "accuracy", DoubleValue: new(0.95)},
 			},
 		}
 		_, err := services.CatalogMetricsArtifactRepository.Save(nonPerfArtifact, savedModel.GetID())
@@ -276,7 +275,7 @@ func TestIntegration_PreservedRecommendationAlgorithm(t *testing.T) {
 
 // TestIntegration_ServiceLayerBehavior tests the service layer implementation
 func TestIntegration_ServiceLayerBehavior(t *testing.T) {
-	sharedDB, cleanup := testutils.SetupPostgresWithMigrations(t, service.DatastoreSpec())
+	sharedDB, cleanup := testutils.SetupPostgresWithMigrations(t, testhelpers.MustDatastoreSpec(t))
 	defer cleanup()
 
 	catalogModelTypeID := testhelpers.GetCatalogModelTypeIDForDBTest(t, sharedDB)
@@ -306,13 +305,13 @@ func TestIntegration_ServiceLayerBehavior(t *testing.T) {
 
 	// Stored name must be namespaced: sourceId:modelName
 	testModel := &models.CatalogModelImpl{
-		TypeID: apiutils.Of(catalogModelTypeID),
+		TypeID: new(catalogModelTypeID),
 		Attributes: &models.CatalogModelAttributes{
-			Name:       apiutils.Of("service-test-source:service-test-model"),
-			ExternalID: apiutils.Of("service-model-123"),
+			Name:       new("service-test-source:service-test-model"),
+			ExternalID: new("service-model-123"),
 		},
 		Properties: &[]dbmodels.Properties{
-			{Name: "source_id", StringValue: apiutils.Of("service-test-source")},
+			{Name: "source_id", StringValue: new("service-test-source")},
 		},
 	}
 	savedModel, err := services.CatalogModelRepository.Save(testModel)
@@ -321,37 +320,37 @@ func TestIntegration_ServiceLayerBehavior(t *testing.T) {
 	t.Run("Multiple_Hardware_Types_Grouped_Correctly", func(t *testing.T) {
 		artifacts := []*models.CatalogMetricsArtifactImpl{
 			{
-				TypeID: apiutils.Of(metricsArtifactTypeID),
+				TypeID: new(metricsArtifactTypeID),
 				Attributes: &models.CatalogMetricsArtifactAttributes{
-					Name:        apiutils.Of("a100-config-1"),
-					ExternalID:  apiutils.Of("a100-1"),
+					Name:        new("a100-config-1"),
+					ExternalID:  new("a100-1"),
 					MetricsType: models.MetricsTypePerformance,
 				},
 				Properties: &[]dbmodels.Properties{
-					{Name: "metricsType", StringValue: apiutils.Of("performance-metrics")},
+					{Name: "metricsType", StringValue: new("performance-metrics")},
 				},
 				CustomProperties: &[]dbmodels.Properties{
-					{Name: "requests_per_second", DoubleValue: apiutils.Of(200.0)},
-					{Name: "ttft_p90", DoubleValue: apiutils.Of(50.0)},
-					{Name: "hardware_count", IntValue: apiutils.Of(int32(2))},
-					{Name: "hardware_type", StringValue: apiutils.Of("gpu-a100")},
+					{Name: "requests_per_second", DoubleValue: new(200.0)},
+					{Name: "ttft_p90", DoubleValue: new(50.0)},
+					{Name: "hardware_count", IntValue: new(int32(2))},
+					{Name: "hardware_type", StringValue: new("gpu-a100")},
 				},
 			},
 			{
-				TypeID: apiutils.Of(metricsArtifactTypeID),
+				TypeID: new(metricsArtifactTypeID),
 				Attributes: &models.CatalogMetricsArtifactAttributes{
-					Name:        apiutils.Of("h100-config-1"),
-					ExternalID:  apiutils.Of("h100-1"),
+					Name:        new("h100-config-1"),
+					ExternalID:  new("h100-1"),
 					MetricsType: models.MetricsTypePerformance,
 				},
 				Properties: &[]dbmodels.Properties{
-					{Name: "metricsType", StringValue: apiutils.Of("performance-metrics")},
+					{Name: "metricsType", StringValue: new("performance-metrics")},
 				},
 				CustomProperties: &[]dbmodels.Properties{
-					{Name: "requests_per_second", DoubleValue: apiutils.Of(300.0)},
-					{Name: "ttft_p90", DoubleValue: apiutils.Of(40.0)},
-					{Name: "hardware_count", IntValue: apiutils.Of(int32(1))},
-					{Name: "hardware_type", StringValue: apiutils.Of("gpu-h100")},
+					{Name: "requests_per_second", DoubleValue: new(300.0)},
+					{Name: "ttft_p90", DoubleValue: new(40.0)},
+					{Name: "hardware_count", IntValue: new(int32(1))},
+					{Name: "hardware_type", StringValue: new("gpu-h100")},
 				},
 			},
 		}
@@ -389,20 +388,20 @@ func TestIntegration_ServiceLayerBehavior(t *testing.T) {
 
 	t.Run("Cost_Calculation_With_Replicas", func(t *testing.T) {
 		artifact := &models.CatalogMetricsArtifactImpl{
-			TypeID: apiutils.Of(metricsArtifactTypeID),
+			TypeID: new(metricsArtifactTypeID),
 			Attributes: &models.CatalogMetricsArtifactAttributes{
-				Name:        apiutils.Of("cost-test-artifact"),
-				ExternalID:  apiutils.Of("cost-123"),
+				Name:        new("cost-test-artifact"),
+				ExternalID:  new("cost-123"),
 				MetricsType: models.MetricsTypePerformance,
 			},
 			Properties: &[]dbmodels.Properties{
-				{Name: "metricsType", StringValue: apiutils.Of("performance-metrics")},
+				{Name: "metricsType", StringValue: new("performance-metrics")},
 			},
 			CustomProperties: &[]dbmodels.Properties{
-				{Name: "requests_per_second", DoubleValue: apiutils.Of(100.0)},
-				{Name: "ttft_p90", DoubleValue: apiutils.Of(80.0)},
-				{Name: "hardware_count", IntValue: apiutils.Of(int32(4))},
-				{Name: "hardware_type", StringValue: apiutils.Of("gpu-v100")},
+				{Name: "requests_per_second", DoubleValue: new(100.0)},
+				{Name: "ttft_p90", DoubleValue: new(80.0)},
+				{Name: "hardware_count", IntValue: new(int32(4))},
+				{Name: "hardware_type", StringValue: new("gpu-v100")},
 			},
 		}
 		_, err := services.CatalogMetricsArtifactRepository.Save(artifact, savedModel.GetID())
@@ -438,7 +437,7 @@ func TestIntegration_ServiceLayerBehavior(t *testing.T) {
 
 // TestIntegration_ConfigurableProperties tests the configurable property parameters
 func TestIntegration_ConfigurableProperties(t *testing.T) {
-	sharedDB, cleanup := testutils.SetupPostgresWithMigrations(t, service.DatastoreSpec())
+	sharedDB, cleanup := testutils.SetupPostgresWithMigrations(t, testhelpers.MustDatastoreSpec(t))
 	defer cleanup()
 
 	catalogModelTypeID := testhelpers.GetCatalogModelTypeIDForDBTest(t, sharedDB)
@@ -468,33 +467,33 @@ func TestIntegration_ConfigurableProperties(t *testing.T) {
 
 	// Stored name must be namespaced: sourceId:modelName
 	testModel := &models.CatalogModelImpl{
-		TypeID: apiutils.Of(catalogModelTypeID),
+		TypeID: new(catalogModelTypeID),
 		Attributes: &models.CatalogModelAttributes{
-			Name:       apiutils.Of("configurable-props-source:configurable-props-model"),
-			ExternalID: apiutils.Of("config-model-999"),
+			Name:       new("configurable-props-source:configurable-props-model"),
+			ExternalID: new("config-model-999"),
 		},
 		Properties: &[]dbmodels.Properties{
-			{Name: "source_id", StringValue: apiutils.Of("configurable-props-source")},
+			{Name: "source_id", StringValue: new("configurable-props-source")},
 		},
 	}
 	savedModel, err := services.CatalogModelRepository.Save(testModel)
 	require.NoError(t, err)
 
 	artifact := &models.CatalogMetricsArtifactImpl{
-		TypeID: apiutils.Of(metricsArtifactTypeID),
+		TypeID: new(metricsArtifactTypeID),
 		Attributes: &models.CatalogMetricsArtifactAttributes{
-			Name:        apiutils.Of("custom-props-artifact"),
-			ExternalID:  apiutils.Of("custom-123"),
+			Name:        new("custom-props-artifact"),
+			ExternalID:  new("custom-123"),
 			MetricsType: models.MetricsTypePerformance,
 		},
 		Properties: &[]dbmodels.Properties{
-			{Name: "metricsType", StringValue: apiutils.Of("performance-metrics")},
+			{Name: "metricsType", StringValue: new("performance-metrics")},
 		},
 		CustomProperties: &[]dbmodels.Properties{
-			{Name: "throughput", DoubleValue: apiutils.Of(100.0)},
-			{Name: "p90_latency", DoubleValue: apiutils.Of(120.0)},
-			{Name: "nodes", IntValue: apiutils.Of(int32(2))},
-			{Name: "instance_type", StringValue: apiutils.Of("gpu-large")},
+			{Name: "throughput", DoubleValue: new(100.0)},
+			{Name: "p90_latency", DoubleValue: new(120.0)},
+			{Name: "nodes", IntValue: new(int32(2))},
+			{Name: "instance_type", StringValue: new("gpu-large")},
 		},
 	}
 	_, err = services.CatalogMetricsArtifactRepository.Save(artifact, savedModel.GetID())
@@ -502,20 +501,20 @@ func TestIntegration_ConfigurableProperties(t *testing.T) {
 
 	t.Run("CustomPropertyNames_WorkEndToEnd", func(t *testing.T) {
 		artifact2 := &models.CatalogMetricsArtifactImpl{
-			TypeID: apiutils.Of(metricsArtifactTypeID),
+			TypeID: new(metricsArtifactTypeID),
 			Attributes: &models.CatalogMetricsArtifactAttributes{
-				Name:        apiutils.Of("custom-props-artifact-2"),
-				ExternalID:  apiutils.Of("custom-456"),
+				Name:        new("custom-props-artifact-2"),
+				ExternalID:  new("custom-456"),
 				MetricsType: models.MetricsTypePerformance,
 			},
 			Properties: &[]dbmodels.Properties{
-				{Name: "metricsType", StringValue: apiutils.Of("performance-metrics")},
+				{Name: "metricsType", StringValue: new("performance-metrics")},
 			},
 			CustomProperties: &[]dbmodels.Properties{
-				{Name: "throughput", DoubleValue: apiutils.Of(50.0)},
-				{Name: "p90_latency", DoubleValue: apiutils.Of(100.0)},
-				{Name: "nodes", IntValue: apiutils.Of(int32(2))},
-				{Name: "instance_type", StringValue: apiutils.Of("gpu-large")},
+				{Name: "throughput", DoubleValue: new(50.0)},
+				{Name: "p90_latency", DoubleValue: new(100.0)},
+				{Name: "nodes", IntValue: new(int32(2))},
+				{Name: "instance_type", StringValue: new("gpu-large")},
 			},
 		}
 		_, err := services.CatalogMetricsArtifactRepository.Save(artifact2, savedModel.GetID())
@@ -528,7 +527,7 @@ func TestIntegration_ConfigurableProperties(t *testing.T) {
 			PageSize:              10,
 			OrderBy:               "",
 			SortOrder:             "ASC",
-			NextPageToken:         apiutils.Of(""),
+			NextPageToken:         new(""),
 			RPSProperty:           "throughput",
 			LatencyProperty:       "p90_latency",
 			HardwareCountProperty: "nodes",
@@ -565,20 +564,20 @@ func TestIntegration_ConfigurableProperties(t *testing.T) {
 
 	t.Run("ErrorHandling_MissingCustomProperties", func(t *testing.T) {
 		errorTestArtifact := &models.CatalogMetricsArtifactImpl{
-			TypeID: apiutils.Of(metricsArtifactTypeID),
+			TypeID: new(metricsArtifactTypeID),
 			Attributes: &models.CatalogMetricsArtifactAttributes{
-				Name:        apiutils.Of("error-test-artifact"),
-				ExternalID:  apiutils.Of("error-test-123"),
+				Name:        new("error-test-artifact"),
+				ExternalID:  new("error-test-123"),
 				MetricsType: models.MetricsTypePerformance,
 			},
 			Properties: &[]dbmodels.Properties{
-				{Name: "metricsType", StringValue: apiutils.Of("performance-metrics")},
+				{Name: "metricsType", StringValue: new("performance-metrics")},
 			},
 			CustomProperties: &[]dbmodels.Properties{
-				{Name: "throughput", DoubleValue: apiutils.Of(100.0)},
-				{Name: "p90_latency", DoubleValue: apiutils.Of(120.0)},
-				{Name: "nodes", IntValue: apiutils.Of(int32(2))},
-				{Name: "instance_type", StringValue: apiutils.Of("gpu-large")},
+				{Name: "throughput", DoubleValue: new(100.0)},
+				{Name: "p90_latency", DoubleValue: new(120.0)},
+				{Name: "nodes", IntValue: new(int32(2))},
+				{Name: "instance_type", StringValue: new("gpu-large")},
 			},
 		}
 		_, err := services.CatalogMetricsArtifactRepository.Save(errorTestArtifact, savedModel.GetID())
@@ -591,7 +590,7 @@ func TestIntegration_ConfigurableProperties(t *testing.T) {
 			PageSize:              10,
 			OrderBy:               "",
 			SortOrder:             "ASC",
-			NextPageToken:         apiutils.Of(""),
+			NextPageToken:         new(""),
 			RPSProperty:           "nonexistent_rps",
 			LatencyProperty:       "p90_latency",
 			HardwareCountProperty: "nodes",
@@ -615,20 +614,20 @@ func TestIntegration_ConfigurableProperties(t *testing.T) {
 
 	t.Run("DefaultPropertyNames_WhenNotSpecified", func(t *testing.T) {
 		defaultArtifact := &models.CatalogMetricsArtifactImpl{
-			TypeID: apiutils.Of(metricsArtifactTypeID),
+			TypeID: new(metricsArtifactTypeID),
 			Attributes: &models.CatalogMetricsArtifactAttributes{
-				Name:        apiutils.Of("default-props-artifact"),
-				ExternalID:  apiutils.Of("default-789"),
+				Name:        new("default-props-artifact"),
+				ExternalID:  new("default-789"),
 				MetricsType: models.MetricsTypePerformance,
 			},
 			Properties: &[]dbmodels.Properties{
-				{Name: "metricsType", StringValue: apiutils.Of("performance-metrics")},
+				{Name: "metricsType", StringValue: new("performance-metrics")},
 			},
 			CustomProperties: &[]dbmodels.Properties{
-				{Name: "requests_per_second", DoubleValue: apiutils.Of(150.0)},
-				{Name: "ttft_p90", DoubleValue: apiutils.Of(80.0)},
-				{Name: "hardware_count", IntValue: apiutils.Of(int32(3))},
-				{Name: "hardware_type", StringValue: apiutils.Of("gpu-medium")},
+				{Name: "requests_per_second", DoubleValue: new(150.0)},
+				{Name: "ttft_p90", DoubleValue: new(80.0)},
+				{Name: "hardware_count", IntValue: new(int32(3))},
+				{Name: "hardware_type", StringValue: new("gpu-medium")},
 			},
 		}
 		_, err := services.CatalogMetricsArtifactRepository.Save(defaultArtifact, savedModel.GetID())
@@ -641,7 +640,7 @@ func TestIntegration_ConfigurableProperties(t *testing.T) {
 			PageSize:              10,
 			OrderBy:               "",
 			SortOrder:             "ASC",
-			NextPageToken:         apiutils.Of(""),
+			NextPageToken:         new(""),
 			RPSProperty:           "",
 			LatencyProperty:       "",
 			HardwareCountProperty: "",
@@ -674,37 +673,37 @@ func TestIntegration_ConfigurableProperties(t *testing.T) {
 	t.Run("RecommendationsParameter_TrueFalse", func(t *testing.T) {
 		artifacts := []*models.CatalogMetricsArtifactImpl{
 			{
-				TypeID: apiutils.Of(metricsArtifactTypeID),
+				TypeID: new(metricsArtifactTypeID),
 				Attributes: &models.CatalogMetricsArtifactAttributes{
-					Name:        apiutils.Of("rec-artifact-1"),
-					ExternalID:  apiutils.Of("rec-1"),
+					Name:        new("rec-artifact-1"),
+					ExternalID:  new("rec-1"),
 					MetricsType: models.MetricsTypePerformance,
 				},
 				Properties: &[]dbmodels.Properties{
-					{Name: "metricsType", StringValue: apiutils.Of("performance-metrics")},
+					{Name: "metricsType", StringValue: new("performance-metrics")},
 				},
 				CustomProperties: &[]dbmodels.Properties{
-					{Name: "requests_per_second", DoubleValue: apiutils.Of(100.0)},
-					{Name: "ttft_p90", DoubleValue: apiutils.Of(90.0)},
-					{Name: "hardware_count", IntValue: apiutils.Of(int32(2))},
-					{Name: "hardware_type", StringValue: apiutils.Of("gpu-test")},
+					{Name: "requests_per_second", DoubleValue: new(100.0)},
+					{Name: "ttft_p90", DoubleValue: new(90.0)},
+					{Name: "hardware_count", IntValue: new(int32(2))},
+					{Name: "hardware_type", StringValue: new("gpu-test")},
 				},
 			},
 			{
-				TypeID: apiutils.Of(metricsArtifactTypeID),
+				TypeID: new(metricsArtifactTypeID),
 				Attributes: &models.CatalogMetricsArtifactAttributes{
-					Name:        apiutils.Of("rec-artifact-2"),
-					ExternalID:  apiutils.Of("rec-2"),
+					Name:        new("rec-artifact-2"),
+					ExternalID:  new("rec-2"),
 					MetricsType: models.MetricsTypePerformance,
 				},
 				Properties: &[]dbmodels.Properties{
-					{Name: "metricsType", StringValue: apiutils.Of("performance-metrics")},
+					{Name: "metricsType", StringValue: new("performance-metrics")},
 				},
 				CustomProperties: &[]dbmodels.Properties{
-					{Name: "requests_per_second", DoubleValue: apiutils.Of(120.0)},
-					{Name: "ttft_p90", DoubleValue: apiutils.Of(95.0)},
-					{Name: "hardware_count", IntValue: apiutils.Of(int32(2))},
-					{Name: "hardware_type", StringValue: apiutils.Of("gpu-test")},
+					{Name: "requests_per_second", DoubleValue: new(120.0)},
+					{Name: "ttft_p90", DoubleValue: new(95.0)},
+					{Name: "hardware_count", IntValue: new(int32(2))},
+					{Name: "hardware_type", StringValue: new("gpu-test")},
 				},
 			},
 		}
