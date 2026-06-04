@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	"github.com/kubeflow/hub/internal/db/models"
 	"github.com/kubeflow/hub/internal/db/service"
 	"github.com/stretchr/testify/assert"
@@ -30,32 +29,32 @@ func TestParameterRepository(t *testing.T) {
 	t.Run("TestSave", func(t *testing.T) {
 		// Test creating a new parameter
 		parameter := &models.ParameterImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.ParameterAttributes{
-				Name:         apiutils.Of("test-parameter"),
-				ExternalID:   apiutils.Of("parameter-ext-123"),
-				URI:          apiutils.Of("s3://bucket/parameter.json"),
-				State:        apiutils.Of("LIVE"),
-				ArtifactType: apiutils.Of("parameter"),
+				Name:         new("test-parameter"),
+				ExternalID:   new("parameter-ext-123"),
+				URI:          new("s3://bucket/parameter.json"),
+				State:        new("LIVE"),
+				ArtifactType: new("parameter"),
 			},
 			Properties: &[]models.Properties{
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Test parameter description"),
+					StringValue: new("Test parameter description"),
 				},
 				{
 					Name:        "value",
-					StringValue: apiutils.Of("0.001"),
+					StringValue: new("0.001"),
 				},
 				{
 					Name:        "parameter_type",
-					StringValue: apiutils.Of("number"),
+					StringValue: new("number"),
 				},
 			},
 			CustomProperties: &[]models.Properties{
 				{
 					Name:             "custom-parameter-prop",
-					StringValue:      apiutils.Of("custom-parameter-value"),
+					StringValue:      new("custom-parameter-value"),
 					IsCustomProperty: true,
 				},
 			},
@@ -112,8 +111,8 @@ func TestParameterRepository(t *testing.T) {
 
 		// Test updating the same parameter
 		parameter.ID = saved.GetID()
-		parameter.GetAttributes().Name = apiutils.Of("updated-parameter")
-		parameter.GetAttributes().State = apiutils.Of("PENDING")
+		parameter.GetAttributes().Name = new("updated-parameter")
+		parameter.GetAttributes().State = new("PENDING")
 		// Preserve CreateTimeSinceEpoch from the saved entity (simulating what OpenAPI converter would do)
 		parameter.GetAttributes().CreateTimeSinceEpoch = saved.GetAttributes().CreateTimeSinceEpoch
 
@@ -130,32 +129,32 @@ func TestParameterRepository(t *testing.T) {
 	t.Run("TestGetByID", func(t *testing.T) {
 		// First create a parameter to retrieve
 		parameter := &models.ParameterImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.ParameterAttributes{
-				Name:         apiutils.Of("get-test-parameter"),
-				ExternalID:   apiutils.Of("get-parameter-ext-123"),
-				URI:          apiutils.Of("s3://bucket/get-parameter.json"),
-				State:        apiutils.Of("LIVE"),
-				ArtifactType: apiutils.Of("parameter"),
+				Name:         new("get-test-parameter"),
+				ExternalID:   new("get-parameter-ext-123"),
+				URI:          new("s3://bucket/get-parameter.json"),
+				State:        new("LIVE"),
+				ArtifactType: new("parameter"),
 			},
 			Properties: &[]models.Properties{
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Parameter for get test"),
+					StringValue: new("Parameter for get test"),
 				},
 				{
 					Name:        "value",
-					StringValue: apiutils.Of("0.005"),
+					StringValue: new("0.005"),
 				},
 				{
 					Name:        "parameter_type",
-					StringValue: apiutils.Of("string"),
+					StringValue: new("string"),
 				},
 			},
 			CustomProperties: &[]models.Properties{
 				{
 					Name:             "experiment-phase",
-					StringValue:      apiutils.Of("validation"),
+					StringValue:      new("validation"),
 					IsCustomProperty: true,
 				},
 			},
@@ -216,50 +215,50 @@ func TestParameterRepository(t *testing.T) {
 		// Create multiple parameters for listing
 		testParameters := []*models.ParameterImpl{
 			{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.ParameterAttributes{
-					Name:         apiutils.Of("list-parameter-1"),
-					ExternalID:   apiutils.Of("list-parameter-ext-1"),
-					URI:          apiutils.Of("s3://bucket/list-parameter-1.json"),
-					State:        apiutils.Of("LIVE"),
-					ArtifactType: apiutils.Of("parameter"),
+					Name:         new("list-parameter-1"),
+					ExternalID:   new("list-parameter-ext-1"),
+					URI:          new("s3://bucket/list-parameter-1.json"),
+					State:        new("LIVE"),
+					ArtifactType: new("parameter"),
 				},
 				Properties: &[]models.Properties{
 					{
 						Name:        "description",
-						StringValue: apiutils.Of("First parameter"),
+						StringValue: new("First parameter"),
 					},
 				},
 			},
 			{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.ParameterAttributes{
-					Name:         apiutils.Of("list-parameter-2"),
-					ExternalID:   apiutils.Of("list-parameter-ext-2"),
-					URI:          apiutils.Of("s3://bucket/list-parameter-2.json"),
-					State:        apiutils.Of("PENDING"),
-					ArtifactType: apiutils.Of("parameter"),
+					Name:         new("list-parameter-2"),
+					ExternalID:   new("list-parameter-ext-2"),
+					URI:          new("s3://bucket/list-parameter-2.json"),
+					State:        new("PENDING"),
+					ArtifactType: new("parameter"),
 				},
 				Properties: &[]models.Properties{
 					{
 						Name:        "description",
-						StringValue: apiutils.Of("Second parameter"),
+						StringValue: new("Second parameter"),
 					},
 				},
 			},
 			{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.ParameterAttributes{
-					Name:         apiutils.Of("list-parameter-3"),
-					ExternalID:   apiutils.Of("list-parameter-ext-3"),
-					URI:          apiutils.Of("s3://bucket/list-parameter-3.json"),
-					State:        apiutils.Of("LIVE"),
-					ArtifactType: apiutils.Of("parameter"),
+					Name:         new("list-parameter-3"),
+					ExternalID:   new("list-parameter-ext-3"),
+					URI:          new("s3://bucket/list-parameter-3.json"),
+					State:        new("LIVE"),
+					ArtifactType: new("parameter"),
 				},
 				Properties: &[]models.Properties{
 					{
 						Name:        "description",
-						StringValue: apiutils.Of("Third parameter"),
+						StringValue: new("Third parameter"),
 					},
 				},
 			},
@@ -282,7 +281,7 @@ func TestParameterRepository(t *testing.T) {
 
 		// Test listing by name
 		listOptions = models.ParameterListOptions{
-			Name: apiutils.Of("list-parameter-1"),
+			Name: new("list-parameter-1"),
 		}
 		listOptions.PageSize = &pageSize
 
@@ -296,7 +295,7 @@ func TestParameterRepository(t *testing.T) {
 
 		// Test listing by external ID
 		listOptions = models.ParameterListOptions{
-			ExternalID: apiutils.Of("list-parameter-ext-2"),
+			ExternalID: new("list-parameter-ext-2"),
 		}
 		listOptions.PageSize = &pageSize
 
@@ -311,7 +310,7 @@ func TestParameterRepository(t *testing.T) {
 		// Test ordering by ID (deterministic)
 		listOptions = models.ParameterListOptions{
 			Pagination: models.Pagination{
-				OrderBy: apiutils.Of("ID"),
+				OrderBy: new("ID"),
 			},
 		}
 		listOptions.PageSize = &pageSize
@@ -332,12 +331,12 @@ func TestParameterRepository(t *testing.T) {
 	t.Run("TestListOrdering", func(t *testing.T) {
 		// Create parameters sequentially with time delays to ensure deterministic ordering
 		parameter1 := &models.ParameterImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.ParameterAttributes{
-				Name:         apiutils.Of("time-test-parameter-1"),
-				URI:          apiutils.Of("s3://bucket/time-parameter-1.json"),
-				State:        apiutils.Of("LIVE"),
-				ArtifactType: apiutils.Of("parameter"),
+				Name:         new("time-test-parameter-1"),
+				URI:          new("s3://bucket/time-parameter-1.json"),
+				State:        new("LIVE"),
+				ArtifactType: new("parameter"),
 			},
 		}
 		saved1, err := repo.Save(parameter1, nil)
@@ -347,12 +346,12 @@ func TestParameterRepository(t *testing.T) {
 		time.Sleep(10 * time.Millisecond)
 
 		parameter2 := &models.ParameterImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.ParameterAttributes{
-				Name:         apiutils.Of("time-test-parameter-2"),
-				URI:          apiutils.Of("s3://bucket/time-parameter-2.json"),
-				State:        apiutils.Of("PENDING"),
-				ArtifactType: apiutils.Of("parameter"),
+				Name:         new("time-test-parameter-2"),
+				URI:          new("s3://bucket/time-parameter-2.json"),
+				State:        new("PENDING"),
+				ArtifactType: new("parameter"),
 			},
 		}
 		saved2, err := repo.Save(parameter2, nil)
@@ -362,7 +361,7 @@ func TestParameterRepository(t *testing.T) {
 		pageSize := int32(10)
 		listOptions := models.ParameterListOptions{
 			Pagination: models.Pagination{
-				OrderBy: apiutils.Of("CREATE_TIME"),
+				OrderBy: new("CREATE_TIME"),
 			},
 		}
 		listOptions.PageSize = &pageSize
@@ -396,18 +395,18 @@ func TestParameterRepository(t *testing.T) {
 	t.Run("TestSaveWithModelVersion", func(t *testing.T) {
 		// First create a registered model and model version
 		registeredModel := &models.RegisteredModelImpl{
-			TypeID: apiutils.Of(int32(registeredModelTypeID)),
+			TypeID: new(int32(registeredModelTypeID)),
 			Attributes: &models.RegisteredModelAttributes{
-				Name: apiutils.Of("test-registered-model-for-parameter"),
+				Name: new("test-registered-model-for-parameter"),
 			},
 		}
 		savedRegisteredModel, err := registeredModelRepo.Save(registeredModel)
 		require.NoError(t, err)
 
 		modelVersion := &models.ModelVersionImpl{
-			TypeID: apiutils.Of(int32(modelVersionTypeID)),
+			TypeID: new(int32(modelVersionTypeID)),
 			Attributes: &models.ModelVersionAttributes{
-				Name: apiutils.Of("test-model-version-for-parameter"),
+				Name: new("test-model-version-for-parameter"),
 			},
 			Properties: &[]models.Properties{
 				{
@@ -421,17 +420,17 @@ func TestParameterRepository(t *testing.T) {
 
 		// Test creating a parameter with model version attribution
 		parameter := &models.ParameterImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.ParameterAttributes{
-				Name:         apiutils.Of(fmt.Sprintf("%d:model-version-parameter", *savedModelVersion.GetID())),
-				URI:          apiutils.Of("s3://bucket/model-version-parameter.json"),
-				State:        apiutils.Of("LIVE"),
-				ArtifactType: apiutils.Of("parameter"),
+				Name:         new(fmt.Sprintf("%d:model-version-parameter", *savedModelVersion.GetID())),
+				URI:          new("s3://bucket/model-version-parameter.json"),
+				State:        new("LIVE"),
+				ArtifactType: new("parameter"),
 			},
 			Properties: &[]models.Properties{
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Parameter associated with model version"),
+					StringValue: new("Parameter associated with model version"),
 				},
 			},
 		}
@@ -447,7 +446,7 @@ func TestParameterRepository(t *testing.T) {
 		listOptions := models.ParameterListOptions{
 			ParentResourceID: savedModelVersion.GetID(),
 		}
-		listOptions.PageSize = apiutils.Of(int32(10))
+		listOptions.PageSize = new(int32(10))
 
 		result, err := repo.List(listOptions)
 		require.NoError(t, err)
@@ -467,37 +466,37 @@ func TestParameterRepository(t *testing.T) {
 
 	t.Run("TestSaveWithProperties", func(t *testing.T) {
 		parameter := &models.ParameterImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.ParameterAttributes{
-				Name:         apiutils.Of("props-test-parameter"),
-				ExternalID:   apiutils.Of("props-parameter-ext-123"),
-				URI:          apiutils.Of("s3://bucket/props-parameter.json"),
-				State:        apiutils.Of("LIVE"),
-				ArtifactType: apiutils.Of("parameter"),
+				Name:         new("props-test-parameter"),
+				ExternalID:   new("props-parameter-ext-123"),
+				URI:          new("s3://bucket/props-parameter.json"),
+				State:        new("LIVE"),
+				ArtifactType: new("parameter"),
 			},
 			Properties: &[]models.Properties{
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Parameter with properties"),
+					StringValue: new("Parameter with properties"),
 				},
 				{
 					Name:        "value",
-					StringValue: apiutils.Of("learning_rate=0.001"),
+					StringValue: new("learning_rate=0.001"),
 				},
 				{
 					Name:        "type",
-					StringValue: apiutils.Of("hyperparameter"),
+					StringValue: new("hyperparameter"),
 				},
 			},
 			CustomProperties: &[]models.Properties{
 				{
 					Name:             "team",
-					StringValue:      apiutils.Of("ml-team"),
+					StringValue:      new("ml-team"),
 					IsCustomProperty: true,
 				},
 				{
 					Name:             "priority",
-					IntValue:         apiutils.Of(int32(5)),
+					IntValue:         new(int32(5)),
 					IsCustomProperty: true,
 				},
 			},
@@ -559,12 +558,12 @@ func TestParameterRepository(t *testing.T) {
 		// Create multiple parameters for pagination testing
 		for i := range 5 {
 			parameter := &models.ParameterImpl{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.ParameterAttributes{
-					Name:         apiutils.Of(fmt.Sprintf("page-parameter-%d", i)),
-					URI:          apiutils.Of(fmt.Sprintf("s3://bucket/page-parameter-%d.json", i)),
-					State:        apiutils.Of("LIVE"),
-					ArtifactType: apiutils.Of("parameter"),
+					Name:         new(fmt.Sprintf("page-parameter-%d", i)),
+					URI:          new(fmt.Sprintf("s3://bucket/page-parameter-%d.json", i)),
+					State:        new("LIVE"),
+					ArtifactType: new("parameter"),
 				},
 			}
 			_, err := repo.Save(parameter, nil)
@@ -597,7 +596,7 @@ func TestParameterRepository(t *testing.T) {
 	t.Run("TestEmptyResults", func(t *testing.T) {
 		// Test listing with filter that returns no results
 		listOptions := models.ParameterListOptions{
-			Name: apiutils.Of("non-existent-parameter"),
+			Name: new("non-existent-parameter"),
 		}
 
 		result, err := repo.List(listOptions)
@@ -612,32 +611,32 @@ func TestParameterRepository(t *testing.T) {
 		// Create parameters with different states for testing
 		parameters := []*models.ParameterImpl{
 			{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.ParameterAttributes{
-					Name:         apiutils.Of("state-parameter-1"),
-					URI:          apiutils.Of("s3://bucket/state-parameter-1.json"),
-					State:        apiutils.Of("LIVE"),
-					ArtifactType: apiutils.Of("parameter"),
+					Name:         new("state-parameter-1"),
+					URI:          new("s3://bucket/state-parameter-1.json"),
+					State:        new("LIVE"),
+					ArtifactType: new("parameter"),
 				},
 				Properties: &[]models.Properties{
 					{
 						Name:        "description",
-						StringValue: apiutils.Of("Live parameter"),
+						StringValue: new("Live parameter"),
 					},
 				},
 			},
 			{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.ParameterAttributes{
-					Name:         apiutils.Of("state-parameter-2"),
-					URI:          apiutils.Of("s3://bucket/state-parameter-2.json"),
-					State:        apiutils.Of("PENDING"),
-					ArtifactType: apiutils.Of("parameter"),
+					Name:         new("state-parameter-2"),
+					URI:          new("s3://bucket/state-parameter-2.json"),
+					State:        new("PENDING"),
+					ArtifactType: new("parameter"),
 				},
 				Properties: &[]models.Properties{
 					{
 						Name:        "description",
-						StringValue: apiutils.Of("Pending parameter"),
+						StringValue: new("Pending parameter"),
 					},
 				},
 			},
@@ -650,7 +649,7 @@ func TestParameterRepository(t *testing.T) {
 
 		// Test listing all parameters (should find at least our 2 test parameters)
 		listOptions := models.ParameterListOptions{}
-		listOptions.PageSize = apiutils.Of(int32(10))
+		listOptions.PageSize = new(int32(10))
 
 		result, err := repo.List(listOptions)
 		require.NoError(t, err)

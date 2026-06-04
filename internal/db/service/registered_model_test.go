@@ -4,10 +4,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	"github.com/kubeflow/hub/internal/db/models"
-	"github.com/kubeflow/hub/internal/platform/db/schema"
 	"github.com/kubeflow/hub/internal/db/service"
+	"github.com/kubeflow/hub/internal/platform/db/schema"
 	"github.com/kubeflow/hub/internal/testutils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -24,21 +23,21 @@ func TestRegisteredModelRepository(t *testing.T) {
 	t.Run("TestSave", func(t *testing.T) {
 		// Test creating a new registered model
 		registeredModel := &models.RegisteredModelImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.RegisteredModelAttributes{
-				Name:       apiutils.Of("test-model"),
-				ExternalID: apiutils.Of("ext-123"),
+				Name:       new("test-model"),
+				ExternalID: new("ext-123"),
 			},
 			Properties: &[]models.Properties{
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Test model description"),
+					StringValue: new("Test model description"),
 				},
 			},
 			CustomProperties: &[]models.Properties{
 				{
 					Name:        "custom-prop",
-					StringValue: apiutils.Of("custom-value"),
+					StringValue: new("custom-value"),
 				},
 			},
 		}
@@ -52,7 +51,7 @@ func TestRegisteredModelRepository(t *testing.T) {
 
 		// Test updating the same model
 		registeredModel.ID = saved.GetID()
-		registeredModel.GetAttributes().Name = apiutils.Of("updated-model")
+		registeredModel.GetAttributes().Name = new("updated-model")
 		// Preserve CreateTimeSinceEpoch from the saved entity (simulating what OpenAPI converter would do)
 		registeredModel.GetAttributes().CreateTimeSinceEpoch = saved.GetAttributes().CreateTimeSinceEpoch
 
@@ -66,10 +65,10 @@ func TestRegisteredModelRepository(t *testing.T) {
 	t.Run("TestGetByID", func(t *testing.T) {
 		// First create a model to retrieve
 		registeredModel := &models.RegisteredModelImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.RegisteredModelAttributes{
-				Name:       apiutils.Of("get-test-model"),
-				ExternalID: apiutils.Of("get-ext-123"),
+				Name:       new("get-test-model"),
+				ExternalID: new("get-ext-123"),
 			},
 		}
 
@@ -94,24 +93,24 @@ func TestRegisteredModelRepository(t *testing.T) {
 		// Create multiple models for listing
 		testModels := []*models.RegisteredModelImpl{
 			{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.RegisteredModelAttributes{
-					Name:       apiutils.Of("list-model-1"),
-					ExternalID: apiutils.Of("list-ext-1"),
+					Name:       new("list-model-1"),
+					ExternalID: new("list-ext-1"),
 				},
 			},
 			{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.RegisteredModelAttributes{
-					Name:       apiutils.Of("list-model-2"),
-					ExternalID: apiutils.Of("list-ext-2"),
+					Name:       new("list-model-2"),
+					ExternalID: new("list-ext-2"),
 				},
 			},
 			{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.RegisteredModelAttributes{
-					Name:       apiutils.Of("list-model-3"),
-					ExternalID: apiutils.Of("list-ext-3"),
+					Name:       new("list-model-3"),
+					ExternalID: new("list-ext-3"),
 				},
 			},
 		}
@@ -133,7 +132,7 @@ func TestRegisteredModelRepository(t *testing.T) {
 
 		// Test listing by name
 		listOptions = models.RegisteredModelListOptions{
-			Name: apiutils.Of("list-model-1"),
+			Name: new("list-model-1"),
 		}
 		listOptions.PageSize = &pageSize
 
@@ -147,7 +146,7 @@ func TestRegisteredModelRepository(t *testing.T) {
 
 		// Test listing by external ID
 		listOptions = models.RegisteredModelListOptions{
-			ExternalID: apiutils.Of("list-ext-2"),
+			ExternalID: new("list-ext-2"),
 		}
 		listOptions.PageSize = &pageSize
 
@@ -162,7 +161,7 @@ func TestRegisteredModelRepository(t *testing.T) {
 		// Test ordering by ID (deterministic)
 		listOptions = models.RegisteredModelListOptions{
 			Pagination: models.Pagination{
-				OrderBy: apiutils.Of("ID"),
+				OrderBy: new("ID"),
 			},
 		}
 		listOptions.PageSize = &pageSize
@@ -183,9 +182,9 @@ func TestRegisteredModelRepository(t *testing.T) {
 	t.Run("TestListOrdering", func(t *testing.T) {
 		// Create models sequentially with time delays to ensure deterministic ordering
 		model1 := &models.RegisteredModelImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.RegisteredModelAttributes{
-				Name: apiutils.Of("time-test-model-1"),
+				Name: new("time-test-model-1"),
 			},
 		}
 		saved1, err := repo.Save(model1)
@@ -195,9 +194,9 @@ func TestRegisteredModelRepository(t *testing.T) {
 		time.Sleep(10 * time.Millisecond)
 
 		model2 := &models.RegisteredModelImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.RegisteredModelAttributes{
-				Name: apiutils.Of("time-test-model-2"),
+				Name: new("time-test-model-2"),
 			},
 		}
 		saved2, err := repo.Save(model2)
@@ -207,7 +206,7 @@ func TestRegisteredModelRepository(t *testing.T) {
 		pageSize := int32(10)
 		listOptions := models.RegisteredModelListOptions{
 			Pagination: models.Pagination{
-				OrderBy: apiutils.Of("CREATE_TIME"),
+				OrderBy: new("CREATE_TIME"),
 			},
 		}
 		listOptions.PageSize = &pageSize
@@ -240,28 +239,28 @@ func TestRegisteredModelRepository(t *testing.T) {
 
 	t.Run("TestSaveWithProperties", func(t *testing.T) {
 		registeredModel := &models.RegisteredModelImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.RegisteredModelAttributes{
-				Name: apiutils.Of("props-test-model"),
+				Name: new("props-test-model"),
 			},
 			Properties: &[]models.Properties{
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Model with properties"),
+					StringValue: new("Model with properties"),
 				},
 				{
 					Name:     "version",
-					IntValue: apiutils.Of(int32(1)),
+					IntValue: new(int32(1)),
 				},
 			},
 			CustomProperties: &[]models.Properties{
 				{
 					Name:        "team",
-					StringValue: apiutils.Of("ml-team"),
+					StringValue: new("ml-team"),
 				},
 				{
 					Name:     "priority",
-					IntValue: apiutils.Of(int32(5)),
+					IntValue: new(int32(5)),
 				},
 			},
 		}
@@ -284,14 +283,14 @@ func TestRegisteredModelRepository(t *testing.T) {
 	t.Run("TestCustomPropertyTypeChange", func(t *testing.T) {
 		// Create a model with an int custom property
 		registeredModel := &models.RegisteredModelImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.RegisteredModelAttributes{
-				Name: apiutils.Of("type-change-model"),
+				Name: new("type-change-model"),
 			},
 			CustomProperties: &[]models.Properties{
 				{
 					Name:     "score",
-					IntValue: apiutils.Of(int32(42)),
+					IntValue: new(int32(42)),
 				},
 			},
 		}
@@ -316,7 +315,7 @@ func TestRegisteredModelRepository(t *testing.T) {
 		registeredModel.CustomProperties = &[]models.Properties{
 			{
 				Name:        "score",
-				DoubleValue: apiutils.Of(3.14),
+				DoubleValue: new(3.14),
 			},
 		}
 
@@ -351,15 +350,15 @@ func TestRegisteredModelRepository(t *testing.T) {
 		// is_custom_property=false from the WHERE clause (zero-value bool), causing the UPDATE
 		// to match both rows and try to set both to is_custom_property=false.
 		registeredModel := &models.RegisteredModelImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.RegisteredModelAttributes{
-				Name: apiutils.Of("same-name-prop-model"),
+				Name: new("same-name-prop-model"),
 			},
 			Properties: &[]models.Properties{
-				{Name: "score", StringValue: apiutils.Of("good")},
+				{Name: "score", StringValue: new("good")},
 			},
 			CustomProperties: &[]models.Properties{
-				{Name: "score", DoubleValue: apiutils.Of(0.95)},
+				{Name: "score", DoubleValue: new(0.95)},
 			},
 		}
 
@@ -370,10 +369,10 @@ func TestRegisteredModelRepository(t *testing.T) {
 		registeredModel.ID = saved.GetID()
 		registeredModel.GetAttributes().CreateTimeSinceEpoch = saved.GetAttributes().CreateTimeSinceEpoch
 		registeredModel.Properties = &[]models.Properties{
-			{Name: "score", StringValue: apiutils.Of("excellent")},
+			{Name: "score", StringValue: new("excellent")},
 		}
 		registeredModel.CustomProperties = &[]models.Properties{
-			{Name: "score", DoubleValue: apiutils.Of(0.99)},
+			{Name: "score", DoubleValue: new(0.99)},
 		}
 
 		updated, err := repo.Save(registeredModel)

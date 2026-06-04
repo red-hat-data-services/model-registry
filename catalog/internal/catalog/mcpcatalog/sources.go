@@ -8,7 +8,6 @@ import (
 
 	"github.com/kubeflow/hub/catalog/internal/catalog/basecatalog"
 	model "github.com/kubeflow/hub/catalog/pkg/openapi"
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 )
 
 // mcpOriginEntry holds MCP sources from a single origin (config file).
@@ -174,7 +173,7 @@ func mergeMCPSources(base, override basecatalog.MCPSource) basecatalog.MCPSource
 // applyMCPDefaults applies default values to an MCPSource for fields that are not set.
 func applyMCPDefaults(source basecatalog.MCPSource) basecatalog.MCPSource {
 	if source.Enabled == nil {
-		source.Enabled = apiutils.Of(true)
+		source.Enabled = new(true)
 	}
 	if source.Labels == nil {
 		source.Labels = []string{}

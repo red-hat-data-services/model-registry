@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/kubeflow/hub/catalog/internal/catalog/mcpcatalog/models"
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	dbmodels "github.com/kubeflow/hub/internal/platform/db/entity"
 	"github.com/kubeflow/hub/internal/testutils"
 	"github.com/stretchr/testify/assert"
@@ -29,16 +28,16 @@ func TestMCPServerToolRepository(t *testing.T) {
 		// Create parent MCP server
 		parentServer := &models.MCPServerImpl{
 			Attributes: &models.MCPServerAttributes{
-				Name: apiutils.Of("test-server"),
+				Name: new("test-server"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "source_id",
-					StringValue: apiutils.Of("test-source"),
+					StringValue: new("test-source"),
 				},
 				{
 					Name:        "version",
-					StringValue: apiutils.Of("1.0.0"),
+					StringValue: new("1.0.0"),
 				},
 			},
 		}
@@ -51,16 +50,16 @@ func TestMCPServerToolRepository(t *testing.T) {
 		// Create tool for the server
 		tool := &models.MCPServerToolImpl{
 			Attributes: &models.MCPServerToolAttributes{
-				Name: apiutils.Of("test-tool"),
+				Name: new("test-tool"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "accessType",
-					StringValue: apiutils.Of("read-write"),
+					StringValue: new("read-write"),
 				},
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("A test tool"),
+					StringValue: new("A test tool"),
 				},
 			},
 		}
@@ -86,11 +85,11 @@ func TestMCPServerToolRepository(t *testing.T) {
 		// Create parent server
 		parentServer := &models.MCPServerImpl{
 			Attributes: &models.MCPServerAttributes{
-				Name: apiutils.Of("parent-server-get"),
+				Name: new("parent-server-get"),
 			},
 			Properties: &[]dbmodels.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("source-get")},
-				{Name: "version", StringValue: apiutils.Of("1.0.0")},
+				{Name: "source_id", StringValue: new("source-get")},
+				{Name: "version", StringValue: new("1.0.0")},
 			},
 		}
 		savedServer, err := serverRepo.Save(parentServer)
@@ -100,10 +99,10 @@ func TestMCPServerToolRepository(t *testing.T) {
 		// Create tool
 		tool := &models.MCPServerToolImpl{
 			Attributes: &models.MCPServerToolAttributes{
-				Name: apiutils.Of("get-test-tool"),
+				Name: new("get-test-tool"),
 			},
 			Properties: &[]dbmodels.Properties{
-				{Name: "accessType", StringValue: apiutils.Of("read-only")},
+				{Name: "accessType", StringValue: new("read-only")},
 			},
 		}
 		savedTool, err := toolRepo.Save(tool, &parentID)
@@ -124,11 +123,11 @@ func TestMCPServerToolRepository(t *testing.T) {
 		// Create parent server
 		parentServer := &models.MCPServerImpl{
 			Attributes: &models.MCPServerAttributes{
-				Name: apiutils.Of("server-with-tools-list"),
+				Name: new("server-with-tools-list"),
 			},
 			Properties: &[]dbmodels.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("source-list")},
-				{Name: "version", StringValue: apiutils.Of("1.0.0")},
+				{Name: "source_id", StringValue: new("source-list")},
+				{Name: "version", StringValue: new("1.0.0")},
 			},
 		}
 		savedServer, err := serverRepo.Save(parentServer)
@@ -137,21 +136,21 @@ func TestMCPServerToolRepository(t *testing.T) {
 
 		// Create multiple tools
 		tool1 := &models.MCPServerToolImpl{
-			Attributes: &models.MCPServerToolAttributes{Name: apiutils.Of("tool-1")},
+			Attributes: &models.MCPServerToolAttributes{Name: new("tool-1")},
 			Properties: &[]dbmodels.Properties{
-				{Name: "accessType", StringValue: apiutils.Of("read-only")},
+				{Name: "accessType", StringValue: new("read-only")},
 			},
 		}
 		tool2 := &models.MCPServerToolImpl{
-			Attributes: &models.MCPServerToolAttributes{Name: apiutils.Of("tool-2")},
+			Attributes: &models.MCPServerToolAttributes{Name: new("tool-2")},
 			Properties: &[]dbmodels.Properties{
-				{Name: "accessType", StringValue: apiutils.Of("read-write")},
+				{Name: "accessType", StringValue: new("read-write")},
 			},
 		}
 		tool3 := &models.MCPServerToolImpl{
-			Attributes: &models.MCPServerToolAttributes{Name: apiutils.Of("tool-3")},
+			Attributes: &models.MCPServerToolAttributes{Name: new("tool-3")},
 			Properties: &[]dbmodels.Properties{
-				{Name: "accessType", StringValue: apiutils.Of("write-only")},
+				{Name: "accessType", StringValue: new("write-only")},
 			},
 		}
 
@@ -180,10 +179,10 @@ func TestMCPServerToolRepository(t *testing.T) {
 	t.Run("TestUpdateTool", func(t *testing.T) {
 		// Create parent server
 		parentServer := &models.MCPServerImpl{
-			Attributes: &models.MCPServerAttributes{Name: apiutils.Of("parent-update")},
+			Attributes: &models.MCPServerAttributes{Name: new("parent-update")},
 			Properties: &[]dbmodels.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("source-update")},
-				{Name: "version", StringValue: apiutils.Of("1.0.0")},
+				{Name: "source_id", StringValue: new("source-update")},
+				{Name: "version", StringValue: new("1.0.0")},
 			},
 		}
 		savedServer, err := serverRepo.Save(parentServer)
@@ -192,10 +191,10 @@ func TestMCPServerToolRepository(t *testing.T) {
 
 		// Create tool
 		tool := &models.MCPServerToolImpl{
-			Attributes: &models.MCPServerToolAttributes{Name: apiutils.Of("update-tool")},
+			Attributes: &models.MCPServerToolAttributes{Name: new("update-tool")},
 			Properties: &[]dbmodels.Properties{
-				{Name: "accessType", StringValue: apiutils.Of("read-only")},
-				{Name: "description", StringValue: apiutils.Of("Original description")},
+				{Name: "accessType", StringValue: new("read-only")},
+				{Name: "description", StringValue: new("Original description")},
 			},
 		}
 		saved, err := toolRepo.Save(tool, &parentID)
@@ -204,10 +203,10 @@ func TestMCPServerToolRepository(t *testing.T) {
 		// Update the tool
 		updateTool := &models.MCPServerToolImpl{
 			ID:         saved.GetID(),
-			Attributes: &models.MCPServerToolAttributes{Name: apiutils.Of("update-tool")},
+			Attributes: &models.MCPServerToolAttributes{Name: new("update-tool")},
 			Properties: &[]dbmodels.Properties{
-				{Name: "accessType", StringValue: apiutils.Of("read-write")},
-				{Name: "description", StringValue: apiutils.Of("Updated description")},
+				{Name: "accessType", StringValue: new("read-write")},
+				{Name: "description", StringValue: new("Updated description")},
 			},
 		}
 		updated, err := toolRepo.Save(updateTool, &parentID)
@@ -234,10 +233,10 @@ func TestMCPServerToolRepository(t *testing.T) {
 	t.Run("TestDeleteToolByID", func(t *testing.T) {
 		// Create parent server
 		parentServer := &models.MCPServerImpl{
-			Attributes: &models.MCPServerAttributes{Name: apiutils.Of("parent-delete")},
+			Attributes: &models.MCPServerAttributes{Name: new("parent-delete")},
 			Properties: &[]dbmodels.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("source-delete")},
-				{Name: "version", StringValue: apiutils.Of("1.0.0")},
+				{Name: "source_id", StringValue: new("source-delete")},
+				{Name: "version", StringValue: new("1.0.0")},
 			},
 		}
 		savedServer, err := serverRepo.Save(parentServer)
@@ -246,9 +245,9 @@ func TestMCPServerToolRepository(t *testing.T) {
 
 		// Create tool
 		tool := &models.MCPServerToolImpl{
-			Attributes: &models.MCPServerToolAttributes{Name: apiutils.Of("delete-tool")},
+			Attributes: &models.MCPServerToolAttributes{Name: new("delete-tool")},
 			Properties: &[]dbmodels.Properties{
-				{Name: "accessType", StringValue: apiutils.Of("read-only")},
+				{Name: "accessType", StringValue: new("read-only")},
 			},
 		}
 		saved, err := toolRepo.Save(tool, &parentID)
@@ -272,10 +271,10 @@ func TestMCPServerToolRepository(t *testing.T) {
 	t.Run("TestDeleteToolsByParentID", func(t *testing.T) {
 		// Create parent server
 		parentServer := &models.MCPServerImpl{
-			Attributes: &models.MCPServerAttributes{Name: apiutils.Of("parent-to-delete-all")},
+			Attributes: &models.MCPServerAttributes{Name: new("parent-to-delete-all")},
 			Properties: &[]dbmodels.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("source-delete-all")},
-				{Name: "version", StringValue: apiutils.Of("1.0.0")},
+				{Name: "source_id", StringValue: new("source-delete-all")},
+				{Name: "version", StringValue: new("1.0.0")},
 			},
 		}
 		savedServer, err := serverRepo.Save(parentServer)
@@ -286,10 +285,10 @@ func TestMCPServerToolRepository(t *testing.T) {
 		for i := 1; i <= 5; i++ {
 			tool := &models.MCPServerToolImpl{
 				Attributes: &models.MCPServerToolAttributes{
-					Name: apiutils.Of(fmt.Sprintf("delete-all-tool-%d", i)),
+					Name: new(fmt.Sprintf("delete-all-tool-%d", i)),
 				},
 				Properties: &[]dbmodels.Properties{
-					{Name: "accessType", StringValue: apiutils.Of("read-only")},
+					{Name: "accessType", StringValue: new("read-only")},
 				},
 			}
 			_, err := toolRepo.Save(tool, &parentID)
@@ -314,10 +313,10 @@ func TestMCPServerToolRepository(t *testing.T) {
 	t.Run("TestCascadeDeleteToolsWithParent", func(t *testing.T) {
 		// Create parent server
 		parentServer := &models.MCPServerImpl{
-			Attributes: &models.MCPServerAttributes{Name: apiutils.Of("cascade-parent")},
+			Attributes: &models.MCPServerAttributes{Name: new("cascade-parent")},
 			Properties: &[]dbmodels.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("source-cascade")},
-				{Name: "version", StringValue: apiutils.Of("1.0.0")},
+				{Name: "source_id", StringValue: new("source-cascade")},
+				{Name: "version", StringValue: new("1.0.0")},
 			},
 		}
 		savedServer, err := serverRepo.Save(parentServer)
@@ -326,15 +325,15 @@ func TestMCPServerToolRepository(t *testing.T) {
 
 		// Create tools
 		tool1 := &models.MCPServerToolImpl{
-			Attributes: &models.MCPServerToolAttributes{Name: apiutils.Of("cascade-tool-1")},
+			Attributes: &models.MCPServerToolAttributes{Name: new("cascade-tool-1")},
 			Properties: &[]dbmodels.Properties{
-				{Name: "accessType", StringValue: apiutils.Of("read-only")},
+				{Name: "accessType", StringValue: new("read-only")},
 			},
 		}
 		tool2 := &models.MCPServerToolImpl{
-			Attributes: &models.MCPServerToolAttributes{Name: apiutils.Of("cascade-tool-2")},
+			Attributes: &models.MCPServerToolAttributes{Name: new("cascade-tool-2")},
 			Properties: &[]dbmodels.Properties{
-				{Name: "accessType", StringValue: apiutils.Of("read-write")},
+				{Name: "accessType", StringValue: new("read-write")},
 			},
 		}
 
@@ -367,10 +366,10 @@ func TestMCPServerToolRepository(t *testing.T) {
 	t.Run("TestToolWithCustomProperties", func(t *testing.T) {
 		// Create parent server
 		parentServer := &models.MCPServerImpl{
-			Attributes: &models.MCPServerAttributes{Name: apiutils.Of("parent-custom")},
+			Attributes: &models.MCPServerAttributes{Name: new("parent-custom")},
 			Properties: &[]dbmodels.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("source-custom")},
-				{Name: "version", StringValue: apiutils.Of("1.0.0")},
+				{Name: "source_id", StringValue: new("source-custom")},
+				{Name: "version", StringValue: new("1.0.0")},
 			},
 		}
 		savedServer, err := serverRepo.Save(parentServer)
@@ -379,13 +378,13 @@ func TestMCPServerToolRepository(t *testing.T) {
 
 		// Create tool with custom properties
 		tool := &models.MCPServerToolImpl{
-			Attributes: &models.MCPServerToolAttributes{Name: apiutils.Of("custom-tool")},
+			Attributes: &models.MCPServerToolAttributes{Name: new("custom-tool")},
 			Properties: &[]dbmodels.Properties{
-				{Name: "accessType", StringValue: apiutils.Of("read-only")},
+				{Name: "accessType", StringValue: new("read-only")},
 			},
 			CustomProperties: &[]dbmodels.Properties{
-				{Name: "customField1", StringValue: apiutils.Of("custom value 1")},
-				{Name: "customField2", IntValue: apiutils.Of(int32(42))},
+				{Name: "customField1", StringValue: new("custom value 1")},
+				{Name: "customField2", IntValue: new(int32(42))},
 			},
 		}
 
@@ -417,9 +416,9 @@ func TestMCPServerToolRepository(t *testing.T) {
 	t.Run("TestSaveToolWithNilParentID", func(t *testing.T) {
 		// Attempt to save a tool without a parent ID
 		tool := &models.MCPServerToolImpl{
-			Attributes: &models.MCPServerToolAttributes{Name: apiutils.Of("orphan-tool")},
+			Attributes: &models.MCPServerToolAttributes{Name: new("orphan-tool")},
 			Properties: &[]dbmodels.Properties{
-				{Name: "accessType", StringValue: apiutils.Of("read-only")},
+				{Name: "accessType", StringValue: new("read-only")},
 			},
 		}
 
@@ -438,9 +437,9 @@ func TestMCPServerToolRepository(t *testing.T) {
 		// Attempt to save a tool with a non-existent parent ID
 		invalidParentID := int32(999999)
 		tool := &models.MCPServerToolImpl{
-			Attributes: &models.MCPServerToolAttributes{Name: apiutils.Of("invalid-parent-tool")},
+			Attributes: &models.MCPServerToolAttributes{Name: new("invalid-parent-tool")},
 			Properties: &[]dbmodels.Properties{
-				{Name: "accessType", StringValue: apiutils.Of("read-only")},
+				{Name: "accessType", StringValue: new("read-only")},
 			},
 		}
 
@@ -452,10 +451,10 @@ func TestMCPServerToolRepository(t *testing.T) {
 	t.Run("TestSaveToolWithNilName", func(t *testing.T) {
 		// Create parent server
 		parentServer := &models.MCPServerImpl{
-			Attributes: &models.MCPServerAttributes{Name: apiutils.Of("parent-nil-name")},
+			Attributes: &models.MCPServerAttributes{Name: new("parent-nil-name")},
 			Properties: &[]dbmodels.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("source-nil-name")},
-				{Name: "version", StringValue: apiutils.Of("1.0.0")},
+				{Name: "source_id", StringValue: new("source-nil-name")},
+				{Name: "version", StringValue: new("1.0.0")},
 			},
 		}
 		savedServer, err := serverRepo.Save(parentServer)
@@ -466,7 +465,7 @@ func TestMCPServerToolRepository(t *testing.T) {
 		tool := &models.MCPServerToolImpl{
 			Attributes: &models.MCPServerToolAttributes{Name: nil},
 			Properties: &[]dbmodels.Properties{
-				{Name: "accessType", StringValue: apiutils.Of("read-only")},
+				{Name: "accessType", StringValue: new("read-only")},
 			},
 		}
 
@@ -477,10 +476,10 @@ func TestMCPServerToolRepository(t *testing.T) {
 	t.Run("TestSaveToolWithEmptyName", func(t *testing.T) {
 		// Create parent server
 		parentServer := &models.MCPServerImpl{
-			Attributes: &models.MCPServerAttributes{Name: apiutils.Of("parent-empty-name")},
+			Attributes: &models.MCPServerAttributes{Name: new("parent-empty-name")},
 			Properties: &[]dbmodels.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("source-empty-name")},
-				{Name: "version", StringValue: apiutils.Of("1.0.0")},
+				{Name: "source_id", StringValue: new("source-empty-name")},
+				{Name: "version", StringValue: new("1.0.0")},
 			},
 		}
 		savedServer, err := serverRepo.Save(parentServer)
@@ -492,7 +491,7 @@ func TestMCPServerToolRepository(t *testing.T) {
 		tool := &models.MCPServerToolImpl{
 			Attributes: &models.MCPServerToolAttributes{Name: &emptyName},
 			Properties: &[]dbmodels.Properties{
-				{Name: "accessType", StringValue: apiutils.Of("read-only")},
+				{Name: "accessType", StringValue: new("read-only")},
 			},
 		}
 
@@ -503,10 +502,10 @@ func TestMCPServerToolRepository(t *testing.T) {
 	t.Run("TestSaveToolWithNilAttributes", func(t *testing.T) {
 		// Create parent server
 		parentServer := &models.MCPServerImpl{
-			Attributes: &models.MCPServerAttributes{Name: apiutils.Of("parent-nil-attrs")},
+			Attributes: &models.MCPServerAttributes{Name: new("parent-nil-attrs")},
 			Properties: &[]dbmodels.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("source-nil-attrs")},
-				{Name: "version", StringValue: apiutils.Of("1.0.0")},
+				{Name: "source_id", StringValue: new("source-nil-attrs")},
+				{Name: "version", StringValue: new("1.0.0")},
 			},
 		}
 		savedServer, err := serverRepo.Save(parentServer)
@@ -517,7 +516,7 @@ func TestMCPServerToolRepository(t *testing.T) {
 		tool := &models.MCPServerToolImpl{
 			Attributes: nil,
 			Properties: &[]dbmodels.Properties{
-				{Name: "accessType", StringValue: apiutils.Of("read-only")},
+				{Name: "accessType", StringValue: new("read-only")},
 			},
 		}
 
@@ -529,11 +528,11 @@ func TestMCPServerToolRepository(t *testing.T) {
 		// Create parent server
 		parentServer := &models.MCPServerImpl{
 			Attributes: &models.MCPServerAttributes{
-				Name: apiutils.Of("server-with-tools-pagesize"),
+				Name: new("server-with-tools-pagesize"),
 			},
 			Properties: &[]dbmodels.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("source-pagesize")},
-				{Name: "version", StringValue: apiutils.Of("1.0.0")},
+				{Name: "source_id", StringValue: new("source-pagesize")},
+				{Name: "version", StringValue: new("1.0.0")},
 			},
 		}
 		savedServer, err := serverRepo.Save(parentServer)
@@ -544,10 +543,10 @@ func TestMCPServerToolRepository(t *testing.T) {
 		for i := 1; i <= 5; i++ {
 			tool := &models.MCPServerToolImpl{
 				Attributes: &models.MCPServerToolAttributes{
-					Name: apiutils.Of(fmt.Sprintf("pagesize-tool-%d", i)),
+					Name: new(fmt.Sprintf("pagesize-tool-%d", i)),
 				},
 				Properties: &[]dbmodels.Properties{
-					{Name: "accessType", StringValue: apiutils.Of("read-only")},
+					{Name: "accessType", StringValue: new("read-only")},
 				},
 			}
 			_, err := toolRepo.Save(tool, &parentID)
@@ -623,17 +622,17 @@ func TestMCPServerToolRepository(t *testing.T) {
 	t.Run("TestCountByParentIDs_MultipleServers", func(t *testing.T) {
 		// Create two parent servers with different tool counts
 		server1 := &models.MCPServerImpl{
-			Attributes: &models.MCPServerAttributes{Name: apiutils.Of("count-server-1")},
+			Attributes: &models.MCPServerAttributes{Name: new("count-server-1")},
 			Properties: &[]dbmodels.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("source-count-1")},
-				{Name: "version", StringValue: apiutils.Of("1.0.0")},
+				{Name: "source_id", StringValue: new("source-count-1")},
+				{Name: "version", StringValue: new("1.0.0")},
 			},
 		}
 		server2 := &models.MCPServerImpl{
-			Attributes: &models.MCPServerAttributes{Name: apiutils.Of("count-server-2")},
+			Attributes: &models.MCPServerAttributes{Name: new("count-server-2")},
 			Properties: &[]dbmodels.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("source-count-2")},
-				{Name: "version", StringValue: apiutils.Of("1.0.0")},
+				{Name: "source_id", StringValue: new("source-count-2")},
+				{Name: "version", StringValue: new("1.0.0")},
 			},
 		}
 		savedServer1, err := serverRepo.Save(server1)
@@ -648,10 +647,10 @@ func TestMCPServerToolRepository(t *testing.T) {
 		for i := 1; i <= 3; i++ {
 			tool := &models.MCPServerToolImpl{
 				Attributes: &models.MCPServerToolAttributes{
-					Name: apiutils.Of(fmt.Sprintf("count-s1-tool-%d", i)),
+					Name: new(fmt.Sprintf("count-s1-tool-%d", i)),
 				},
 				Properties: &[]dbmodels.Properties{
-					{Name: "accessType", StringValue: apiutils.Of("read-only")},
+					{Name: "accessType", StringValue: new("read-only")},
 				},
 			}
 			_, err := toolRepo.Save(tool, &parentID1)
@@ -660,9 +659,9 @@ func TestMCPServerToolRepository(t *testing.T) {
 
 		// Add 1 tool to server2
 		tool := &models.MCPServerToolImpl{
-			Attributes: &models.MCPServerToolAttributes{Name: apiutils.Of("count-s2-tool-1")},
+			Attributes: &models.MCPServerToolAttributes{Name: new("count-s2-tool-1")},
 			Properties: &[]dbmodels.Properties{
-				{Name: "accessType", StringValue: apiutils.Of("read-only")},
+				{Name: "accessType", StringValue: new("read-only")},
 			},
 		}
 		_, err = toolRepo.Save(tool, &parentID2)
@@ -678,10 +677,10 @@ func TestMCPServerToolRepository(t *testing.T) {
 	t.Run("TestCountByParentIDs_ServerWithNoTools", func(t *testing.T) {
 		// Create a server with no tools
 		server := &models.MCPServerImpl{
-			Attributes: &models.MCPServerAttributes{Name: apiutils.Of("count-empty-server")},
+			Attributes: &models.MCPServerAttributes{Name: new("count-empty-server")},
 			Properties: &[]dbmodels.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("source-count-empty")},
-				{Name: "version", StringValue: apiutils.Of("1.0.0")},
+				{Name: "source_id", StringValue: new("source-count-empty")},
+				{Name: "version", StringValue: new("1.0.0")},
 			},
 		}
 		savedServer, err := serverRepo.Save(server)

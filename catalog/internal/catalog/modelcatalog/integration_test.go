@@ -9,7 +9,6 @@ import (
 	modelservice "github.com/kubeflow/hub/catalog/internal/catalog/modelcatalog/service"
 	"github.com/kubeflow/hub/catalog/internal/db/service"
 	"github.com/kubeflow/hub/catalog/internal/testhelpers"
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	mr_models "github.com/kubeflow/hub/internal/platform/db/entity"
 	"github.com/kubeflow/hub/internal/platform/db/schema"
 	"github.com/kubeflow/hub/internal/testutils"
@@ -69,14 +68,14 @@ func insertTestData(t *testing.T, ctx context.Context, svcs Services, catalogMod
 	var modelIDs []int32
 	for _, modelData := range testModels {
 		model := &models.CatalogModelImpl{
-			TypeID: apiutils.Of(catalogModelTypeID),
+			TypeID: new(catalogModelTypeID),
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of(modelData.name),
-				ExternalID: apiutils.Of(modelData.name + "-ext"),
+				Name:       new(modelData.name),
+				ExternalID: new(modelData.name + "-ext"),
 			},
 			Properties: &[]mr_models.Properties{
-				{Name: "source_id", StringValue: apiutils.Of(modelData.sourceID)},
-				{Name: "description", StringValue: apiutils.Of(modelData.description)},
+				{Name: "source_id", StringValue: new(modelData.sourceID)},
+				{Name: "description", StringValue: new(modelData.description)},
 			},
 		}
 
@@ -112,18 +111,18 @@ func insertTestData(t *testing.T, ctx context.Context, svcs Services, catalogMod
 
 	for _, perfData := range performanceArtifacts {
 		artifact := &models.CatalogMetricsArtifactImpl{
-			TypeID: apiutils.Of(metricsArtifactTypeID),
+			TypeID: new(metricsArtifactTypeID),
 			Attributes: &models.CatalogMetricsArtifactAttributes{
-				Name:        apiutils.Of(perfData.name),
+				Name:        new(perfData.name),
 				MetricsType: models.MetricsTypePerformance,
 			},
 			Properties: &[]mr_models.Properties{},
 			CustomProperties: &[]mr_models.Properties{
-				{Name: "ttft_p90", DoubleValue: apiutils.Of(perfData.ttft_p90)},
-				{Name: "custom_latency_metric", DoubleValue: apiutils.Of(perfData.custom_latency_metric)},
-				{Name: "requests_per_second", DoubleValue: apiutils.Of(perfData.requests_per_second)},
-				{Name: "hardware_count", IntValue: apiutils.Of(perfData.hardware_count)},
-				{Name: "hardware_type", StringValue: apiutils.Of(perfData.hardware_type)},
+				{Name: "ttft_p90", DoubleValue: new(perfData.ttft_p90)},
+				{Name: "custom_latency_metric", DoubleValue: new(perfData.custom_latency_metric)},
+				{Name: "requests_per_second", DoubleValue: new(perfData.requests_per_second)},
+				{Name: "hardware_count", IntValue: new(perfData.hardware_count)},
+				{Name: "hardware_type", StringValue: new(perfData.hardware_type)},
 			},
 		}
 
@@ -151,7 +150,7 @@ func BenchmarkRecommendedLatencySorting(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		_, err := provider.FindModelsWithRecommendedLatency(ctx, mr_models.Pagination{
-			PageSize: apiutils.Of(int32(20)),
+			PageSize: new(int32(20)),
 		}, paretoParams, []string{"benchmark-source"}, "")
 
 		require.NoError(b, err)
@@ -198,14 +197,14 @@ func insertBenchmarkData(b *testing.B, ctx context.Context, svcs Services, catal
 	// Create 100 test models
 	for i := range numModels {
 		model := &models.CatalogModelImpl{
-			TypeID: apiutils.Of(catalogModelTypeID),
+			TypeID: new(catalogModelTypeID),
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of(fmt.Sprintf("benchmark-model-%d", i)),
-				ExternalID: apiutils.Of(fmt.Sprintf("benchmark-model-%d-ext", i)),
+				Name:       new(fmt.Sprintf("benchmark-model-%d", i)),
+				ExternalID: new(fmt.Sprintf("benchmark-model-%d-ext", i)),
 			},
 			Properties: &[]mr_models.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("benchmark-source")},
-				{Name: "description", StringValue: apiutils.Of(fmt.Sprintf("Benchmark model %d", i))},
+				{Name: "source_id", StringValue: new("benchmark-source")},
+				{Name: "description", StringValue: new(fmt.Sprintf("Benchmark model %d", i))},
 			},
 		}
 
@@ -221,17 +220,17 @@ func insertBenchmarkData(b *testing.B, ctx context.Context, svcs Services, catal
 			rps := 200.0 - float64(i*2)         // Varying RPS
 
 			artifact := &models.CatalogMetricsArtifactImpl{
-				TypeID: apiutils.Of(metricsArtifactTypeID),
+				TypeID: new(metricsArtifactTypeID),
 				Attributes: &models.CatalogMetricsArtifactAttributes{
-					Name:        apiutils.Of(fmt.Sprintf("benchmark-perf-%d-%d", i, j)),
+					Name:        new(fmt.Sprintf("benchmark-perf-%d-%d", i, j)),
 					MetricsType: models.MetricsTypePerformance,
 				},
 				Properties: &[]mr_models.Properties{},
 				CustomProperties: &[]mr_models.Properties{
-					{Name: "ttft_p90", DoubleValue: apiutils.Of(latency)},
-					{Name: "requests_per_second", DoubleValue: apiutils.Of(rps)},
-					{Name: "hardware_count", IntValue: apiutils.Of(int32(1 + i%4))},
-					{Name: "hardware_type", StringValue: apiutils.Of([]string{"gpu-a100", "gpu-v100", "gpu-t4"}[i%3])},
+					{Name: "ttft_p90", DoubleValue: new(latency)},
+					{Name: "requests_per_second", DoubleValue: new(rps)},
+					{Name: "hardware_count", IntValue: new(int32(1 + i%4))},
+					{Name: "hardware_type", StringValue: new([]string{"gpu-a100", "gpu-v100", "gpu-t4"}[i%3])},
 				},
 			}
 

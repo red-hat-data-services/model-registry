@@ -10,7 +10,6 @@ import (
 	"github.com/kubeflow/hub/catalog/internal/catalog/mcpcatalog/models"
 	"github.com/kubeflow/hub/catalog/internal/converter"
 	"github.com/kubeflow/hub/catalog/pkg/openapi"
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	dbmodels "github.com/kubeflow/hub/internal/platform/db/entity"
 	"github.com/kubeflow/hub/internal/testutils"
 	"github.com/stretchr/testify/assert"
@@ -29,35 +28,35 @@ func TestMCPServerRepository(t *testing.T) {
 		// Test creating a new MCP server
 		mcpServer := &models.MCPServerImpl{
 			Attributes: &models.MCPServerAttributes{
-				Name:       apiutils.Of("test-mcp-server"),
-				ExternalID: apiutils.Of("mcp-ext-123"),
+				Name:       new("test-mcp-server"),
+				ExternalID: new("mcp-ext-123"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "source_id",
-					StringValue: apiutils.Of("test-source"),
+					StringValue: new("test-source"),
 				},
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Test MCP server description"),
+					StringValue: new("Test MCP server description"),
 				},
 				{
 					Name:        "provider",
-					StringValue: apiutils.Of("test-provider"),
+					StringValue: new("test-provider"),
 				},
 				{
 					Name:        "version",
-					StringValue: apiutils.Of("1.0.0"),
+					StringValue: new("1.0.0"),
 				},
 				{
 					Name:      "verifiedSource",
-					BoolValue: apiutils.Of(true),
+					BoolValue: new(true),
 				},
 			},
 			CustomProperties: &[]dbmodels.Properties{
 				{
 					Name:        "custom-prop",
-					StringValue: apiutils.Of("custom-value"),
+					StringValue: new("custom-value"),
 				},
 			},
 		}
@@ -74,16 +73,16 @@ func TestMCPServerRepository(t *testing.T) {
 		// Create initial server
 		mcpServer := &models.MCPServerImpl{
 			Attributes: &models.MCPServerAttributes{
-				Name: apiutils.Of("update-test-server"),
+				Name: new("update-test-server"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "source_id",
-					StringValue: apiutils.Of("update-source"),
+					StringValue: new("update-source"),
 				},
 				{
 					Name:        "version",
-					StringValue: apiutils.Of("1.0.0"),
+					StringValue: new("1.0.0"),
 				},
 			},
 		}
@@ -96,21 +95,21 @@ func TestMCPServerRepository(t *testing.T) {
 		updateServer := &models.MCPServerImpl{
 			ID: saved.GetID(),
 			Attributes: &models.MCPServerAttributes{
-				Name:                 apiutils.Of("update-test-server"),
+				Name:                 new("update-test-server"),
 				CreateTimeSinceEpoch: saved.GetAttributes().CreateTimeSinceEpoch,
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "source_id",
-					StringValue: apiutils.Of("update-source"),
+					StringValue: new("update-source"),
 				},
 				{
 					Name:        "version",
-					StringValue: apiutils.Of("2.0.0"), // Updated version
+					StringValue: new("2.0.0"), // Updated version
 				},
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Updated description"),
+					StringValue: new("Updated description"),
 				},
 			},
 		}
@@ -139,20 +138,20 @@ func TestMCPServerRepository(t *testing.T) {
 		// Create first server with name and version
 		server1 := &models.MCPServerImpl{
 			Attributes: &models.MCPServerAttributes{
-				Name: apiutils.Of("upsert-server"),
+				Name: new("upsert-server"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "source_id",
-					StringValue: apiutils.Of("upsert-source"),
+					StringValue: new("upsert-source"),
 				},
 				{
 					Name:        "version",
-					StringValue: apiutils.Of("1.0.0"),
+					StringValue: new("1.0.0"),
 				},
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Initial description"),
+					StringValue: new("Initial description"),
 				},
 			},
 		}
@@ -165,20 +164,20 @@ func TestMCPServerRepository(t *testing.T) {
 		// This should UPDATE the existing server
 		server2 := &models.MCPServerImpl{
 			Attributes: &models.MCPServerAttributes{
-				Name: apiutils.Of("upsert-server"),
+				Name: new("upsert-server"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "source_id",
-					StringValue: apiutils.Of("upsert-source"),
+					StringValue: new("upsert-source"),
 				},
 				{
 					Name:        "version",
-					StringValue: apiutils.Of("1.0.0"),
+					StringValue: new("1.0.0"),
 				},
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Updated description"),
+					StringValue: new("Updated description"),
 				},
 			},
 		}
@@ -204,16 +203,16 @@ func TestMCPServerRepository(t *testing.T) {
 		// Create first server with version 1.0.0
 		server1 := &models.MCPServerImpl{
 			Attributes: &models.MCPServerAttributes{
-				Name: apiutils.Of("multi-version-server"),
+				Name: new("multi-version-server"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "source_id",
-					StringValue: apiutils.Of("multi-source"),
+					StringValue: new("multi-source"),
 				},
 				{
 					Name:        "version",
-					StringValue: apiutils.Of("1.0.0"),
+					StringValue: new("1.0.0"),
 				},
 			},
 		}
@@ -226,16 +225,16 @@ func TestMCPServerRepository(t *testing.T) {
 		// This should CREATE a new server
 		server2 := &models.MCPServerImpl{
 			Attributes: &models.MCPServerAttributes{
-				Name: apiutils.Of("multi-version-server"),
+				Name: new("multi-version-server"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "source_id",
-					StringValue: apiutils.Of("multi-source"),
+					StringValue: new("multi-source"),
 				},
 				{
 					Name:        "version",
-					StringValue: apiutils.Of("2.0.0"),
+					StringValue: new("2.0.0"),
 				},
 			},
 		}
@@ -258,12 +257,12 @@ func TestMCPServerRepository(t *testing.T) {
 		// Create a server
 		mcpServer := &models.MCPServerImpl{
 			Attributes: &models.MCPServerAttributes{
-				Name: apiutils.Of("get-by-id-test"),
+				Name: new("get-by-id-test"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "source_id",
-					StringValue: apiutils.Of("get-source"),
+					StringValue: new("get-source"),
 				},
 			},
 		}
@@ -288,16 +287,16 @@ func TestMCPServerRepository(t *testing.T) {
 		// Create a server with version
 		mcpServer := &models.MCPServerImpl{
 			Attributes: &models.MCPServerAttributes{
-				Name: apiutils.Of("versioned-server"),
+				Name: new("versioned-server"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "source_id",
-					StringValue: apiutils.Of("version-source"),
+					StringValue: new("version-source"),
 				},
 				{
 					Name:        "version",
-					StringValue: apiutils.Of("1.0.0"),
+					StringValue: new("1.0.0"),
 				},
 			},
 		}
@@ -326,16 +325,16 @@ func TestMCPServerRepository(t *testing.T) {
 		// Create a server without version
 		mcpServer := &models.MCPServerImpl{
 			Attributes: &models.MCPServerAttributes{
-				Name: apiutils.Of("unversioned-server"),
+				Name: new("unversioned-server"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "source_id",
-					StringValue: apiutils.Of("no-version-source"),
+					StringValue: new("no-version-source"),
 				},
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Server without version"),
+					StringValue: new("Server without version"),
 				},
 			},
 		}
@@ -361,31 +360,31 @@ func TestMCPServerRepository(t *testing.T) {
 		testServers := []*models.MCPServerImpl{
 			{
 				Attributes: &models.MCPServerAttributes{
-					Name: apiutils.Of("list-server-1"),
+					Name: new("list-server-1"),
 				},
 				Properties: &[]dbmodels.Properties{
 					{
 						Name:        "source_id",
-						StringValue: apiutils.Of("list-source-1"),
+						StringValue: new("list-source-1"),
 					},
 					{
 						Name:        "provider",
-						StringValue: apiutils.Of("provider-a"),
+						StringValue: new("provider-a"),
 					},
 				},
 			},
 			{
 				Attributes: &models.MCPServerAttributes{
-					Name: apiutils.Of("list-server-2"),
+					Name: new("list-server-2"),
 				},
 				Properties: &[]dbmodels.Properties{
 					{
 						Name:        "source_id",
-						StringValue: apiutils.Of("list-source-2"),
+						StringValue: new("list-source-2"),
 					},
 					{
 						Name:        "provider",
-						StringValue: apiutils.Of("provider-b"),
+						StringValue: new("provider-b"),
 					},
 				},
 			},
@@ -409,16 +408,16 @@ func TestMCPServerRepository(t *testing.T) {
 		// This validates that filtering by name matches the display name, not the internal composite.
 		mcpServer := &models.MCPServerImpl{
 			Attributes: &models.MCPServerAttributes{
-				Name: apiutils.Of("filter-by-name-unique"),
+				Name: new("filter-by-name-unique"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "source_id",
-					StringValue: apiutils.Of("filter-source"),
+					StringValue: new("filter-source"),
 				},
 				{
 					Name:        "version",
-					StringValue: apiutils.Of("2.0.0"),
+					StringValue: new("2.0.0"),
 				},
 			},
 		}
@@ -450,16 +449,16 @@ func TestMCPServerRepository(t *testing.T) {
 		// Create a server with a version to ensure the composite name differs from display name.
 		mcpServer := &models.MCPServerImpl{
 			Attributes: &models.MCPServerAttributes{
-				Name: apiutils.Of("filterquery-name-server"),
+				Name: new("filterquery-name-server"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "source_id",
-					StringValue: apiutils.Of("fq-source"),
+					StringValue: new("fq-source"),
 				},
 				{
 					Name:        "version",
-					StringValue: apiutils.Of("3.1.0"),
+					StringValue: new("3.1.0"),
 				},
 			},
 		}
@@ -492,31 +491,31 @@ func TestMCPServerRepository(t *testing.T) {
 		testServers := []*models.MCPServerImpl{
 			{
 				Attributes: &models.MCPServerAttributes{
-					Name: apiutils.Of("query-test-server-xyz"),
+					Name: new("query-test-server-xyz"),
 				},
 				Properties: &[]dbmodels.Properties{
 					{
 						Name:        "source_id",
-						StringValue: apiutils.Of("query-source"),
+						StringValue: new("query-source"),
 					},
 					{
 						Name:        "description",
-						StringValue: apiutils.Of("This is a special server"),
+						StringValue: new("This is a special server"),
 					},
 				},
 			},
 			{
 				Attributes: &models.MCPServerAttributes{
-					Name: apiutils.Of("another-server"),
+					Name: new("another-server"),
 				},
 				Properties: &[]dbmodels.Properties{
 					{
 						Name:        "source_id",
-						StringValue: apiutils.Of("query-source-2"),
+						StringValue: new("query-source-2"),
 					},
 					{
 						Name:        "provider",
-						StringValue: apiutils.Of("special provider"),
+						StringValue: new("special provider"),
 					},
 				},
 			},
@@ -542,34 +541,34 @@ func TestMCPServerRepository(t *testing.T) {
 		testServers := []*models.MCPServerImpl{
 			{
 				Attributes: &models.MCPServerAttributes{
-					Name: apiutils.Of("source-filter-server-1"),
+					Name: new("source-filter-server-1"),
 				},
 				Properties: &[]dbmodels.Properties{
 					{
 						Name:        "source_id",
-						StringValue: apiutils.Of("source-alpha"),
+						StringValue: new("source-alpha"),
 					},
 				},
 			},
 			{
 				Attributes: &models.MCPServerAttributes{
-					Name: apiutils.Of("source-filter-server-2"),
+					Name: new("source-filter-server-2"),
 				},
 				Properties: &[]dbmodels.Properties{
 					{
 						Name:        "source_id",
-						StringValue: apiutils.Of("source-beta"),
+						StringValue: new("source-beta"),
 					},
 				},
 			},
 			{
 				Attributes: &models.MCPServerAttributes{
-					Name: apiutils.Of("source-filter-server-3"),
+					Name: new("source-filter-server-3"),
 				},
 				Properties: &[]dbmodels.Properties{
 					{
 						Name:        "source_id",
-						StringValue: apiutils.Of("source-gamma"),
+						StringValue: new("source-gamma"),
 					},
 				},
 			},
@@ -612,23 +611,23 @@ func TestMCPServerRepository(t *testing.T) {
 		testServers := []*models.MCPServerImpl{
 			{
 				Attributes: &models.MCPServerAttributes{
-					Name: apiutils.Of("delete-source-server-1"),
+					Name: new("delete-source-server-1"),
 				},
 				Properties: &[]dbmodels.Properties{
 					{
 						Name:        "source_id",
-						StringValue: apiutils.Of(sourceID),
+						StringValue: new(sourceID),
 					},
 				},
 			},
 			{
 				Attributes: &models.MCPServerAttributes{
-					Name: apiutils.Of("delete-source-server-2"),
+					Name: new("delete-source-server-2"),
 				},
 				Properties: &[]dbmodels.Properties{
 					{
 						Name:        "source_id",
-						StringValue: apiutils.Of(sourceID),
+						StringValue: new(sourceID),
 					},
 				},
 			},
@@ -657,12 +656,12 @@ func TestMCPServerRepository(t *testing.T) {
 		// Create a server
 		mcpServer := &models.MCPServerImpl{
 			Attributes: &models.MCPServerAttributes{
-				Name: apiutils.Of("delete-by-id-test"),
+				Name: new("delete-by-id-test"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "source_id",
-					StringValue: apiutils.Of("delete-id-source"),
+					StringValue: new("delete-id-source"),
 				},
 			},
 		}
@@ -689,34 +688,34 @@ func TestMCPServerRepository(t *testing.T) {
 		testServers := []*models.MCPServerImpl{
 			{
 				Attributes: &models.MCPServerAttributes{
-					Name: apiutils.Of("distinct-source-1"),
+					Name: new("distinct-source-1"),
 				},
 				Properties: &[]dbmodels.Properties{
 					{
 						Name:        "source_id",
-						StringValue: apiutils.Of("distinct-source-alpha"),
+						StringValue: new("distinct-source-alpha"),
 					},
 				},
 			},
 			{
 				Attributes: &models.MCPServerAttributes{
-					Name: apiutils.Of("distinct-source-2"),
+					Name: new("distinct-source-2"),
 				},
 				Properties: &[]dbmodels.Properties{
 					{
 						Name:        "source_id",
-						StringValue: apiutils.Of("distinct-source-beta"),
+						StringValue: new("distinct-source-beta"),
 					},
 				},
 			},
 			{
 				Attributes: &models.MCPServerAttributes{
-					Name: apiutils.Of("distinct-source-3"),
+					Name: new("distinct-source-3"),
 				},
 				Properties: &[]dbmodels.Properties{
 					{
 						Name:        "source_id",
-						StringValue: apiutils.Of("distinct-source-alpha"), // Duplicate
+						StringValue: new("distinct-source-alpha"), // Duplicate
 					},
 				},
 			},
@@ -751,12 +750,12 @@ func TestMCPServerRepository(t *testing.T) {
 		for i := range 5 {
 			mcpServer := &models.MCPServerImpl{
 				Attributes: &models.MCPServerAttributes{
-					Name: apiutils.Of(fmt.Sprintf("pagination-server-%d", i)),
+					Name: new(fmt.Sprintf("pagination-server-%d", i)),
 				},
 				Properties: &[]dbmodels.Properties{
 					{
 						Name:        "source_id",
-						StringValue: apiutils.Of("pagination-source"),
+						StringValue: new("pagination-source"),
 					},
 				},
 			}
@@ -788,12 +787,12 @@ func TestMCPServerRepository(t *testing.T) {
 		// Test that base_name cannot contain @ symbol
 		server := &models.MCPServerImpl{
 			Attributes: &models.MCPServerAttributes{
-				Name: apiutils.Of("invalid@name"),
+				Name: new("invalid@name"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "source_id",
-					StringValue: apiutils.Of("test-source"),
+					StringValue: new("test-source"),
 				},
 			},
 		}
@@ -807,12 +806,12 @@ func TestMCPServerRepository(t *testing.T) {
 		// Test that base_name cannot be empty
 		server := &models.MCPServerImpl{
 			Attributes: &models.MCPServerAttributes{
-				Name: apiutils.Of(""),
+				Name: new(""),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "source_id",
-					StringValue: apiutils.Of("test-source"),
+					StringValue: new("test-source"),
 				},
 			},
 		}
@@ -825,12 +824,12 @@ func TestMCPServerRepository(t *testing.T) {
 		// Test that base_name with only whitespace is treated as empty
 		server := &models.MCPServerImpl{
 			Attributes: &models.MCPServerAttributes{
-				Name: apiutils.Of("   "),
+				Name: new("   "),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "source_id",
-					StringValue: apiutils.Of("test-source"),
+					StringValue: new("test-source"),
 				},
 			},
 		}
@@ -844,12 +843,12 @@ func TestMCPServerRepository(t *testing.T) {
 		longName := strings.Repeat("a", 256)
 		server := &models.MCPServerImpl{
 			Attributes: &models.MCPServerAttributes{
-				Name: apiutils.Of(longName),
+				Name: new(longName),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "source_id",
-					StringValue: apiutils.Of("test-source"),
+					StringValue: new("test-source"),
 				},
 			},
 		}
@@ -863,16 +862,16 @@ func TestMCPServerRepository(t *testing.T) {
 		longVersion := strings.Repeat("1", 101)
 		server := &models.MCPServerImpl{
 			Attributes: &models.MCPServerAttributes{
-				Name: apiutils.Of("test-server"),
+				Name: new("test-server"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "source_id",
-					StringValue: apiutils.Of("test-source"),
+					StringValue: new("test-source"),
 				},
 				{
 					Name:        "version",
-					StringValue: apiutils.Of(longVersion),
+					StringValue: new(longVersion),
 				},
 			},
 		}
@@ -885,12 +884,12 @@ func TestMCPServerRepository(t *testing.T) {
 		// Test that base_name with other special characters (not @) is allowed
 		server := &models.MCPServerImpl{
 			Attributes: &models.MCPServerAttributes{
-				Name: apiutils.Of("test-server_v1.0"),
+				Name: new("test-server_v1.0"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "source_id",
-					StringValue: apiutils.Of("test-source"),
+					StringValue: new("test-source"),
 				},
 			},
 		}
@@ -904,12 +903,12 @@ func TestMCPServerRepository(t *testing.T) {
 		// Test that base_name is trimmed of leading/trailing whitespace
 		server := &models.MCPServerImpl{
 			Attributes: &models.MCPServerAttributes{
-				Name: apiutils.Of("  trimmed-server  "),
+				Name: new("  trimmed-server  "),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "source_id",
-					StringValue: apiutils.Of("test-source"),
+					StringValue: new("test-source"),
 				},
 			},
 		}
@@ -927,16 +926,16 @@ func TestMCPServerRepository(t *testing.T) {
 		// Test that version cannot contain @ symbol
 		server := &models.MCPServerImpl{
 			Attributes: &models.MCPServerAttributes{
-				Name: apiutils.Of("test-server"),
+				Name: new("test-server"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{
 					Name:        "source_id",
-					StringValue: apiutils.Of("test-source"),
+					StringValue: new("test-source"),
 				},
 				{
 					Name:        "version",
-					StringValue: apiutils.Of("v1.0@beta"),
+					StringValue: new("v1.0@beta"),
 				},
 			},
 		}
@@ -976,18 +975,18 @@ func TestConvertOpenapiMCPServerToDb(t *testing.T) {
 		openapiServer := &openapi.MCPServer{
 			Name:             "full-server",
 			ToolCount:        10,
-			SourceId:         apiutils.Of("test-source"),
-			Provider:         apiutils.Of("Acme Corp"),
-			Logo:             apiutils.Of("https://example.com/logo.png"),
-			Version:          apiutils.Of("1.0.0"),
-			License:          apiutils.Of("MIT"),
-			LicenseLink:      apiutils.Of("https://opensource.org/licenses/MIT"),
-			Readme:           apiutils.Of("# Test Server\nThis is a test"),
-			DeploymentMode:   apiutils.Of("local"),
-			DocumentationUrl: apiutils.Of("https://docs.example.com"),
-			RepositoryUrl:    apiutils.Of("https://github.com/example/repo"),
-			SourceCode:       apiutils.Of("https://github.com/example/repo/tree/main"),
-			Description:      apiutils.Of("A test MCP server"),
+			SourceId:         new("test-source"),
+			Provider:         new("Acme Corp"),
+			Logo:             new("https://example.com/logo.png"),
+			Version:          new("1.0.0"),
+			License:          new("MIT"),
+			LicenseLink:      new("https://opensource.org/licenses/MIT"),
+			Readme:           new("# Test Server\nThis is a test"),
+			DeploymentMode:   new("local"),
+			DocumentationUrl: new("https://docs.example.com"),
+			RepositoryUrl:    new("https://github.com/example/repo"),
+			SourceCode:       new("https://github.com/example/repo/tree/main"),
+			Description:      new("A test MCP server"),
 		}
 
 		dbServer := converter.ConvertOpenapiMCPServerToDb(openapiServer)
@@ -1088,10 +1087,10 @@ func TestConvertOpenapiMCPServerToDb(t *testing.T) {
 			Name:      "secure-server",
 			ToolCount: 2,
 			SecurityIndicators: &openapi.MCPSecurityIndicator{
-				VerifiedSource: apiutils.Of(true),
-				SecureEndpoint: apiutils.Of(true),
-				Sast:           apiutils.Of(false),
-				ReadOnlyTools:  apiutils.Of(true),
+				VerifiedSource: new(true),
+				SecureEndpoint: new(true),
+				Sast:           new(false),
+				ReadOnlyTools:  new(true),
 			},
 		}
 
@@ -1119,8 +1118,8 @@ func TestConvertOpenapiMCPServerToDb(t *testing.T) {
 			Name:      "json-server",
 			ToolCount: 1,
 			Endpoints: &openapi.MCPEndpoints{
-				Http: apiutils.Of("http://localhost:8080"),
-				Sse:  apiutils.Of("http://localhost:8080/events"),
+				Http: new("http://localhost:8080"),
+				Sse:  new("http://localhost:8080/events"),
 			},
 			Artifacts: []openapi.MCPArtifact{
 				{
@@ -1128,7 +1127,7 @@ func TestConvertOpenapiMCPServerToDb(t *testing.T) {
 				},
 			},
 			RuntimeMetadata: &openapi.MCPRuntimeMetadata{
-				DefaultPort: apiutils.Of(int32(8080)),
+				DefaultPort: new(int32(8080)),
 				DefaultArgs: []string{"--log-level", "info"},
 			},
 		}
@@ -1157,18 +1156,18 @@ func TestConvertDbMCPServerToOpenapi(t *testing.T) {
 	t.Run("BasicFields", func(t *testing.T) {
 		// Test basic field conversion
 		dbServer := &models.MCPServerImpl{
-			ID: apiutils.Of(int32(123)),
+			ID: new(int32(123)),
 			Attributes: &models.MCPServerAttributes{
-				Name:                     apiutils.Of("test-server"),
-				ExternalID:               apiutils.Of("ext-123"),
-				CreateTimeSinceEpoch:     apiutils.Of(int64(1704067200000)),
-				LastUpdateTimeSinceEpoch: apiutils.Of(int64(1704153600000)),
+				Name:                     new("test-server"),
+				ExternalID:               new("ext-123"),
+				CreateTimeSinceEpoch:     new(int64(1704067200000)),
+				LastUpdateTimeSinceEpoch: new(int64(1704153600000)),
 			},
 			Properties: &[]dbmodels.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("test-source")},
-				{Name: "provider", StringValue: apiutils.Of("Test Provider")},
-				{Name: "version", StringValue: apiutils.Of("1.0.0")},
-				{Name: "description", StringValue: apiutils.Of("Test description")},
+				{Name: "source_id", StringValue: new("test-source")},
+				{Name: "provider", StringValue: new("Test Provider")},
+				{Name: "version", StringValue: new("1.0.0")},
+				{Name: "description", StringValue: new("Test description")},
 			},
 		}
 
@@ -1191,11 +1190,11 @@ func TestConvertDbMCPServerToOpenapi(t *testing.T) {
 		// Test array field decoding from JSON
 		dbServer := &models.MCPServerImpl{
 			Attributes: &models.MCPServerAttributes{
-				Name: apiutils.Of("array-server"),
+				Name: new("array-server"),
 			},
 			Properties: &[]dbmodels.Properties{
-				{Name: "tags", StringValue: apiutils.Of(`["monitoring","observability"]`)},
-				{Name: "transports", StringValue: apiutils.Of(`["stdio","http","sse"]`)},
+				{Name: "tags", StringValue: new(`["monitoring","observability"]`)},
+				{Name: "transports", StringValue: new(`["stdio","http","sse"]`)},
 			},
 		}
 
@@ -1220,7 +1219,7 @@ func TestConvertDbMCPServerToOpenapi(t *testing.T) {
 
 		dbServer := &models.MCPServerImpl{
 			Attributes: &models.MCPServerAttributes{
-				Name: apiutils.Of("time-server"),
+				Name: new("time-server"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{Name: "publishedDate", StringValue: &publishedStr},
@@ -1244,13 +1243,13 @@ func TestConvertDbMCPServerToOpenapi(t *testing.T) {
 		// Test SecurityIndicators reconstruction from 4 boolean properties
 		dbServer := &models.MCPServerImpl{
 			Attributes: &models.MCPServerAttributes{
-				Name: apiutils.Of("secure-server"),
+				Name: new("secure-server"),
 			},
 			Properties: &[]dbmodels.Properties{
-				{Name: "verifiedSource", BoolValue: apiutils.Of(true)},
-				{Name: "secureEndpoint", BoolValue: apiutils.Of(true)},
-				{Name: "sast", BoolValue: apiutils.Of(false)},
-				{Name: "readOnlyTools", BoolValue: apiutils.Of(true)},
+				{Name: "verifiedSource", BoolValue: new(true)},
+				{Name: "secureEndpoint", BoolValue: new(true)},
+				{Name: "sast", BoolValue: new(false)},
+				{Name: "readOnlyTools", BoolValue: new(true)},
 			},
 		}
 
@@ -1272,7 +1271,7 @@ func TestConvertDbMCPServerToOpenapi(t *testing.T) {
 
 		dbServer := &models.MCPServerImpl{
 			Attributes: &models.MCPServerAttributes{
-				Name: apiutils.Of("json-server"),
+				Name: new("json-server"),
 			},
 			Properties: &[]dbmodels.Properties{
 				{Name: "endpoints", StringValue: &endpointsJSON},
@@ -1304,10 +1303,10 @@ func TestConvertDbMCPServerToOpenapi(t *testing.T) {
 		// Test that SecurityIndicators is nil when no properties exist
 		dbServer := &models.MCPServerImpl{
 			Attributes: &models.MCPServerAttributes{
-				Name: apiutils.Of("no-security-server"),
+				Name: new("no-security-server"),
 			},
 			Properties: &[]dbmodels.Properties{
-				{Name: "version", StringValue: apiutils.Of("1.0.0")},
+				{Name: "version", StringValue: new("1.0.0")},
 			},
 		}
 
@@ -1327,31 +1326,31 @@ func TestRoundTrip_OpenapiToDbToOpenapi(t *testing.T) {
 		original := &openapi.MCPServer{
 			Name:             "roundtrip-server",
 			ToolCount:        15,
-			SourceId:         apiutils.Of("source-123"),
-			Provider:         apiutils.Of("RoundTrip Corp"),
-			Logo:             apiutils.Of("https://example.com/logo.png"),
-			Version:          apiutils.Of("2.5.0"),
-			License:          apiutils.Of("Apache-2.0"),
-			LicenseLink:      apiutils.Of("https://www.apache.org/licenses/LICENSE-2.0"),
-			Readme:           apiutils.Of("# RoundTrip Server\nFull featured test"),
-			DeploymentMode:   apiutils.Of("remote"),
-			DocumentationUrl: apiutils.Of("https://docs.example.com/roundtrip"),
-			RepositoryUrl:    apiutils.Of("https://github.com/example/roundtrip"),
-			SourceCode:       apiutils.Of("https://github.com/example/roundtrip/tree/v2.5.0"),
-			Description:      apiutils.Of("A comprehensive roundtrip test server"),
+			SourceId:         new("source-123"),
+			Provider:         new("RoundTrip Corp"),
+			Logo:             new("https://example.com/logo.png"),
+			Version:          new("2.5.0"),
+			License:          new("Apache-2.0"),
+			LicenseLink:      new("https://www.apache.org/licenses/LICENSE-2.0"),
+			Readme:           new("# RoundTrip Server\nFull featured test"),
+			DeploymentMode:   new("remote"),
+			DocumentationUrl: new("https://docs.example.com/roundtrip"),
+			RepositoryUrl:    new("https://github.com/example/roundtrip"),
+			SourceCode:       new("https://github.com/example/roundtrip/tree/v2.5.0"),
+			Description:      new("A comprehensive roundtrip test server"),
 			Tags:             []string{"test", "roundtrip", "validation"},
 			Transports:       []string{"stdio", "http", "sse"},
 			PublishedDate:    &publishedDate,
 			LastUpdated:      &lastUpdated,
 			SecurityIndicators: &openapi.MCPSecurityIndicator{
-				VerifiedSource: apiutils.Of(true),
-				SecureEndpoint: apiutils.Of(true),
-				Sast:           apiutils.Of(true),
-				ReadOnlyTools:  apiutils.Of(false),
+				VerifiedSource: new(true),
+				SecureEndpoint: new(true),
+				Sast:           new(true),
+				ReadOnlyTools:  new(false),
 			},
 			Endpoints: &openapi.MCPEndpoints{
-				Http: apiutils.Of("https://api.example.com"),
-				Sse:  apiutils.Of("https://api.example.com/events"),
+				Http: new("https://api.example.com"),
+				Sse:  new("https://api.example.com/events"),
 			},
 		}
 
@@ -1533,10 +1532,10 @@ func TestConvertDbMCPToolToOpenapi(t *testing.T) {
 		// Test basic conversion from DB to OpenAPI
 		dbTool := &models.MCPServerToolImpl{
 			Attributes: &models.MCPServerToolAttributes{
-				Name: apiutils.Of("db-tool"),
+				Name: new("db-tool"),
 			},
 			Properties: &[]dbmodels.Properties{
-				{Name: "accessType", StringValue: apiutils.Of("read-write")},
+				{Name: "accessType", StringValue: new("read-write")},
 			},
 		}
 
@@ -1555,11 +1554,11 @@ func TestConvertDbMCPToolToOpenapi(t *testing.T) {
 	t.Run("WithDescription", func(t *testing.T) {
 		dbTool := &models.MCPServerToolImpl{
 			Attributes: &models.MCPServerToolAttributes{
-				Name: apiutils.Of("desc-tool"),
+				Name: new("desc-tool"),
 			},
 			Properties: &[]dbmodels.Properties{
-				{Name: "accessType", StringValue: apiutils.Of("read-only")},
-				{Name: "description", StringValue: apiutils.Of("Test description")},
+				{Name: "accessType", StringValue: new("read-only")},
+				{Name: "description", StringValue: new("Test description")},
 			},
 		}
 
@@ -1574,10 +1573,10 @@ func TestConvertDbMCPToolToOpenapi(t *testing.T) {
 		paramsJSON := `[{"name":"input","type":"string","required":true},{"name":"count","type":"integer"}]`
 		dbTool := &models.MCPServerToolImpl{
 			Attributes: &models.MCPServerToolAttributes{
-				Name: apiutils.Of("param-tool"),
+				Name: new("param-tool"),
 			},
 			Properties: &[]dbmodels.Properties{
-				{Name: "accessType", StringValue: apiutils.Of("read-write")},
+				{Name: "accessType", StringValue: new("read-write")},
 				{Name: "parameters", StringValue: &paramsJSON},
 			},
 		}
@@ -1596,12 +1595,12 @@ func TestConvertDbMCPToolToOpenapi(t *testing.T) {
 
 		dbTool := &models.MCPServerToolImpl{
 			Attributes: &models.MCPServerToolAttributes{
-				Name:                     apiutils.Of("time-tool"),
+				Name:                     new("time-tool"),
 				CreateTimeSinceEpoch:     &createTime,
 				LastUpdateTimeSinceEpoch: &updateTime,
 			},
 			Properties: &[]dbmodels.Properties{
-				{Name: "accessType", StringValue: apiutils.Of("read-only")},
+				{Name: "accessType", StringValue: new("read-only")},
 			},
 		}
 
@@ -1629,7 +1628,7 @@ func TestRoundTrip_OpenapiToolToDbToOpenapi(t *testing.T) {
 					Name:        "param1",
 					Type:        "string",
 					Required:    true,
-					Description: apiutils.Of("First parameter"),
+					Description: new("First parameter"),
 				},
 			},
 		}
@@ -1672,11 +1671,11 @@ func TestConvertDbMCPServerWithToolsToOpenapi(t *testing.T) {
 	t.Run("WithTools_CorrectToolCountAndToolsArray", func(t *testing.T) {
 		dbServer := &models.MCPServerImpl{
 			Attributes: &models.MCPServerAttributes{
-				Name: apiutils.Of("test-server"),
+				Name: new("test-server"),
 			},
 			Properties: &[]dbmodels.Properties{
-				{Name: "version", StringValue: apiutils.Of("1.0.0")},
-				{Name: "description", StringValue: apiutils.Of("Test server")},
+				{Name: "version", StringValue: new("1.0.0")},
+				{Name: "description", StringValue: new("Test server")},
 			},
 		}
 
@@ -1684,28 +1683,28 @@ func TestConvertDbMCPServerWithToolsToOpenapi(t *testing.T) {
 		tools := []models.MCPServerTool{
 			&models.MCPServerToolImpl{
 				Attributes: &models.MCPServerToolAttributes{
-					Name: apiutils.Of("read-tool"),
+					Name: new("read-tool"),
 				},
 				Properties: &[]dbmodels.Properties{
-					{Name: "accessType", StringValue: apiutils.Of("read-only")},
-					{Name: "description", StringValue: apiutils.Of("Reads data")},
+					{Name: "accessType", StringValue: new("read-only")},
+					{Name: "description", StringValue: new("Reads data")},
 				},
 			},
 			&models.MCPServerToolImpl{
 				Attributes: &models.MCPServerToolAttributes{
-					Name: apiutils.Of("write-tool"),
+					Name: new("write-tool"),
 				},
 				Properties: &[]dbmodels.Properties{
-					{Name: "accessType", StringValue: apiutils.Of("read-write")},
-					{Name: "description", StringValue: apiutils.Of("Writes data")},
+					{Name: "accessType", StringValue: new("read-write")},
+					{Name: "description", StringValue: new("Writes data")},
 				},
 			},
 			&models.MCPServerToolImpl{
 				Attributes: &models.MCPServerToolAttributes{
-					Name: apiutils.Of("admin-tool"),
+					Name: new("admin-tool"),
 				},
 				Properties: &[]dbmodels.Properties{
-					{Name: "accessType", StringValue: apiutils.Of("admin")},
+					{Name: "accessType", StringValue: new("admin")},
 				},
 			},
 		}
@@ -1734,10 +1733,10 @@ func TestConvertDbMCPServerWithToolsToOpenapi(t *testing.T) {
 	t.Run("WithNilTools_ZeroToolCount", func(t *testing.T) {
 		dbServer := &models.MCPServerImpl{
 			Attributes: &models.MCPServerAttributes{
-				Name: apiutils.Of("empty-server"),
+				Name: new("empty-server"),
 			},
 			Properties: &[]dbmodels.Properties{
-				{Name: "version", StringValue: apiutils.Of("1.0.0")},
+				{Name: "version", StringValue: new("1.0.0")},
 			},
 		}
 
@@ -1752,10 +1751,10 @@ func TestConvertDbMCPServerWithToolsToOpenapi(t *testing.T) {
 	t.Run("WithEmptyToolsSlice_ZeroToolCount", func(t *testing.T) {
 		dbServer := &models.MCPServerImpl{
 			Attributes: &models.MCPServerAttributes{
-				Name: apiutils.Of("empty-server"),
+				Name: new("empty-server"),
 			},
 			Properties: &[]dbmodels.Properties{
-				{Name: "version", StringValue: apiutils.Of("1.0.0")},
+				{Name: "version", StringValue: new("1.0.0")},
 			},
 		}
 
@@ -1770,20 +1769,20 @@ func TestConvertDbMCPServerWithToolsToOpenapi(t *testing.T) {
 	t.Run("WithSingleTool_ToolCountOne", func(t *testing.T) {
 		dbServer := &models.MCPServerImpl{
 			Attributes: &models.MCPServerAttributes{
-				Name: apiutils.Of("single-tool-server"),
+				Name: new("single-tool-server"),
 			},
 			Properties: &[]dbmodels.Properties{
-				{Name: "version", StringValue: apiutils.Of("1.0.0")},
+				{Name: "version", StringValue: new("1.0.0")},
 			},
 		}
 
 		tools := []models.MCPServerTool{
 			&models.MCPServerToolImpl{
 				Attributes: &models.MCPServerToolAttributes{
-					Name: apiutils.Of("only-tool"),
+					Name: new("only-tool"),
 				},
 				Properties: &[]dbmodels.Properties{
-					{Name: "accessType", StringValue: apiutils.Of("read-only")},
+					{Name: "accessType", StringValue: new("read-only")},
 				},
 			},
 		}
@@ -1801,10 +1800,10 @@ func TestConvertDbMCPServerWithToolsToOpenapi(t *testing.T) {
 		// Test that the simple ConvertDbMCPServerToOpenapi (without tools) returns 0
 		dbServer := &models.MCPServerImpl{
 			Attributes: &models.MCPServerAttributes{
-				Name: apiutils.Of("test-server"),
+				Name: new("test-server"),
 			},
 			Properties: &[]dbmodels.Properties{
-				{Name: "version", StringValue: apiutils.Of("1.0.0")},
+				{Name: "version", StringValue: new("1.0.0")},
 			},
 		}
 
@@ -1820,7 +1819,7 @@ func TestConvertDbMCPServerWithToolsToOpenapi(t *testing.T) {
 		// Test that nil tools in the slice are skipped
 		dbServer := &models.MCPServerImpl{
 			Attributes: &models.MCPServerAttributes{
-				Name: apiutils.Of("test-server"),
+				Name: new("test-server"),
 			},
 		}
 
@@ -1833,10 +1832,10 @@ func TestConvertDbMCPServerWithToolsToOpenapi(t *testing.T) {
 			},
 			&models.MCPServerToolImpl{
 				Attributes: &models.MCPServerToolAttributes{
-					Name: apiutils.Of("valid-tool"),
+					Name: new("valid-tool"),
 				},
 				Properties: &[]dbmodels.Properties{
-					{Name: "accessType", StringValue: apiutils.Of("read-only")},
+					{Name: "accessType", StringValue: new("read-only")},
 				},
 			},
 		}

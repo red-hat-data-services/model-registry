@@ -8,7 +8,6 @@ import (
 
 	"github.com/kubeflow/hub/catalog/internal/catalog/basecatalog"
 	model "github.com/kubeflow/hub/catalog/pkg/openapi"
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 )
 
 // originEntry holds sources from a single origin (config file).
@@ -144,7 +143,7 @@ func mergeSources(base, override basecatalog.ModelSource) basecatalog.ModelSourc
 func applyDefaults(source basecatalog.ModelSource) basecatalog.ModelSource {
 	// Default Enabled to true if not set
 	if source.Enabled == nil {
-		source.Enabled = apiutils.Of(true)
+		source.Enabled = new(true)
 	}
 
 	// Default Labels to empty slice if not set

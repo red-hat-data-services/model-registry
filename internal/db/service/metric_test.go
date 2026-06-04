@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	"github.com/kubeflow/hub/internal/db/models"
 	"github.com/kubeflow/hub/internal/db/service"
 	"github.com/stretchr/testify/assert"
@@ -30,32 +29,32 @@ func TestMetricRepository(t *testing.T) {
 	t.Run("TestSave", func(t *testing.T) {
 		// Test creating a new metric
 		metric := &models.MetricImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.MetricAttributes{
-				Name:         apiutils.Of("test-metric"),
-				ExternalID:   apiutils.Of("metric-ext-123"),
-				URI:          apiutils.Of("s3://bucket/metric.json"),
-				State:        apiutils.Of("LIVE"),
-				ArtifactType: apiutils.Of("metric"),
+				Name:         new("test-metric"),
+				ExternalID:   new("metric-ext-123"),
+				URI:          new("s3://bucket/metric.json"),
+				State:        new("LIVE"),
+				ArtifactType: new("metric"),
 			},
 			Properties: &[]models.Properties{
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Test metric description"),
+					StringValue: new("Test metric description"),
 				},
 				{
 					Name:        "value",
-					DoubleValue: apiutils.Of(0.95),
+					DoubleValue: new(0.95),
 				},
 				{
 					Name:     "step",
-					IntValue: apiutils.Of(int32(100)),
+					IntValue: new(int32(100)),
 				},
 			},
 			CustomProperties: &[]models.Properties{
 				{
 					Name:             "custom-metric-prop",
-					StringValue:      apiutils.Of("custom-metric-value"),
+					StringValue:      new("custom-metric-value"),
 					IsCustomProperty: true,
 				},
 			},
@@ -112,8 +111,8 @@ func TestMetricRepository(t *testing.T) {
 
 		// Test updating the same metric
 		metric.ID = saved.GetID()
-		metric.GetAttributes().Name = apiutils.Of("updated-metric")
-		metric.GetAttributes().State = apiutils.Of("PENDING")
+		metric.GetAttributes().Name = new("updated-metric")
+		metric.GetAttributes().State = new("PENDING")
 		// Preserve CreateTimeSinceEpoch from the saved entity (simulating what OpenAPI converter would do)
 		metric.GetAttributes().CreateTimeSinceEpoch = saved.GetAttributes().CreateTimeSinceEpoch
 
@@ -130,32 +129,32 @@ func TestMetricRepository(t *testing.T) {
 	t.Run("TestGetByID", func(t *testing.T) {
 		// First create a metric to retrieve
 		metric := &models.MetricImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.MetricAttributes{
-				Name:         apiutils.Of("get-test-metric"),
-				ExternalID:   apiutils.Of("get-metric-ext-123"),
-				URI:          apiutils.Of("s3://bucket/get-metric.json"),
-				State:        apiutils.Of("LIVE"),
-				ArtifactType: apiutils.Of("metric"),
+				Name:         new("get-test-metric"),
+				ExternalID:   new("get-metric-ext-123"),
+				URI:          new("s3://bucket/get-metric.json"),
+				State:        new("LIVE"),
+				ArtifactType: new("metric"),
 			},
 			Properties: &[]models.Properties{
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Metric for get test"),
+					StringValue: new("Metric for get test"),
 				},
 				{
 					Name:        "value",
-					DoubleValue: apiutils.Of(0.85),
+					DoubleValue: new(0.85),
 				},
 				{
 					Name:     "step",
-					IntValue: apiutils.Of(int32(50)),
+					IntValue: new(int32(50)),
 				},
 			},
 			CustomProperties: &[]models.Properties{
 				{
 					Name:             "test-category",
-					StringValue:      apiutils.Of("retrieval-test"),
+					StringValue:      new("retrieval-test"),
 					IsCustomProperty: true,
 				},
 			},
@@ -216,50 +215,50 @@ func TestMetricRepository(t *testing.T) {
 		// Create multiple metrics for listing
 		testMetrics := []*models.MetricImpl{
 			{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.MetricAttributes{
-					Name:         apiutils.Of("list-metric-1"),
-					ExternalID:   apiutils.Of("list-metric-ext-1"),
-					URI:          apiutils.Of("s3://bucket/list-metric-1.json"),
-					State:        apiutils.Of("LIVE"),
-					ArtifactType: apiutils.Of("metric"),
+					Name:         new("list-metric-1"),
+					ExternalID:   new("list-metric-ext-1"),
+					URI:          new("s3://bucket/list-metric-1.json"),
+					State:        new("LIVE"),
+					ArtifactType: new("metric"),
 				},
 				Properties: &[]models.Properties{
 					{
 						Name:        "description",
-						StringValue: apiutils.Of("First metric"),
+						StringValue: new("First metric"),
 					},
 				},
 			},
 			{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.MetricAttributes{
-					Name:         apiutils.Of("list-metric-2"),
-					ExternalID:   apiutils.Of("list-metric-ext-2"),
-					URI:          apiutils.Of("s3://bucket/list-metric-2.json"),
-					State:        apiutils.Of("PENDING"),
-					ArtifactType: apiutils.Of("metric"),
+					Name:         new("list-metric-2"),
+					ExternalID:   new("list-metric-ext-2"),
+					URI:          new("s3://bucket/list-metric-2.json"),
+					State:        new("PENDING"),
+					ArtifactType: new("metric"),
 				},
 				Properties: &[]models.Properties{
 					{
 						Name:        "description",
-						StringValue: apiutils.Of("Second metric"),
+						StringValue: new("Second metric"),
 					},
 				},
 			},
 			{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.MetricAttributes{
-					Name:         apiutils.Of("list-metric-3"),
-					ExternalID:   apiutils.Of("list-metric-ext-3"),
-					URI:          apiutils.Of("s3://bucket/list-metric-3.json"),
-					State:        apiutils.Of("LIVE"),
-					ArtifactType: apiutils.Of("metric"),
+					Name:         new("list-metric-3"),
+					ExternalID:   new("list-metric-ext-3"),
+					URI:          new("s3://bucket/list-metric-3.json"),
+					State:        new("LIVE"),
+					ArtifactType: new("metric"),
 				},
 				Properties: &[]models.Properties{
 					{
 						Name:        "description",
-						StringValue: apiutils.Of("Third metric"),
+						StringValue: new("Third metric"),
 					},
 				},
 			},
@@ -282,7 +281,7 @@ func TestMetricRepository(t *testing.T) {
 
 		// Test listing by name
 		listOptions = models.MetricListOptions{
-			Name: apiutils.Of("list-metric-1"),
+			Name: new("list-metric-1"),
 		}
 		listOptions.PageSize = &pageSize
 
@@ -296,7 +295,7 @@ func TestMetricRepository(t *testing.T) {
 
 		// Test listing by external ID
 		listOptions = models.MetricListOptions{
-			ExternalID: apiutils.Of("list-metric-ext-2"),
+			ExternalID: new("list-metric-ext-2"),
 		}
 		listOptions.PageSize = &pageSize
 
@@ -311,7 +310,7 @@ func TestMetricRepository(t *testing.T) {
 		// Test ordering by ID (deterministic)
 		listOptions = models.MetricListOptions{
 			Pagination: models.Pagination{
-				OrderBy: apiutils.Of("ID"),
+				OrderBy: new("ID"),
 			},
 		}
 		listOptions.PageSize = &pageSize
@@ -332,12 +331,12 @@ func TestMetricRepository(t *testing.T) {
 	t.Run("TestListOrdering", func(t *testing.T) {
 		// Create metrics sequentially with time delays to ensure deterministic ordering
 		metric1 := &models.MetricImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.MetricAttributes{
-				Name:         apiutils.Of("time-test-metric-1"),
-				URI:          apiutils.Of("s3://bucket/time-metric-1.json"),
-				State:        apiutils.Of("LIVE"),
-				ArtifactType: apiutils.Of("metric"),
+				Name:         new("time-test-metric-1"),
+				URI:          new("s3://bucket/time-metric-1.json"),
+				State:        new("LIVE"),
+				ArtifactType: new("metric"),
 			},
 		}
 		saved1, err := repo.Save(metric1, nil)
@@ -347,12 +346,12 @@ func TestMetricRepository(t *testing.T) {
 		time.Sleep(10 * time.Millisecond)
 
 		metric2 := &models.MetricImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.MetricAttributes{
-				Name:         apiutils.Of("time-test-metric-2"),
-				URI:          apiutils.Of("s3://bucket/time-metric-2.json"),
-				State:        apiutils.Of("PENDING"),
-				ArtifactType: apiutils.Of("metric"),
+				Name:         new("time-test-metric-2"),
+				URI:          new("s3://bucket/time-metric-2.json"),
+				State:        new("PENDING"),
+				ArtifactType: new("metric"),
 			},
 		}
 		saved2, err := repo.Save(metric2, nil)
@@ -362,7 +361,7 @@ func TestMetricRepository(t *testing.T) {
 		pageSize := int32(10)
 		listOptions := models.MetricListOptions{
 			Pagination: models.Pagination{
-				OrderBy: apiutils.Of("CREATE_TIME"),
+				OrderBy: new("CREATE_TIME"),
 			},
 		}
 		listOptions.PageSize = &pageSize
@@ -396,18 +395,18 @@ func TestMetricRepository(t *testing.T) {
 	t.Run("TestSaveWithModelVersion", func(t *testing.T) {
 		// First create a registered model and model version
 		registeredModel := &models.RegisteredModelImpl{
-			TypeID: apiutils.Of(int32(registeredModelTypeID)),
+			TypeID: new(int32(registeredModelTypeID)),
 			Attributes: &models.RegisteredModelAttributes{
-				Name: apiutils.Of("test-registered-model-for-metric"),
+				Name: new("test-registered-model-for-metric"),
 			},
 		}
 		savedRegisteredModel, err := registeredModelRepo.Save(registeredModel)
 		require.NoError(t, err)
 
 		modelVersion := &models.ModelVersionImpl{
-			TypeID: apiutils.Of(int32(modelVersionTypeID)),
+			TypeID: new(int32(modelVersionTypeID)),
 			Attributes: &models.ModelVersionAttributes{
-				Name: apiutils.Of("test-model-version-for-metric"),
+				Name: new("test-model-version-for-metric"),
 			},
 			Properties: &[]models.Properties{
 				{
@@ -421,17 +420,17 @@ func TestMetricRepository(t *testing.T) {
 
 		// Test creating a metric with model version attribution
 		metric := &models.MetricImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.MetricAttributes{
-				Name:         apiutils.Of(fmt.Sprintf("%d:model-version-metric", *savedModelVersion.GetID())),
-				URI:          apiutils.Of("s3://bucket/model-version-metric.json"),
-				State:        apiutils.Of("LIVE"),
-				ArtifactType: apiutils.Of("metric"),
+				Name:         new(fmt.Sprintf("%d:model-version-metric", *savedModelVersion.GetID())),
+				URI:          new("s3://bucket/model-version-metric.json"),
+				State:        new("LIVE"),
+				ArtifactType: new("metric"),
 			},
 			Properties: &[]models.Properties{
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Metric associated with model version"),
+					StringValue: new("Metric associated with model version"),
 				},
 			},
 		}
@@ -447,7 +446,7 @@ func TestMetricRepository(t *testing.T) {
 		listOptions := models.MetricListOptions{
 			ParentResourceID: savedModelVersion.GetID(),
 		}
-		listOptions.PageSize = apiutils.Of(int32(10))
+		listOptions.PageSize = new(int32(10))
 
 		result, err := repo.List(listOptions)
 		require.NoError(t, err)
@@ -467,37 +466,37 @@ func TestMetricRepository(t *testing.T) {
 
 	t.Run("TestSaveWithProperties", func(t *testing.T) {
 		metric := &models.MetricImpl{
-			TypeID: apiutils.Of(int32(typeID)),
+			TypeID: new(int32(typeID)),
 			Attributes: &models.MetricAttributes{
-				Name:         apiutils.Of("props-test-metric"),
-				ExternalID:   apiutils.Of("props-metric-ext-123"),
-				URI:          apiutils.Of("s3://bucket/props-metric.json"),
-				State:        apiutils.Of("LIVE"),
-				ArtifactType: apiutils.Of("metric"),
+				Name:         new("props-test-metric"),
+				ExternalID:   new("props-metric-ext-123"),
+				URI:          new("s3://bucket/props-metric.json"),
+				State:        new("LIVE"),
+				ArtifactType: new("metric"),
 			},
 			Properties: &[]models.Properties{
 				{
 					Name:        "description",
-					StringValue: apiutils.Of("Metric with properties"),
+					StringValue: new("Metric with properties"),
 				},
 				{
 					Name:        "value",
-					DoubleValue: apiutils.Of(0.95),
+					DoubleValue: new(0.95),
 				},
 				{
 					Name:        "threshold",
-					DoubleValue: apiutils.Of(0.90),
+					DoubleValue: new(0.90),
 				},
 			},
 			CustomProperties: &[]models.Properties{
 				{
 					Name:             "team",
-					StringValue:      apiutils.Of("ml-team"),
+					StringValue:      new("ml-team"),
 					IsCustomProperty: true,
 				},
 				{
 					Name:             "priority",
-					IntValue:         apiutils.Of(int32(5)),
+					IntValue:         new(int32(5)),
 					IsCustomProperty: true,
 				},
 			},
@@ -542,12 +541,12 @@ func TestMetricRepository(t *testing.T) {
 		// Create multiple metrics for pagination testing
 		for i := range 5 {
 			metric := &models.MetricImpl{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.MetricAttributes{
-					Name:         apiutils.Of(fmt.Sprintf("page-metric-%d", i)),
-					URI:          apiutils.Of(fmt.Sprintf("s3://bucket/page-metric-%d.json", i)),
-					State:        apiutils.Of("LIVE"),
-					ArtifactType: apiutils.Of("metric"),
+					Name:         new(fmt.Sprintf("page-metric-%d", i)),
+					URI:          new(fmt.Sprintf("s3://bucket/page-metric-%d.json", i)),
+					State:        new("LIVE"),
+					ArtifactType: new("metric"),
 				},
 			}
 			_, err := repo.Save(metric, nil)
@@ -580,7 +579,7 @@ func TestMetricRepository(t *testing.T) {
 	t.Run("TestEmptyResults", func(t *testing.T) {
 		// Test listing with filter that returns no results
 		listOptions := models.MetricListOptions{
-			Name: apiutils.Of("non-existent-metric"),
+			Name: new("non-existent-metric"),
 		}
 
 		result, err := repo.List(listOptions)
@@ -595,32 +594,32 @@ func TestMetricRepository(t *testing.T) {
 		// Create metrics with different states for testing
 		metrics := []*models.MetricImpl{
 			{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.MetricAttributes{
-					Name:         apiutils.Of("state-metric-1"),
-					URI:          apiutils.Of("s3://bucket/state-metric-1.json"),
-					State:        apiutils.Of("LIVE"),
-					ArtifactType: apiutils.Of("metric"),
+					Name:         new("state-metric-1"),
+					URI:          new("s3://bucket/state-metric-1.json"),
+					State:        new("LIVE"),
+					ArtifactType: new("metric"),
 				},
 				Properties: &[]models.Properties{
 					{
 						Name:        "description",
-						StringValue: apiutils.Of("Live metric"),
+						StringValue: new("Live metric"),
 					},
 				},
 			},
 			{
-				TypeID: apiutils.Of(int32(typeID)),
+				TypeID: new(int32(typeID)),
 				Attributes: &models.MetricAttributes{
-					Name:         apiutils.Of("state-metric-2"),
-					URI:          apiutils.Of("s3://bucket/state-metric-2.json"),
-					State:        apiutils.Of("PENDING"),
-					ArtifactType: apiutils.Of("metric"),
+					Name:         new("state-metric-2"),
+					URI:          new("s3://bucket/state-metric-2.json"),
+					State:        new("PENDING"),
+					ArtifactType: new("metric"),
 				},
 				Properties: &[]models.Properties{
 					{
 						Name:        "description",
-						StringValue: apiutils.Of("Pending metric"),
+						StringValue: new("Pending metric"),
 					},
 				},
 			},
@@ -633,7 +632,7 @@ func TestMetricRepository(t *testing.T) {
 
 		// Test listing all metrics (should find at least our 2 test metrics)
 		listOptions := models.MetricListOptions{}
-		listOptions.PageSize = apiutils.Of(int32(10))
+		listOptions.PageSize = new(int32(10))
 
 		result, err := repo.List(listOptions)
 		require.NoError(t, err)

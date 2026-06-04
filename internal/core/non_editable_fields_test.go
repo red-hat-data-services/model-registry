@@ -4,7 +4,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	"github.com/kubeflow/hub/internal/core"
 	"github.com/kubeflow/hub/pkg/openapi"
 	"github.com/stretchr/testify/assert"
@@ -52,8 +51,8 @@ func testRegisteredModelNonEditableFields(t *testing.T, service *core.ModelRegis
 	// Create initial model
 	model := &openapi.RegisteredModel{
 		Name:        "test-rm-non-editable",
-		Description: apiutils.Of("Original description"),
-		Owner:       apiutils.Of("original-owner"),
+		Description: new("Original description"),
+		Owner:       new("original-owner"),
 		CustomProperties: map[string]openapi.MetadataValue{
 			"original": {
 				MetadataStringValue: &openapi.MetadataStringValue{
@@ -77,11 +76,11 @@ func testRegisteredModelNonEditableFields(t *testing.T, service *core.ModelRegis
 	// Attempt to hack non-editable fields
 	updateRequest := &openapi.RegisteredModel{
 		Id:                       created.Id,
-		Name:                     "HACKED_NAME",                      // Should be ignored
-		CreateTimeSinceEpoch:     apiutils.Of("9999999999"),          // Should be ignored
-		LastUpdateTimeSinceEpoch: apiutils.Of("8888888888"),          // Should be ignored
-		Description:              apiutils.Of("Updated description"), // Should work
-		Owner:                    apiutils.Of("updated-owner"),       // Should work
+		Name:                     "HACKED_NAME",              // Should be ignored
+		CreateTimeSinceEpoch:     new("9999999999"),          // Should be ignored
+		LastUpdateTimeSinceEpoch: new("8888888888"),          // Should be ignored
+		Description:              new("Updated description"), // Should work
+		Owner:                    new("updated-owner"),       // Should work
 	}
 
 	updated, err := service.UpsertRegisteredModel(updateRequest)
@@ -107,8 +106,8 @@ func testModelVersionNonEditableFields(t *testing.T, service *core.ModelRegistry
 	// Create model version
 	mv := &openapi.ModelVersion{
 		Name:        "v1.0",
-		Description: apiutils.Of("Original version"),
-		Author:      apiutils.Of("original-author"),
+		Description: new("Original version"),
+		Author:      new("original-author"),
 	}
 
 	created, err := service.UpsertModelVersion(mv, createdRM.Id)
@@ -125,12 +124,12 @@ func testModelVersionNonEditableFields(t *testing.T, service *core.ModelRegistry
 	// Attempt to hack non-editable fields
 	updateRequest := &openapi.ModelVersion{
 		Id:                       created.Id,
-		Name:                     "HACKED_NAME",                      // Should be ignored
-		RegisteredModelId:        "999999",                           // Should be ignored
-		CreateTimeSinceEpoch:     apiutils.Of("9999999999"),          // Should be ignored
-		LastUpdateTimeSinceEpoch: apiutils.Of("8888888888"),          // Should be ignored
-		Description:              apiutils.Of("Updated description"), // Should work
-		Author:                   apiutils.Of("updated-author"),      // Should work
+		Name:                     "HACKED_NAME",              // Should be ignored
+		RegisteredModelId:        "999999",                   // Should be ignored
+		CreateTimeSinceEpoch:     new("9999999999"),          // Should be ignored
+		LastUpdateTimeSinceEpoch: new("8888888888"),          // Should be ignored
+		Description:              new("Updated description"), // Should work
+		Author:                   new("updated-author"),      // Should work
 	}
 
 	updated, err := service.UpsertModelVersion(updateRequest, nil)
@@ -151,7 +150,7 @@ func testServingEnvironmentNonEditableFields(t *testing.T, service *core.ModelRe
 
 	se := &openapi.ServingEnvironment{
 		Name:        "test-se-non-editable",
-		Description: apiutils.Of("Original description"),
+		Description: new("Original description"),
 	}
 
 	created, err := service.UpsertServingEnvironment(se)
@@ -167,10 +166,10 @@ func testServingEnvironmentNonEditableFields(t *testing.T, service *core.ModelRe
 	// Attempt to hack non-editable fields
 	updateRequest := &openapi.ServingEnvironment{
 		Id:                       created.Id,
-		Name:                     "HACKED_NAME",                      // Should be ignored
-		CreateTimeSinceEpoch:     apiutils.Of("9999999999"),          // Should be ignored
-		LastUpdateTimeSinceEpoch: apiutils.Of("8888888888"),          // Should be ignored
-		Description:              apiutils.Of("Updated description"), // Should work
+		Name:                     "HACKED_NAME",              // Should be ignored
+		CreateTimeSinceEpoch:     new("9999999999"),          // Should be ignored
+		LastUpdateTimeSinceEpoch: new("8888888888"),          // Should be ignored
+		Description:              new("Updated description"), // Should work
 	}
 
 	updated, err := service.UpsertServingEnvironment(updateRequest)
@@ -202,12 +201,12 @@ func testInferenceServiceNonEditableFields(t *testing.T, service *core.ModelRegi
 
 	// Create inference service
 	is := &openapi.InferenceService{
-		Name:                 apiutils.Of("test-is"),
+		Name:                 new("test-is"),
 		ServingEnvironmentId: *createdSE.Id,
 		RegisteredModelId:    *createdRM.Id,
 		ModelVersionId:       createdMV.Id,
-		Description:          apiutils.Of("Original description"),
-		Runtime:              apiutils.Of("original-runtime"),
+		Description:          new("Original description"),
+		Runtime:              new("original-runtime"),
 	}
 
 	created, err := service.UpsertInferenceService(is)
@@ -224,12 +223,12 @@ func testInferenceServiceNonEditableFields(t *testing.T, service *core.ModelRegi
 	// Attempt to hack non-editable fields
 	updateRequest := &openapi.InferenceService{
 		Id:                   created.Id,
-		Name:                 apiutils.Of("HACKED_NAME"),         // Should be ignored
-		ServingEnvironmentId: "999999",                           // Should be ignored
-		RegisteredModelId:    "888888",                           // Should be ignored
-		ModelVersionId:       apiutils.Of("777777"),              // Should work (editable)
-		Description:          apiutils.Of("Updated description"), // Should work
-		Runtime:              apiutils.Of("updated-runtime"),     // Should work
+		Name:                 new("HACKED_NAME"),         // Should be ignored
+		ServingEnvironmentId: "999999",                   // Should be ignored
+		RegisteredModelId:    "888888",                   // Should be ignored
+		ModelVersionId:       new("777777"),              // Should work (editable)
+		Description:          new("Updated description"), // Should work
+		Runtime:              new("updated-runtime"),     // Should work
 	}
 
 	updated, err := service.UpsertInferenceService(updateRequest)
@@ -262,7 +261,7 @@ func testServeModelNonEditableFields(t *testing.T, service *core.ModelRegistrySe
 	require.NoError(t, err)
 
 	is := &openapi.InferenceService{
-		Name:                 apiutils.Of("test-sm-is"),
+		Name:                 new("test-sm-is"),
 		ServingEnvironmentId: *createdSE.Id,
 		RegisteredModelId:    *createdRM.Id,
 		ModelVersionId:       createdMV.Id,
@@ -272,9 +271,9 @@ func testServeModelNonEditableFields(t *testing.T, service *core.ModelRegistrySe
 
 	// Create serve model
 	sm := &openapi.ServeModel{
-		Name:           apiutils.Of("test-sm"),
+		Name:           new("test-sm"),
 		ModelVersionId: *createdMV.Id,
-		Description:    apiutils.Of("Original description"),
+		Description:    new("Original description"),
 	}
 
 	created, err := service.UpsertServeModel(sm, createdIS.Id)
@@ -290,9 +289,9 @@ func testServeModelNonEditableFields(t *testing.T, service *core.ModelRegistrySe
 	// Attempt to hack non-editable fields
 	updateRequest := &openapi.ServeModel{
 		Id:             created.Id,
-		Name:           apiutils.Of("HACKED_NAME"),         // Should be ignored
-		ModelVersionId: "999999",                           // Should be ignored
-		Description:    apiutils.Of("Updated description"), // Should work
+		Name:           new("HACKED_NAME"),         // Should be ignored
+		ModelVersionId: "999999",                   // Should be ignored
+		Description:    new("Updated description"), // Should work
 	}
 
 	updated, err := service.UpsertServeModel(updateRequest, nil)
@@ -316,9 +315,9 @@ func testExperimentRunNonEditableFields(t *testing.T, service *core.ModelRegistr
 
 	// Create experiment run
 	er := &openapi.ExperimentRun{
-		Name:        apiutils.Of("test-er"),
-		Description: apiutils.Of("Original description"),
-		Owner:       apiutils.Of("original-owner"),
+		Name:        new("test-er"),
+		Description: new("Original description"),
+		Owner:       new("original-owner"),
 	}
 
 	created, err := service.UpsertExperimentRun(er, createdExp.Id)
@@ -334,10 +333,10 @@ func testExperimentRunNonEditableFields(t *testing.T, service *core.ModelRegistr
 	// Attempt to hack non-editable fields
 	updateRequest := &openapi.ExperimentRun{
 		Id:           created.Id,
-		Name:         apiutils.Of("HACKED_NAME"),         // Should be ignored
-		ExperimentId: "999999",                           // Should be ignored
-		Description:  apiutils.Of("Updated description"), // Should work
-		Owner:        apiutils.Of("updated-owner"),       // Should work
+		Name:         new("HACKED_NAME"),         // Should be ignored
+		ExperimentId: "999999",                   // Should be ignored
+		Description:  new("Updated description"), // Should work
+		Owner:        new("updated-owner"),       // Should work
 	}
 
 	updated, err := service.UpsertExperimentRun(updateRequest, createdExp.Id)
@@ -360,9 +359,9 @@ func testArtifactNonEditableFields(t *testing.T, service *core.ModelRegistryServ
 		// Create model artifact
 		artifact := &openapi.Artifact{
 			ModelArtifact: &openapi.ModelArtifact{
-				Name:        apiutils.Of("test-ma"),
-				Description: apiutils.Of("Original description"),
-				Uri:         apiutils.Of("s3://original/path"),
+				Name:        new("test-ma"),
+				Description: new("Original description"),
+				Uri:         new("s3://original/path"),
 			},
 		}
 
@@ -380,10 +379,10 @@ func testArtifactNonEditableFields(t *testing.T, service *core.ModelRegistryServ
 		updateRequest := &openapi.Artifact{
 			ModelArtifact: &openapi.ModelArtifact{
 				Id:           created.ModelArtifact.Id,
-				Name:         apiutils.Of("HACKED_NAME"),         // Should be ignored
-				ArtifactType: apiutils.Of("HACKED_TYPE"),         // Should be ignored
-				Description:  apiutils.Of("Updated description"), // Should work
-				Uri:          apiutils.Of("s3://updated/path"),   // Should work
+				Name:         new("HACKED_NAME"),         // Should be ignored
+				ArtifactType: new("HACKED_TYPE"),         // Should be ignored
+				Description:  new("Updated description"), // Should work
+				Uri:          new("s3://updated/path"),   // Should work
 			},
 		}
 

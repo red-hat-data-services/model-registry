@@ -8,7 +8,6 @@ import (
 
 	"github.com/kubeflow/hub/catalog/internal/catalog/modelcatalog/models"
 	sharedmodels "github.com/kubeflow/hub/catalog/internal/db/models"
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	dbmodels "github.com/kubeflow/hub/internal/platform/db/entity"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -85,12 +84,12 @@ func TestPerformanceArtifactService_GetArtifacts(t *testing.T) {
 		{
 			CatalogMetricsArtifact: &dbmodels.BaseEntity[models.CatalogMetricsArtifactAttributes]{
 				Attributes: &models.CatalogMetricsArtifactAttributes{
-					Name:        apiutils.Of("test-perf-artifact"),
+					Name:        new("test-perf-artifact"),
 					MetricsType: models.MetricsTypePerformance,
 				},
 				Properties: &[]dbmodels.Properties{},
 				CustomProperties: &[]dbmodels.Properties{
-					{Name: "requests_per_second", DoubleValue: apiutils.Of(200.0)},
+					{Name: "requests_per_second", DoubleValue: new(200.0)},
 				},
 			},
 		},
@@ -129,15 +128,15 @@ func TestPerformanceArtifactService_ProcessWithTargetRPSAndRecommendataion(t *te
 	id := int32(1)
 	testDBMetrics := &dbmodels.BaseEntity[models.CatalogMetricsArtifactAttributes]{
 		Attributes: &models.CatalogMetricsArtifactAttributes{
-			Name:        apiutils.Of("test-perf-artifact"),
+			Name:        new("test-perf-artifact"),
 			MetricsType: models.MetricsTypePerformance,
 		},
 		Properties: &[]dbmodels.Properties{},
 		CustomProperties: &[]dbmodels.Properties{
-			{Name: "requests_per_second", DoubleValue: apiutils.Of(200.0)},
-			{Name: "ttft_p90", DoubleValue: apiutils.Of(50.0)},
-			{Name: "estimated_cost_per_hour", DoubleValue: apiutils.Of(80.0)},
-			{Name: "hardware_type", StringValue: apiutils.Of("gpu-a100")},
+			{Name: "requests_per_second", DoubleValue: new(200.0)},
+			{Name: "ttft_p90", DoubleValue: new(50.0)},
+			{Name: "estimated_cost_per_hour", DoubleValue: new(80.0)},
+			{Name: "hardware_type", StringValue: new("gpu-a100")},
 		},
 	}
 	testDBMetrics.SetID(id)
@@ -214,7 +213,7 @@ func TestPerformanceArtifactService_Recommendataions(t *testing.T) {
 	artifacts := []sharedmodels.CatalogMetricsArtifact{
 		&dbmodels.BaseEntity[models.CatalogMetricsArtifactAttributes]{
 			Attributes: &models.CatalogMetricsArtifactAttributes{
-				Name: apiutils.Of("fast-expensive"),
+				Name: new("fast-expensive"),
 			},
 			CustomProperties: &[]dbmodels.Properties{
 				dbmodels.NewStringProperty("hardware_type", "gpu-a100", true),
@@ -225,7 +224,7 @@ func TestPerformanceArtifactService_Recommendataions(t *testing.T) {
 		},
 		&dbmodels.BaseEntity[models.CatalogMetricsArtifactAttributes]{
 			Attributes: &models.CatalogMetricsArtifactAttributes{
-				Name: apiutils.Of("slow-cheap"),
+				Name: new("slow-cheap"),
 			},
 			CustomProperties: &[]dbmodels.Properties{
 				dbmodels.NewStringProperty("hardware_type", "gpu-a100", true),
@@ -261,7 +260,7 @@ func TestPropertyValidation(t *testing.T) {
 		// artifact with custom property
 		&dbmodels.BaseEntity[models.CatalogMetricsArtifactAttributes]{
 			Attributes: &models.CatalogMetricsArtifactAttributes{
-				Name: apiutils.Of("artifact-with-prop"),
+				Name: new("artifact-with-prop"),
 			},
 			CustomProperties: &[]dbmodels.Properties{
 				dbmodels.NewDoubleProperty("custom_rps", 100.0, true),
@@ -273,7 +272,7 @@ func TestPropertyValidation(t *testing.T) {
 		// artifact without custom property
 		&dbmodels.BaseEntity[models.CatalogMetricsArtifactAttributes]{
 			Attributes: &models.CatalogMetricsArtifactAttributes{
-				Name: apiutils.Of("artifact-without-prop"),
+				Name: new("artifact-without-prop"),
 			},
 			CustomProperties: &[]dbmodels.Properties{
 				dbmodels.NewDoubleProperty("other_prop", 200.0, true),
@@ -313,7 +312,7 @@ func TestGetArtifactsWithValidation(t *testing.T) {
 		{
 			CatalogMetricsArtifact: &dbmodels.BaseEntity[models.CatalogMetricsArtifactAttributes]{
 				Attributes: &models.CatalogMetricsArtifactAttributes{
-					Name:        apiutils.Of("test-artifact"),
+					Name:        new("test-artifact"),
 					MetricsType: models.MetricsTypePerformance,
 				},
 				CustomProperties: &[]dbmodels.Properties{
@@ -359,7 +358,7 @@ func TestConfigurablePropertyUsage(t *testing.T) {
 	id := int32(1)
 	artifact := &dbmodels.BaseEntity[models.CatalogMetricsArtifactAttributes]{
 		Attributes: &models.CatalogMetricsArtifactAttributes{
-			Name: apiutils.Of("test-artifact"),
+			Name: new("test-artifact"),
 		},
 		CustomProperties: &[]dbmodels.Properties{
 			dbmodels.NewDoubleProperty("throughput", 50.0, true),
@@ -404,7 +403,7 @@ func TestConfigurableRecommendataion(t *testing.T) {
 		// Dominated artifact: slower AND more expensive
 		&dbmodels.BaseEntity[models.CatalogMetricsArtifactAttributes]{
 			Attributes: &models.CatalogMetricsArtifactAttributes{
-				Name: apiutils.Of("artifact-slow-expensive"),
+				Name: new("artifact-slow-expensive"),
 			},
 			CustomProperties: &[]dbmodels.Properties{
 				dbmodels.NewStringProperty("instance_type", "gpu-small", true),
@@ -416,7 +415,7 @@ func TestConfigurableRecommendataion(t *testing.T) {
 		// Fast but expensive
 		&dbmodels.BaseEntity[models.CatalogMetricsArtifactAttributes]{
 			Attributes: &models.CatalogMetricsArtifactAttributes{
-				Name: apiutils.Of("artifact-fast-expensive"),
+				Name: new("artifact-fast-expensive"),
 			},
 			CustomProperties: &[]dbmodels.Properties{
 				dbmodels.NewStringProperty("instance_type", "gpu-small", true),
@@ -428,7 +427,7 @@ func TestConfigurableRecommendataion(t *testing.T) {
 		// Cheapest option (but slower than artifact-fast-expensive)
 		&dbmodels.BaseEntity[models.CatalogMetricsArtifactAttributes]{
 			Attributes: &models.CatalogMetricsArtifactAttributes{
-				Name: apiutils.Of("artifact-cheap"),
+				Name: new("artifact-cheap"),
 			},
 			CustomProperties: &[]dbmodels.Properties{
 				dbmodels.NewStringProperty("instance_type", "gpu-small", true),
@@ -540,7 +539,7 @@ func createArtifactsFromRows(rows []testArtifactRow, targetRPS int32) []sharedmo
 
 		artifact := &dbmodels.BaseEntity[models.CatalogMetricsArtifactAttributes]{
 			Attributes: &models.CatalogMetricsArtifactAttributes{
-				Name: apiutils.Of(fmt.Sprintf("artifact-%d", i)),
+				Name: new(fmt.Sprintf("artifact-%d", i)),
 			},
 			CustomProperties: &[]dbmodels.Properties{
 				dbmodels.NewStringProperty("hardware_type", row.hardwareType, true),
@@ -585,7 +584,7 @@ func TestGetMinimumRecommendedLatency(t *testing.T) {
 	// Setup mock model repository to return a model with ID
 	testModelID := int32(42)
 	mockModelRepo.On("GetByName", "test-model").Return(&dbmodels.BaseEntity[models.CatalogModelAttributes]{
-		ID: apiutils.Of(testModelID),
+		ID: new(testModelID),
 	}, nil)
 
 	service := NewPerformanceArtifactService(mockArtifactRepo, mockModelRepo)
@@ -596,15 +595,15 @@ func TestGetMinimumRecommendedLatency(t *testing.T) {
 		{
 			CatalogMetricsArtifact: &dbmodels.BaseEntity[models.CatalogMetricsArtifactAttributes]{
 				Attributes: &models.CatalogMetricsArtifactAttributes{
-					Name:        apiutils.Of("test-perf-artifact"),
+					Name:        new("test-perf-artifact"),
 					MetricsType: models.MetricsTypePerformance,
 				},
 				Properties: &[]dbmodels.Properties{},
 				CustomProperties: &[]dbmodels.Properties{
-					{Name: "ttft_p90", DoubleValue: apiutils.Of(150.0)},
-					{Name: "requests_per_second", DoubleValue: apiutils.Of(200.0)},
-					{Name: "hardware_count", IntValue: apiutils.Of(int32(2))},
-					{Name: "hardware_type", StringValue: apiutils.Of("gpu-a100")},
+					{Name: "ttft_p90", DoubleValue: new(150.0)},
+					{Name: "requests_per_second", DoubleValue: new(200.0)},
+					{Name: "hardware_count", IntValue: new(int32(2))},
+					{Name: "hardware_type", StringValue: new("gpu-a100")},
 				},
 			},
 		},
@@ -644,7 +643,7 @@ func TestGetMinimumRecommendedLatency_NoArtifacts(t *testing.T) {
 	// Setup mock model repository to return a model with ID
 	testModelID := int32(42)
 	mockModelRepo.On("GetByName", "nonexistent-model").Return(&dbmodels.BaseEntity[models.CatalogModelAttributes]{
-		ID: apiutils.Of(testModelID),
+		ID: new(testModelID),
 	}, nil)
 
 	service := NewPerformanceArtifactService(mockArtifactRepo, mockModelRepo)

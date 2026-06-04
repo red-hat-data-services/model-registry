@@ -9,15 +9,15 @@ import (
 	sharedmodels "github.com/kubeflow/hub/catalog/internal/db/models"
 	"github.com/kubeflow/hub/internal/platform/apiutils"
 	dbmodels "github.com/kubeflow/hub/internal/platform/db/entity"
-	"github.com/kubeflow/hub/internal/platform/db/schema"
 	service "github.com/kubeflow/hub/internal/platform/db/repository"
+	"github.com/kubeflow/hub/internal/platform/db/schema"
 	"github.com/kubeflow/hub/internal/platform/db/utils"
 	"gorm.io/gorm"
 )
 
 // Register the mapping function for CatalogMetricsArtifact
 func init() {
-	sharedmodels.RegisterArtifactMapper("kf.CatalogMetricsArtifact", func(artifact schema.Artifact, properties []schema.ArtifactProperty) interface{} {
+	sharedmodels.RegisterArtifactMapper("kf.CatalogMetricsArtifact", func(artifact schema.Artifact, properties []schema.ArtifactProperty) any {
 		return mapDataLayerToCatalogMetricsArtifact(artifact, properties)
 	})
 }
@@ -240,7 +240,7 @@ func mapCatalogMetricsArtifactToArtifactProperties(catalogMetricsArtifact models
 	if catalogMetricsArtifact.GetAttributes() != nil {
 		metricsTypeProp := dbmodels.Properties{
 			Name:        "metricsType",
-			StringValue: apiutils.Of(string(catalogMetricsArtifact.GetAttributes().MetricsType)),
+			StringValue: new(string(catalogMetricsArtifact.GetAttributes().MetricsType)),
 		}
 		properties = append(properties, service.MapPropertiesToArtifactProperty(metricsTypeProp, artifactID, false))
 	}
@@ -266,7 +266,7 @@ func mapDataLayerToCatalogMetricsArtifact(artifact schema.Artifact, artPropertie
 		TypeID: &artifact.TypeID,
 		Attributes: &models.CatalogMetricsArtifactAttributes{
 			Name:                     artifact.Name,
-			ArtifactType:             apiutils.Of(models.CatalogMetricsArtifactType),
+			ArtifactType:             new(models.CatalogMetricsArtifactType),
 			ExternalID:               artifact.ExternalID,
 			CreateTimeSinceEpoch:     &artifact.CreateTimeSinceEpoch,
 			LastUpdateTimeSinceEpoch: &artifact.LastUpdateTimeSinceEpoch,

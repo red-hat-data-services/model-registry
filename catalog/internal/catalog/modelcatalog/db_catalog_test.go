@@ -17,7 +17,6 @@ import (
 	"github.com/kubeflow/hub/catalog/internal/db/service"
 	"github.com/kubeflow/hub/catalog/internal/testhelpers"
 	model "github.com/kubeflow/hub/catalog/pkg/openapi"
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	mr_models "github.com/kubeflow/hub/internal/platform/db/entity"
 	"github.com/kubeflow/hub/internal/testutils"
 	"github.com/kubeflow/hub/pkg/api"
@@ -74,14 +73,14 @@ func TestDBCatalog(t *testing.T) {
 	t.Run("TestGetModel_Success", func(t *testing.T) {
 		// Create test model with namespaced name (sourceId:modelName) as stored in DB
 		testModel := &models.CatalogModelImpl{
-			TypeID: apiutils.Of(int32(catalogModelTypeID)),
+			TypeID: new(int32(catalogModelTypeID)),
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("test-source-id:test-get-model"),
-				ExternalID: apiutils.Of("test-get-model-ext"),
+				Name:       new("test-source-id:test-get-model"),
+				ExternalID: new("test-get-model-ext"),
 			},
 			Properties: &[]mr_models.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("test-source-id")},
-				{Name: "description", StringValue: apiutils.Of("Test model description")},
+				{Name: "source_id", StringValue: new("test-source-id")},
+				{Name: "description", StringValue: new("Test model description")},
 			},
 		}
 
@@ -113,26 +112,26 @@ func TestDBCatalog(t *testing.T) {
 		sourceIDs := []string{"list-test-source"}
 
 		model1 := &models.CatalogModelImpl{
-			TypeID: apiutils.Of(int32(catalogModelTypeID)),
+			TypeID: new(int32(catalogModelTypeID)),
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("list-test-model-1"),
-				ExternalID: apiutils.Of("list-test-1"),
+				Name:       new("list-test-model-1"),
+				ExternalID: new("list-test-1"),
 			},
 			Properties: &[]mr_models.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("list-test-source")},
-				{Name: "description", StringValue: apiutils.Of("First test model")},
+				{Name: "source_id", StringValue: new("list-test-source")},
+				{Name: "description", StringValue: new("First test model")},
 			},
 		}
 
 		model2 := &models.CatalogModelImpl{
-			TypeID: apiutils.Of(int32(catalogModelTypeID)),
+			TypeID: new(int32(catalogModelTypeID)),
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("list-test-model-2"),
-				ExternalID: apiutils.Of("list-test-2"),
+				Name:       new("list-test-model-2"),
+				ExternalID: new("list-test-2"),
 			},
 			Properties: &[]mr_models.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("list-test-source")},
-				{Name: "description", StringValue: apiutils.Of("Second test model")},
+				{Name: "source_id", StringValue: new("list-test-source")},
+				{Name: "description", StringValue: new("Second test model")},
 			},
 		}
 
@@ -147,7 +146,7 @@ func TestDBCatalog(t *testing.T) {
 			PageSize:      10,
 			OrderBy:       model.ORDERBYFIELD_CREATE_TIME,
 			SortOrder:     model.SORTORDER_ASC,
-			NextPageToken: apiutils.Of(""),
+			NextPageToken: new(""),
 		}
 
 		result, err := dbCatalog.ListModels(ctx, params)
@@ -184,13 +183,13 @@ func TestDBCatalog(t *testing.T) {
 		// Create multiple models
 		for i := range 5 {
 			model := &models.CatalogModelImpl{
-				TypeID: apiutils.Of(int32(catalogModelTypeID)),
+				TypeID: new(int32(catalogModelTypeID)),
 				Attributes: &models.CatalogModelAttributes{
-					Name:       apiutils.Of(fmt.Sprintf("pagination-test-source:pagination-test-model-%d", i)),
-					ExternalID: apiutils.Of(fmt.Sprintf("pagination-test-%d", i)),
+					Name:       new(fmt.Sprintf("pagination-test-source:pagination-test-model-%d", i)),
+					ExternalID: new(fmt.Sprintf("pagination-test-%d", i)),
 				},
 				Properties: &[]mr_models.Properties{
-					{Name: "source_id", StringValue: apiutils.Of("pagination-test-source")},
+					{Name: "source_id", StringValue: new("pagination-test-source")},
 				},
 			}
 			_, err := catalogModelRepo.Save(model)
@@ -202,7 +201,7 @@ func TestDBCatalog(t *testing.T) {
 			PageSize:      3,
 			OrderBy:       model.ORDERBYFIELD_CREATE_TIME,
 			SortOrder:     model.SORTORDER_ASC,
-			NextPageToken: apiutils.Of(""),
+			NextPageToken: new(""),
 		}
 
 		result, err := dbCatalog.ListModels(ctx, params)
@@ -217,44 +216,44 @@ func TestDBCatalog(t *testing.T) {
 		sourceIDs := []string{"query-test-source"}
 
 		model1 := &models.CatalogModelImpl{
-			TypeID: apiutils.Of(int32(catalogModelTypeID)),
+			TypeID: new(int32(catalogModelTypeID)),
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("query-test-source:BERT-base-model"),
-				ExternalID: apiutils.Of("bert-base-1"),
+				Name:       new("query-test-source:BERT-base-model"),
+				ExternalID: new("bert-base-1"),
 			},
 			Properties: &[]mr_models.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("query-test-source")},
-				{Name: "description", StringValue: apiutils.Of("BERT base model for NLP tasks")},
-				{Name: "provider", StringValue: apiutils.Of("Hugging Face")},
-				{Name: "tasks", StringValue: apiutils.Of(`["text-classification", "question-answering"]`)},
+				{Name: "source_id", StringValue: new("query-test-source")},
+				{Name: "description", StringValue: new("BERT base model for NLP tasks")},
+				{Name: "provider", StringValue: new("Hugging Face")},
+				{Name: "tasks", StringValue: new(`["text-classification", "question-answering"]`)},
 			},
 		}
 
 		model2 := &models.CatalogModelImpl{
-			TypeID: apiutils.Of(int32(catalogModelTypeID)),
+			TypeID: new(int32(catalogModelTypeID)),
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("query-test-source:GPT-3.5-turbo"),
-				ExternalID: apiutils.Of("gpt-35-turbo-1"),
+				Name:       new("query-test-source:GPT-3.5-turbo"),
+				ExternalID: new("gpt-35-turbo-1"),
 			},
 			Properties: &[]mr_models.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("query-test-source")},
-				{Name: "description", StringValue: apiutils.Of("OpenAI GPT model for text generation")},
-				{Name: "provider", StringValue: apiutils.Of("OpenAI")},
-				{Name: "tasks", StringValue: apiutils.Of(`["text-generation", "conversational"]`)},
+				{Name: "source_id", StringValue: new("query-test-source")},
+				{Name: "description", StringValue: new("OpenAI GPT model for text generation")},
+				{Name: "provider", StringValue: new("OpenAI")},
+				{Name: "tasks", StringValue: new(`["text-generation", "conversational"]`)},
 			},
 		}
 
 		model3 := &models.CatalogModelImpl{
-			TypeID: apiutils.Of(int32(catalogModelTypeID)),
+			TypeID: new(int32(catalogModelTypeID)),
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("query-test-source:ResNet-50-image"),
-				ExternalID: apiutils.Of("resnet-50-1"),
+				Name:       new("query-test-source:ResNet-50-image"),
+				ExternalID: new("resnet-50-1"),
 			},
 			Properties: &[]mr_models.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("query-test-source")},
-				{Name: "description", StringValue: apiutils.Of("Deep learning model for image classification")},
-				{Name: "provider", StringValue: apiutils.Of("PyTorch")},
-				{Name: "tasks", StringValue: apiutils.Of(`["image-classification", "computer-vision"]`)},
+				{Name: "source_id", StringValue: new("query-test-source")},
+				{Name: "description", StringValue: new("Deep learning model for image classification")},
+				{Name: "provider", StringValue: new("PyTorch")},
+				{Name: "tasks", StringValue: new(`["image-classification", "computer-vision"]`)},
 			},
 		}
 
@@ -272,7 +271,7 @@ func TestDBCatalog(t *testing.T) {
 			PageSize:      10,
 			OrderBy:       model.ORDERBYFIELD_CREATE_TIME,
 			SortOrder:     model.SORTORDER_ASC,
-			NextPageToken: apiutils.Of(""),
+			NextPageToken: new(""),
 		}
 
 		result, err := dbCatalog.ListModels(ctx, params)
@@ -356,50 +355,50 @@ func TestDBCatalog(t *testing.T) {
 		sourceIDs := []string{"filterquery-test-source"}
 
 		model1 := &models.CatalogModelImpl{
-			TypeID: apiutils.Of(int32(catalogModelTypeID)),
+			TypeID: new(int32(catalogModelTypeID)),
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("filterquery-test-source:TensorFlow-ResNet50"),
-				ExternalID: apiutils.Of("tf-resnet50-1"),
+				Name:       new("filterquery-test-source:TensorFlow-ResNet50"),
+				ExternalID: new("tf-resnet50-1"),
 			},
 			Properties: &[]mr_models.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("filterquery-test-source")},
-				{Name: "description", StringValue: apiutils.Of("Deep learning model for image classification using TensorFlow")},
-				{Name: "provider", StringValue: apiutils.Of("Google")},
-				{Name: "framework", StringValue: apiutils.Of("TensorFlow")},
-				{Name: "tasks", StringValue: apiutils.Of(`["image-classification", "computer-vision"]`)},
-				{Name: "accuracy", StringValue: apiutils.Of("0.95")},
+				{Name: "source_id", StringValue: new("filterquery-test-source")},
+				{Name: "description", StringValue: new("Deep learning model for image classification using TensorFlow")},
+				{Name: "provider", StringValue: new("Google")},
+				{Name: "framework", StringValue: new("TensorFlow")},
+				{Name: "tasks", StringValue: new(`["image-classification", "computer-vision"]`)},
+				{Name: "accuracy", StringValue: new("0.95")},
 			},
 		}
 
 		model2 := &models.CatalogModelImpl{
-			TypeID: apiutils.Of(int32(catalogModelTypeID)),
+			TypeID: new(int32(catalogModelTypeID)),
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("filterquery-test-source:PyTorch-BERT"),
-				ExternalID: apiutils.Of("pt-bert-1"),
+				Name:       new("filterquery-test-source:PyTorch-BERT"),
+				ExternalID: new("pt-bert-1"),
 			},
 			Properties: &[]mr_models.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("filterquery-test-source")},
-				{Name: "description", StringValue: apiutils.Of("BERT model for natural language processing using PyTorch")},
-				{Name: "provider", StringValue: apiutils.Of("Hugging Face")},
-				{Name: "framework", StringValue: apiutils.Of("PyTorch")},
-				{Name: "tasks", StringValue: apiutils.Of(`["text-classification", "question-answering"]`)},
-				{Name: "accuracy", StringValue: apiutils.Of("0.92")},
+				{Name: "source_id", StringValue: new("filterquery-test-source")},
+				{Name: "description", StringValue: new("BERT model for natural language processing using PyTorch")},
+				{Name: "provider", StringValue: new("Hugging Face")},
+				{Name: "framework", StringValue: new("PyTorch")},
+				{Name: "tasks", StringValue: new(`["text-classification", "question-answering"]`)},
+				{Name: "accuracy", StringValue: new("0.92")},
 			},
 		}
 
 		model3 := &models.CatalogModelImpl{
-			TypeID: apiutils.Of(int32(catalogModelTypeID)),
+			TypeID: new(int32(catalogModelTypeID)),
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("filterquery-test-source:Scikit-learn-LogisticRegression"),
-				ExternalID: apiutils.Of("sk-lr-1"),
+				Name:       new("filterquery-test-source:Scikit-learn-LogisticRegression"),
+				ExternalID: new("sk-lr-1"),
 			},
 			Properties: &[]mr_models.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("filterquery-test-source")},
-				{Name: "description", StringValue: apiutils.Of("Traditional machine learning model for classification")},
-				{Name: "provider", StringValue: apiutils.Of("Scikit-learn")},
-				{Name: "framework", StringValue: apiutils.Of("Scikit-learn")},
-				{Name: "tasks", StringValue: apiutils.Of(`["classification", "regression"]`)},
-				{Name: "accuracy", StringValue: apiutils.Of("0.88")},
+				{Name: "source_id", StringValue: new("filterquery-test-source")},
+				{Name: "description", StringValue: new("Traditional machine learning model for classification")},
+				{Name: "provider", StringValue: new("Scikit-learn")},
+				{Name: "framework", StringValue: new("Scikit-learn")},
+				{Name: "tasks", StringValue: new(`["classification", "regression"]`)},
+				{Name: "accuracy", StringValue: new("0.88")},
 			},
 		}
 
@@ -417,7 +416,7 @@ func TestDBCatalog(t *testing.T) {
 			PageSize:      10,
 			OrderBy:       model.ORDERBYFIELD_NAME,
 			SortOrder:     model.SORTORDER_ASC,
-			NextPageToken: apiutils.Of(""),
+			NextPageToken: new(""),
 		}
 
 		result, err := dbCatalog.ListModels(ctx, params)
@@ -525,13 +524,13 @@ func TestDBCatalog(t *testing.T) {
 	t.Run("TestGetArtifacts_Success", func(t *testing.T) {
 		// Create test model
 		testModel := &models.CatalogModelImpl{
-			TypeID: apiutils.Of(int32(catalogModelTypeID)),
+			TypeID: new(int32(catalogModelTypeID)),
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("artifact-test-source:artifact-test-model"),
-				ExternalID: apiutils.Of("artifact-test-model-ext"),
+				Name:       new("artifact-test-source:artifact-test-model"),
+				ExternalID: new("artifact-test-model-ext"),
 			},
 			Properties: &[]mr_models.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("artifact-test-source")},
+				{Name: "source_id", StringValue: new("artifact-test-source")},
 			},
 		}
 
@@ -540,22 +539,22 @@ func TestDBCatalog(t *testing.T) {
 
 		// Create test artifacts
 		modelArtifact := &models.CatalogModelArtifactImpl{
-			TypeID: apiutils.Of(int32(modelArtifactTypeID)),
+			TypeID: new(int32(modelArtifactTypeID)),
 			Attributes: &models.CatalogModelArtifactAttributes{
-				Name:         apiutils.Of("test-model-artifact"),
-				ExternalID:   apiutils.Of("test-model-artifact-ext"),
-				URI:          apiutils.Of("s3://test/model.bin"),
-				ArtifactType: apiutils.Of(models.CatalogModelArtifactType),
+				Name:         new("test-model-artifact"),
+				ExternalID:   new("test-model-artifact-ext"),
+				URI:          new("s3://test/model.bin"),
+				ArtifactType: new(models.CatalogModelArtifactType),
 			},
 		}
 
 		metricsArtifact := &models.CatalogMetricsArtifactImpl{
-			TypeID: apiutils.Of(int32(metricsArtifactTypeID)),
+			TypeID: new(int32(metricsArtifactTypeID)),
 			Attributes: &models.CatalogMetricsArtifactAttributes{
-				Name:         apiutils.Of("test-metrics-artifact"),
-				ExternalID:   apiutils.Of("test-metrics-artifact-ext"),
+				Name:         new("test-metrics-artifact"),
+				ExternalID:   new("test-metrics-artifact-ext"),
 				MetricsType:  models.MetricsTypeAccuracy,
-				ArtifactType: apiutils.Of("metrics-artifact"),
+				ArtifactType: new("metrics-artifact"),
 			},
 		}
 
@@ -569,7 +568,7 @@ func TestDBCatalog(t *testing.T) {
 			PageSize:      10,
 			OrderBy:       string(model.ORDERBYFIELD_CREATE_TIME),
 			SortOrder:     model.SORTORDER_ASC,
-			NextPageToken: apiutils.Of(""),
+			NextPageToken: new(""),
 		}
 
 		result, err := dbCatalog.GetArtifacts(ctx, "artifact-test-model", "artifact-test-source", params)
@@ -611,7 +610,7 @@ func TestDBCatalog(t *testing.T) {
 			PageSize:      10,
 			OrderBy:       string(model.ORDERBYFIELD_CREATE_TIME),
 			SortOrder:     model.SORTORDER_ASC,
-			NextPageToken: apiutils.Of(""),
+			NextPageToken: new(""),
 		}
 
 		_, err := dbCatalog.GetArtifacts(ctx, "non-existent-model", "test-source", params)
@@ -622,13 +621,13 @@ func TestDBCatalog(t *testing.T) {
 	t.Run("TestGetArtifacts_WithCustomProperties", func(t *testing.T) {
 		// Create model
 		testModel := &models.CatalogModelImpl{
-			TypeID: apiutils.Of(int32(catalogModelTypeID)),
+			TypeID: new(int32(catalogModelTypeID)),
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("custom-props-source:custom-props-model"),
-				ExternalID: apiutils.Of("custom-props-model-ext"),
+				Name:       new("custom-props-source:custom-props-model"),
+				ExternalID: new("custom-props-model-ext"),
 			},
 			Properties: &[]mr_models.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("custom-props-source")},
+				{Name: "source_id", StringValue: new("custom-props-source")},
 			},
 		}
 
@@ -637,17 +636,17 @@ func TestDBCatalog(t *testing.T) {
 
 		// Create artifact with custom properties
 		customProps := []mr_models.Properties{
-			{Name: "custom_prop_1", StringValue: apiutils.Of("value_1")},
-			{Name: "custom_prop_2", StringValue: apiutils.Of("value_2")},
+			{Name: "custom_prop_1", StringValue: new("value_1")},
+			{Name: "custom_prop_2", StringValue: new("value_2")},
 		}
 
 		artifactWithProps := &models.CatalogModelArtifactImpl{
-			TypeID: apiutils.Of(int32(modelArtifactTypeID)),
+			TypeID: new(int32(modelArtifactTypeID)),
 			Attributes: &models.CatalogModelArtifactAttributes{
-				Name:         apiutils.Of("artifact-with-props"),
-				ExternalID:   apiutils.Of("artifact-with-props-ext"),
-				URI:          apiutils.Of("s3://test/props.bin"),
-				ArtifactType: apiutils.Of(models.CatalogModelArtifactType),
+				Name:         new("artifact-with-props"),
+				ExternalID:   new("artifact-with-props-ext"),
+				URI:          new("s3://test/props.bin"),
+				ArtifactType: new(models.CatalogModelArtifactType),
 			},
 			CustomProperties: &customProps,
 		}
@@ -660,7 +659,7 @@ func TestDBCatalog(t *testing.T) {
 			PageSize:      10,
 			OrderBy:       string(model.ORDERBYFIELD_CREATE_TIME),
 			SortOrder:     model.SORTORDER_ASC,
-			NextPageToken: apiutils.Of(""),
+			NextPageToken: new(""),
 		}
 
 		result, err := dbCatalog.GetArtifacts(ctx, "custom-props-model", "custom-props-source", params)
@@ -696,22 +695,22 @@ func TestDBCatalog(t *testing.T) {
 		t.Run("TestMapCatalogModelToCatalogModel", func(t *testing.T) {
 			// Create a catalog model with various properties
 			catalogModel := &models.CatalogModelImpl{
-				ID:     apiutils.Of(int32(123)),
-				TypeID: apiutils.Of(int32(catalogModelTypeID)),
+				ID:     new(int32(123)),
+				TypeID: new(int32(catalogModelTypeID)),
 				Attributes: &models.CatalogModelAttributes{
-					Name:                     apiutils.Of("test-source:mapping-test-model"),
-					ExternalID:               apiutils.Of("mapping-test-ext"),
-					CreateTimeSinceEpoch:     apiutils.Of(int64(1234567890)),
-					LastUpdateTimeSinceEpoch: apiutils.Of(int64(1234567891)),
+					Name:                     new("test-source:mapping-test-model"),
+					ExternalID:               new("mapping-test-ext"),
+					CreateTimeSinceEpoch:     new(int64(1234567890)),
+					LastUpdateTimeSinceEpoch: new(int64(1234567891)),
 				},
 				Properties: &[]mr_models.Properties{
-					{Name: "source_id", StringValue: apiutils.Of("test-source")},
-					{Name: "description", StringValue: apiutils.Of("Test description")},
-					{Name: "library_name", StringValue: apiutils.Of("pytorch")},
-					{Name: "language", StringValue: apiutils.Of("[\"python\", \"go\"]")},
-					{Name: "tasks", StringValue: apiutils.Of("[\"classification\", \"regression\"]")},
-					{Name: "validated_tasks", StringValue: apiutils.Of(`["text-generation","tool-calling"]`)},
-					{Name: "serving_config", StringValue: apiutils.Of(`{"toolCalling":{"toolCallParser":"granite","chatTemplate":"opt/app-root/template/tool_chat_template_granite.jinja","enableAutoToolChoice":true,"requiredArgs":["--config_format granite"]}}`)},
+					{Name: "source_id", StringValue: new("test-source")},
+					{Name: "description", StringValue: new("Test description")},
+					{Name: "library_name", StringValue: new("pytorch")},
+					{Name: "language", StringValue: new("[\"python\", \"go\"]")},
+					{Name: "tasks", StringValue: new("[\"classification\", \"regression\"]")},
+					{Name: "validated_tasks", StringValue: new(`["text-generation","tool-calling"]`)},
+					{Name: "serving_config", StringValue: new(`{"toolCalling":{"toolCallParser":"granite","chatTemplate":"opt/app-root/template/tool_chat_template_granite.jinja","enableAutoToolChoice":true,"requiredArgs":["--config_format granite"]}}`)},
 				},
 			}
 
@@ -734,21 +733,21 @@ func TestDBCatalog(t *testing.T) {
 			// Verify nested JSON object is properly parsed
 			require.NotNil(t, result.ServingConfig)
 			require.NotNil(t, result.ServingConfig.ToolCalling)
-			assert.Equal(t, apiutils.Of("granite"), result.ServingConfig.ToolCalling.ToolCallParser)
-			assert.Equal(t, apiutils.Of("opt/app-root/template/tool_chat_template_granite.jinja"), result.ServingConfig.ToolCalling.ChatTemplate)
-			assert.Equal(t, model.PtrBool(true), result.ServingConfig.ToolCalling.EnableAutoToolChoice)
+			assert.Equal(t, new("granite"), result.ServingConfig.ToolCalling.ToolCallParser)
+			assert.Equal(t, new("opt/app-root/template/tool_chat_template_granite.jinja"), result.ServingConfig.ToolCalling.ChatTemplate)
+			assert.Equal(t, new(true), result.ServingConfig.ToolCalling.EnableAutoToolChoice)
 			assert.Equal(t, []string{"--config_format granite"}, result.ServingConfig.ToolCalling.RequiredArgs)
 		})
 
 		t.Run("TestMapCatalogArtifactToCatalogArtifact", func(t *testing.T) {
 			// Test model artifact mapping
 			var catalogModelArtifact models.CatalogModelArtifact = &models.CatalogModelArtifactImpl{
-				ID:     apiutils.Of(int32(456)),
-				TypeID: apiutils.Of(int32(modelArtifactTypeID)),
+				ID:     new(int32(456)),
+				TypeID: new(int32(modelArtifactTypeID)),
 				Attributes: &models.CatalogModelArtifactAttributes{
-					Name:       apiutils.Of("test-model-artifact"),
-					ExternalID: apiutils.Of("test-model-artifact-ext"),
-					URI:        apiutils.Of("s3://test/model.bin"),
+					Name:       new("test-model-artifact"),
+					ExternalID: new("test-model-artifact-ext"),
+					URI:        new("s3://test/model.bin"),
 				},
 			}
 
@@ -767,11 +766,11 @@ func TestDBCatalog(t *testing.T) {
 
 			// Test metrics artifact mapping
 			var catalogMetricsArtifact models.CatalogMetricsArtifact = &models.CatalogMetricsArtifactImpl{
-				ID:     apiutils.Of(int32(789)),
-				TypeID: apiutils.Of(int32(metricsArtifactTypeID)),
+				ID:     new(int32(789)),
+				TypeID: new(int32(metricsArtifactTypeID)),
 				Attributes: &models.CatalogMetricsArtifactAttributes{
-					Name:        apiutils.Of("test-metrics-artifact"),
-					ExternalID:  apiutils.Of("test-metrics-artifact-ext"),
+					Name:        new("test-metrics-artifact"),
+					ExternalID:  new("test-metrics-artifact-ext"),
 					MetricsType: models.MetricsTypePerformance,
 				},
 			}
@@ -792,15 +791,15 @@ func TestDBCatalog(t *testing.T) {
 
 		t.Run("TestMapCatalogModel_ValidatedTasksAndServingConfig_RoundTrip", func(t *testing.T) {
 			testModel := &models.CatalogModelImpl{
-				TypeID: apiutils.Of(int32(catalogModelTypeID)),
+				TypeID: new(int32(catalogModelTypeID)),
 				Attributes: &models.CatalogModelAttributes{
-					Name:       apiutils.Of("roundtrip-source:roundtrip-validated-serving"),
-					ExternalID: apiutils.Of("roundtrip-validated-serving-ext"),
+					Name:       new("roundtrip-source:roundtrip-validated-serving"),
+					ExternalID: new("roundtrip-validated-serving-ext"),
 				},
 				Properties: &[]mr_models.Properties{
-					{Name: "source_id", StringValue: apiutils.Of("roundtrip-source")},
-					{Name: "validated_tasks", StringValue: apiutils.Of(`["text-generation","tool-calling"]`)},
-					{Name: "serving_config", StringValue: apiutils.Of(`{"toolCalling":{"toolCallParser":"granite","chatTemplate":"opt/app-root/template/tool_chat_template_granite.jinja","enableAutoToolChoice":false,"requiredArgs":["--config_format granite"]}}`)},
+					{Name: "source_id", StringValue: new("roundtrip-source")},
+					{Name: "validated_tasks", StringValue: new(`["text-generation","tool-calling"]`)},
+					{Name: "serving_config", StringValue: new(`{"toolCalling":{"toolCallParser":"granite","chatTemplate":"opt/app-root/template/tool_chat_template_granite.jinja","enableAutoToolChoice":false,"requiredArgs":["--config_format granite"]}}`)},
 				},
 			}
 
@@ -814,24 +813,24 @@ func TestDBCatalog(t *testing.T) {
 			assert.Equal(t, []string{"text-generation", "tool-calling"}, retrieved.ValidatedTasks)
 			require.NotNil(t, retrieved.ServingConfig)
 			require.NotNil(t, retrieved.ServingConfig.ToolCalling)
-			assert.Equal(t, apiutils.Of("granite"), retrieved.ServingConfig.ToolCalling.ToolCallParser)
-			assert.Equal(t, apiutils.Of("opt/app-root/template/tool_chat_template_granite.jinja"), retrieved.ServingConfig.ToolCalling.ChatTemplate)
-			assert.Equal(t, model.PtrBool(false), retrieved.ServingConfig.ToolCalling.EnableAutoToolChoice)
+			assert.Equal(t, new("granite"), retrieved.ServingConfig.ToolCalling.ToolCallParser)
+			assert.Equal(t, new("opt/app-root/template/tool_chat_template_granite.jinja"), retrieved.ServingConfig.ToolCalling.ChatTemplate)
+			assert.Equal(t, new(false), retrieved.ServingConfig.ToolCalling.EnableAutoToolChoice)
 			assert.Equal(t, []string{"--config_format granite"}, retrieved.ServingConfig.ToolCalling.RequiredArgs)
 		})
 
 		t.Run("TestMapCatalogModel_MalformedJSON_SilentFailure", func(t *testing.T) {
 			catalogModel := &models.CatalogModelImpl{
-				ID:     apiutils.Of(int32(999)),
-				TypeID: apiutils.Of(int32(catalogModelTypeID)),
+				ID:     new(int32(999)),
+				TypeID: new(int32(catalogModelTypeID)),
 				Attributes: &models.CatalogModelAttributes{
-					Name:       apiutils.Of("malformed-source:malformed-json-model"),
-					ExternalID: apiutils.Of("malformed-json-ext"),
+					Name:       new("malformed-source:malformed-json-model"),
+					ExternalID: new("malformed-json-ext"),
 				},
 				Properties: &[]mr_models.Properties{
-					{Name: "source_id", StringValue: apiutils.Of("malformed-source")},
-					{Name: "validated_tasks", StringValue: apiutils.Of(`not valid json`)},
-					{Name: "serving_config", StringValue: apiutils.Of(`{broken}`)},
+					{Name: "source_id", StringValue: new("malformed-source")},
+					{Name: "validated_tasks", StringValue: new(`not valid json`)},
+					{Name: "serving_config", StringValue: new(`{broken}`)},
 				},
 			}
 
@@ -865,7 +864,7 @@ func TestDBCatalog(t *testing.T) {
 				PageSize:      10,
 				OrderBy:       string(model.ORDERBYFIELD_CREATE_TIME),
 				SortOrder:     model.SORTORDER_ASC,
-				NextPageToken: apiutils.Of(""),
+				NextPageToken: new(""),
 			}
 
 			_, err := dbCatalog.GetArtifacts(ctx, "non-existent-model", "test-source", params)
@@ -877,55 +876,55 @@ func TestDBCatalog(t *testing.T) {
 	t.Run("TestGetFilterOptions", func(t *testing.T) {
 		// Create models with various properties for filter options testing
 		model1 := &models.CatalogModelImpl{
-			TypeID: apiutils.Of(int32(catalogModelTypeID)),
+			TypeID: new(int32(catalogModelTypeID)),
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("filter-test-source:filter-options-model-1"),
-				ExternalID: apiutils.Of("filter-opt-1"),
+				Name:       new("filter-test-source:filter-options-model-1"),
+				ExternalID: new("filter-opt-1"),
 			},
 			Properties: &[]mr_models.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("filter-test-source")},
-				{Name: "license", StringValue: apiutils.Of("MIT")},
-				{Name: "provider", StringValue: apiutils.Of("HuggingFace")},
-				{Name: "maturity", StringValue: apiutils.Of("stable")},
-				{Name: "library_name", StringValue: apiutils.Of("transformers")},
-				{Name: "language", StringValue: apiutils.Of(`["python", "rust"]`)},
-				{Name: "tasks", StringValue: apiutils.Of(`["text-classification", "token-classification"]`)},
+				{Name: "source_id", StringValue: new("filter-test-source")},
+				{Name: "license", StringValue: new("MIT")},
+				{Name: "provider", StringValue: new("HuggingFace")},
+				{Name: "maturity", StringValue: new("stable")},
+				{Name: "library_name", StringValue: new("transformers")},
+				{Name: "language", StringValue: new(`["python", "rust"]`)},
+				{Name: "tasks", StringValue: new(`["text-classification", "token-classification"]`)},
 			},
 		}
 
 		model2 := &models.CatalogModelImpl{
-			TypeID: apiutils.Of(int32(catalogModelTypeID)),
+			TypeID: new(int32(catalogModelTypeID)),
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("filter-test-source:filter-options-model-2"),
-				ExternalID: apiutils.Of("filter-opt-2"),
+				Name:       new("filter-test-source:filter-options-model-2"),
+				ExternalID: new("filter-opt-2"),
 			},
 			Properties: &[]mr_models.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("filter-test-source")},
-				{Name: "license", StringValue: apiutils.Of("Apache-2.0")},
-				{Name: "provider", StringValue: apiutils.Of("OpenAI")},
-				{Name: "maturity", StringValue: apiutils.Of("experimental")},
-				{Name: "library_name", StringValue: apiutils.Of("openai")},
-				{Name: "language", StringValue: apiutils.Of(`["python", "javascript"]`)},
-				{Name: "tasks", StringValue: apiutils.Of(`["text-generation", "conversational"]`)},
-				{Name: "readme", StringValue: apiutils.Of("This is a very long readme that exceeds 100 characters and should be excluded from filter options because it's too verbose for filtering purposes.")},
+				{Name: "source_id", StringValue: new("filter-test-source")},
+				{Name: "license", StringValue: new("Apache-2.0")},
+				{Name: "provider", StringValue: new("OpenAI")},
+				{Name: "maturity", StringValue: new("experimental")},
+				{Name: "library_name", StringValue: new("openai")},
+				{Name: "language", StringValue: new(`["python", "javascript"]`)},
+				{Name: "tasks", StringValue: new(`["text-generation", "conversational"]`)},
+				{Name: "readme", StringValue: new("This is a very long readme that exceeds 100 characters and should be excluded from filter options because it's too verbose for filtering purposes.")},
 			},
 		}
 
 		model3 := &models.CatalogModelImpl{
-			TypeID: apiutils.Of(int32(catalogModelTypeID)),
+			TypeID: new(int32(catalogModelTypeID)),
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("filter-test-source:filter-options-model-3"),
-				ExternalID: apiutils.Of("filter-opt-3"),
+				Name:       new("filter-test-source:filter-options-model-3"),
+				ExternalID: new("filter-opt-3"),
 			},
 			Properties: &[]mr_models.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("filter-test-source")},
-				{Name: "license", StringValue: apiutils.Of("MIT")},
-				{Name: "provider", StringValue: apiutils.Of("PyTorch")},
-				{Name: "maturity", StringValue: apiutils.Of("stable")},
-				{Name: "language", StringValue: apiutils.Of(`["python"]`)},
-				{Name: "tasks", StringValue: apiutils.Of(`["image-classification"]`)},
-				{Name: "logo", StringValue: apiutils.Of("https://example.com/logo.png")},
-				{Name: "license_link", StringValue: apiutils.Of("https://example.com/license")},
+				{Name: "source_id", StringValue: new("filter-test-source")},
+				{Name: "license", StringValue: new("MIT")},
+				{Name: "provider", StringValue: new("PyTorch")},
+				{Name: "maturity", StringValue: new("stable")},
+				{Name: "language", StringValue: new(`["python"]`)},
+				{Name: "tasks", StringValue: new(`["image-classification"]`)},
+				{Name: "logo", StringValue: new("https://example.com/logo.png")},
+				{Name: "license_link", StringValue: new("https://example.com/license")},
 			},
 		}
 
@@ -1043,13 +1042,13 @@ func TestDBCatalog(t *testing.T) {
 	t.Run("TestGetPerformanceArtifacts_BasicFiltering", func(t *testing.T) {
 		// Create test model
 		testModel := &models.CatalogModelImpl{
-			TypeID: apiutils.Of(int32(catalogModelTypeID)),
+			TypeID: new(int32(catalogModelTypeID)),
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("perf-test-source:perf-test-model"),
-				ExternalID: apiutils.Of("perf-test-model-ext"),
+				Name:       new("perf-test-source:perf-test-model"),
+				ExternalID: new("perf-test-model-ext"),
 			},
 			Properties: &[]mr_models.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("perf-test-source")},
+				{Name: "source_id", StringValue: new("perf-test-source")},
 			},
 		}
 
@@ -1058,27 +1057,27 @@ func TestDBCatalog(t *testing.T) {
 
 		// Create performance metrics artifact
 		perfArtifact := &models.CatalogMetricsArtifactImpl{
-			TypeID: apiutils.Of(int32(metricsArtifactTypeID)),
+			TypeID: new(int32(metricsArtifactTypeID)),
 			Attributes: &models.CatalogMetricsArtifactAttributes{
-				Name:         apiutils.Of("performance-metrics-1"),
-				ExternalID:   apiutils.Of("perf-metrics-1"),
+				Name:         new("performance-metrics-1"),
+				ExternalID:   new("perf-metrics-1"),
 				MetricsType:  models.MetricsTypePerformance,
-				ArtifactType: apiutils.Of("metrics-artifact"),
+				ArtifactType: new("metrics-artifact"),
 			},
 			CustomProperties: &[]mr_models.Properties{
-				{Name: "throughput", DoubleValue: apiutils.Of(float64(50.0))},
-				{Name: "latency_p99", DoubleValue: apiutils.Of(float64(100.0))},
+				{Name: "throughput", DoubleValue: new(float64(50.0))},
+				{Name: "latency_p99", DoubleValue: new(float64(100.0))},
 			},
 		}
 
 		// Create accuracy metrics artifact (should be filtered out)
 		accuracyArtifact := &models.CatalogMetricsArtifactImpl{
-			TypeID: apiutils.Of(int32(metricsArtifactTypeID)),
+			TypeID: new(int32(metricsArtifactTypeID)),
 			Attributes: &models.CatalogMetricsArtifactAttributes{
-				Name:         apiutils.Of("accuracy-metrics-1"),
-				ExternalID:   apiutils.Of("acc-metrics-1"),
+				Name:         new("accuracy-metrics-1"),
+				ExternalID:   new("acc-metrics-1"),
 				MetricsType:  models.MetricsTypeAccuracy,
-				ArtifactType: apiutils.Of("metrics-artifact"),
+				ArtifactType: new("metrics-artifact"),
 			},
 		}
 
@@ -1092,7 +1091,7 @@ func TestDBCatalog(t *testing.T) {
 			PageSize:        10,
 			OrderBy:         string(model.ORDERBYFIELD_CREATE_TIME),
 			SortOrder:       model.SORTORDER_ASC,
-			NextPageToken:   apiutils.Of(""),
+			NextPageToken:   new(""),
 			TargetRPS:       0,
 			Recommendations: false,
 		}
@@ -1113,13 +1112,13 @@ func TestDBCatalog(t *testing.T) {
 	t.Run("TestGetPerformanceArtifacts_WithTargetRPS", func(t *testing.T) {
 		// Create test model
 		testModel := &models.CatalogModelImpl{
-			TypeID: apiutils.Of(int32(catalogModelTypeID)),
+			TypeID: new(int32(catalogModelTypeID)),
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("rps-test-source:rps-test-model"),
-				ExternalID: apiutils.Of("rps-test-model-ext"),
+				Name:       new("rps-test-source:rps-test-model"),
+				ExternalID: new("rps-test-model-ext"),
 			},
 			Properties: &[]mr_models.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("rps-test-source")},
+				{Name: "source_id", StringValue: new("rps-test-source")},
 			},
 		}
 
@@ -1128,15 +1127,15 @@ func TestDBCatalog(t *testing.T) {
 
 		// Create performance metrics artifact with throughput data
 		perfArtifact := &models.CatalogMetricsArtifactImpl{
-			TypeID: apiutils.Of(int32(metricsArtifactTypeID)),
+			TypeID: new(int32(metricsArtifactTypeID)),
 			Attributes: &models.CatalogMetricsArtifactAttributes{
-				Name:         apiutils.Of("rps-metrics-1"),
-				ExternalID:   apiutils.Of("rps-metrics-1"),
+				Name:         new("rps-metrics-1"),
+				ExternalID:   new("rps-metrics-1"),
 				MetricsType:  models.MetricsTypePerformance,
-				ArtifactType: apiutils.Of("metrics-artifact"),
+				ArtifactType: new("metrics-artifact"),
 			},
 			CustomProperties: &[]mr_models.Properties{
-				{Name: "throughput", DoubleValue: apiutils.Of(float64(50.0))},
+				{Name: "throughput", DoubleValue: new(float64(50.0))},
 			},
 		}
 
@@ -1148,7 +1147,7 @@ func TestDBCatalog(t *testing.T) {
 			PageSize:        10,
 			OrderBy:         string(model.ORDERBYFIELD_CREATE_TIME),
 			SortOrder:       model.SORTORDER_ASC,
-			NextPageToken:   apiutils.Of(""),
+			NextPageToken:   new(""),
 			TargetRPS:       100,
 			Recommendations: false,
 		}
@@ -1186,13 +1185,13 @@ func TestDBCatalog(t *testing.T) {
 	t.Run("TestGetPerformanceArtifacts_WithDeduplication", func(t *testing.T) {
 		// Create test model
 		testModel := &models.CatalogModelImpl{
-			TypeID: apiutils.Of(int32(catalogModelTypeID)),
+			TypeID: new(int32(catalogModelTypeID)),
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("dedup-test-source:dedup-test-model"),
-				ExternalID: apiutils.Of("dedup-test-model-ext"),
+				Name:       new("dedup-test-source:dedup-test-model"),
+				ExternalID: new("dedup-test-model-ext"),
 			},
 			Properties: &[]mr_models.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("dedup-test-source")},
+				{Name: "source_id", StringValue: new("dedup-test-source")},
 			},
 		}
 
@@ -1203,47 +1202,47 @@ func TestDBCatalog(t *testing.T) {
 		// The deduplication algorithm uses hardware_count * replicas for cost calculation
 		// It keeps artifacts with decreasing cost (when sorted by latency)
 		perfArtifact1 := &models.CatalogMetricsArtifactImpl{
-			TypeID: apiutils.Of(int32(metricsArtifactTypeID)),
+			TypeID: new(int32(metricsArtifactTypeID)),
 			Attributes: &models.CatalogMetricsArtifactAttributes{
-				Name:         apiutils.Of("dedup-metrics-1"),
-				ExternalID:   apiutils.Of("dedup-metrics-1"),
+				Name:         new("dedup-metrics-1"),
+				ExternalID:   new("dedup-metrics-1"),
 				MetricsType:  models.MetricsTypePerformance,
-				ArtifactType: apiutils.Of("metrics-artifact"),
+				ArtifactType: new("metrics-artifact"),
 			},
 			CustomProperties: &[]mr_models.Properties{
-				{Name: "hardware_count", IntValue: apiutils.Of(int32(4))},
-				{Name: "ttft_p90", DoubleValue: apiutils.Of(float64(100.0))},
-				{Name: "hardware_type", StringValue: apiutils.Of("gpu-a100")},
+				{Name: "hardware_count", IntValue: new(int32(4))},
+				{Name: "ttft_p90", DoubleValue: new(float64(100.0))},
+				{Name: "hardware_type", StringValue: new("gpu-a100")},
 			},
 		}
 
 		perfArtifact2 := &models.CatalogMetricsArtifactImpl{
-			TypeID: apiutils.Of(int32(metricsArtifactTypeID)),
+			TypeID: new(int32(metricsArtifactTypeID)),
 			Attributes: &models.CatalogMetricsArtifactAttributes{
-				Name:         apiutils.Of("dedup-metrics-2"),
-				ExternalID:   apiutils.Of("dedup-metrics-2"),
+				Name:         new("dedup-metrics-2"),
+				ExternalID:   new("dedup-metrics-2"),
 				MetricsType:  models.MetricsTypePerformance,
-				ArtifactType: apiutils.Of("metrics-artifact"),
+				ArtifactType: new("metrics-artifact"),
 			},
 			CustomProperties: &[]mr_models.Properties{
-				{Name: "hardware_count", IntValue: apiutils.Of(int32(4))},
-				{Name: "ttft_p90", DoubleValue: apiutils.Of(float64(150.0))},
-				{Name: "hardware_type", StringValue: apiutils.Of("gpu-a100")},
+				{Name: "hardware_count", IntValue: new(int32(4))},
+				{Name: "ttft_p90", DoubleValue: new(float64(150.0))},
+				{Name: "hardware_type", StringValue: new("gpu-a100")},
 			},
 		}
 
 		perfArtifact3 := &models.CatalogMetricsArtifactImpl{
-			TypeID: apiutils.Of(int32(metricsArtifactTypeID)),
+			TypeID: new(int32(metricsArtifactTypeID)),
 			Attributes: &models.CatalogMetricsArtifactAttributes{
-				Name:         apiutils.Of("dedup-metrics-3"),
-				ExternalID:   apiutils.Of("dedup-metrics-3"),
+				Name:         new("dedup-metrics-3"),
+				ExternalID:   new("dedup-metrics-3"),
 				MetricsType:  models.MetricsTypePerformance,
-				ArtifactType: apiutils.Of("metrics-artifact"),
+				ArtifactType: new("metrics-artifact"),
 			},
 			CustomProperties: &[]mr_models.Properties{
-				{Name: "hardware_count", IntValue: apiutils.Of(int32(2))},
-				{Name: "ttft_p90", DoubleValue: apiutils.Of(float64(200.0))},
-				{Name: "hardware_type", StringValue: apiutils.Of("gpu-a100")},
+				{Name: "hardware_count", IntValue: new(int32(2))},
+				{Name: "ttft_p90", DoubleValue: new(float64(200.0))},
+				{Name: "hardware_type", StringValue: new("gpu-a100")},
 			},
 		}
 
@@ -1259,7 +1258,7 @@ func TestDBCatalog(t *testing.T) {
 			PageSize:        10,
 			OrderBy:         string(model.ORDERBYFIELD_CREATE_TIME),
 			SortOrder:       model.SORTORDER_ASC,
-			NextPageToken:   apiutils.Of(""),
+			NextPageToken:   new(""),
 			TargetRPS:       0,
 			Recommendations: false,
 		}
@@ -1278,13 +1277,13 @@ func TestDBCatalog(t *testing.T) {
 	t.Run("TestGetArtifacts_WithFilterQuery", func(t *testing.T) {
 		// Create test model
 		testModel := &models.CatalogModelImpl{
-			TypeID: apiutils.Of(int32(catalogModelTypeID)),
+			TypeID: new(int32(catalogModelTypeID)),
 			Attributes: &models.CatalogModelAttributes{
-				Name:       apiutils.Of("filterquery-test-source:filterquery-artifact-test-model"),
-				ExternalID: apiutils.Of("filterquery-artifact-test-model-ext"),
+				Name:       new("filterquery-test-source:filterquery-artifact-test-model"),
+				ExternalID: new("filterquery-artifact-test-model-ext"),
 			},
 			Properties: &[]mr_models.Properties{
-				{Name: "source_id", StringValue: apiutils.Of("filterquery-test-source")},
+				{Name: "source_id", StringValue: new("filterquery-test-source")},
 			},
 		}
 
@@ -1293,43 +1292,43 @@ func TestDBCatalog(t *testing.T) {
 
 		// Create multiple test artifacts with different properties
 		artifact1 := &models.CatalogModelArtifactImpl{
-			TypeID: apiutils.Of(int32(modelArtifactTypeID)),
+			TypeID: new(int32(modelArtifactTypeID)),
 			Attributes: &models.CatalogModelArtifactAttributes{
-				Name:         apiutils.Of("pytorch-model-artifact"),
-				ExternalID:   apiutils.Of("pytorch-model-artifact-ext"),
-				URI:          apiutils.Of("s3://bucket/pytorch/model.bin"),
-				ArtifactType: apiutils.Of(models.CatalogModelArtifactType),
+				Name:         new("pytorch-model-artifact"),
+				ExternalID:   new("pytorch-model-artifact-ext"),
+				URI:          new("s3://bucket/pytorch/model.bin"),
+				ArtifactType: new(models.CatalogModelArtifactType),
 			},
 			CustomProperties: &[]mr_models.Properties{
-				{Name: "format", StringValue: apiutils.Of("pytorch")},
-				{Name: "model_size", DoubleValue: apiutils.Of(float64(500))},
+				{Name: "format", StringValue: new("pytorch")},
+				{Name: "model_size", DoubleValue: new(float64(500))},
 			},
 		}
 
 		artifact2 := &models.CatalogModelArtifactImpl{
-			TypeID: apiutils.Of(int32(modelArtifactTypeID)),
+			TypeID: new(int32(modelArtifactTypeID)),
 			Attributes: &models.CatalogModelArtifactAttributes{
-				Name:         apiutils.Of("onnx-model-artifact"),
-				ExternalID:   apiutils.Of("onnx-model-artifact-ext"),
-				URI:          apiutils.Of("https://huggingface.co/models/onnx/model.onnx"),
-				ArtifactType: apiutils.Of(models.CatalogModelArtifactType),
+				Name:         new("onnx-model-artifact"),
+				ExternalID:   new("onnx-model-artifact-ext"),
+				URI:          new("https://huggingface.co/models/onnx/model.onnx"),
+				ArtifactType: new(models.CatalogModelArtifactType),
 			},
 			CustomProperties: &[]mr_models.Properties{
-				{Name: "format", StringValue: apiutils.Of("onnx")},
-				{Name: "model_size", DoubleValue: apiutils.Of(float64(1500))},
+				{Name: "format", StringValue: new("onnx")},
+				{Name: "model_size", DoubleValue: new(float64(1500))},
 			},
 		}
 
 		artifact3 := &models.CatalogMetricsArtifactImpl{
-			TypeID: apiutils.Of(int32(metricsArtifactTypeID)),
+			TypeID: new(int32(metricsArtifactTypeID)),
 			Attributes: &models.CatalogMetricsArtifactAttributes{
-				Name:         apiutils.Of("accuracy-metrics"),
-				ExternalID:   apiutils.Of("accuracy-metrics-ext"),
+				Name:         new("accuracy-metrics"),
+				ExternalID:   new("accuracy-metrics-ext"),
 				MetricsType:  models.MetricsTypeAccuracy,
-				ArtifactType: apiutils.Of("metrics-artifact"),
+				ArtifactType: new("metrics-artifact"),
 			},
 			CustomProperties: &[]mr_models.Properties{
-				{Name: "overall_average", DoubleValue: apiutils.Of(float64(0.95))},
+				{Name: "overall_average", DoubleValue: new(float64(0.95))},
 			},
 		}
 
@@ -1440,7 +1439,7 @@ func TestDBCatalog(t *testing.T) {
 					PageSize:      10,
 					OrderBy:       string(model.ORDERBYFIELD_CREATE_TIME),
 					SortOrder:     model.SORTORDER_ASC,
-					NextPageToken: apiutils.Of(""),
+					NextPageToken: new(""),
 				}
 
 				result, err := dbCatalog.GetArtifacts(ctx, "filterquery-artifact-test-model", "filterquery-test-source", params)
@@ -1514,13 +1513,13 @@ func TestDBCatalog_GetPerformanceArtifactsWithService(t *testing.T) {
 
 	// Create test model and performance artifacts
 	testModel := &models.CatalogModelImpl{
-		TypeID: apiutils.Of(int32(catalogModelTypeID)),
+		TypeID: new(int32(catalogModelTypeID)),
 		Attributes: &models.CatalogModelAttributes{
-			Name:       apiutils.Of("test-source:performance-test-model"),
-			ExternalID: apiutils.Of("perf-model-123"),
+			Name:       new("test-source:performance-test-model"),
+			ExternalID: new("perf-model-123"),
 		},
 		Properties: &[]mr_models.Properties{
-			{Name: "source_id", StringValue: apiutils.Of("test-source")},
+			{Name: "source_id", StringValue: new("test-source")},
 		},
 	}
 	savedModel, err := catalogModelRepo.Save(testModel)
@@ -1528,20 +1527,20 @@ func TestDBCatalog_GetPerformanceArtifactsWithService(t *testing.T) {
 
 	// Create performance metrics artifact with exact properties for algorithm testing
 	perfArtifact := &models.CatalogMetricsArtifactImpl{
-		TypeID: apiutils.Of(int32(metricsArtifactTypeID)),
+		TypeID: new(int32(metricsArtifactTypeID)),
 		Attributes: &models.CatalogMetricsArtifactAttributes{
-			Name:        apiutils.Of("test-perf-artifact"),
-			ExternalID:  apiutils.Of("perf-123"),
+			Name:        new("test-perf-artifact"),
+			ExternalID:  new("perf-123"),
 			MetricsType: models.MetricsTypePerformance,
 		},
 		Properties: &[]mr_models.Properties{
-			{Name: "metricsType", StringValue: apiutils.Of("performance-metrics")},
+			{Name: "metricsType", StringValue: new("performance-metrics")},
 		},
 		CustomProperties: &[]mr_models.Properties{
-			{Name: "requests_per_second", DoubleValue: apiutils.Of(200.0)},
-			{Name: "ttft_p90", DoubleValue: apiutils.Of(50.0)},
-			{Name: "hardware_count", IntValue: apiutils.Of(int32(1))},
-			{Name: "hardware_type", StringValue: apiutils.Of("gpu-a100")},
+			{Name: "requests_per_second", DoubleValue: new(200.0)},
+			{Name: "ttft_p90", DoubleValue: new(50.0)},
+			{Name: "hardware_count", IntValue: new(int32(1))},
+			{Name: "hardware_type", StringValue: new("gpu-a100")},
 		},
 	}
 	_, err = metricsArtifactRepo.Save(perfArtifact, savedModel.GetID())
@@ -1681,11 +1680,6 @@ func (m *mockPropertyRepositoryWithRanges) Refresh(optionType sharedmodels.Prope
 	return nil
 }
 
-// Helper functions for creating pointers to primitive types
-func floatPtr(val float64) *float64 {
-	return &val
-}
-
 func TestApplyMinMax(t *testing.T) {
 	tests := []struct {
 		name          string
@@ -1703,8 +1697,8 @@ func TestApplyMinMax(t *testing.T) {
 				"throughput": {
 					Type: "number",
 					Range: &model.FilterOptionRange{
-						Min: floatPtr(10.0),
-						Max: floatPtr(100.0),
+						Min: new(10.0),
+						Max: new(100.0),
 					},
 				},
 			},
@@ -1722,8 +1716,8 @@ func TestApplyMinMax(t *testing.T) {
 				"latency": {
 					Type: "number",
 					Range: &model.FilterOptionRange{
-						Min: floatPtr(5.0),
-						Max: floatPtr(50.0),
+						Min: new(5.0),
+						Max: new(50.0),
 					},
 				},
 			},
@@ -1761,8 +1755,8 @@ func TestApplyMinMax(t *testing.T) {
 				"count": {
 					Type: "number",
 					Range: &model.FilterOptionRange{
-						Min: floatPtr(0.0),
-						Max: floatPtr(100.0),
+						Min: new(0.0),
+						Max: new(100.0),
 					},
 				},
 			},
@@ -1782,8 +1776,8 @@ func TestApplyMinMax(t *testing.T) {
 				"known_field": {
 					Type: "number",
 					Range: &model.FilterOptionRange{
-						Min: floatPtr(1.0),
-						Max: floatPtr(10.0),
+						Min: new(1.0),
+						Max: new(10.0),
 					},
 				},
 			},
@@ -1819,13 +1813,13 @@ func TestApplyMinMax(t *testing.T) {
 					Type: "number",
 					Range: &model.FilterOptionRange{
 						Min: nil,
-						Max: floatPtr(100.0),
+						Max: new(100.0),
 					},
 				},
 				"field_nil_max": {
 					Type: "number",
 					Range: &model.FilterOptionRange{
-						Min: floatPtr(0.0),
+						Min: new(0.0),
 						Max: nil,
 					},
 				},
@@ -1855,29 +1849,29 @@ func TestApplyMinMax(t *testing.T) {
 				"field1": {
 					Type: "number",
 					Range: &model.FilterOptionRange{
-						Min: floatPtr(1.0),
-						Max: floatPtr(10.0),
+						Min: new(1.0),
+						Max: new(10.0),
 					},
 				},
 				"field2": {
 					Type: "number",
 					Range: &model.FilterOptionRange{
-						Min: floatPtr(1.0),
-						Max: floatPtr(10.0),
+						Min: new(1.0),
+						Max: new(10.0),
 					},
 				},
 				"field3": {
 					Type: "number",
 					Range: &model.FilterOptionRange{
-						Min: floatPtr(1.0),
-						Max: floatPtr(10.0),
+						Min: new(1.0),
+						Max: new(10.0),
 					},
 				},
 				"field4": {
 					Type: "number",
 					Range: &model.FilterOptionRange{
-						Min: floatPtr(1.0),
-						Max: floatPtr(10.0),
+						Min: new(1.0),
+						Max: new(10.0),
 					},
 				},
 			},
@@ -1900,22 +1894,22 @@ func TestApplyMinMax(t *testing.T) {
 				"throughput": {
 					Type: "number",
 					Range: &model.FilterOptionRange{
-						Min: floatPtr(10.0),
-						Max: floatPtr(1000.0),
+						Min: new(10.0),
+						Max: new(1000.0),
 					},
 				},
 				"latency": {
 					Type: "number",
 					Range: &model.FilterOptionRange{
-						Min: floatPtr(1.0),
-						Max: floatPtr(100.0),
+						Min: new(1.0),
+						Max: new(100.0),
 					},
 				},
 				"cpu_usage": {
 					Type: "number",
 					Range: &model.FilterOptionRange{
-						Min: floatPtr(0.0),
-						Max: floatPtr(100.0),
+						Min: new(0.0),
+						Max: new(100.0),
 					},
 				},
 			},
@@ -1939,15 +1933,15 @@ func TestApplyMinMax(t *testing.T) {
 				"throughput": {
 					Type: "number",
 					Range: &model.FilterOptionRange{
-						Min: floatPtr(50.0),
-						Max: floatPtr(500.0),
+						Min: new(50.0),
+						Max: new(500.0),
 					},
 				},
 				"latency": {
 					Type: "number",
 					Range: &model.FilterOptionRange{
-						Min: floatPtr(10.0),
-						Max: floatPtr(200.0),
+						Min: new(10.0),
+						Max: new(200.0),
 					},
 				},
 				"status": {
@@ -1973,8 +1967,8 @@ func TestApplyMinMax(t *testing.T) {
 				"metric": {
 					Type: "number",
 					Range: &model.FilterOptionRange{
-						Min: floatPtr(25.0),
-						Max: floatPtr(75.0),
+						Min: new(25.0),
+						Max: new(75.0),
 					},
 				},
 			},
@@ -2032,38 +2026,38 @@ func TestFindModelsWithRecommendedLatency(t *testing.T) {
 
 	// Create test models with and without performance artifacts
 	model1 := &models.CatalogModelImpl{
-		TypeID: apiutils.Of(int32(catalogModelTypeID)),
+		TypeID: new(int32(catalogModelTypeID)),
 		Attributes: &models.CatalogModelAttributes{
-			Name:       apiutils.Of("latency-test-source:latency-model-1"),
-			ExternalID: apiutils.Of("latency-model-1-ext"),
+			Name:       new("latency-test-source:latency-model-1"),
+			ExternalID: new("latency-model-1-ext"),
 		},
 		Properties: &[]mr_models.Properties{
-			{Name: "source_id", StringValue: apiutils.Of("latency-test-source")},
-			{Name: "description", StringValue: apiutils.Of("Model with performance data")},
+			{Name: "source_id", StringValue: new("latency-test-source")},
+			{Name: "description", StringValue: new("Model with performance data")},
 		},
 	}
 
 	model2 := &models.CatalogModelImpl{
-		TypeID: apiutils.Of(int32(catalogModelTypeID)),
+		TypeID: new(int32(catalogModelTypeID)),
 		Attributes: &models.CatalogModelAttributes{
-			Name:       apiutils.Of("latency-test-source:latency-model-2"),
-			ExternalID: apiutils.Of("latency-model-2-ext"),
+			Name:       new("latency-test-source:latency-model-2"),
+			ExternalID: new("latency-model-2-ext"),
 		},
 		Properties: &[]mr_models.Properties{
-			{Name: "source_id", StringValue: apiutils.Of("latency-test-source")},
-			{Name: "description", StringValue: apiutils.Of("Model with performance data")},
+			{Name: "source_id", StringValue: new("latency-test-source")},
+			{Name: "description", StringValue: new("Model with performance data")},
 		},
 	}
 
 	model3 := &models.CatalogModelImpl{
-		TypeID: apiutils.Of(int32(catalogModelTypeID)),
+		TypeID: new(int32(catalogModelTypeID)),
 		Attributes: &models.CatalogModelAttributes{
-			Name:       apiutils.Of("latency-test-source:latency-model-3"),
-			ExternalID: apiutils.Of("latency-model-3-ext"),
+			Name:       new("latency-test-source:latency-model-3"),
+			ExternalID: new("latency-model-3-ext"),
 		},
 		Properties: &[]mr_models.Properties{
-			{Name: "source_id", StringValue: apiutils.Of("latency-test-source")},
-			{Name: "description", StringValue: apiutils.Of("Model without performance data")},
+			{Name: "source_id", StringValue: new("latency-test-source")},
+			{Name: "description", StringValue: new("Model without performance data")},
 		},
 	}
 
@@ -2076,34 +2070,34 @@ func TestFindModelsWithRecommendedLatency(t *testing.T) {
 
 	// Add performance artifacts for model1 and model2
 	perfArtifact1 := &models.CatalogMetricsArtifactImpl{
-		TypeID: apiutils.Of(int32(metricsArtifactTypeID)),
+		TypeID: new(int32(metricsArtifactTypeID)),
 		Attributes: &models.CatalogMetricsArtifactAttributes{
-			Name:        apiutils.Of("perf-artifact-1"),
-			ExternalID:  apiutils.Of("perf-artifact-1-ext"),
+			Name:        new("perf-artifact-1"),
+			ExternalID:  new("perf-artifact-1-ext"),
 			MetricsType: models.MetricsTypePerformance,
 		},
 		Properties: &[]mr_models.Properties{},
 		CustomProperties: &[]mr_models.Properties{
-			{Name: "ttft_p90", DoubleValue: apiutils.Of(float64(100.0))}, // Lower latency
-			{Name: "requests_per_second", DoubleValue: apiutils.Of(float64(50.0))},
-			{Name: "hardware_count", IntValue: apiutils.Of(int32(2))},
-			{Name: "hardware_type", StringValue: apiutils.Of("gpu")},
+			{Name: "ttft_p90", DoubleValue: new(float64(100.0))}, // Lower latency
+			{Name: "requests_per_second", DoubleValue: new(float64(50.0))},
+			{Name: "hardware_count", IntValue: new(int32(2))},
+			{Name: "hardware_type", StringValue: new("gpu")},
 		},
 	}
 
 	perfArtifact2 := &models.CatalogMetricsArtifactImpl{
-		TypeID: apiutils.Of(int32(metricsArtifactTypeID)),
+		TypeID: new(int32(metricsArtifactTypeID)),
 		Attributes: &models.CatalogMetricsArtifactAttributes{
-			Name:        apiutils.Of("perf-artifact-2"),
-			ExternalID:  apiutils.Of("perf-artifact-2-ext"),
+			Name:        new("perf-artifact-2"),
+			ExternalID:  new("perf-artifact-2-ext"),
 			MetricsType: models.MetricsTypePerformance,
 		},
 		Properties: &[]mr_models.Properties{},
 		CustomProperties: &[]mr_models.Properties{
-			{Name: "ttft_p90", DoubleValue: apiutils.Of(float64(200.0))}, // Higher latency
-			{Name: "requests_per_second", DoubleValue: apiutils.Of(float64(30.0))},
-			{Name: "hardware_count", IntValue: apiutils.Of(int32(1))},
-			{Name: "hardware_type", StringValue: apiutils.Of("cpu")},
+			{Name: "ttft_p90", DoubleValue: new(float64(200.0))}, // Higher latency
+			{Name: "requests_per_second", DoubleValue: new(float64(30.0))},
+			{Name: "hardware_count", IntValue: new(int32(1))},
+			{Name: "hardware_type", StringValue: new("cpu")},
 		},
 	}
 
@@ -2114,7 +2108,7 @@ func TestFindModelsWithRecommendedLatency(t *testing.T) {
 
 	// Test FindModelsWithRecommendedLatency
 	pagination := mr_models.Pagination{
-		PageSize: apiutils.Of(int32(10)),
+		PageSize: new(int32(10)),
 	}
 
 	paretoParams := ParetoFilteringParams{
@@ -2176,16 +2170,16 @@ func TestGetFilterOptions_NoMCPServerContamination(t *testing.T) {
 
 	// Create a catalog model with model-specific properties
 	catalogModel := &models.CatalogModelImpl{
-		TypeID: apiutils.Of(catalogModelTypeID),
+		TypeID: new(catalogModelTypeID),
 		Attributes: &models.CatalogModelAttributes{
-			Name:       apiutils.Of("cross-test-source:cross-test-model"),
-			ExternalID: apiutils.Of("cross-test-model-ext"),
+			Name:       new("cross-test-source:cross-test-model"),
+			ExternalID: new("cross-test-model-ext"),
 		},
 		Properties: &[]mr_models.Properties{
-			{Name: "source_id", StringValue: apiutils.Of("cross-test-source")},
-			{Name: "license", StringValue: apiutils.Of("Apache-2.0")},
-			{Name: "provider", StringValue: apiutils.Of("TestProvider")},
-			{Name: "maturity", StringValue: apiutils.Of("stable")},
+			{Name: "source_id", StringValue: new("cross-test-source")},
+			{Name: "license", StringValue: new("Apache-2.0")},
+			{Name: "provider", StringValue: new("TestProvider")},
+			{Name: "maturity", StringValue: new("stable")},
 		},
 	}
 	_, err := catalogModelRepo.Save(catalogModel)
@@ -2193,16 +2187,16 @@ func TestGetFilterOptions_NoMCPServerContamination(t *testing.T) {
 
 	// Create an MCP server with MCP-specific properties
 	mcpServer := &mcpcatalogmodels.MCPServerImpl{
-		TypeID: apiutils.Of(mcpServerTypeID),
+		TypeID: new(mcpServerTypeID),
 		Attributes: &mcpcatalogmodels.MCPServerAttributes{
-			Name:       apiutils.Of("cross-test-mcp-server"),
-			ExternalID: apiutils.Of("cross-test-mcp-ext"),
+			Name:       new("cross-test-mcp-server"),
+			ExternalID: new("cross-test-mcp-ext"),
 		},
 		Properties: &[]mr_models.Properties{
-			{Name: "source_id", StringValue: apiutils.Of("cross-test-mcp-source")},
-			{Name: "version", StringValue: apiutils.Of("1.0.0")},
-			{Name: "base_name", StringValue: apiutils.Of("cross-test-mcp-server")},
-			{Name: "deploymentMode", StringValue: apiutils.Of("remote")},
+			{Name: "source_id", StringValue: new("cross-test-mcp-source")},
+			{Name: "version", StringValue: new("1.0.0")},
+			{Name: "base_name", StringValue: new("cross-test-mcp-server")},
+			{Name: "deploymentMode", StringValue: new("remote")},
 		},
 	}
 	_, err = mcpServerRepo.Save(mcpServer)

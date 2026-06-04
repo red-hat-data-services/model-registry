@@ -8,7 +8,6 @@ import (
 	"github.com/kubeflow/hub/catalog/internal/db/models"
 	"github.com/kubeflow/hub/catalog/internal/db/service"
 	"github.com/kubeflow/hub/catalog/internal/testhelpers"
-	"github.com/kubeflow/hub/internal/platform/apiutils"
 	dbmodels "github.com/kubeflow/hub/internal/platform/db/entity"
 	"github.com/kubeflow/hub/internal/testutils"
 	"github.com/stretchr/testify/assert"
@@ -168,23 +167,23 @@ func TestPropertyOptionsRepository(t *testing.T) {
 	t.Run("List_ContextPropertyOptions_WithData", func(t *testing.T) {
 		// Create a catalog model with properties to populate the materialized view
 		catalogModel := &modelcatalogmodels.CatalogModelImpl{
-			TypeID: apiutils.Of(int32(catalogModelTypeID)),
+			TypeID: new(int32(catalogModelTypeID)),
 			Attributes: &modelcatalogmodels.CatalogModelAttributes{
-				Name:       apiutils.Of("test-model-for-context-properties"),
-				ExternalID: apiutils.Of("context-props-test-123"),
+				Name:       new("test-model-for-context-properties"),
+				ExternalID: new("context-props-test-123"),
 			},
 			CustomProperties: &[]dbmodels.Properties{
 				{
 					Name:        "custom_prop_1",
-					StringValue: apiutils.Of("value1"),
+					StringValue: new("value1"),
 				},
 				{
 					Name:     "version_number",
-					IntValue: apiutils.Of(int32(1)),
+					IntValue: new(int32(1)),
 				},
 				{
 					Name:        "accuracy",
-					DoubleValue: apiutils.Of(0.95),
+					DoubleValue: new(0.95),
 				},
 			},
 		}
@@ -224,10 +223,10 @@ func TestPropertyOptionsRepository(t *testing.T) {
 	t.Run("List_ArtifactPropertyOptions_WithData", func(t *testing.T) {
 		// First create a catalog model as parent
 		catalogModel := &modelcatalogmodels.CatalogModelImpl{
-			TypeID: apiutils.Of(int32(catalogModelTypeID)),
+			TypeID: new(int32(catalogModelTypeID)),
 			Attributes: &modelcatalogmodels.CatalogModelAttributes{
-				Name:       apiutils.Of("test-model-for-artifact-properties"),
-				ExternalID: apiutils.Of("artifact-props-test-123"),
+				Name:       new("test-model-for-artifact-properties"),
+				ExternalID: new("artifact-props-test-123"),
 			},
 		}
 		savedModel, err := catalogModelRepo.Save(catalogModel)
@@ -235,24 +234,24 @@ func TestPropertyOptionsRepository(t *testing.T) {
 
 		// Create an artifact with properties
 		artifact := &modelcatalogmodels.CatalogModelArtifactImpl{
-			TypeID: apiutils.Of(int32(modelArtifactTypeID)),
+			TypeID: new(int32(modelArtifactTypeID)),
 			Attributes: &modelcatalogmodels.CatalogModelArtifactAttributes{
-				Name:       apiutils.Of("test-artifact-with-properties"),
-				ExternalID: apiutils.Of("artifact-props-test-456"),
-				URI:        apiutils.Of("s3://bucket/model.pkl"),
+				Name:       new("test-artifact-with-properties"),
+				ExternalID: new("artifact-props-test-456"),
+				URI:        new("s3://bucket/model.pkl"),
 			},
 			CustomProperties: &[]dbmodels.Properties{
 				{
 					Name:        "model_type",
-					StringValue: apiutils.Of("classification"),
+					StringValue: new("classification"),
 				},
 				{
 					Name:     "file_size",
-					IntValue: apiutils.Of(int32(1024)),
+					IntValue: new(int32(1024)),
 				},
 				{
 					Name:        "validation_accuracy",
-					DoubleValue: apiutils.Of(0.92),
+					DoubleValue: new(0.92),
 				},
 			},
 		}
