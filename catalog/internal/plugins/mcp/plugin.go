@@ -18,7 +18,7 @@ import (
 )
 
 type Plugin struct {
-	plugin.PluginBase
+	*plugin.PluginBase
 	loader   *mcpcatalog.MCPLoader
 	services mcpcatalog.Services
 }
@@ -27,7 +27,6 @@ func (p *Plugin) Name() string                   { return "mcp" }
 func (p *Plugin) Version() string                { return "v1alpha1" }
 func (p *Plugin) Description() string            { return "MCP server catalog" }
 func (p *Plugin) BasePath() string               { return "/api/mcp_catalog/v1alpha1" }
-func (p *Plugin) Healthy() bool                  { return true }
 func (p *Plugin) Migrations() []plugin.Migration { return nil }
 
 // MCPSources returns the MCP source collection for cross-plugin access.

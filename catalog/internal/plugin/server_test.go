@@ -241,6 +241,48 @@ func TestServerHealthAllHealthy(t *testing.T) {
 	assert.Equal(t, "ready", body["status"])
 }
 
+func TestReadyzBothPluginsUnhealthy(t *testing.T) {
+	Reset()
+	defer Reset()
+
+	Register(&mockPlugin{name: "model", version: "v1", healthy: false})
+	Register(&mockPlugin{name: "mcp", version: "v1", healthy: false})
+
+	s := newTestServer()
+	require.NoError(t, s.Init(context.Background()))
+	router, err := s.MountRoutes()
+	require.NoError(t, err)
+
+	assertStatus(t, router, "/readyz", http.StatusServiceUnavailable)
+	body := getJSON(t, router, "/readyz")
+	assert.Equal(t, "not_ready", body["status"])
+
+	plugins := body["plugins"].(map[string]any)
+	assert.Equal(t, false, plugins["model"])
+	assert.Equal(t, false, plugins["mcp"])
+}
+
+func TestReadyzSinglePluginUnhealthy(t *testing.T) {
+	Reset()
+	defer Reset()
+
+	Register(&mockPlugin{name: "model", version: "v1", healthy: true})
+	Register(&mockPlugin{name: "mcp", version: "v1", healthy: false})
+
+	s := newTestServer()
+	require.NoError(t, s.Init(context.Background()))
+	router, err := s.MountRoutes()
+	require.NoError(t, err)
+
+	assertStatus(t, router, "/readyz", http.StatusServiceUnavailable)
+	body := getJSON(t, router, "/readyz")
+	assert.Equal(t, "not_ready", body["status"])
+
+	plugins := body["plugins"].(map[string]any)
+	assert.Equal(t, true, plugins["model"])
+	assert.Equal(t, false, plugins["mcp"])
+}
+
 func TestServerNotifyLeader(t *testing.T) {
 	Reset()
 	defer Reset()

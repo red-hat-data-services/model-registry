@@ -3,6 +3,7 @@ package plugin
 import (
 	"context"
 	"fmt"
+	"sync/atomic"
 	"time"
 
 	mapset "github.com/deckarep/golang-set/v2"
@@ -33,14 +34,22 @@ type PluginBaseConfig struct {
 
 // PluginBase provides the shared lifecycle implementation for catalog plugins.
 // Embed this in concrete plugin structs to get Start, Stop, OnBecomeLeader,
-// and KnownSourceIDs for free.
+// Healthy, and KnownSourceIDs for free.
 type PluginBase struct {
-	cfg PluginBaseConfig
+	cfg     PluginBaseConfig
+	healthy atomic.Bool
 }
 
 // NewPluginBase creates a PluginBase with the given configuration.
-func NewPluginBase(cfg PluginBaseConfig) PluginBase {
-	return PluginBase{cfg: cfg}
+func NewPluginBase(cfg PluginBaseConfig) *PluginBase {
+	pb := &PluginBase{cfg: cfg}
+	pb.healthy.Store(true)
+	return pb
+}
+
+// Healthy returns true if the plugin has not encountered any runtime errors.
+func (pb *PluginBase) Healthy() bool {
+	return pb.healthy.Load()
 }
 
 // Start sets up file watchers, parses all configs, and launches
@@ -68,18 +77,27 @@ func (pb *PluginBase) Start(ctx context.Context) error {
 func (pb *PluginBase) watchFile(ctx context.Context, path string) {
 	changes, err := pb.cfg.FileWatcher.Path(ctx, path)
 	if err != nil {
+		pb.healthy.Store(false)
 		glog.Errorf("unable to watch file (%s): %v", path, err)
 		return
 	}
 
 	for range changes {
 		glog.Infof("Config file changed, reloading %s sources: %s", pb.cfg.Name, path)
-		pb.cfg.Loader.ReloadParsing()
+		if err := pb.cfg.Loader.ReloadParsing(); err != nil {
+			pb.healthy.Store(false)
+			glog.Errorf("unable to reload %s config: %v", pb.cfg.Name, err)
+			continue
+		}
+		pb.healthy.Store(true)
 
 		if pb.cfg.State.ShouldWriteDatabase() {
 			allKnownSourceIDs := CollectAllSourceIDs()
 			if err := pb.cfg.Loader.PerformLeaderOperations(ctx, allKnownSourceIDs); err != nil {
+				pb.healthy.Store(false)
 				glog.Errorf("unable to perform %s leader writes on reload: %v", pb.cfg.Name, err)
+			} else {
+				pb.healthy.Store(true)
 			}
 		}
 	}
@@ -98,17 +116,20 @@ func (pb *PluginBase) OnBecomeLeader(ctx context.Context) error {
 
 	allKnownSourceIDs := CollectAllSourceIDs()
 	if err := pb.cfg.Loader.PerformLeaderOperations(ctx, allKnownSourceIDs); err != nil {
+		pb.healthy.Store(false)
 		pb.cfg.State.SetLeader(false)
 		return fmt.Errorf("%s leader operations: %w", pb.cfg.Name, err)
 	}
 
 	if pb.cfg.OnLeaderReady != nil {
 		if err := pb.cfg.OnLeaderReady(ctx); err != nil {
+			pb.healthy.Store(false)
 			pb.cfg.State.SetLeader(false)
 			return fmt.Errorf("%s post-leader setup: %w", pb.cfg.Name, err)
 		}
 	}
 
+	pb.healthy.Store(true)
 	glog.Infof("%s plugin leader mode active", pb.cfg.Name)
 	<-ctx.Done()
 
