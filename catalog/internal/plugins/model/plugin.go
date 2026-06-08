@@ -28,7 +28,7 @@ type mcpSourceProvider interface {
 }
 
 type Plugin struct {
-	plugin.PluginBase
+	*plugin.PluginBase
 	loader   *modelcatalog.ModelLoader
 	services modelcatalog.Services
 }
@@ -37,7 +37,6 @@ func (p *Plugin) Name() string                   { return "model" }
 func (p *Plugin) Version() string                { return "v1alpha1" }
 func (p *Plugin) Description() string            { return "Model catalog" }
 func (p *Plugin) BasePath() string               { return "/api/model_catalog/v1alpha1" }
-func (p *Plugin) Healthy() bool                  { return true }
 func (p *Plugin) Migrations() []plugin.Migration { return nil }
 
 func (p *Plugin) DatastoreEntries() []plugin.DatastoreEntry {
