@@ -9,46 +9,8 @@ set -e
 # upstream condition that would make it safe to remove.
 # =============================================================================
 
-# s390x is big-endian; vendored OpenSSL compilation produces binaries that
-# segfault at runtime. Link against the system OpenSSL instead.
-# This must be set before any pip install that might build cryptography from
-# source (Fix #3 pulls it as a transitive dep of rh-model-signing).
-ARCH=$(uname -m)
-if [ "$ARCH" = "s390x" ] || [ "$ARCH" = "ppc64le" ]; then
-  export OPENSSL_NO_VENDOR=1
-fi
-
 # -----------------------------------------------------------------------------
-# Fix #1 — Cargo git source redirect missing from Hermeto-generated config
-#
-# Hermeto dynamically generates .cargo/config.toml to redirect crates.io
-# sources to the local vendor directory. However, it does not apply the same
-# redirect for git-sourced dependencies (only registry sources are handled).
-# This causes cargo to attempt a live network fetch during a hermetic build.
-#
-# Workaround: Overwrite the generated config with one that also redirects the
-# known git source (pyca/cryptography) to the local vendor directory.
-#
-# Remove when: Hermeto supports vendoring and redirecting git-sourced Cargo deps.
-# -----------------------------------------------------------------------------
-cat <<EOF > /cachi2/output/.cargo/config.toml
-
-[source.crates-io]
-replace-with = "local"
-
-[source."git+https://github.com/pyca/cryptography.git?tag=45.0.4"]
-git = "https://github.com/pyca/cryptography.git"
-tag = "45.0.4"
-replace-with = "local"
-
-[source.local]
-directory = "/cachi2/output/deps/cargo"
-EOF
-# explicitly install the package here so we fail fast if the cargo redirect does not work
-pip install rfc3161-client
-
-# -----------------------------------------------------------------------------
-# Fix #2 — sigstore_models cannot be built via uv-build in a hermetic environment
+# Fix #1 — sigstore_models cannot be built via uv-build in a hermetic environment
 #
 # sigstore_models declares uv-build as its build backend. uv-build depends on
 # maturin, which generates a Cargo invalid lockfile causing the hermetic build to fail.
@@ -66,7 +28,7 @@ sed -i '/^\[build-system\]$/,/^build-backend = "uv_build"$/d' pyproject.toml
 python -m pip install .
 
 # -----------------------------------------------------------------------------
-# Fix #3 — rh-model-signing sdist has a broken hatch build config
+# Fix #2 — rh-model-signing sdist has a broken hatch build config
 #
 # The sdist for rh-model-signing 0.1.0 places the model_signing package at the
 # archive root, but pyproject.toml declares packages = ["src/model_signing"]
