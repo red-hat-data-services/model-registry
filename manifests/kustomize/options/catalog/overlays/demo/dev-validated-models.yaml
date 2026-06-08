@@ -1726,4 +1726,4 @@ models:
           architecture:
             metadataType: MetadataStringValue
             string_value: '["amd64"]'
-
+  

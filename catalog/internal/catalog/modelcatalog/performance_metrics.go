@@ -9,6 +9,7 @@ import (
 	"maps"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 
@@ -21,11 +22,20 @@ import (
 // metadataJSON represents the minimal structure needed from metadata.json files
 // Only the ID field is needed to look up existing models
 type metadataJSON struct {
-	ID              string   `json:"id"`               // Maps to model name for lookup
-	OverallAccuracy *float64 `json:"overall_accuracy"` // Overall accuracy score for the model
-	Size            *string  `json:"size"`             // Model parameter count (e.g., "8B params")
-	TensorType      *string  `json:"tensor_type"`      // Data precision (e.g., "FP16", "INT4")
-	VariantGroupID  *string  `json:"variant_group_id"` // UUID linking model variants together
+	ID              string           `json:"id"`                // Maps to model name for lookup
+	OverallAccuracy *float64         `json:"overall_accuracy"`  // Overall accuracy score for the model
+	Size            *string          `json:"size"`              // Model parameter count (e.g., "8B params")
+	TensorType      *string          `json:"tensor_type"`       // Data precision (e.g., "FP16", "INT4")
+	VariantGroupID  *string          `json:"variant_group_id"`  // UUID linking model variants together
+	MinVRAMGB       *string          `json:"min_vram_gb"`       // Minimum VRAM required (e.g., "265 GB")
+	ColdStartMatrix []coldStartEntry `json:"cold_start_matrix"` // Cold start times per GPU configuration
+}
+
+type coldStartEntry struct {
+	GPUType                    string `json:"gpu_type"`
+	GPUCount                   string `json:"gpu_count"`
+	ColdStartTimeToLoadSeconds string `json:"cold_start_time_to_load_seconds"`
+	RuntimeCommand             string `json:"runtime_command"`
 }
 
 // parseMetadataJSON parses JSON data into metadataJSON struct, extracting only the ID field
@@ -314,12 +324,12 @@ func processModelDirectory(dirPath string, modelRepo dbmodels.CatalogModelReposi
 	glog.V(2).Infof("Found existing model %s with ID %d, processing metrics", namespacedModelName, modelID)
 
 	// Use batch processing for all artifacts
-	return processModelArtifactsBatch(dirPath, modelID, metadata.ID, metadata.OverallAccuracy, metricsArtifactRepo, metricsArtifactTypeID)
+	return processModelArtifactsBatch(dirPath, modelID, metadata.ID, metadata.OverallAccuracy, metadata.ColdStartMatrix, metricsArtifactRepo, metricsArtifactTypeID)
 }
 
 // processModelArtifactsBatch processes all metric artifacts for a model in batch
 // This reduces DB overhead by parsing, checking, and inserting in optimized phases
-func processModelArtifactsBatch(dirPath string, modelID int32, modelName string, overallAccuracy *float64, metricsArtifactRepo dbmodels.CatalogMetricsArtifactRepository, metricsArtifactTypeID int32) (int, error) {
+func processModelArtifactsBatch(dirPath string, modelID int32, modelName string, overallAccuracy *float64, coldStartMatrix []coldStartEntry, metricsArtifactRepo dbmodels.CatalogMetricsArtifactRepository, metricsArtifactTypeID int32) (int, error) {
 	// Parse all metrics files
 	var evaluationRecords []evaluationRecord
 	var performanceRecords []performanceRecord
@@ -346,7 +356,7 @@ func processModelArtifactsBatch(dirPath string, modelID int32, modelName string,
 		}
 	}
 
-	totalRecords := len(evaluationRecords) + len(performanceRecords)
+	totalRecords := len(evaluationRecords) + len(performanceRecords) + len(coldStartMatrix)
 	if totalRecords == 0 {
 		return 0, nil
 	}
@@ -389,6 +399,21 @@ func processModelArtifactsBatch(dirPath string, modelID int32, modelName string,
 			artifactsToInsert = append(artifactsToInsert, artifact)
 		} else {
 			glog.V(2).Infof("Performance artifact %s already exists, skipping", perfRecord.ID)
+		}
+	}
+
+	// Check cold-start artifacts (one per GPU configuration from metadata.json)
+	for i, csEntry := range coldStartMatrix {
+		if csEntry.GPUType == "" || csEntry.GPUCount == "" {
+			glog.Warningf("Skipping cold-start entry %d for model %s: gpu_type and gpu_count are required", i, modelName)
+			continue
+		}
+		externalID := coldStartExternalID(modelID, csEntry)
+		if !existingArtifactsMap[externalID] {
+			artifact := createColdStartArtifact(csEntry, externalID, metricsArtifactTypeID)
+			artifactsToInsert = append(artifactsToInsert, artifact)
+		} else {
+			glog.V(2).Infof("Cold-start artifact %s already exists, skipping", externalID)
 		}
 	}
 
@@ -654,6 +679,55 @@ func createPerformanceArtifact(perfRecord performanceRecord, modelID int32, type
 	return metricsArtifact
 }
 
+func coldStartExternalID(modelID int32, entry coldStartEntry) string {
+	return fmt.Sprintf("cold-start-%d-%s-%s", modelID, entry.GPUType, entry.GPUCount)
+}
+
+// createColdStartArtifact creates a metrics artifact from a single cold-start matrix entry.
+// Each GPU configuration becomes its own artifact with discrete, filterable custom properties.
+func createColdStartArtifact(entry coldStartEntry, externalID string, typeID int32) *dbmodels.CatalogMetricsArtifactImpl {
+	artifactName := fmt.Sprintf("cold-start-%s-%s", entry.GPUType, entry.GPUCount)
+
+	now := time.Now().UnixMilli()
+
+	customProperties := []models.Properties{
+		{Name: "gpu_type", StringValue: &entry.GPUType},
+		{Name: "gpu_count", StringValue: &entry.GPUCount},
+	}
+
+	if entry.RuntimeCommand != "" {
+		customProperties = append(customProperties, models.Properties{
+			Name:        "runtime_command",
+			StringValue: &entry.RuntimeCommand,
+		})
+	}
+
+	if seconds, err := strconv.ParseFloat(entry.ColdStartTimeToLoadSeconds, 64); err == nil {
+		customProperties = append(customProperties, models.Properties{
+			Name:        "cold_start_time_to_load_seconds",
+			DoubleValue: &seconds,
+		})
+	} else {
+		glog.Warningf("cold-start artifact %s: invalid cold_start_time_to_load_seconds %q: %v",
+			externalID, entry.ColdStartTimeToLoadSeconds, err)
+	}
+
+	properties := []models.Properties{}
+
+	return &dbmodels.CatalogMetricsArtifactImpl{
+		TypeID: &typeID,
+		Attributes: &dbmodels.CatalogMetricsArtifactAttributes{
+			Name:                     &artifactName,
+			ExternalID:               &externalID,
+			CreateTimeSinceEpoch:     &now,
+			LastUpdateTimeSinceEpoch: &now,
+			MetricsType:              dbmodels.MetricsTypeColdStart,
+		},
+		Properties:       &properties,
+		CustomProperties: &customProperties,
+	}
+}
+
 // enrichCatalogModelFromMetadata updates CatalogModel with additional fields from metadata.json
 func enrichCatalogModelFromMetadata(existingModel dbmodels.CatalogModel, metadata metadataJSON, modelRepo dbmodels.CatalogModelRepository) error {
 	// Build custom properties to add/update
@@ -679,6 +753,14 @@ func enrichCatalogModelFromMetadata(existingModel dbmodels.CatalogModel, metadat
 		customProperties = append(customProperties, models.Properties{
 			Name:             "variant_group_id",
 			StringValue:      metadata.VariantGroupID,
+			IsCustomProperty: true,
+		})
+	}
+
+	if metadata.MinVRAMGB != nil && *metadata.MinVRAMGB != "" {
+		customProperties = append(customProperties, models.Properties{
+			Name:             "min_vram_gb",
+			StringValue:      metadata.MinVRAMGB,
 			IsCustomProperty: true,
 		})
 	}
