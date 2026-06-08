@@ -12,7 +12,7 @@ import (
 // Both modelcatalog.ModelLoader and mcpcatalog.MCPLoader satisfy this.
 type Reloader interface {
 	ParseAllConfigs() error
-	ReloadParsing()
+	ReloadParsing() error
 	PerformLeaderOperations(ctx context.Context, allKnownSourceIDs mapset.Set[string]) error
 }
 

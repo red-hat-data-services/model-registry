@@ -133,12 +133,14 @@ func (l *ModelLoader) PerformLeaderOperations(ctx context.Context, allKnownSourc
 
 // ReloadParsing re-parses all config files into in-memory collections.
 // Called by the unified loader before computing combined source IDs for leader writes.
-func (l *ModelLoader) ReloadParsing() {
+func (l *ModelLoader) ReloadParsing() error {
+	var errs []error
 	for _, path := range l.state.Paths() {
 		if err := l.parseAndMerge(path); err != nil {
-			glog.Errorf("unable to reload model sources from %s: %v", path, err)
+			errs = append(errs, fmt.Errorf("unable to reload model sources from %s: %w", path, err))
 		}
 	}
+	return errors.Join(errs...)
 }
 
 // performLeaderWrites executes database write operations: removing orphaned
