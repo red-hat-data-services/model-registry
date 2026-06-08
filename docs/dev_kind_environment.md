@@ -10,6 +10,7 @@ Local Kubernetes development environment for the model-registry UI using Kind an
 - Go >= 1.26
 - Node.js >= 22.0.0
 - Tilt v0.33.22+ (auto-downloaded by `make tilt-up` if not present)
+- `yq` and `kustomize` (required for running the Catalog service)
 
 ## Architecture
 
