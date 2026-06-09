@@ -118,12 +118,14 @@ func (ml *MCPLoader) PerformLeaderOperations(ctx context.Context, allKnownSource
 
 // ReloadParsing re-parses all config files into in-memory collections.
 // Called by the unified loader before computing combined source IDs for leader writes.
-func (ml *MCPLoader) ReloadParsing() {
+func (ml *MCPLoader) ReloadParsing() error {
+	var errs []error
 	for _, path := range ml.state.Paths() {
 		if err := ml.parseAndMerge(path); err != nil {
-			glog.Errorf("unable to reload MCP sources from %s: %v", path, err)
+			errs = append(errs, fmt.Errorf("unable to reload MCP sources from %s: %w", path, err))
 		}
 	}
+	return errors.Join(errs...)
 }
 
 // parseAndMerge parses a config file and merges its MCP sources into the collection.
