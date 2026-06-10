@@ -6,6 +6,9 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/kubeflow/hub/catalog/internal/catalog/modelcatalog/models"
+	dbmodels "github.com/kubeflow/hub/internal/platform/db/entity"
 )
 
 func TestParseMetadataJSON(t *testing.T) {
@@ -953,13 +956,15 @@ func TestUnmarshalJSON_EdgeCases(t *testing.T) {
 
 func TestParseMetadataJSON_NewFields(t *testing.T) {
 	tests := []struct {
-		name           string
-		jsonData       string
-		wantID         string
-		wantSize       *string
-		wantTensorType *string
-		wantVariantID  *string
-		wantErr        bool
+		name                string
+		jsonData            string
+		wantID              string
+		wantSize            *string
+		wantTensorType      *string
+		wantVariantID       *string
+		wantMinVRAMGB       *string
+		wantColdStartMatrix []coldStartEntry
+		wantErr             bool
 	}{
 		{
 			name: "complete metadata with all new fields",
@@ -1111,6 +1116,70 @@ func TestParseMetadataJSON_NewFields(t *testing.T) {
 			wantVariantID:  &[]string{"stu901kl-2def-456s-tu90-123456789abc"}[0],
 			wantErr:        false,
 		},
+		{
+			name: "metadata with vRAM and cold-start matrix fields",
+			jsonData: `{
+				"id": "sample-model/test-405b-instruct",
+				"size": "405B params",
+				"tensor_type": "FP8",
+				"variant_group_id": "vwx234mn-5678-901v-wx23-456789abcdef",
+				"min_vram_gb": "265 GB",
+				"cold_start_matrix": [
+					{
+						"gpu_type": "A100-80",
+						"gpu_count": "4",
+						"cold_start_time_to_load_seconds": "587.3"
+					},
+					{
+						"gpu_type": "B200",
+						"gpu_count": "2",
+						"cold_start_time_to_load_seconds": "559.9"
+					}
+				]
+			}`,
+			wantID:         "sample-model/test-405b-instruct",
+			wantSize:       &[]string{"405B params"}[0],
+			wantTensorType: &[]string{"FP8"}[0],
+			wantVariantID:  &[]string{"vwx234mn-5678-901v-wx23-456789abcdef"}[0],
+			wantMinVRAMGB:  &[]string{"265 GB"}[0],
+			wantColdStartMatrix: []coldStartEntry{
+				{GPUType: "A100-80", GPUCount: "4", ColdStartTimeToLoadSeconds: "587.3"},
+				{GPUType: "B200", GPUCount: "2", ColdStartTimeToLoadSeconds: "559.9"},
+			},
+			wantErr: false,
+		},
+		{
+			name: "metadata with runtime_command in cold-start matrix",
+			jsonData: `{
+				"id": "RedHatAI/MiniMax-M2.5",
+				"size": "229B",
+				"tensor_type": "FP8",
+				"min_vram_gb": "265 GB",
+				"cold_start_matrix": [
+					{
+						"gpu_type": "A100-80",
+						"gpu_count": "4",
+						"cold_start_time_to_load_seconds": "587.3",
+						"runtime_command": "python3 -m vllm.entrypoints.openai.api_server --model RedHatAI/MiniMax-M2.5 --tensor-parallel-size 4"
+					},
+					{
+						"gpu_type": "H200",
+						"gpu_count": "4",
+						"cold_start_time_to_load_seconds": "806.7",
+						"runtime_command": "python3 -m vllm.entrypoints.openai.api_server --model RedHatAI/MiniMax-M2.5 --tensor-parallel-size 4"
+					}
+				]
+			}`,
+			wantID:         "RedHatAI/MiniMax-M2.5",
+			wantSize:       &[]string{"229B"}[0],
+			wantTensorType: &[]string{"FP8"}[0],
+			wantMinVRAMGB:  &[]string{"265 GB"}[0],
+			wantColdStartMatrix: []coldStartEntry{
+				{GPUType: "A100-80", GPUCount: "4", ColdStartTimeToLoadSeconds: "587.3", RuntimeCommand: "python3 -m vllm.entrypoints.openai.api_server --model RedHatAI/MiniMax-M2.5 --tensor-parallel-size 4"},
+				{GPUType: "H200", GPUCount: "4", ColdStartTimeToLoadSeconds: "806.7", RuntimeCommand: "python3 -m vllm.entrypoints.openai.api_server --model RedHatAI/MiniMax-M2.5 --tensor-parallel-size 4"},
+			},
+			wantErr: false,
+		},
 	}
 
 	for _, tt := range tests {
@@ -1144,6 +1213,23 @@ func TestParseMetadataJSON_NewFields(t *testing.T) {
 			// Test VariantGroupID field
 			if (got.VariantGroupID == nil) != (tt.wantVariantID == nil) || (got.VariantGroupID != nil && tt.wantVariantID != nil && *got.VariantGroupID != *tt.wantVariantID) {
 				t.Errorf("parseMetadataJSON() VariantGroupID = %v, want %v", got.VariantGroupID, tt.wantVariantID)
+			}
+
+			// Test MinVRAMGB field
+			if (got.MinVRAMGB == nil) != (tt.wantMinVRAMGB == nil) || (got.MinVRAMGB != nil && tt.wantMinVRAMGB != nil && *got.MinVRAMGB != *tt.wantMinVRAMGB) {
+				t.Errorf("parseMetadataJSON() MinVRAMGB = %v, want %v", got.MinVRAMGB, tt.wantMinVRAMGB)
+			}
+
+			// Test ColdStartMatrix field
+			if len(got.ColdStartMatrix) != len(tt.wantColdStartMatrix) {
+				t.Errorf("parseMetadataJSON() ColdStartMatrix length = %d, want %d", len(got.ColdStartMatrix), len(tt.wantColdStartMatrix))
+			} else {
+				for i, entry := range got.ColdStartMatrix {
+					want := tt.wantColdStartMatrix[i]
+					if entry.GPUType != want.GPUType || entry.GPUCount != want.GPUCount || entry.ColdStartTimeToLoadSeconds != want.ColdStartTimeToLoadSeconds || entry.RuntimeCommand != want.RuntimeCommand {
+						t.Errorf("parseMetadataJSON() ColdStartMatrix[%d] = %+v, want %+v", i, entry, want)
+					}
+				}
 			}
 		})
 	}
@@ -1377,6 +1463,304 @@ func TestBuildModelDirCache_CollisionWarning(t *testing.T) {
 	if cachedPath != dir2 {
 		t.Errorf("expected collision winner to be %s (last walked), got %s", dir2, cachedPath)
 	}
+}
+
+func TestEnrichCatalogModelFromMetadata_NewFields(t *testing.T) {
+	modelName := "test-vendor/test-405b-instruct"
+	modelID := int32(1)
+
+	existingModel := &models.CatalogModelImpl{
+		ID: &modelID,
+		Attributes: &models.CatalogModelAttributes{
+			Name: &modelName,
+		},
+	}
+
+	minVRAM := "80GB"
+	metadata := metadataJSON{
+		ID:        modelName,
+		MinVRAMGB: &minVRAM,
+		ColdStartMatrix: []coldStartEntry{
+			{GPUType: "A100", GPUCount: "2", ColdStartTimeToLoadSeconds: "127.3"},
+			{GPUType: "H100", GPUCount: "1", ColdStartTimeToLoadSeconds: "68.9"},
+		},
+	}
+
+	mockRepo := &mockPerfModelRepo{}
+
+	err := enrichCatalogModelFromMetadata(existingModel, metadata, mockRepo)
+	if err != nil {
+		t.Fatalf("enrichCatalogModelFromMetadata() error = %v", err)
+	}
+
+	props := existingModel.GetCustomProperties()
+	if props == nil {
+		t.Fatal("expected custom properties to be set, got nil")
+	}
+
+	propMap := make(map[string]string)
+	for _, p := range *props {
+		if p.StringValue != nil {
+			propMap[p.Name] = *p.StringValue
+		}
+	}
+
+	if v, ok := propMap["min_vram_gb"]; !ok {
+		t.Error("expected custom property 'min_vram_gb' to be set")
+	} else if v != "80GB" {
+		t.Errorf("min_vram_gb = %q, want %q", v, "80GB")
+	}
+}
+
+func TestCreateColdStartArtifact(t *testing.T) {
+	modelID := int32(42)
+	typeID := int32(7)
+
+	tests := []struct {
+		name           string
+		entry          coldStartEntry
+		wantGPUType    string
+		wantGPUCount   string
+		wantSeconds    *float64
+		wantExtID      string
+		wantArtName    string
+		wantRuntimeCmd string
+	}{
+		{
+			name: "valid entry with numeric seconds",
+			entry: coldStartEntry{
+				GPUType:                    "A100-80",
+				GPUCount:                   "4",
+				ColdStartTimeToLoadSeconds: "587.3",
+				RuntimeCommand:             "python3 -m vllm.entrypoints.openai.api_server --model RedHatAI/MiniMax-M2.5 --max-model-len -1 --tensor-parallel-size 4 --trust-remote-code",
+			},
+			wantGPUType:    "A100-80",
+			wantGPUCount:   "4",
+			wantSeconds:    new(float64(587.3)),
+			wantExtID:      "cold-start-42-A100-80-4",
+			wantArtName:    "cold-start-A100-80-4",
+			wantRuntimeCmd: "python3 -m vllm.entrypoints.openai.api_server --model RedHatAI/MiniMax-M2.5 --max-model-len -1 --tensor-parallel-size 4 --trust-remote-code",
+		},
+		{
+			name: "valid entry with integer seconds",
+			entry: coldStartEntry{
+				GPUType:                    "H100",
+				GPUCount:                   "1",
+				ColdStartTimeToLoadSeconds: "68",
+				RuntimeCommand:             "python3 -m vllm.entrypoints.openai.api_server --model RedHatAI/MiniMax-M2.5 --max-model-len -1 --tensor-parallel-size 1 --trust-remote-code",
+			},
+			wantGPUType:    "H100",
+			wantGPUCount:   "1",
+			wantSeconds:    new(float64(68)),
+			wantExtID:      "cold-start-42-H100-1",
+			wantArtName:    "cold-start-H100-1",
+			wantRuntimeCmd: "python3 -m vllm.entrypoints.openai.api_server --model RedHatAI/MiniMax-M2.5 --max-model-len -1 --tensor-parallel-size 1 --trust-remote-code",
+		},
+		{
+			name: "invalid seconds value omits seconds property",
+			entry: coldStartEntry{
+				GPUType:                    "B200",
+				GPUCount:                   "2",
+				ColdStartTimeToLoadSeconds: "not-a-number",
+				RuntimeCommand:             "python3 -m vllm.entrypoints.openai.api_server --model RedHatAI/MiniMax-M2.5 --max-model-len -1 --tensor-parallel-size 2 --trust-remote-code",
+			},
+			wantGPUType:    "B200",
+			wantGPUCount:   "2",
+			wantSeconds:    nil,
+			wantExtID:      "cold-start-42-B200-2",
+			wantArtName:    "cold-start-B200-2",
+			wantRuntimeCmd: "python3 -m vllm.entrypoints.openai.api_server --model RedHatAI/MiniMax-M2.5 --max-model-len -1 --tensor-parallel-size 2 --trust-remote-code",
+		},
+		{
+			name: "empty runtime_command omits property",
+			entry: coldStartEntry{
+				GPUType:                    "H200",
+				GPUCount:                   "4",
+				ColdStartTimeToLoadSeconds: "806.7",
+			},
+			wantGPUType:    "H200",
+			wantGPUCount:   "4",
+			wantSeconds:    new(float64(806.7)),
+			wantExtID:      "cold-start-42-H200-4",
+			wantArtName:    "cold-start-H200-4",
+			wantRuntimeCmd: "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			externalID := coldStartExternalID(modelID, tt.entry)
+			artifact := createColdStartArtifact(tt.entry, externalID, typeID)
+
+			if artifact == nil {
+				t.Fatal("expected non-nil artifact")
+			}
+
+			// Verify type and metrics type
+			if *artifact.TypeID != typeID {
+				t.Errorf("TypeID = %d, want %d", *artifact.TypeID, typeID)
+			}
+			attrs := artifact.GetAttributes()
+			if attrs.MetricsType != models.MetricsTypeColdStart {
+				t.Errorf("MetricsType = %q, want %q", attrs.MetricsType, models.MetricsTypeColdStart)
+			}
+
+			// Verify naming
+			if *attrs.ExternalID != tt.wantExtID {
+				t.Errorf("ExternalID = %q, want %q", *attrs.ExternalID, tt.wantExtID)
+			}
+			if *attrs.Name != tt.wantArtName {
+				t.Errorf("Name = %q, want %q", *attrs.Name, tt.wantArtName)
+			}
+
+			// Verify timestamps are set
+			if attrs.CreateTimeSinceEpoch == nil || *attrs.CreateTimeSinceEpoch <= 0 {
+				t.Error("expected CreateTimeSinceEpoch to be set")
+			}
+			if attrs.LastUpdateTimeSinceEpoch == nil || *attrs.LastUpdateTimeSinceEpoch <= 0 {
+				t.Error("expected LastUpdateTimeSinceEpoch to be set")
+			}
+
+			// Verify custom properties
+			customProps := artifact.GetCustomProperties()
+			if customProps == nil {
+				t.Fatal("expected custom properties to be set")
+			}
+			propMap := make(map[string]interface{})
+			for _, p := range *customProps {
+				if p.StringValue != nil {
+					propMap[p.Name] = *p.StringValue
+				} else if p.DoubleValue != nil {
+					propMap[p.Name] = *p.DoubleValue
+				}
+			}
+
+			if propMap["gpu_type"] != tt.wantGPUType {
+				t.Errorf("gpu_type = %v, want %q", propMap["gpu_type"], tt.wantGPUType)
+			}
+			if propMap["gpu_count"] != tt.wantGPUCount {
+				t.Errorf("gpu_count = %v, want %q", propMap["gpu_count"], tt.wantGPUCount)
+			}
+			if tt.wantRuntimeCmd != "" {
+				if propMap["runtime_command"] != tt.wantRuntimeCmd {
+					t.Errorf("runtime_command = %v, want %q", propMap["runtime_command"], tt.wantRuntimeCmd)
+				}
+			} else {
+				if _, exists := propMap["runtime_command"]; exists {
+					t.Error("expected runtime_command to be absent when not provided")
+				}
+			}
+			if tt.wantSeconds != nil {
+				if propMap["cold_start_time_to_load_seconds"] != *tt.wantSeconds {
+					t.Errorf("cold_start_time_to_load_seconds = %v, want %v", propMap["cold_start_time_to_load_seconds"], *tt.wantSeconds)
+				}
+			} else {
+				if _, exists := propMap["cold_start_time_to_load_seconds"]; exists {
+					t.Error("expected cold_start_time_to_load_seconds to be absent for invalid input")
+				}
+			}
+		})
+	}
+}
+
+func TestProcessModelArtifactsBatch_ColdStartOnly(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	coldStartMatrix := []coldStartEntry{
+		{GPUType: "A100", GPUCount: "2", ColdStartTimeToLoadSeconds: "127.3"},
+		{GPUType: "H100", GPUCount: "1", ColdStartTimeToLoadSeconds: "68.9"},
+	}
+
+	modelID := int32(1)
+	typeID := int32(7)
+
+	var savedArtifacts []models.CatalogMetricsArtifact
+	mockRepo := &mockMetricsArtifactRepo{
+		listResult: &dbmodels.ListWrapper[models.CatalogMetricsArtifact]{},
+		batchSaveFunc: func(artifacts []models.CatalogMetricsArtifact, parentID *int32) ([]models.CatalogMetricsArtifact, error) {
+			savedArtifacts = artifacts
+			return artifacts, nil
+		},
+	}
+
+	count, err := processModelArtifactsBatch(tmpDir, modelID, "test-model", nil, coldStartMatrix, mockRepo, typeID)
+	if err != nil {
+		t.Fatalf("processModelArtifactsBatch() error = %v", err)
+	}
+
+	if count != 2 {
+		t.Errorf("processModelArtifactsBatch() returned count = %d, want 2", count)
+	}
+
+	if len(savedArtifacts) != 2 {
+		t.Fatalf("expected 2 saved artifacts, got %d", len(savedArtifacts))
+	}
+
+	// Verify both artifacts have cold-start metrics type
+	for _, a := range savedArtifacts {
+		if a.GetAttributes().MetricsType != models.MetricsTypeColdStart {
+			t.Errorf("expected MetricsType %q, got %q", models.MetricsTypeColdStart, a.GetAttributes().MetricsType)
+		}
+	}
+}
+
+func TestProcessModelArtifactsBatch_ColdStartDedup(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	coldStartMatrix := []coldStartEntry{
+		{GPUType: "A100", GPUCount: "2", ColdStartTimeToLoadSeconds: "127.3"},
+	}
+
+	modelID := int32(1)
+	typeID := int32(7)
+	existingExternalID := "cold-start-1-A100-2"
+
+	mockRepo := &mockMetricsArtifactRepo{
+		listResult: &dbmodels.ListWrapper[models.CatalogMetricsArtifact]{
+			Items: []models.CatalogMetricsArtifact{
+				&models.CatalogMetricsArtifactImpl{
+					Attributes: &models.CatalogMetricsArtifactAttributes{
+						ExternalID: &existingExternalID,
+					},
+				},
+			},
+			Size: 1,
+		},
+	}
+
+	count, err := processModelArtifactsBatch(tmpDir, modelID, "test-model", nil, coldStartMatrix, mockRepo, typeID)
+	if err != nil {
+		t.Fatalf("processModelArtifactsBatch() error = %v", err)
+	}
+
+	if count != 0 {
+		t.Errorf("processModelArtifactsBatch() returned count = %d, want 0 (all duplicates)", count)
+	}
+}
+
+// mockMetricsArtifactRepo is a minimal mock for CatalogMetricsArtifactRepository used in batch tests
+type mockMetricsArtifactRepo struct {
+	listResult    *dbmodels.ListWrapper[models.CatalogMetricsArtifact]
+	batchSaveFunc func([]models.CatalogMetricsArtifact, *int32) ([]models.CatalogMetricsArtifact, error)
+}
+
+func (m *mockMetricsArtifactRepo) GetByID(id int32) (models.CatalogMetricsArtifact, error) {
+	return nil, nil
+}
+
+func (m *mockMetricsArtifactRepo) List(opts models.CatalogMetricsArtifactListOptions) (*dbmodels.ListWrapper[models.CatalogMetricsArtifact], error) {
+	return m.listResult, nil
+}
+
+func (m *mockMetricsArtifactRepo) Save(artifact models.CatalogMetricsArtifact, parentID *int32) (models.CatalogMetricsArtifact, error) {
+	return artifact, nil
+}
+
+func (m *mockMetricsArtifactRepo) BatchSave(artifacts []models.CatalogMetricsArtifact, parentID *int32) ([]models.CatalogMetricsArtifact, error) {
+	if m.batchSaveFunc != nil {
+		return m.batchSaveFunc(artifacts, parentID)
+	}
+	return artifacts, nil
 }
 
 // cacheKeys returns all keys from a map for diagnostic output.
