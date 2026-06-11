@@ -143,6 +143,7 @@ const ModelCatalogCardBody: React.FC<ModelCatalogCardBodyProps> = ({
       <TruncatedText
         content={model.description || ''}
         maxLines={4}
+        tooltipPosition="left"
         data-testid="model-catalog-card-description"
       />
     );
@@ -157,6 +158,7 @@ const ModelCatalogCardBody: React.FC<ModelCatalogCardBodyProps> = ({
             <TruncatedText
               content={model.description || ''}
               maxLines={4}
+              tooltipPosition="left"
               data-testid="model-catalog-card-description"
             />
           </StackItem>
@@ -199,6 +201,7 @@ const ModelCatalogCardBody: React.FC<ModelCatalogCardBodyProps> = ({
         <TruncatedText
           content={model.description || ''}
           maxLines={4}
+          tooltipPosition="left"
           data-testid="model-catalog-card-description"
         />
       );
@@ -264,7 +267,7 @@ const ModelCatalogCardBody: React.FC<ModelCatalogCardBodyProps> = ({
             {matchedColdStart !== undefined && (
               <Flex direction={{ default: 'column' }}>
                 <span className="pf-v6-u-font-weight-bold" data-testid="validated-model-cold-start">
-                  {formatLatency(matchedColdStart * 1000)}
+                  {matchedColdStart.toFixed(2)} s
                 </span>
                 <Flex alignItems={{ default: 'alignItemsBaseline' }} gap={{ default: 'gapXs' }}>
                   <Content component={ContentVariants.small}>Cold start load time</Content>
@@ -345,6 +348,7 @@ const ModelCatalogCardBody: React.FC<ModelCatalogCardBodyProps> = ({
     <TruncatedText
       content={model.description || ''}
       maxLines={4}
+      tooltipPosition="left"
       data-testid="model-catalog-card-description"
     />
   );
