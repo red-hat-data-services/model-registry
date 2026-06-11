@@ -143,6 +143,7 @@ const ModelCatalogCardBody: React.FC<ModelCatalogCardBodyProps> = ({
       <TruncatedText
         content={model.description || ''}
         maxLines={4}
+        tooltipPosition="left"
         data-testid="model-catalog-card-description"
       />
     );
@@ -157,6 +158,7 @@ const ModelCatalogCardBody: React.FC<ModelCatalogCardBodyProps> = ({
             <TruncatedText
               content={model.description || ''}
               maxLines={4}
+              tooltipPosition="left"
               data-testid="model-catalog-card-description"
             />
           </StackItem>
@@ -199,6 +201,7 @@ const ModelCatalogCardBody: React.FC<ModelCatalogCardBodyProps> = ({
         <TruncatedText
           content={model.description || ''}
           maxLines={4}
+          tooltipPosition="left"
           data-testid="model-catalog-card-description"
         />
       );
@@ -345,6 +348,7 @@ const ModelCatalogCardBody: React.FC<ModelCatalogCardBodyProps> = ({
     <TruncatedText
       content={model.description || ''}
       maxLines={4}
+      tooltipPosition="left"
       data-testid="model-catalog-card-description"
     />
   );
