@@ -6,12 +6,53 @@ import (
 	"errors"
 	"fmt"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"cirello.io/pglock"
 	"github.com/golang/glog"
 	"gorm.io/gorm"
 )
+
+const defaultUnhealthyThreshold int32 = 3
+
+// lockHandle represents a held distributed lock.
+type lockHandle interface {
+	sendHeartbeat(ctx context.Context) error
+	release() error
+}
+
+// lockClient abstracts distributed lock acquisition for testability.
+type lockClient interface {
+	acquireContext(ctx context.Context, name string) (lockHandle, error)
+}
+
+// pglockAdapter wraps *pglock.Client to satisfy lockClient.
+type pglockAdapter struct {
+	client *pglock.Client
+}
+
+func (a *pglockAdapter) acquireContext(ctx context.Context, name string) (lockHandle, error) {
+	lock, err := a.client.AcquireContext(ctx, name)
+	if err != nil {
+		return nil, err
+	}
+	return &pglockHandle{client: a.client, lock: lock}, nil
+}
+
+// pglockHandle wraps a held *pglock.Lock to satisfy lockHandle.
+type pglockHandle struct {
+	client *pglock.Client
+	lock   *pglock.Lock
+}
+
+func (h *pglockHandle) sendHeartbeat(ctx context.Context) error {
+	return h.client.SendHeartbeat(ctx, h.lock)
+}
+
+func (h *pglockHandle) release() error {
+	return h.client.Release(h.lock)
+}
 
 // backoff provides exponential backoff for retry logic.
 type backoff struct {
@@ -46,7 +87,7 @@ type LeaderElector struct {
 	lockDuration   time.Duration
 	heartbeatFreq  time.Duration
 	onBecomeLeader []func(context.Context)
-	client         *pglock.Client
+	locker         lockClient
 	mu             sync.Mutex
 
 	// Leadership state (protected by mu)
@@ -60,6 +101,15 @@ type LeaderElector struct {
 
 	// Dynamic callback tracking
 	activeCallbacks sync.WaitGroup
+
+	// Health tracking: counts consecutive election loop errors (failed
+	// lock acquisition or lost heartbeat). Healthy() returns false after
+	// unhealthyThreshold consecutive failures, resets on successful acquisition.
+	consecutiveFailures atomic.Int32
+	unhealthyThreshold  int32
+
+	// retryBackoff overrides the default backoff for testing. nil = use defaults.
+	retryBackoff *backoff
 }
 
 // NewLeaderElector creates a new LeaderElector instance.
@@ -104,13 +154,17 @@ func NewLeaderElector(
 	}
 
 	e := &LeaderElector{
-		ctx:           ctx,
-		lockName:      lockName,
-		lockDuration:  lockDuration,
-		heartbeatFreq: heartbeatFreq,
-		client:        client,
-		done:          make(chan struct{}),
+		ctx:                ctx,
+		lockName:           lockName,
+		lockDuration:       lockDuration,
+		heartbeatFreq:      heartbeatFreq,
+		locker:             &pglockAdapter{client: client},
+		done:               make(chan struct{}),
+		unhealthyThreshold: defaultUnhealthyThreshold,
 	}
+	// Start unhealthy: a pod that has never acquired the lock is not ready.
+	// Resets to 0 on first successful acquisition in runOnce().
+	e.consecutiveFailures.Store(e.unhealthyThreshold)
 
 	// Start the background goroutine immediately
 	go e.run()
@@ -163,6 +217,14 @@ func (e *LeaderElector) Wait() error {
 	return e.err
 }
 
+// Healthy returns true if the leader elector has not exceeded its
+// consecutive failure threshold. The counter increments on any
+// runOnce error — failed lock acquisition or lost heartbeat —
+// and resets to zero on successful acquisition.
+func (e *LeaderElector) Healthy() bool {
+	return e.consecutiveFailures.Load() < e.unhealthyThreshold
+}
+
 // run starts the leader election process with automatic retry.
 // This runs in a background goroutine started by NewLeaderElector.
 //
@@ -179,7 +241,10 @@ func (e *LeaderElector) run() {
 	defer close(e.done)
 
 	ctx := e.ctx
-	backoff := newBackoff()
+	backoff := e.retryBackoff
+	if backoff == nil {
+		backoff = newBackoff()
+	}
 
 	for {
 		if ctx.Err() != nil {
@@ -197,8 +262,9 @@ func (e *LeaderElector) run() {
 		}
 
 		if err != nil {
+			failures := e.consecutiveFailures.Add(1)
 			delay := backoff.next()
-			glog.Errorf("Leader election error: %v (retrying in %v)", err, delay)
+			glog.Errorf("Leader election error: %v (consecutive failures: %d, retrying in %v)", err, failures, delay)
 
 			select {
 			case <-time.After(delay):
@@ -218,12 +284,13 @@ func (e *LeaderElector) run() {
 // Returns when context is canceled or lock is lost.
 // Per the plan, callbacks exiting early no longer causes lock release.
 func (e *LeaderElector) runOnce(ctx context.Context) error {
-	lock, err := e.client.AcquireContext(ctx, e.lockName)
+	handle, err := e.locker.acquireContext(ctx, e.lockName)
 	if err != nil {
 		return fmt.Errorf("failed to acquire lock %q: %w", e.lockName, err)
 	}
 
 	glog.Infof("Successfully acquired leadership lock: %s", e.lockName)
+	e.consecutiveFailures.Store(0)
 
 	// Create a context that will be canceled when we lose leadership
 	leaderCtx, cancelLeader := context.WithCancel(e.ctx)
@@ -263,14 +330,14 @@ func (e *LeaderElector) runOnce(ctx context.Context) error {
 			e.cancelLeader = nil
 			e.mu.Unlock()
 
-			if err := e.client.Release(lock); err != nil {
+			if err := handle.release(); err != nil {
 				glog.Errorf("Error releasing lock: %v", err)
 			}
 			return ctx.Err()
 
 		case <-ticker.C:
 			// Verify we still own the lock
-			if err := e.client.SendHeartbeat(ctx, lock); err != nil {
+			if err := handle.sendHeartbeat(ctx); err != nil {
 				glog.Errorf("Lost leadership lock: %v", err)
 				cancelLeader()           // Signal ALL callbacks to stop
 				e.activeCallbacks.Wait() // Wait for ALL callbacks to finish
