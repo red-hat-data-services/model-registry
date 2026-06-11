@@ -26,12 +26,20 @@ type ServerConfig struct {
 	Logger                 *slog.Logger
 }
 
+// readinessCheck is a named readiness check evaluated by the /readyz handler.
+type readinessCheck struct {
+	name string
+	fn   func() bool
+}
+
 // Server manages the lifecycle of catalog plugins and provides a unified HTTP server.
 type Server struct {
-	cfg     ServerConfig
-	mu      sync.RWMutex
-	plugins []CatalogPlugin
-	router  chi.Router
+	cfg             ServerConfig
+	mu              sync.RWMutex
+	plugins         []CatalogPlugin
+	router          chi.Router
+	readinessChecks []readinessCheck
+	lastReady       map[string]bool
 }
 
 // NewServer creates a new plugin server.
@@ -40,8 +48,9 @@ func NewServer(cfg ServerConfig) *Server {
 		cfg.Logger = slog.Default()
 	}
 	return &Server{
-		cfg:     cfg,
-		plugins: make([]CatalogPlugin, 0),
+		cfg:       cfg,
+		plugins:   make([]CatalogPlugin, 0),
+		lastReady: make(map[string]bool),
 	}
 }
 
@@ -183,6 +192,14 @@ func (s *Server) Plugins() []CatalogPlugin {
 	return result
 }
 
+// AddReadinessCheck registers a readiness check evaluated by the /readyz
+// handler alongside plugin health. Must be called before serving traffic.
+func (s *Server) AddReadinessCheck(name string, fn func() bool) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.readinessChecks = append(s.readinessChecks, readinessCheck{name: name, fn: fn})
+}
+
 func (s *Server) healthHandler(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -190,8 +207,9 @@ func (s *Server) healthHandler(w http.ResponseWriter, _ *http.Request) {
 }
 
 func (s *Server) readyHandler(w http.ResponseWriter, _ *http.Request) {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
+	// Write lock: readiness check transition tracking updates lastReady.
+	s.mu.Lock()
+	defer s.mu.Unlock()
 
 	allHealthy := true
 	pluginStatus := make(map[string]bool)
@@ -202,6 +220,22 @@ func (s *Server) readyHandler(w http.ResponseWriter, _ *http.Request) {
 		if !healthy {
 			allHealthy = false
 		}
+	}
+
+	for _, rc := range s.readinessChecks {
+		ready := rc.fn()
+		if !ready {
+			allHealthy = false
+		}
+		prev, seen := s.lastReady[rc.name]
+		if seen && prev != ready {
+			if ready {
+				s.cfg.Logger.Info("readiness check recovered", "check", rc.name)
+			} else {
+				s.cfg.Logger.Warn("readiness check failed", "check", rc.name)
+			}
+		}
+		s.lastReady[rc.name] = ready
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -221,11 +255,9 @@ func (s *Server) readyHandler(w http.ResponseWriter, _ *http.Request) {
 	_ = json.NewEncoder(w).Encode(response)
 }
 
-
 func computeBasePath(p CatalogPlugin) string {
 	if bp, ok := p.(BasePathProvider); ok {
 		return bp.BasePath()
 	}
 	return fmt.Sprintf("/api/%s_catalog/%s", p.Name(), p.Version())
 }
-
