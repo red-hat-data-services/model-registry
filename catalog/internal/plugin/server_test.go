@@ -381,6 +381,79 @@ func TestServerMountRoutesFailure(t *testing.T) {
 	assert.Contains(t, err.Error(), "route registration failed")
 }
 
+func TestReadyzNoReadinessChecks(t *testing.T) {
+	Reset()
+	defer Reset()
+
+	Register(&mockPlugin{name: "model", version: "v1", healthy: true})
+
+	s := newTestServer()
+	require.NoError(t, s.Init(context.Background()))
+
+	router, err := s.MountRoutes()
+	require.NoError(t, err)
+
+	assertStatus(t, router, "/readyz", http.StatusOK)
+	body := getJSON(t, router, "/readyz")
+	assert.Equal(t, "ready", body["status"])
+}
+
+func TestReadyzWithReadinessCheck(t *testing.T) {
+	Reset()
+	defer Reset()
+
+	Register(&mockPlugin{name: "model", version: "v1", healthy: true})
+
+	s := newTestServer()
+	require.NoError(t, s.Init(context.Background()))
+
+	healthy := true
+	s.AddReadinessCheck("leader_election", func() bool { return healthy })
+
+	router, err := s.MountRoutes()
+	require.NoError(t, err)
+
+	// All healthy → 200
+	assertStatus(t, router, "/readyz", http.StatusOK)
+	body := getJSON(t, router, "/readyz")
+	assert.Equal(t, "ready", body["status"])
+
+	// Health check fails → 503
+	healthy = false
+	assertStatus(t, router, "/readyz", http.StatusServiceUnavailable)
+	body = getJSON(t, router, "/readyz")
+	assert.Equal(t, "not_ready", body["status"])
+
+	// Plugin still healthy
+	plugins := body["plugins"].(map[string]any)
+	assert.Equal(t, true, plugins["model"])
+}
+
+func TestReadyzReadinessCheckRecovery(t *testing.T) {
+	Reset()
+	defer Reset()
+
+	Register(&mockPlugin{name: "model", version: "v1", healthy: true})
+
+	s := newTestServer()
+	require.NoError(t, s.Init(context.Background()))
+
+	healthy := false
+	s.AddReadinessCheck("leader_election", func() bool { return healthy })
+
+	router, err := s.MountRoutes()
+	require.NoError(t, err)
+
+	// Starts unhealthy
+	assertStatus(t, router, "/readyz", http.StatusServiceUnavailable)
+
+	// Recovers
+	healthy = true
+	assertStatus(t, router, "/readyz", http.StatusOK)
+	body := getJSON(t, router, "/readyz")
+	assert.Equal(t, "ready", body["status"])
+}
+
 // Test helpers
 
 func assertStatus(t *testing.T, handler http.Handler, path string, expectedStatus int) {

@@ -148,6 +148,8 @@ func runCatalogServer(_ *cobra.Command, _ []string) error {
 		RepoSet:                repoSet,
 	})
 
+	pluginServer.AddReadinessCheck("leader_election", elector.Healthy)
+
 	if err := pluginServer.Init(ctx); err != nil {
 		return fmt.Errorf("error initializing plugins: %w", err)
 	}
