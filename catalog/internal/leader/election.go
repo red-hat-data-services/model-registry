@@ -33,7 +33,7 @@ type pglockAdapter struct {
 }
 
 func (a *pglockAdapter) acquireContext(ctx context.Context, name string) (lockHandle, error) {
-	lock, err := a.client.AcquireContext(ctx, name)
+	lock, err := a.client.AcquireContext(ctx, name, pglock.FailIfLocked())
 	if err != nil {
 		return nil, err
 	}
@@ -102,9 +102,13 @@ type LeaderElector struct {
 	// Dynamic callback tracking
 	activeCallbacks sync.WaitGroup
 
-	// Health tracking: counts consecutive election loop errors (failed
-	// lock acquisition or lost heartbeat). Healthy() returns false after
-	// unhealthyThreshold consecutive failures, resets on successful acquisition.
+	// Health tracking.
+	// dbReachable flips to true on first successful DB contact (acquisition
+	// or ErrNotAcquired). Pods that have never contacted the DB are not ready.
+	// consecutiveFailures counts consecutive infrastructure errors (DB
+	// unreachable, lost heartbeat). Healthy() returns false when the DB has
+	// never been reached OR failures exceed the threshold.
+	dbReachable         atomic.Bool
 	consecutiveFailures atomic.Int32
 	unhealthyThreshold  int32
 
@@ -162,9 +166,8 @@ func NewLeaderElector(
 		done:               make(chan struct{}),
 		unhealthyThreshold: defaultUnhealthyThreshold,
 	}
-	// Start unhealthy: a pod that has never acquired the lock is not ready.
-	// Resets to 0 on first successful acquisition in runOnce().
-	e.consecutiveFailures.Store(e.unhealthyThreshold)
+	// dbReachable starts false (zero value) — pod is not ready until first
+	// successful DB contact. No need to hack the failure counter.
 
 	// Start the background goroutine immediately
 	go e.run()
@@ -217,12 +220,11 @@ func (e *LeaderElector) Wait() error {
 	return e.err
 }
 
-// Healthy returns true if the leader elector has not exceeded its
-// consecutive failure threshold. The counter increments on any
-// runOnce error — failed lock acquisition or lost heartbeat —
-// and resets to zero on successful acquisition.
+// Healthy reports whether this elector can reach the database.
+// Returns false before first DB contact (cold start) and when consecutive
+// infrastructure failures exceed the threshold.
 func (e *LeaderElector) Healthy() bool {
-	return e.consecutiveFailures.Load() < e.unhealthyThreshold
+	return e.dbReachable.Load() && e.consecutiveFailures.Load() < e.unhealthyThreshold
 }
 
 // run starts the leader election process with automatic retry.
@@ -262,9 +264,29 @@ func (e *LeaderElector) run() {
 		}
 
 		if err != nil {
-			failures := e.consecutiveFailures.Add(1)
-			delay := backoff.next()
-			glog.Errorf("Leader election error: %v (consecutive failures: %d, retrying in %v)", err, failures, delay)
+			// pglock returns ErrNotAcquired (not context.Canceled) when the
+			// context is cancelled during acquisition — check context first.
+			if ctx.Err() != nil {
+				glog.Info("Leader election canceled, shutting down")
+				e.err = ctx.Err()
+				return
+			}
+
+			var delay time.Duration
+			if errors.Is(err, pglock.ErrNotAcquired) {
+				// Lock held by another pod — DB is reachable, pod is healthy.
+				// Keep retry interval short so we acquire quickly when the
+				// lease is released (e.g., during rolling updates).
+				e.dbReachable.Store(true)
+				e.consecutiveFailures.Store(0)
+				backoff.reset()
+				delay = backoff.next()
+				glog.Infof("Lock held by another instance, retrying in %v", delay)
+			} else {
+				failures := e.consecutiveFailures.Add(1)
+				delay = backoff.next()
+				glog.Errorf("Leader election error: %v (consecutive failures: %d, retrying in %v)", err, failures, delay)
+			}
 
 			select {
 			case <-time.After(delay):
@@ -290,6 +312,7 @@ func (e *LeaderElector) runOnce(ctx context.Context) error {
 	}
 
 	glog.Infof("Successfully acquired leadership lock: %s", e.lockName)
+	e.dbReachable.Store(true)
 	e.consecutiveFailures.Store(0)
 
 	// Create a context that will be canceled when we lose leadership
