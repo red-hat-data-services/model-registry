@@ -3,10 +3,12 @@ package leader
 import (
 	"context"
 	"errors"
+	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
 
+	"cirello.io/pglock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -77,7 +79,8 @@ func newTestElector(ctx context.Context, locker lockClient, threshold int32) *Le
 		unhealthyThreshold: threshold,
 		retryBackoff:       &backoff{current: time.Millisecond, max: time.Millisecond},
 	}
-	e.consecutiveFailures.Store(threshold)
+	// dbReachable starts false (zero value) — Healthy() returns false until
+	// first successful DB contact, matching NewLeaderElector behavior.
 	go e.run()
 	return e
 }
@@ -170,6 +173,77 @@ func TestHealthyThresholdBoundary(t *testing.T) {
 	}, 2*time.Second, 5*time.Millisecond, "should have attempted acquisition")
 
 	assert.False(t, e.Healthy(), "should remain unhealthy with sustained failures")
+
+	cancel()
+	_ = e.Wait()
+}
+
+// switchableLocker allows changing the error mid-test.
+type switchableLocker struct {
+	mu  sync.Mutex
+	err error
+}
+
+func (s *switchableLocker) acquireContext(_ context.Context, _ string) (lockHandle, error) {
+	s.mu.Lock()
+	err := s.err
+	s.mu.Unlock()
+	if err != nil {
+		return nil, err
+	}
+	return &mockHandle{}, nil
+}
+
+func (s *switchableLocker) setErr(err error) {
+	s.mu.Lock()
+	s.err = err
+	s.mu.Unlock()
+}
+
+func TestHealthyWhenLockHeldByAnother(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	locker := &failingLocker{
+		err:       pglock.ErrNotAcquired,
+		failCount: -1,
+	}
+
+	e := newTestElector(ctx, locker, 3)
+
+	assert.False(t, e.Healthy(), "should start unhealthy")
+
+	// ErrNotAcquired proves DB is reachable → should become healthy
+	require.Eventually(t, func() bool {
+		return e.Healthy()
+	}, 2*time.Second, 5*time.Millisecond, "should become healthy when lock is held by another pod")
+
+	assert.Equal(t, int32(0), e.consecutiveFailures.Load())
+
+	cancel()
+	_ = e.Wait()
+}
+
+func TestHealthyContentionThenInfraFailure(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	locker := &switchableLocker{err: pglock.ErrNotAcquired}
+
+	e := newTestElector(ctx, locker, 3)
+
+	// Contention → healthy
+	require.Eventually(t, func() bool {
+		return e.Healthy()
+	}, 2*time.Second, 5*time.Millisecond, "should become healthy during contention")
+
+	// Switch to infra failure
+	locker.setErr(errors.New("connection refused"))
+
+	// Should become unhealthy after threshold failures
+	require.Eventually(t, func() bool {
+		return !e.Healthy()
+	}, 2*time.Second, 5*time.Millisecond, "should become unhealthy after infra failure")
 
 	cancel()
 	_ = e.Wait()
