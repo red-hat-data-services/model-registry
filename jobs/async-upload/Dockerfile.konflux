@@ -2,7 +2,7 @@
 #  Asynchronous Model-Sync Job image for Kubeflow Model Registry (https://github.com/kubeflow/model-registry/issues/1108)
 ###############################################################################
 
-FROM registry.access.redhat.com/ubi9/python-312-minimal@sha256:fe0b4d46e769a01ed0b7849eca019a03bf4dab21bc037bb9529ee1d1ed04e0d8 AS base
+FROM registry.access.redhat.com/ubi9/python-312-minimal@sha256:5382549a08267a87bb27132ce484cb575c4ec4decd1e551b7a6561673a810e0f AS base
 
 USER 0
 
