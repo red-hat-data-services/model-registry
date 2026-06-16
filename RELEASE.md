@@ -73,6 +73,9 @@ pushd manifests/kustomize/base && kustomize edit set image ghcr.io/kubeflow/hub/
 pushd manifests/kustomize/options/csi && kustomize edit set image ghcr.io/kubeflow/hub/storage-initializer=ghcr.io/kubeflow/hub/storage-initializer:$VVERSION && popd
 pushd manifests/kustomize/options/ui/base && kustomize edit set image model-registry-ui=ghcr.io/kubeflow/hub/ui:$VVERSION && popd
 pushd manifests/kustomize/options/catalog/base && kustomize edit set image ghcr.io/kubeflow/hub/server=ghcr.io/kubeflow/hub/server:$VVERSION && popd
+VERSION=$(echo $VVERSION | cut -b 2-)
+sed -i "s/^\(version = \"\)[^\"]*\"/\1$VERSION\"/" clients/python/pyproject.toml
+sed -i "s/^\(__version__ = \"\)[^\"]*\"/\1$VERSION\"/" clients/python/src/model_registry/__init__.py
 git add .
 git commit -s
 
@@ -83,6 +86,8 @@ git commit -s
 # eg: git push --set-upstream origin mr_maintainer-20241108-upstreamSync
 git push --set-upstream origin mr_maintainer-$TDATE-upstreamSync
 ```
+
+**Note:** On mac, replace the `sed -i` in the above command with `sed -i ''`.
 
 - create PR ⚠️ targeting the _release branch_ ⚠️ specifically (title ~like: `chore: align manifest for 0.2.10`)
 - merge the PR (you can manually add the approved, lgtm labels)
