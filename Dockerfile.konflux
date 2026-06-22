@@ -1,7 +1,7 @@
 # Build arguments
 ARG SOURCE_CODE=.
 
-FROM registry.redhat.io/ubi8/go-toolset:1.25@sha256:fee677324cf4f32aa0776f621673c0fced12dd3501cd2147b787b13e7b269328 as builder
+FROM registry.redhat.io/ubi8/go-toolset:1.25@sha256:20d12a4fa008c6a2fc4a1387369dac242ca49c673f8bd2a7dc7a7298a3949286 as builder
 
 ## Build args to be used at this step
 ARG SOURCE_CODE
