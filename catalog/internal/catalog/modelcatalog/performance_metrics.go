@@ -137,6 +137,41 @@ func (pr *performanceRecord) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// securityEvaluationRecord represents a single security evaluation result from security-evaluations.ndjson
+type securityEvaluationRecord struct {
+	// Core fields needed to associate security data with model
+	ID      string `json:"id"`
+	ModelID string `json:"model_id"`
+
+	// CustomProperties captures remaining fields dynamically
+	CustomProperties map[string]any `json:"-"`
+}
+
+// UnmarshalJSON implements custom JSON unmarshaling to capture all undefined fields as CustomProperties
+func (sr *securityEvaluationRecord) UnmarshalJSON(data []byte) error {
+	var raw map[string]any
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.UseNumber()
+	if err := decoder.Decode(&raw); err != nil {
+		return err
+	}
+
+	if id, ok := raw["id"].(string); ok {
+		sr.ID = id
+	}
+	if modelID, ok := raw["model_id"].(string); ok {
+		sr.ModelID = modelID
+	}
+
+	if sr.CustomProperties == nil {
+		sr.CustomProperties = make(map[string]any)
+	}
+
+	maps.Copy(sr.CustomProperties, raw)
+
+	return nil
+}
+
 type PerformanceMetricsLoader struct {
 	path                  []string
 	modelRepo             dbmodels.CatalogModelRepository
@@ -334,6 +369,7 @@ func processModelArtifactsBatch(dirPath string, modelID int32, modelName string,
 	// Parse all metrics files
 	var evaluationRecords []evaluationRecord
 	var performanceRecords []performanceRecord
+	var securityRecords []securityEvaluationRecord
 
 	// Parse evaluation metrics if file exists
 	evaluationsPath := filepath.Join(dirPath, "evaluations.ndjson")
@@ -357,7 +393,18 @@ func processModelArtifactsBatch(dirPath string, modelID int32, modelName string,
 		}
 	}
 
-	totalRecords := len(evaluationRecords) + len(performanceRecords) + len(coldStartMatrix)
+	// Parse security evaluation metrics if file exists
+	securityPath := filepath.Join(dirPath, "security-evaluations.ndjson")
+	if _, err := os.Stat(securityPath); err == nil {
+		records, err := parseSecurityEvaluationFile(securityPath)
+		if err != nil {
+			glog.Errorf("Failed to parse security evaluations file for %s: %v", modelName, err)
+		} else {
+			securityRecords = records
+		}
+	}
+
+	totalRecords := len(evaluationRecords) + len(performanceRecords) + len(securityRecords) + len(coldStartMatrix)
 	if totalRecords == 0 {
 		return 0, nil
 	}
@@ -415,6 +462,22 @@ func processModelArtifactsBatch(dirPath string, modelID int32, modelName string,
 			artifactsToInsert = append(artifactsToInsert, artifact)
 		} else {
 			glog.V(2).Infof("Cold-start artifact %s already exists, skipping", externalID)
+		}
+	}
+
+	// Check security evaluation artifacts; deduplicate within the file before the DB check
+	seenSecurityIDs := make(map[string]bool, len(securityRecords))
+	for _, secRecord := range securityRecords {
+		if seenSecurityIDs[secRecord.ID] {
+			glog.Warningf("Duplicate security artifact ID %s in file, skipping", secRecord.ID)
+			continue
+		}
+		seenSecurityIDs[secRecord.ID] = true
+		if !existingArtifactsMap[secRecord.ID] {
+			artifact := createSecurityArtifact(secRecord, modelID, metricsArtifactTypeID, nil, nil)
+			artifactsToInsert = append(artifactsToInsert, artifact)
+		} else {
+			glog.V(2).Infof("Security artifact %s already exists, skipping", secRecord.ID)
 		}
 	}
 
@@ -728,6 +791,126 @@ func createColdStartArtifact(entry coldStartEntry, externalID string, modelID in
 		Properties:       &properties,
 		CustomProperties: &customProperties,
 	}
+}
+
+// parseSecurityEvaluationFile reads and parses a security-evaluations.ndjson file
+func parseSecurityEvaluationFile(filePath string) ([]securityEvaluationRecord, error) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open security evaluation file %s: %v", filePath, err)
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	securityRecords := []securityEvaluationRecord{}
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		if strings.TrimSpace(line) == "" {
+			continue
+		}
+
+		var secRecord securityEvaluationRecord
+		if err := json.Unmarshal([]byte(line), &secRecord); err != nil {
+			glog.Errorf("Failed to parse security evaluation record: %v", err)
+			continue
+		}
+
+		securityRecords = append(securityRecords, secRecord)
+	}
+
+	if err := scanner.Err(); err != nil {
+		return nil, fmt.Errorf("error reading security evaluation file: %v", err)
+	}
+
+	return securityRecords, nil
+}
+
+// createSecurityArtifact creates a metrics artifact from a security evaluation record
+func createSecurityArtifact(secRecord securityEvaluationRecord, modelID int32, typeID int32, existingID *int32, existingCreateTime *int64) *dbmodels.CatalogMetricsArtifactImpl {
+	artifactName := fmt.Sprintf("security-%s", secRecord.ID)
+
+	createTime := existingCreateTime
+	var updateTime *int64
+
+	if existingCreateTime == nil {
+		if createdAtNum, ok := secRecord.CustomProperties["created_at"].(json.Number); ok {
+			createdAt, err := createdAtNum.Int64()
+			if err == nil {
+				createTime = &createdAt
+			} else {
+				glog.Warningf("%s: invalid created_at value: %v", artifactName, err)
+			}
+		}
+	}
+	if createTime == nil {
+		createTime = new(time.Now().UnixMilli())
+	}
+
+	if updatedAtNum, ok := secRecord.CustomProperties["updated_at"].(json.Number); ok {
+		updatedAt, err := updatedAtNum.Int64()
+		if err == nil {
+			updateTime = &updatedAt
+		} else {
+			glog.Warningf("%s: invalid updated_at value: %v", artifactName, err)
+		}
+	}
+	if updateTime == nil {
+		updateTime = new(time.Now().UnixMilli())
+	}
+	delete(secRecord.CustomProperties, "updated_at")
+	delete(secRecord.CustomProperties, "created_at")
+
+	properties := []models.Properties{}
+	customProperties := []models.Properties{}
+
+	for key, value := range secRecord.CustomProperties {
+		prop := models.Properties{Name: key}
+
+		switch v := value.(type) {
+		case string:
+			prop.StringValue = &v
+		case float64:
+			prop.DoubleValue = &v
+		case int64:
+			prop.SetInt64Value(v)
+		case int:
+			intVal := int32(v)
+			prop.IntValue = &intVal
+		case bool:
+			prop.BoolValue = &v
+		case json.Number:
+			if n, err := v.Int64(); err == nil {
+				prop.SetInt64Value(n)
+			} else if f, err := v.Float64(); err == nil {
+				prop.DoubleValue = &f
+			} else {
+				strVal := v.String()
+				prop.StringValue = &strVal
+			}
+		default:
+			strVal := fmt.Sprintf("%v", v)
+			prop.StringValue = &strVal
+		}
+
+		customProperties = append(customProperties, prop)
+	}
+
+	metricsArtifact := &dbmodels.CatalogMetricsArtifactImpl{
+		ID:     existingID,
+		TypeID: &typeID,
+		Attributes: &dbmodels.CatalogMetricsArtifactAttributes{
+			Name:                     &artifactName,
+			ExternalID:               &secRecord.ID,
+			CreateTimeSinceEpoch:     createTime,
+			LastUpdateTimeSinceEpoch: updateTime,
+			MetricsType:              dbmodels.MetricsTypeSecurityMetrics,
+		},
+		Properties:       &properties,
+		CustomProperties: &customProperties,
+	}
+
+	return metricsArtifact
 }
 
 // enrichCatalogModelFromMetadata updates CatalogModel with additional fields from metadata.json
