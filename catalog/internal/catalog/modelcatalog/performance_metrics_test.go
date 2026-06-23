@@ -952,6 +952,15 @@ func TestUnmarshalJSON_EdgeCases(t *testing.T) {
 				t.Errorf("performanceRecord.UnmarshalJSON() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
+
+		t.Run(tt.name+" (securityEvaluationRecord)", func(t *testing.T) {
+			var sr securityEvaluationRecord
+			err := sr.UnmarshalJSON([]byte(tt.jsonData))
+
+			if (err != nil) != tt.wantErr {
+				t.Errorf("securityEvaluationRecord.UnmarshalJSON() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
 	}
 }
 
@@ -1968,4 +1977,456 @@ func generateLongString(length int) string {
 		result.WriteString(char)
 	}
 	return result.String()
+}
+
+func TestSecurityEvaluationRecordUnmarshalJSON(t *testing.T) {
+	tests := []struct {
+		name             string
+		jsonData         string
+		wantID           string
+		wantModelID      string
+		wantCustomProps  map[string]any
+		wantErr          bool
+		checkCustomProps bool
+	}{
+		{
+			name: "complete security evaluation record",
+			jsonData: `{
+				"id": "sec-eval-123",
+				"model_id": "test-model-456",
+				"cve_score": 7.5,
+				"created_at": 1609459200,
+				"updated_at": 1609545600
+			}`,
+			wantID:      "sec-eval-123",
+			wantModelID: "test-model-456",
+			wantCustomProps: map[string]any{
+				"id":         "sec-eval-123",
+				"model_id":   "test-model-456",
+				"cve_score":  7.5,
+				"created_at": float64(1609459200),
+				"updated_at": float64(1609545600),
+			},
+			wantErr:          false,
+			checkCustomProps: true,
+		},
+		{
+			name: "minimal security record with only core fields",
+			jsonData: `{
+				"id": "minimal-sec",
+				"model_id": "minimal-model"
+			}`,
+			wantID:      "minimal-sec",
+			wantModelID: "minimal-model",
+			wantCustomProps: map[string]any{
+				"id":       "minimal-sec",
+				"model_id": "minimal-model",
+			},
+			wantErr:          false,
+			checkCustomProps: true,
+		},
+		{
+			name: "security record with custom properties",
+			jsonData: `{
+				"id": "custom-sec",
+				"model_id": "custom-model",
+				"risk_level": "high",
+				"exploitability": 8.5,
+				"patched": true
+			}`,
+			wantID:      "custom-sec",
+			wantModelID: "custom-model",
+			wantCustomProps: map[string]any{
+				"id":             "custom-sec",
+				"model_id":       "custom-model",
+				"risk_level":     "high",
+				"exploitability": 8.5,
+				"patched":        true,
+			},
+			wantErr:          false,
+			checkCustomProps: true,
+		},
+		{
+			name: "security record with null values",
+			jsonData: `{
+				"id": "null-sec",
+				"model_id": "null-model",
+				"null_field": null,
+				"score": 5.0
+			}`,
+			wantID:      "null-sec",
+			wantModelID: "null-model",
+			wantCustomProps: map[string]any{
+				"id":         "null-sec",
+				"model_id":   "null-model",
+				"null_field": nil,
+				"score":      5.0,
+			},
+			wantErr:          false,
+			checkCustomProps: true,
+		},
+		{
+			name: "security record missing core fields",
+			jsonData: `{
+				"cve_score": 9.8,
+				"severity": "critical"
+			}`,
+			wantID:           "",
+			wantModelID:      "",
+			wantErr:          false,
+			checkCustomProps: false,
+		},
+		{
+			name: "security record with wrong type for core fields",
+			jsonData: `{
+				"id": 123,
+				"model_id": 456,
+				"score": 7.0
+			}`,
+			wantID:           "",
+			wantModelID:      "",
+			wantErr:          false,
+			checkCustomProps: false,
+		},
+		{
+			name:             "empty JSON object",
+			jsonData:         `{}`,
+			wantID:           "",
+			wantModelID:      "",
+			wantErr:          false,
+			checkCustomProps: false,
+		},
+		{
+			name:             "invalid JSON",
+			jsonData:         `{"id": "invalid", "model_id":}`,
+			wantErr:          true,
+			checkCustomProps: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var sr securityEvaluationRecord
+			err := sr.UnmarshalJSON([]byte(tt.jsonData))
+
+			if (err != nil) != tt.wantErr {
+				t.Errorf("securityEvaluationRecord.UnmarshalJSON() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
+			if err != nil {
+				return
+			}
+
+			if sr.ID != tt.wantID {
+				t.Errorf("ID = %v, want %v", sr.ID, tt.wantID)
+			}
+			if sr.ModelID != tt.wantModelID {
+				t.Errorf("ModelID = %v, want %v", sr.ModelID, tt.wantModelID)
+			}
+
+			if sr.CustomProperties == nil {
+				t.Error("CustomProperties should not be nil")
+			}
+
+			if tt.checkCustomProps {
+				if len(sr.CustomProperties) != len(tt.wantCustomProps) {
+					t.Errorf("CustomProperties length = %v, want %v", len(sr.CustomProperties), len(tt.wantCustomProps))
+				}
+				for key, wantValue := range tt.wantCustomProps {
+					gotValue, exists := sr.CustomProperties[key]
+					if !exists {
+						t.Errorf("CustomProperties missing key %v", key)
+						continue
+					}
+
+					if jsonNumber, ok := gotValue.(json.Number); ok {
+						var newValue any
+						var convErr error
+						switch wantValue.(type) {
+						case float64:
+							newValue, convErr = jsonNumber.Float64()
+						case int, int32, int64:
+							newValue, convErr = jsonNumber.Int64()
+						}
+						if convErr == nil {
+							gotValue = newValue
+						}
+					}
+
+					if gotValue != wantValue {
+						t.Errorf("CustomProperties[%v] = %v (type %T), want %v (type %T)",
+							key, gotValue, gotValue, wantValue, wantValue)
+					}
+				}
+			}
+		})
+	}
+}
+
+func TestSecurityEvaluationRecordUnmarshalJSON_CoreFieldsInCustomProperties(t *testing.T) {
+	jsonData := `{
+		"id": "sec-id",
+		"model_id": "test-model",
+		"cve_score": 8.5
+	}`
+
+	var sr securityEvaluationRecord
+	err := sr.UnmarshalJSON([]byte(jsonData))
+	if err != nil {
+		t.Fatalf("Unexpected error: %v", err)
+	}
+
+	if sr.CustomProperties["id"] != "sec-id" {
+		t.Errorf("CustomProperties[id] = %v, want %v", sr.CustomProperties["id"], "sec-id")
+	}
+	if sr.CustomProperties["model_id"] != "test-model" {
+		t.Errorf("CustomProperties[model_id] = %v, want %v", sr.CustomProperties["model_id"], "test-model")
+	}
+	if v, _ := sr.CustomProperties["cve_score"].(json.Number).Float64(); v != 8.5 {
+		t.Errorf("CustomProperties[cve_score] = %v, want 8.5", sr.CustomProperties["cve_score"])
+	}
+}
+
+func TestCreateSecurityArtifact(t *testing.T) {
+	t.Run("artifact name uses security- prefix with record ID", func(t *testing.T) {
+		secRecord := securityEvaluationRecord{
+			ID:      "sec-eval-abc123",
+			ModelID: "test-model",
+			CustomProperties: map[string]any{
+				"id":       "sec-eval-abc123",
+				"model_id": "test-model",
+			},
+		}
+
+		artifact := createSecurityArtifact(secRecord, 1, 100, nil, nil)
+
+		if artifact.Attributes == nil {
+			t.Fatal("Attributes should not be nil")
+		}
+		if artifact.Attributes.Name == nil || *artifact.Attributes.Name != "security-sec-eval-abc123" {
+			t.Errorf("Name = %v, want security-sec-eval-abc123", artifact.Attributes.Name)
+		}
+	})
+
+	t.Run("external ID is the record ID", func(t *testing.T) {
+		secRecord := securityEvaluationRecord{
+			ID:               "sec-eval-xyz789",
+			CustomProperties: map[string]any{"id": "sec-eval-xyz789"},
+		}
+
+		artifact := createSecurityArtifact(secRecord, 1, 100, nil, nil)
+
+		if artifact.Attributes.ExternalID == nil || *artifact.Attributes.ExternalID != "sec-eval-xyz789" {
+			t.Errorf("ExternalID = %v, want sec-eval-xyz789", artifact.Attributes.ExternalID)
+		}
+	})
+
+	t.Run("metrics type is security-metrics", func(t *testing.T) {
+		secRecord := securityEvaluationRecord{
+			ID:               "sec-eval-001",
+			CustomProperties: map[string]any{"id": "sec-eval-001"},
+		}
+
+		artifact := createSecurityArtifact(secRecord, 1, 100, nil, nil)
+
+		if artifact.Attributes.MetricsType != "security-metrics" {
+			t.Errorf("MetricsType = %v, want security-metrics", artifact.Attributes.MetricsType)
+		}
+	})
+
+	t.Run("custom properties are mapped correctly", func(t *testing.T) {
+		strVal := "high"
+		floatVal := 9.1
+		boolVal := true
+		secRecord := securityEvaluationRecord{
+			ID:      "sec-eval-props",
+			ModelID: "test-model",
+			CustomProperties: map[string]any{
+				"id":           "sec-eval-props",
+				"risk_level":   strVal,
+				"cvss_score":   json.Number("9.1"),
+				"is_exploited": boolVal,
+			},
+		}
+
+		artifact := createSecurityArtifact(secRecord, 1, 100, nil, nil)
+
+		propMap := map[string]any{}
+		for _, p := range *artifact.CustomProperties {
+			if p.StringValue != nil {
+				propMap[p.Name] = *p.StringValue
+			} else if p.DoubleValue != nil {
+				propMap[p.Name] = *p.DoubleValue
+			} else if p.BoolValue != nil {
+				propMap[p.Name] = *p.BoolValue
+			}
+		}
+
+		if propMap["risk_level"] != strVal {
+			t.Errorf("risk_level = %v, want %v", propMap["risk_level"], strVal)
+		}
+		if propMap["cvss_score"] != floatVal {
+			t.Errorf("cvss_score = %v, want %v", propMap["cvss_score"], floatVal)
+		}
+		if propMap["is_exploited"] != boolVal {
+			t.Errorf("is_exploited = %v, want %v", propMap["is_exploited"], boolVal)
+		}
+	})
+
+	t.Run("created_at and updated_at are removed from custom properties", func(t *testing.T) {
+		createdAt := int64(1609459200000)
+		secRecord := securityEvaluationRecord{
+			ID: "sec-eval-timestamps",
+			CustomProperties: map[string]any{
+				"id":         "sec-eval-timestamps",
+				"created_at": json.Number("1609459200000"),
+				"updated_at": json.Number("1609545600000"),
+				"score":      json.Number("7.5"),
+			},
+		}
+
+		artifact := createSecurityArtifact(secRecord, 1, 100, nil, nil)
+
+		for _, p := range *artifact.CustomProperties {
+			if p.Name == "created_at" || p.Name == "updated_at" {
+				t.Errorf("unexpected property %q in custom properties", p.Name)
+			}
+		}
+
+		if artifact.Attributes.CreateTimeSinceEpoch == nil || *artifact.Attributes.CreateTimeSinceEpoch != createdAt {
+			t.Errorf("CreateTimeSinceEpoch = %v, want %v", artifact.Attributes.CreateTimeSinceEpoch, createdAt)
+		}
+	})
+}
+
+func TestParseSecurityEvaluationFile(t *testing.T) {
+	t.Run("valid multi-record NDJSON", func(t *testing.T) {
+		f := writeTempNDJSON(t, []string{
+			`{"id":"id-1","model_id":"m1","result":0.1,"pass":true}`,
+			`{"id":"id-2","model_id":"m1","result":0.2,"pass":false}`,
+		})
+
+		records, err := parseSecurityEvaluationFile(f)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if len(records) != 2 {
+			t.Fatalf("expected 2 records, got %d", len(records))
+		}
+		if records[0].ID != "id-1" || records[1].ID != "id-2" {
+			t.Errorf("unexpected record IDs: %v, %v", records[0].ID, records[1].ID)
+		}
+	})
+
+	t.Run("blank lines are skipped", func(t *testing.T) {
+		f := writeTempNDJSON(t, []string{
+			`{"id":"id-1","model_id":"m1"}`,
+			``,
+			`   `,
+			`{"id":"id-2","model_id":"m1"}`,
+		})
+
+		records, err := parseSecurityEvaluationFile(f)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if len(records) != 2 {
+			t.Errorf("expected 2 records after skipping blank lines, got %d", len(records))
+		}
+	})
+
+	t.Run("malformed record is skipped, valid records returned", func(t *testing.T) {
+		f := writeTempNDJSON(t, []string{
+			`{"id":"id-1","model_id":"m1"}`,
+			`{not valid json`,
+			`{"id":"id-2","model_id":"m1"}`,
+		})
+
+		records, err := parseSecurityEvaluationFile(f)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if len(records) != 2 {
+			t.Errorf("expected 2 records after skipping malformed line, got %d", len(records))
+		}
+	})
+
+	t.Run("empty file returns zero records without error", func(t *testing.T) {
+		f := writeTempNDJSON(t, []string{})
+
+		records, err := parseSecurityEvaluationFile(f)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		if len(records) != 0 {
+			t.Errorf("expected 0 records, got %d", len(records))
+		}
+	})
+
+	t.Run("nonexistent file returns error", func(t *testing.T) {
+		_, err := parseSecurityEvaluationFile("/nonexistent/path/security-evaluations.ndjson")
+		if err == nil {
+			t.Error("expected error for nonexistent file, got nil")
+		}
+	})
+}
+
+// writeTempNDJSON writes lines to a temp file and returns its path.
+func writeTempNDJSON(t *testing.T, lines []string) string {
+	t.Helper()
+	f, err := os.CreateTemp(t.TempDir(), "*.ndjson")
+	if err != nil {
+		t.Fatalf("failed to create temp file: %v", err)
+	}
+	for _, line := range lines {
+		if _, err := f.WriteString(line + "\n"); err != nil {
+			t.Fatalf("failed to write line: %v", err)
+		}
+	}
+	f.Close()
+	return f.Name()
+}
+
+func TestSecurityDuplicateIDDeduplication(t *testing.T) {
+	t.Run("duplicate IDs in NDJSON file produce only one artifact on first sync", func(t *testing.T) {
+		// Two records sharing the same id — only the first should be inserted.
+		records := []securityEvaluationRecord{
+			{ID: "dup-id", ModelID: "m1", CustomProperties: map[string]any{"id": "dup-id", "result": json.Number("0.1")}},
+			{ID: "dup-id", ModelID: "m1", CustomProperties: map[string]any{"id": "dup-id", "result": json.Number("0.9")}},
+			{ID: "unique-id", ModelID: "m1", CustomProperties: map[string]any{"id": "unique-id", "result": json.Number("0.5")}},
+		}
+
+		// Simulate the deduplication logic from processModelArtifactsBatch with an empty existingArtifactsMap.
+		existingArtifactsMap := map[string]bool{}
+		artifactsToInsert := []*models.CatalogMetricsArtifactImpl{}
+		seenSecurityIDs := make(map[string]bool, len(records))
+		for _, secRecord := range records {
+			if seenSecurityIDs[secRecord.ID] {
+				continue
+			}
+			seenSecurityIDs[secRecord.ID] = true
+			if !existingArtifactsMap[secRecord.ID] {
+				artifact := createSecurityArtifact(secRecord, 1, 100, nil, nil)
+				artifactsToInsert = append(artifactsToInsert, artifact)
+			}
+		}
+
+		if len(artifactsToInsert) != 2 {
+			t.Errorf("expected 2 artifacts (dup-id deduplicated, unique-id kept), got %d", len(artifactsToInsert))
+		}
+
+		ids := map[string]int{}
+		for _, a := range artifactsToInsert {
+			if a.Attributes != nil && a.Attributes.ExternalID != nil {
+				ids[*a.Attributes.ExternalID]++
+			}
+		}
+		if ids["dup-id"] != 1 {
+			t.Errorf("expected dup-id to appear exactly once, got %d", ids["dup-id"])
+		}
+		if ids["unique-id"] != 1 {
+			t.Errorf("expected unique-id to appear exactly once, got %d", ids["unique-id"])
+		}
+	})
 }
