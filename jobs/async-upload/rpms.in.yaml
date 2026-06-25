@@ -8,14 +8,6 @@ contentOrigin:
     - "./ubi.repo"
 packages:
   - skopeo
-  - gcc
-  - make
-  - python3.12-devel
-  - cargo
-  - g++
-  - libffi-devel
-  - openssl-devel
-  - perl
 context:
   containerfile: 
     file: "./Dockerfile.konflux"
