@@ -14,11 +14,11 @@ import (
 	"encoding/json"
 )
 
-// checks if the CatalogSourcePreviewResponse type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &CatalogSourcePreviewResponse{}
+// checks if the AssetSourcePreviewResponse type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &AssetSourcePreviewResponse{}
 
-// CatalogSourcePreviewResponse Response containing models and their inclusion/exclusion status.
-type CatalogSourcePreviewResponse struct {
+// AssetSourcePreviewResponse Response containing assets and their inclusion/exclusion status.
+type AssetSourcePreviewResponse struct {
 	// Token to use to retrieve next page of results.
 	NextPageToken string `json:"nextPageToken"`
 	// Maximum number of resources to return in the result.
@@ -26,19 +26,19 @@ type CatalogSourcePreviewResponse struct {
 	// Number of items in result list.
 	Size      int32            `json:"size"`
 	AssetType CatalogAssetType `json:"assetType"`
-	// Array of model preview results.
-	Items   []ModelPreviewResult                     `json:"items"`
-	Summary CatalogSourcePreviewResponseAllOfSummary `json:"summary"`
+	// Array of asset preview results.
+	Items   []AssetPreviewResult                   `json:"items"`
+	Summary AssetSourcePreviewResponseAllOfSummary `json:"summary"`
 }
 
-type _CatalogSourcePreviewResponse CatalogSourcePreviewResponse
+type _AssetSourcePreviewResponse AssetSourcePreviewResponse
 
-// NewCatalogSourcePreviewResponse instantiates a new CatalogSourcePreviewResponse object
+// NewAssetSourcePreviewResponse instantiates a new AssetSourcePreviewResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewCatalogSourcePreviewResponse(nextPageToken string, pageSize int32, size int32, assetType CatalogAssetType, items []ModelPreviewResult, summary CatalogSourcePreviewResponseAllOfSummary) *CatalogSourcePreviewResponse {
-	this := CatalogSourcePreviewResponse{}
+func NewAssetSourcePreviewResponse(nextPageToken string, pageSize int32, size int32, assetType CatalogAssetType, items []AssetPreviewResult, summary AssetSourcePreviewResponseAllOfSummary) *AssetSourcePreviewResponse {
+	this := AssetSourcePreviewResponse{}
 	this.NextPageToken = nextPageToken
 	this.PageSize = pageSize
 	this.Size = size
@@ -48,18 +48,18 @@ func NewCatalogSourcePreviewResponse(nextPageToken string, pageSize int32, size 
 	return &this
 }
 
-// NewCatalogSourcePreviewResponseWithDefaults instantiates a new CatalogSourcePreviewResponse object
+// NewAssetSourcePreviewResponseWithDefaults instantiates a new AssetSourcePreviewResponse object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewCatalogSourcePreviewResponseWithDefaults() *CatalogSourcePreviewResponse {
-	this := CatalogSourcePreviewResponse{}
+func NewAssetSourcePreviewResponseWithDefaults() *AssetSourcePreviewResponse {
+	this := AssetSourcePreviewResponse{}
 	var assetType CatalogAssetType = CATALOGASSETTYPE_MODELS
 	this.AssetType = assetType
 	return &this
 }
 
 // GetNextPageToken returns the NextPageToken field value
-func (o *CatalogSourcePreviewResponse) GetNextPageToken() string {
+func (o *AssetSourcePreviewResponse) GetNextPageToken() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -70,7 +70,7 @@ func (o *CatalogSourcePreviewResponse) GetNextPageToken() string {
 
 // GetNextPageTokenOk returns a tuple with the NextPageToken field value
 // and a boolean to check if the value has been set.
-func (o *CatalogSourcePreviewResponse) GetNextPageTokenOk() (*string, bool) {
+func (o *AssetSourcePreviewResponse) GetNextPageTokenOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -78,12 +78,12 @@ func (o *CatalogSourcePreviewResponse) GetNextPageTokenOk() (*string, bool) {
 }
 
 // SetNextPageToken sets field value
-func (o *CatalogSourcePreviewResponse) SetNextPageToken(v string) {
+func (o *AssetSourcePreviewResponse) SetNextPageToken(v string) {
 	o.NextPageToken = v
 }
 
 // GetPageSize returns the PageSize field value
-func (o *CatalogSourcePreviewResponse) GetPageSize() int32 {
+func (o *AssetSourcePreviewResponse) GetPageSize() int32 {
 	if o == nil {
 		var ret int32
 		return ret
@@ -94,7 +94,7 @@ func (o *CatalogSourcePreviewResponse) GetPageSize() int32 {
 
 // GetPageSizeOk returns a tuple with the PageSize field value
 // and a boolean to check if the value has been set.
-func (o *CatalogSourcePreviewResponse) GetPageSizeOk() (*int32, bool) {
+func (o *AssetSourcePreviewResponse) GetPageSizeOk() (*int32, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -102,12 +102,12 @@ func (o *CatalogSourcePreviewResponse) GetPageSizeOk() (*int32, bool) {
 }
 
 // SetPageSize sets field value
-func (o *CatalogSourcePreviewResponse) SetPageSize(v int32) {
+func (o *AssetSourcePreviewResponse) SetPageSize(v int32) {
 	o.PageSize = v
 }
 
 // GetSize returns the Size field value
-func (o *CatalogSourcePreviewResponse) GetSize() int32 {
+func (o *AssetSourcePreviewResponse) GetSize() int32 {
 	if o == nil {
 		var ret int32
 		return ret
@@ -118,7 +118,7 @@ func (o *CatalogSourcePreviewResponse) GetSize() int32 {
 
 // GetSizeOk returns a tuple with the Size field value
 // and a boolean to check if the value has been set.
-func (o *CatalogSourcePreviewResponse) GetSizeOk() (*int32, bool) {
+func (o *AssetSourcePreviewResponse) GetSizeOk() (*int32, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -126,12 +126,12 @@ func (o *CatalogSourcePreviewResponse) GetSizeOk() (*int32, bool) {
 }
 
 // SetSize sets field value
-func (o *CatalogSourcePreviewResponse) SetSize(v int32) {
+func (o *AssetSourcePreviewResponse) SetSize(v int32) {
 	o.Size = v
 }
 
 // GetAssetType returns the AssetType field value
-func (o *CatalogSourcePreviewResponse) GetAssetType() CatalogAssetType {
+func (o *AssetSourcePreviewResponse) GetAssetType() CatalogAssetType {
 	if o == nil {
 		var ret CatalogAssetType
 		return ret
@@ -142,7 +142,7 @@ func (o *CatalogSourcePreviewResponse) GetAssetType() CatalogAssetType {
 
 // GetAssetTypeOk returns a tuple with the AssetType field value
 // and a boolean to check if the value has been set.
-func (o *CatalogSourcePreviewResponse) GetAssetTypeOk() (*CatalogAssetType, bool) {
+func (o *AssetSourcePreviewResponse) GetAssetTypeOk() (*CatalogAssetType, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -150,14 +150,14 @@ func (o *CatalogSourcePreviewResponse) GetAssetTypeOk() (*CatalogAssetType, bool
 }
 
 // SetAssetType sets field value
-func (o *CatalogSourcePreviewResponse) SetAssetType(v CatalogAssetType) {
+func (o *AssetSourcePreviewResponse) SetAssetType(v CatalogAssetType) {
 	o.AssetType = v
 }
 
 // GetItems returns the Items field value
-func (o *CatalogSourcePreviewResponse) GetItems() []ModelPreviewResult {
+func (o *AssetSourcePreviewResponse) GetItems() []AssetPreviewResult {
 	if o == nil {
-		var ret []ModelPreviewResult
+		var ret []AssetPreviewResult
 		return ret
 	}
 
@@ -166,7 +166,7 @@ func (o *CatalogSourcePreviewResponse) GetItems() []ModelPreviewResult {
 
 // GetItemsOk returns a tuple with the Items field value
 // and a boolean to check if the value has been set.
-func (o *CatalogSourcePreviewResponse) GetItemsOk() ([]ModelPreviewResult, bool) {
+func (o *AssetSourcePreviewResponse) GetItemsOk() ([]AssetPreviewResult, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -174,14 +174,14 @@ func (o *CatalogSourcePreviewResponse) GetItemsOk() ([]ModelPreviewResult, bool)
 }
 
 // SetItems sets field value
-func (o *CatalogSourcePreviewResponse) SetItems(v []ModelPreviewResult) {
+func (o *AssetSourcePreviewResponse) SetItems(v []AssetPreviewResult) {
 	o.Items = v
 }
 
 // GetSummary returns the Summary field value
-func (o *CatalogSourcePreviewResponse) GetSummary() CatalogSourcePreviewResponseAllOfSummary {
+func (o *AssetSourcePreviewResponse) GetSummary() AssetSourcePreviewResponseAllOfSummary {
 	if o == nil {
-		var ret CatalogSourcePreviewResponseAllOfSummary
+		var ret AssetSourcePreviewResponseAllOfSummary
 		return ret
 	}
 
@@ -190,7 +190,7 @@ func (o *CatalogSourcePreviewResponse) GetSummary() CatalogSourcePreviewResponse
 
 // GetSummaryOk returns a tuple with the Summary field value
 // and a boolean to check if the value has been set.
-func (o *CatalogSourcePreviewResponse) GetSummaryOk() (*CatalogSourcePreviewResponseAllOfSummary, bool) {
+func (o *AssetSourcePreviewResponse) GetSummaryOk() (*AssetSourcePreviewResponseAllOfSummary, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -198,11 +198,11 @@ func (o *CatalogSourcePreviewResponse) GetSummaryOk() (*CatalogSourcePreviewResp
 }
 
 // SetSummary sets field value
-func (o *CatalogSourcePreviewResponse) SetSummary(v CatalogSourcePreviewResponseAllOfSummary) {
+func (o *AssetSourcePreviewResponse) SetSummary(v AssetSourcePreviewResponseAllOfSummary) {
 	o.Summary = v
 }
 
-func (o CatalogSourcePreviewResponse) MarshalJSON() ([]byte, error) {
+func (o AssetSourcePreviewResponse) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -210,7 +210,7 @@ func (o CatalogSourcePreviewResponse) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o CatalogSourcePreviewResponse) ToMap() (map[string]interface{}, error) {
+func (o AssetSourcePreviewResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["nextPageToken"] = o.NextPageToken
 	toSerialize["pageSize"] = o.PageSize
@@ -221,38 +221,38 @@ func (o CatalogSourcePreviewResponse) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-type NullableCatalogSourcePreviewResponse struct {
-	value *CatalogSourcePreviewResponse
+type NullableAssetSourcePreviewResponse struct {
+	value *AssetSourcePreviewResponse
 	isSet bool
 }
 
-func (v NullableCatalogSourcePreviewResponse) Get() *CatalogSourcePreviewResponse {
+func (v NullableAssetSourcePreviewResponse) Get() *AssetSourcePreviewResponse {
 	return v.value
 }
 
-func (v *NullableCatalogSourcePreviewResponse) Set(val *CatalogSourcePreviewResponse) {
+func (v *NullableAssetSourcePreviewResponse) Set(val *AssetSourcePreviewResponse) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableCatalogSourcePreviewResponse) IsSet() bool {
+func (v NullableAssetSourcePreviewResponse) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableCatalogSourcePreviewResponse) Unset() {
+func (v *NullableAssetSourcePreviewResponse) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableCatalogSourcePreviewResponse(val *CatalogSourcePreviewResponse) *NullableCatalogSourcePreviewResponse {
-	return &NullableCatalogSourcePreviewResponse{value: val, isSet: true}
+func NewNullableAssetSourcePreviewResponse(val *AssetSourcePreviewResponse) *NullableAssetSourcePreviewResponse {
+	return &NullableAssetSourcePreviewResponse{value: val, isSet: true}
 }
 
-func (v NullableCatalogSourcePreviewResponse) MarshalJSON() ([]byte, error) {
+func (v NullableAssetSourcePreviewResponse) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableCatalogSourcePreviewResponse) UnmarshalJSON(src []byte) error {
+func (v *NullableAssetSourcePreviewResponse) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
