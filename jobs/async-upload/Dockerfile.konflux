@@ -13,6 +13,18 @@ RUN . /cachi2/cachi2.env && \
     microdnf install -y skopeo gcc make python3.12-devel cargo g++ libffi-devel openssl-devel perl && \
     microdnf clean all
 
+# Activate the OpenSSL FIPS provider so the FIPS compliance scanner finds it.
+# openssl-fips-provider-so ships fips.so but the provider is not wired into
+# openssl.cnf by default. RHEL disables `openssl fipsinstall`, so we use
+# update-crypto-policies and manually wire the provider section.
+RUN microdnf install -y crypto-policies-scripts && \
+    update-crypto-policies --set FIPS && \
+    printf '[fips_sect]\nactivate = 1\n' > /etc/pki/tls/openssl.d/fips.cnf && \
+    sed -i 's/^default = default_sect$/default = default_sect\nfips = fips_sect/' \
+        /etc/pki/tls/openssl.cnf && \
+    printf '\n.include /etc/pki/tls/fips_local.cnf\n' >> /etc/pki/tls/openssl.cnf && \
+    microdnf clean all
+
 # security/env hardening
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
