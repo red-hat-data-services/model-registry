@@ -9,6 +9,7 @@ import (
 
 	mapset "github.com/deckarep/golang-set/v2"
 
+	"github.com/kubeflow/hub/catalog/internal/catalog/agentcatalog"
 	"github.com/kubeflow/hub/catalog/internal/catalog/basecatalog"
 	"github.com/kubeflow/hub/catalog/internal/catalog/mcpcatalog"
 	"github.com/kubeflow/hub/catalog/internal/catalog/modelcatalog"
@@ -27,10 +28,17 @@ type mcpSourceProvider interface {
 	MCPSources() *mcpcatalog.MCPSourceCollection
 }
 
+// agentSourceProvider is a local interface satisfied by the agent plugin.
+// Used to get agent sources for the unified FindSources endpoint.
+type agentSourceProvider interface {
+	AgentSources() *agentcatalog.AgentSourceCollection
+}
+
 type Plugin struct {
 	*plugin.PluginBase
-	loader   *modelcatalog.ModelLoader
-	services modelcatalog.Services
+	loader     *modelcatalog.ModelLoader
+	services   modelcatalog.Services
+	perfLoader *modelcatalog.PerformanceMetricsLoader
 }
 
 func (p *Plugin) Name() string                   { return "model" }
@@ -97,6 +105,7 @@ func (p *Plugin) Init(_ context.Context, cfg plugin.Config) error {
 		if err != nil {
 			return fmt.Errorf("initializing performance metrics: %w", err)
 		}
+		p.perfLoader = perfLoader
 		p.loader.RegisterEventHandler(perfLoader.Load)
 	}
 
@@ -125,6 +134,28 @@ func (p *Plugin) Init(_ context.Context, cfg plugin.Config) error {
 	return nil
 }
 
+func (p *Plugin) Reconnect(_ context.Context, cfg plugin.Config) error {
+	p.services = modelcatalog.Services{
+		CatalogModelRepository:           plugin.GetRepo[modelcatalogmodels.CatalogModelRepository](cfg.RepoSet),
+		CatalogArtifactRepository:        plugin.GetRepo[models.CatalogArtifactRepository](cfg.RepoSet),
+		CatalogModelArtifactRepository:   plugin.GetRepo[modelcatalogmodels.CatalogModelArtifactRepository](cfg.RepoSet),
+		CatalogMetricsArtifactRepository: plugin.GetRepo[modelcatalogmodels.CatalogMetricsArtifactRepository](cfg.RepoSet),
+		CatalogSourceRepository:          plugin.GetRepo[models.CatalogSourceRepository](cfg.RepoSet),
+		PropertyOptionsRepository:        plugin.GetRepo[models.PropertyOptionsRepository](cfg.RepoSet),
+	}
+	p.loader.UpdateServices(p.services)
+	if p.perfLoader != nil {
+		if err := p.perfLoader.UpdateRepos(
+			p.services.CatalogModelRepository,
+			p.services.CatalogMetricsArtifactRepository,
+			cfg.RepoSet.TypeMap(),
+		); err != nil {
+			return fmt.Errorf("updating performance metrics repos: %w", err)
+		}
+	}
+	return nil
+}
+
 func (p *Plugin) RegisterRoutes(router chi.Router) error {
 	var mcpSources *mcpcatalog.MCPSourceCollection
 	if mcpPlugin, ok := plugin.Get("mcp"); ok {
@@ -133,10 +164,18 @@ func (p *Plugin) RegisterRoutes(router chi.Router) error {
 		}
 	}
 
+	var agentSources *agentcatalog.AgentSourceCollection
+	if agentPlugin, ok := plugin.Get("agent"); ok {
+		if ap, ok := agentPlugin.(agentSourceProvider); ok {
+			agentSources = ap.AgentSources()
+		}
+	}
+
 	svc := openapi.NewModelCatalogServiceAPIService(
 		modelcatalog.NewDBCatalog(p.services, p.loader.Sources),
 		p.loader.Sources,
 		mcpSources,
+		agentSources,
 		p.loader.Labels,
 		p.services.CatalogSourceRepository,
 	)

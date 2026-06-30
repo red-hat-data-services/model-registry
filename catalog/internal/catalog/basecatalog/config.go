@@ -54,6 +54,9 @@ type SourceConfig struct {
 	// MCPCatalogs contains MCP catalog source definitions
 	MCPCatalogs []MCPSource `yaml:"mcp_catalogs,omitempty" json:"mcp_catalogs,omitempty"`
 
+	// AgentCatalogs contains agent catalog source definitions
+	AgentCatalogs []PluginSource `yaml:"agent_catalogs,omitempty" json:"agent_catalogs,omitempty"`
+
 	// Labels contains label definitions for the catalogs
 	Labels []map[string]any `yaml:"labels,omitempty" json:"labels,omitempty"`
 
@@ -141,6 +144,9 @@ func (c *SourceConfig) Validate() error {
 		return err
 	}
 
+	if err := validateSourceIDs("agent", c.AgentCatalogs, seen); err != nil {
+		return err
+	}
 	if err := ValidateNamedQueries(c.NamedQueries); err != nil {
 		return fmt.Errorf("invalid named queries: %w", err)
 	}
