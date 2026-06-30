@@ -1,16 +1,48 @@
 #!/bin/bash
 # Builds the async upload job hermetically using podman. The hermeto CLI expects to be ran from the git root
 set -euxo pipefail
+
+if [ $# -ne 2 ]; then
+  echo "Usage: $0 <activation-key> <org-id>" >&2
+  echo "Create an activation key here https://console.redhat.com/insights/connector/activation-keys"
+  exit 1
+fi
+
+ACTIVATION_KEY="$1"
+ORG_ID="$2"
+
 shopt -s expand_aliases
 mkdir -p /tmp/cachi2
-alias hermeto='podman run --rm -ti -v "$PWD:$PWD:z" -w "$PWD" -v /tmp/cachi2:/tmp/cachi2:z ghcr.io/hermetoproject/hermeto:latest'
+alias hermeto='podman run --rm -ti -v shared-certs:/certs -v "$PWD:$PWD:z" -w "$PWD" -v /tmp/cachi2:/tmp/cachi2:z ghcr.io/hermetoproject/hermeto:latest'
 
 
-hermeto fetch-deps --output /tmp/cachi2/output '[{"type": "rpm", "path": "jobs/async-upload"},{
-  "type": "pip", "path": "jobs/async-upload",
-  "requirements_files": ["requirements-aipcc.txt"],
-  "binary": { "arch": "x86_64", "os": "linux" }
-}]'
+podman run --rm -v shared-certs:/certs -i registry.access.redhat.com/ubi9/ubi:9.6 /bin/bash <<EOF
+set -e
+subscription-manager config --rhsm.manage_repos=0
+subscription-manager register --activationkey="${ACTIVATION_KEY}" --org="${ORG_ID}"
+cp \$(ls /etc/pki/entitlement/*.pem | grep -v '\-key\.pem$') /certs/cert.pem
+cp \$(ls /etc/pki/entitlement/*-key.pem) /certs/key.pem
+cp /etc/rhsm/ca/redhat-uep.pem /certs/redhat-uep.pem
+EOF
+
+hermeto fetch-deps --output /tmp/cachi2/output \
+  '[{
+    "type": "rpm",
+    "path": "jobs/async-upload",
+    "options": {
+      "ssl": {
+        "client_cert": "/certs/cert.pem",
+        "client_key": "/certs/key.pem",
+        "ca_bundle": "/certs/redhat-uep.pem"
+      }
+    }
+  },
+  {
+    "type": "pip",
+    "path": "jobs/async-upload",
+    "requirements_files": ["requirements-aipcc.txt"],
+    "binary": { "arch": "x86_64", "os": "linux" }
+  }]'
 
 hermeto inject-files /tmp/cachi2/output --for-output-dir /cachi2/output
 hermeto generate-env -f env -o /tmp/cachi2/cachi2.env --for-output-dir /tmp/cachi2 /tmp/cachi2/output

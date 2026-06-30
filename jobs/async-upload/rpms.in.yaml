@@ -5,7 +5,7 @@ arches:
   - s390x
 contentOrigin:
   repofiles: 
-    - "./ubi.repo"
+    - "./redhat.repo"
 packages:
   - skopeo
 context:
