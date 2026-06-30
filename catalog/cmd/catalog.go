@@ -23,6 +23,7 @@ import (
 
 	_ "github.com/kubeflow/hub/catalog/internal/plugins/mcp"
 	_ "github.com/kubeflow/hub/catalog/internal/plugins/model"
+	_ "github.com/kubeflow/hub/catalog/internal/plugins/agent"
 )
 
 var catalogCfg = struct {
@@ -129,10 +130,31 @@ func runCatalogServer(_ *cobra.Command, _ []string) error {
 		return fmt.Errorf("error building datastore spec: %w", err)
 	}
 
-	elector.OnBecomeLeader(func(_ context.Context) {
+	var pluginServer *plugin.Server
+	pluginReady := make(chan struct{})
+	elector.OnBecomeLeader(func(leaderCtx context.Context) {
 		if err := ds.RunMigrations(spec); err != nil {
-			glog.Errorf("unable to run migrations: %v", err)
+			glog.Errorf("unable to run migrations: %v — canceling to trigger restart", err)
+			cancel()
+			return
 		}
+		select {
+		case <-pluginReady:
+		case <-leaderCtx.Done():
+			return
+		}
+		newRepoSet, err := ds.Reconnect(spec)
+		if err != nil {
+			glog.Errorf("unable to reconnect after migrations: %v — canceling to trigger restart", err)
+			cancel()
+			return
+		}
+		if err := pluginServer.Reconnect(leaderCtx, newRepoSet); err != nil {
+			glog.Errorf("unable to reconnect plugins: %v — canceling to trigger restart", err)
+			cancel()
+			return
+		}
+		pluginServer.NotifyLeader(leaderCtx)
 	})
 
 	repoSet, err := ds.Connect(spec)
@@ -141,7 +163,7 @@ func runCatalogServer(_ *cobra.Command, _ []string) error {
 	}
 
 	// Plugin server setup
-	pluginServer := plugin.NewServer(plugin.ServerConfig{
+	pluginServer = plugin.NewServer(plugin.ServerConfig{
 		DB:                     gormDB,
 		ConfigPaths:            catalogCfg.ConfigPath,
 		PerformanceMetricsPath: catalogCfg.PerformanceMetricsPath,
@@ -162,6 +184,8 @@ func runCatalogServer(_ *cobra.Command, _ []string) error {
 	if err := pluginServer.Start(ctx); err != nil {
 		return fmt.Errorf("error starting plugins: %w", err)
 	}
+
+	close(pluginReady)
 
 	// Signal handling
 	sigCh := make(chan os.Signal, 1)
@@ -196,12 +220,6 @@ func runCatalogServer(_ *cobra.Command, _ []string) error {
 			glog.Errorf("HTTP server shutdown error: %v", err)
 		}
 		return nil
-	})
-
-	elector.OnBecomeLeader(func(leaderCtx context.Context) {
-		glog.Info("Became leader - notifying plugins")
-		pluginServer.NotifyLeader(leaderCtx)
-		glog.Info("Leader callback complete")
 	})
 
 	g.Go(func() error {

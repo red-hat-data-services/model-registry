@@ -1,0 +1,140 @@
+# Agent starter kit test data for E2E tests
+source: Sample Agent Catalog
+agents:
+  - name: travel-planner
+    displayName: "Travel Planner Agent"
+    description: "Multi-step travel planning agent that researches destinations, compares flights and hotels, and builds complete itineraries using tool calling."
+    readme: "# Travel Planner Agent\n\nA starter kit for building a travel planning assistant. Uses ReAct-style reasoning to break down complex travel requests into research, comparison, and booking steps.\n\n## Features\n- Multi-city itinerary planning\n- Flight and hotel comparison via tool calls\n- Budget-aware recommendations"
+    framework: langgraph
+    agentType: starter_kit
+    tags:
+      - travel
+      - planning
+      - react
+      - tool-calling
+    models:
+      - granite-3.1-8b-instruct
+      - mistral-7b-instruct
+    logo: "https://example.com/logos/travel-planner.svg"
+    repositoryUrl: "https://github.com/example-org/agent-starter-kits/tree/main/agents/travel-planner"
+    publishedDate: "2025-06-01T00:00:00Z"
+    env:
+      - name: MODEL_ENDPOINT
+        required: true
+      - name: MODEL_NAME
+        required: true
+      - name: FLIGHTS_API_KEY
+        required: false
+    artifacts:
+      - uri: "oci://quay.io/example-org/travel-planner-agent:latest"
+    customProperties: {}
+    createTimeSinceEpoch: "1748736000000"
+    lastUpdateTimeSinceEpoch: "1750550400000"
+
+  - name: code-reviewer
+    displayName: "Code Review Agent"
+    description: "Automated code review agent that analyzes pull requests for bugs, security issues, and style violations using static analysis tools and LLM reasoning."
+    framework: crewai
+    agentType: starter_kit
+    tags:
+      - code-review
+      - security
+      - developer-tools
+    models:
+      - granite-3.1-8b-instruct
+    repositoryUrl: "https://github.com/example-org/agent-starter-kits/tree/main/agents/code-reviewer"
+    publishedDate: "2025-05-15T00:00:00Z"
+    env:
+      - name: MODEL_ENDPOINT
+        required: true
+      - name: MODEL_NAME
+        required: true
+      - name: GITHUB_TOKEN
+        required: true
+    artifacts:
+      - uri: "oci://quay.io/example-org/code-reviewer-agent:latest"
+    customProperties: {}
+    createTimeSinceEpoch: "1747267200000"
+    lastUpdateTimeSinceEpoch: "1750550400000"
+
+  - name: customer-support-bot
+    displayName: "Customer Support Bot"
+    description: "RAG-powered customer support agent that searches knowledge bases and previous tickets to provide accurate, context-aware responses to customer inquiries."
+    framework: llamaindex
+    agentType: starter_kit
+    tags:
+      - customer-support
+      - rag
+      - knowledge-base
+    models:
+      - granite-3.1-8b-instruct
+      - llama-3.1-8b-instruct
+    repositoryUrl: "https://github.com/example-org/agent-starter-kits/tree/main/agents/customer-support"
+    publishedDate: "2025-05-20T00:00:00Z"
+    env:
+      - name: MODEL_ENDPOINT
+        required: true
+      - name: MODEL_NAME
+        required: true
+      - name: VECTOR_DB_URI
+        required: true
+      - name: VECTOR_DB_TOKEN
+        required: false
+    customProperties: {}
+    createTimeSinceEpoch: "1747699200000"
+    lastUpdateTimeSinceEpoch: "1750550400000"
+
+  - name: data-pipeline-orchestrator
+    displayName: "Data Pipeline Orchestrator"
+    description: "Agent that designs and executes data transformation pipelines by composing SQL queries, API calls, and file operations through MCP tool servers."
+    framework: autogen
+    agentType: starter_kit
+    tags:
+      - data-engineering
+      - mcp
+      - pipeline
+      - sql
+    models:
+      - granite-3.1-8b-instruct
+    repositoryUrl: "https://github.com/example-org/agent-starter-kits/tree/main/agents/data-pipeline"
+    publishedDate: "2025-04-28T00:00:00Z"
+    env:
+      - name: MODEL_ENDPOINT
+        required: true
+      - name: MODEL_NAME
+        required: true
+      - name: MCP_SERVER_URL
+        required: true
+      - name: DATABASE_URL
+        required: true
+    artifacts:
+      - uri: "oci://quay.io/example-org/data-pipeline-agent:latest"
+    customProperties: {}
+    createTimeSinceEpoch: "1745798400000"
+    lastUpdateTimeSinceEpoch: "1750550400000"
+
+  - name: research-assistant
+    displayName: "Research Assistant"
+    description: "Web search and summarization agent that gathers information from multiple sources, cross-references findings, and produces structured research reports."
+    framework: langgraph
+    agentType: starter_kit
+    tags:
+      - research
+      - web-search
+      - summarization
+      - report-generation
+    models:
+      - granite-3.1-8b-instruct
+      - mistral-7b-instruct
+    repositoryUrl: "https://github.com/example-org/agent-starter-kits/tree/main/agents/research-assistant"
+    publishedDate: "2025-05-10T00:00:00Z"
+    env:
+      - name: MODEL_ENDPOINT
+        required: true
+      - name: MODEL_NAME
+        required: true
+      - name: SEARCH_API_KEY
+        required: true
+    customProperties: {}
+    createTimeSinceEpoch: "1746835200000"
+    lastUpdateTimeSinceEpoch: "1750550400000"
