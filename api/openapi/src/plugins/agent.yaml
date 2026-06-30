@@ -1,0 +1,220 @@
+paths:
+  /api/agent_catalog/v1alpha1/agents:
+    description: >-
+      The REST endpoint/path used to list zero or more `Agent` entities.
+    get:
+      summary: List agents.
+      tags:
+        - AgentCatalogService
+      parameters:
+        - name: name
+          description: Filter by name using SQL LIKE pattern matching.
+          schema:
+            type: string
+          in: query
+          required: false
+        - name: q
+          description: Free-form keyword search used to filter the response.
+          schema:
+            type: string
+          in: query
+          required: false
+        - name: source
+          description: Filter by source ID.
+          schema:
+            type: array
+            items:
+              type: string
+          in: query
+          required: false
+        - name: sourceLabel
+          description: |-
+            Filter by the label associated with the source. Multiple
+            values can be separated by commas. If one of the values is the
+            string `null`, then entities from every source without a label will
+            be returned.
+          schema:
+            type: array
+            items:
+              type: string
+          in: query
+          required: false
+        - $ref: "#/components/parameters/filterQuery"
+        - $ref: "#/components/parameters/pageSize"
+        - $ref: "#/components/parameters/orderBy"
+        - $ref: "#/components/parameters/sortOrder"
+        - $ref: "#/components/parameters/nextPageToken"
+      responses:
+        "200":
+          $ref: "#/components/responses/AgentListResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+      operationId: findAgents
+
+  /api/agent_catalog/v1alpha1/agents/filter_options:
+    description: Lists options for `filterQuery` when listing agents.
+    get:
+      summary: Lists fields and values that can be used in `filterQuery` on the list agents endpoint.
+      tags:
+        - AgentCatalogService
+      responses:
+        "200":
+          $ref: "#/components/responses/FilterOptionsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+      operationId: findAgentsFilterOptions
+
+  /api/agent_catalog/v1alpha1/agents/{id}:
+    description: >-
+      The REST endpoint/path used to get a single `Agent` entity.
+    get:
+      summary: Get an agent by ID.
+      tags:
+        - AgentCatalogService
+      parameters:
+        - name: id
+          description: The unique identifier of the entity.
+          schema:
+            type: string
+          in: path
+          required: true
+      responses:
+        "200":
+          $ref: "#/components/responses/AgentResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+      operationId: getAgent
+
+# Parameters (pageSize, orderBy, filterQuery, sortOrder, nextPageToken) and shared
+# responses (BadRequest, FilterOptionsResponse, etc.) are provided by lib/common.yaml
+# and catalog.yaml during spec assembly. Only plugin-specific schemas and responses
+# are defined here.
+components:
+  schemas:
+    Agent:
+      description: An agent in the agent catalog.
+      allOf:
+        - $ref: "#/components/schemas/BaseResource"
+        - type: object
+          required:
+            - name
+          properties:
+            name:
+              type: string
+              description: Agent identifier. Must be unique within a source.
+            source_id:
+              type: string
+              description: Catalog source that provides this entity.
+            displayName:
+              type: string
+              description: Human-readable display name.
+            description:
+              type: string
+              description: Short description of the agent.
+            readme:
+              type: string
+              description: Full Markdown documentation.
+            framework:
+              type: string
+              description: Agent framework (e.g., langgraph, crewai, autogen).
+            agentType:
+              type: string
+              description: Catalog classification (e.g., starter_kit).
+            tags:
+              type: array
+              items:
+                type: string
+              description: Tags for categorization and filtering.
+            models:
+              type: array
+              items:
+                type: string
+              description: Compatible model identifiers.
+            logo:
+              type: string
+              description: URL or path to the agent logo image.
+            repositoryUrl:
+              type: string
+              format: uri
+              description: URL to the agent source code repository.
+            publishedDate:
+              type: string
+              format: date-time
+              description: Date when the agent was published.
+            env:
+              type: array
+              items:
+                $ref: "#/components/schemas/AgentEnvVar"
+              description: Environment variables required for deployment.
+            artifacts:
+              type: array
+              items:
+                $ref: "#/components/schemas/AgentArtifact"
+              description: OCI artifacts for agent deployment.
+
+    AgentEnvVar:
+      description: An environment variable required by an agent.
+      type: object
+      required:
+        - name
+        - required
+      properties:
+        name:
+          type: string
+          description: Environment variable name.
+        required:
+          type: boolean
+          description: Whether this variable is required for deployment.
+
+    AgentArtifact:
+      description: OCI artifact for agent deployment.
+      allOf:
+        - $ref: "#/components/schemas/BaseResourceDates"
+        - type: object
+          required:
+            - uri
+          properties:
+            uri:
+              type: string
+              format: uri
+              description: URI of the artifact (e.g., OCI image reference).
+
+    AgentList:
+      description: A list of agent entities.
+      allOf:
+        - type: object
+          properties:
+            items:
+              description: Array of `Agent` entities.
+              type: array
+              items:
+                $ref: "#/components/schemas/Agent"
+          required:
+            - items
+        - $ref: "#/components/schemas/BaseResourceList"
+
+  responses:
+    AgentListResponse:
+      description: A list of agent entities.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AgentList"
+    AgentResponse:
+      description: A single agent entity.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Agent"
