@@ -94,7 +94,13 @@ test-integration-run:
 
 .PHONY: local-hermetic-build
 local-hermetic-build:
-	cd ../../ && ./jobs/async-upload/local_hermetic_build.sh
+ifndef ACTIVATION_KEY
+	$(error ACTIVATION_KEY is required. Create one at https://console.redhat.com/insights/connector/activation-keys)
+endif
+ifndef ORG
+	$(error ORG is required)
+endif
+	cd ../../ && ./jobs/async-upload/local_hermetic_build.sh $(ACTIVATION_KEY) $(ORG)
 
 .PHONY: install
 install: install-poetry-export

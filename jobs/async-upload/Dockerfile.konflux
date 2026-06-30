@@ -2,15 +2,14 @@
 #  Asynchronous Model-Sync Job image for Kubeflow Model Registry (https://github.com/kubeflow/model-registry/issues/1108)
 ###############################################################################
 
-FROM quay.io/aipcc/base-images/cpu:3.5@sha256:6b99ae587ff547d754495419461b25f348b1a41078909fa75e32ea6a2723af83 AS base
+FROM quay.io/aipcc/base-images/cpu:3.5@sha256:1459233907bdcfe4fdb4f9a8d39de861bacd868d7a1e5cee083ddd46f93c306d AS base
 
 USER 0
 
 ARG TARGETARCH
 
 # Install skopeo for Push/Pull of container images to integrate with Model Registry py client and Olot.
-RUN . /cachi2/cachi2.env && \
-    dnf install -y skopeo  && \
+RUN dnf install -y skopeo  && \
     dnf clean all
 
 # security/env hardening
