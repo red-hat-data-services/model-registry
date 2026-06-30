@@ -23,6 +23,7 @@ import (
 
 	_ "github.com/kubeflow/hub/catalog/internal/plugins/mcp"
 	_ "github.com/kubeflow/hub/catalog/internal/plugins/model"
+	_ "github.com/kubeflow/hub/catalog/internal/plugins/agent"
 )
 
 var catalogCfg = struct {

@@ -85,7 +85,7 @@ func newRepoSet(db *gorm.DB, spec *datastore.Spec) (datastore.RepoSet, error) {
 		if err != nil {
 			return nil, fmt.Errorf("embedmd: other %d: %w", i, err)
 		}
-		rs.put(repo)
+		rs.putWithReturnType(fn, repo)
 	}
 
 	for name, specType := range spec.ArtifactTypes {
@@ -95,7 +95,7 @@ func newRepoSet(db *gorm.DB, spec *datastore.Spec) (datastore.RepoSet, error) {
 		if err != nil {
 			return nil, fmt.Errorf("embedmd: %s: %w", name, err)
 		}
-		rs.put(repo)
+		rs.putWithReturnType(specType.InitFn, repo)
 	}
 
 	for name, specType := range spec.ContextTypes {
@@ -105,7 +105,7 @@ func newRepoSet(db *gorm.DB, spec *datastore.Spec) (datastore.RepoSet, error) {
 		if err != nil {
 			return nil, fmt.Errorf("embedmd: %s: %w", name, err)
 		}
-		rs.put(repo)
+		rs.putWithReturnType(specType.InitFn, repo)
 	}
 
 	for name, specType := range spec.ExecutionTypes {
@@ -114,7 +114,7 @@ func newRepoSet(db *gorm.DB, spec *datastore.Spec) (datastore.RepoSet, error) {
 		if err != nil {
 			return nil, fmt.Errorf("embedmd: %s: %w", name, err)
 		}
-		rs.put(repo)
+		rs.putWithReturnType(specType.InitFn, repo)
 	}
 
 	return rs, nil
@@ -164,9 +164,22 @@ func (rs *repoSetImpl) call(fn any, args map[reflect.Type]any) (any, error) {
 	return out[0].Interface(), err
 }
 
-// put adds one repository to the set.
+// put adds one repository to the set, keyed by its concrete type.
 func (rs *repoSetImpl) put(repo any) {
 	rs.repos[reflect.TypeOf(repo)] = repo
+}
+
+// putWithReturnType stores the repo by both its concrete type and the declared
+// return type of the init function. This ensures that GetRepo[InterfaceType]
+// finds the correct repo via exact match, avoiding the non-deterministic
+// Implements fallback when multiple generic repos share the same underlying
+// structure (e.g., multiple GenericRepository[T, ...] for different context types).
+func (rs *repoSetImpl) putWithReturnType(fn any, repo any) {
+	rs.put(repo)
+	fnType := reflect.TypeOf(fn)
+	if fnType.NumOut() > 0 {
+		rs.repos[fnType.Out(0)] = repo
+	}
 }
 
 func (rs *repoSetImpl) Repository(t reflect.Type) (any, error) {

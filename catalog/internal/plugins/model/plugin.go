@@ -9,6 +9,7 @@ import (
 
 	mapset "github.com/deckarep/golang-set/v2"
 
+	"github.com/kubeflow/hub/catalog/internal/catalog/agentcatalog"
 	"github.com/kubeflow/hub/catalog/internal/catalog/basecatalog"
 	"github.com/kubeflow/hub/catalog/internal/catalog/mcpcatalog"
 	"github.com/kubeflow/hub/catalog/internal/catalog/modelcatalog"
@@ -25,6 +26,12 @@ import (
 // Used to get MCP sources for the unified FindSources endpoint.
 type mcpSourceProvider interface {
 	MCPSources() *mcpcatalog.MCPSourceCollection
+}
+
+// agentSourceProvider is a local interface satisfied by the agent plugin.
+// Used to get agent sources for the unified FindSources endpoint.
+type agentSourceProvider interface {
+	AgentSources() *agentcatalog.AgentSourceCollection
 }
 
 type Plugin struct {
@@ -133,10 +140,18 @@ func (p *Plugin) RegisterRoutes(router chi.Router) error {
 		}
 	}
 
+	var agentSources *agentcatalog.AgentSourceCollection
+	if agentPlugin, ok := plugin.Get("agent"); ok {
+		if ap, ok := agentPlugin.(agentSourceProvider); ok {
+			agentSources = ap.AgentSources()
+		}
+	}
+
 	svc := openapi.NewModelCatalogServiceAPIService(
 		modelcatalog.NewDBCatalog(p.services, p.loader.Sources),
 		p.loader.Sources,
 		mcpSources,
+		agentSources,
 		p.loader.Labels,
 		p.services.CatalogSourceRepository,
 	)

@@ -1,6 +1,7 @@
 package catalog
 
 import (
+	"github.com/kubeflow/hub/catalog/internal/catalog/agentcatalog"
 	"github.com/kubeflow/hub/catalog/internal/catalog/basecatalog"
 	"github.com/kubeflow/hub/catalog/internal/catalog/mcpcatalog"
 	"github.com/kubeflow/hub/catalog/internal/catalog/modelcatalog"
@@ -19,6 +20,9 @@ type (
 	ListModelsParams               = modelcatalog.ListModelsParams
 	ListArtifactsParams            = modelcatalog.ListArtifactsParams
 	ListPerformanceArtifactsParams = modelcatalog.ListPerformanceArtifactsParams
+
+	// Agent catalog types
+	AgentSourceCollection = agentcatalog.AgentSourceCollection
 
 	// MCP catalog types
 	MCPSourceCollection      = mcpcatalog.MCPSourceCollection
