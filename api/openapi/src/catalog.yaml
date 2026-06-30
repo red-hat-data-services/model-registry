@@ -404,6 +404,7 @@ components:
       enum:
         - models
         - mcp_servers
+        - agents
       default: models
     CatalogSourcePreviewResponse:
       description: Response containing models and their inclusion/exclusion status.

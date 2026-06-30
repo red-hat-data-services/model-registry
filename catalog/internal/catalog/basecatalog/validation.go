@@ -60,6 +60,7 @@ func ValidateNamedQueries(namedQueries map[string]NamedQuery) error {
 	validAssetTypes := map[string]bool{
 		AssetTypeModels:     true,
 		AssetTypeMCPServers: true,
+		AssetTypeAgents:     true,
 	}
 
 	for queryName, nq := range namedQueries {
@@ -68,7 +69,7 @@ func ValidateNamedQueries(namedQueries map[string]NamedQuery) error {
 		}
 
 		if nq.AssetType != "" && !validAssetTypes[nq.AssetType] {
-			return fmt.Errorf("named query '%s' has invalid assetType '%s' (valid values: %s, %s)", queryName, nq.AssetType, AssetTypeModels, AssetTypeMCPServers)
+			return fmt.Errorf("named query '%s' has invalid assetType '%s' (valid values: %s, %s, %s)", queryName, nq.AssetType, AssetTypeModels, AssetTypeMCPServers, AssetTypeAgents)
 		}
 
 		if len(nq.Filters) == 0 {
