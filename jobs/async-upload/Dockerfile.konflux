@@ -2,16 +2,15 @@
 #  Asynchronous Model-Sync Job image for Kubeflow Model Registry (https://github.com/kubeflow/model-registry/issues/1108)
 ###############################################################################
 
-FROM registry.access.redhat.com/ubi9/python-312-minimal@sha256:2eef57a47c201792a5c6188800c88660a4dcc57b2d60f8874f618e694067d4f9 AS base
+FROM quay.io/aipcc/base-images/cpu:3.5@sha256:1459233907bdcfe4fdb4f9a8d39de861bacd868d7a1e5cee083ddd46f93c306d AS base
 
 USER 0
 
 ARG TARGETARCH
 
 # Install skopeo for Push/Pull of container images to integrate with Model Registry py client and Olot.
-RUN . /cachi2/cachi2.env && \
-    microdnf install -y skopeo gcc make python3.12-devel cargo g++ libffi-devel openssl-devel perl && \
-    microdnf clean all
+RUN dnf install -y skopeo  && \
+    dnf clean all
 
 # security/env hardening
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -20,10 +19,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=on
 
 WORKDIR /app
-COPY ./poetry.lock ./pyproject.toml ./requirements.txt ./
-
-COPY ./hermetic_fixes.sh ./
-RUN ./hermetic_fixes.sh
+COPY ./poetry.lock ./pyproject.toml ./requirements-aipcc.txt ./
 
 # rfc3161-client has no pre-built wheels for ppc64le/s390x, so pip builds from
 # source via Rust/maturin. OPENSSL_NO_VENDOR tells openssl-sys to link against
@@ -31,7 +27,7 @@ RUN ./hermetic_fixes.sh
 RUN if [ "$TARGETARCH" = "ppc64le" ] || [ "$TARGETARCH" = "s390x" ]; then \
       export OPENSSL_NO_VENDOR=1; \
     fi && \
-    python -m pip install -r requirements.txt  \
+    python -m pip install -r requirements-aipcc.txt  \
     && echo "Installation completed" \
     && echo "Python path:" && python -c "import sys; print('\\n'.join(sys.path))" \
     && echo "Installed packages:" \
