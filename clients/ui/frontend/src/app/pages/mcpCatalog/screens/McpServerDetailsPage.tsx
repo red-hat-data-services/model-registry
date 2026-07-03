@@ -46,7 +46,7 @@ const McpServerDetailsPage: React.FC = () => {
               <Link to={mcpCatalogUrl()}>MCP Catalog</Link>
             </BreadcrumbItem>
             <BreadcrumbItem isActive data-testid="breadcrumb-server-name">
-              {server?.name || 'Details'}
+              {server?.displayName || server?.name || 'Details'}
             </BreadcrumbItem>
           </Breadcrumb>
         }
@@ -75,7 +75,7 @@ const McpServerDetailsPage: React.FC = () => {
                     alignItems={{ default: 'alignItemsCenter' }}
                     flexWrap={{ default: 'wrap' }}
                   >
-                    <FlexItem>{server.name}</FlexItem>
+                    <FlexItem>{server.displayName || server.name}</FlexItem>
                     {isMcpRemoteDeploymentMode(server.deploymentMode) && (
                       <FlexItem>
                         <Label data-testid="mcp-server-details-remote-label">

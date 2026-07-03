@@ -2715,6 +2715,7 @@ func GetMcpServerMocks() []models.McpServer {
 	prometheusMcp := models.McpServer{
 		ID:          "1",
 		Name:        "Prometheus MCP Server",
+		DisplayName: stringToPointer("Prometheus Monitoring"),
 		SourceID:    stringToPointer("community-mcp-source"),
 		Description: stringToPointer("Query Prometheus metrics and alerts directly from your agent"),
 		Provider:    stringToPointer("Prometheus Community"),
@@ -2798,6 +2799,7 @@ func GetMcpServerMocks() []models.McpServer {
 	elasticMcp := models.McpServer{
 		ID:          "3",
 		Name:        "Elasticsearch MCP Server",
+		DisplayName: stringToPointer("Elastic Search"),
 		SourceID:    stringToPointer("organization-mcp-source"),
 		Description: stringToPointer("Search and analyze data in Elasticsearch clusters"),
 		Provider:    stringToPointer("Elastic"),
@@ -2851,6 +2853,7 @@ func GetMcpServerMocks() []models.McpServer {
 	grafanaMcp := models.McpServer{
 		ID:          "5",
 		Name:        "Grafana MCP Server",
+		DisplayName: stringToPointer("Grafana"),
 		SourceID:    stringToPointer("community-mcp-source"),
 		Description: stringToPointer("Query Grafana dashboards, data sources and annotations via natural language"),
 		Provider:    stringToPointer("Grafana Labs"),
@@ -2921,6 +2924,7 @@ func GetMcpServerMocks() []models.McpServer {
 	redisMcp := models.McpServer{
 		ID:          "8",
 		Name:        "Redis MCP Server",
+		DisplayName: stringToPointer("Redis Cache Manager"),
 		SourceID:    stringToPointer("organization-mcp-source"),
 		Description: stringToPointer("Manage Redis key-value stores, caches and pub/sub channels"),
 		Provider:    stringToPointer("Redis Ltd"),
