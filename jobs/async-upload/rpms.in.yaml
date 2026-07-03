@@ -1,0 +1,19 @@
+arches:
+  - x86_64
+  - aarch64
+  - ppc64le
+  - s390x
+contentOrigin:
+  repofiles: 
+    - "./ubi.repo"
+packages:
+  - skopeo
+  - gcc
+  - make
+  - python3.12-devel
+  - cargo
+  - g++
+context:
+  containerfile: 
+    file: "./Dockerfile.konflux"
+    stageName: base
