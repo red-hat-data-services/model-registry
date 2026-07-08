@@ -281,7 +281,7 @@ describe('Model Catalog Performance Filters API Behavior', () => {
     });
   });
 
-  describe('Reset all defaults functionality', () => {
+  describe('Reset all filters functionality', () => {
     beforeEach(() => {
       visitWithPerformanceToggle(true);
     });
@@ -298,8 +298,8 @@ describe('Model Catalog Performance Filters API Behavior', () => {
       modelCatalog.openColdStartLatencyFilter();
       modelCatalog.applyColdStartLatencyFilter();
 
-      // Click Reset all defaults button in the toolbar
-      cy.findByRole('button', { name: 'Reset all defaults' }).click();
+      // Click Reset all filters button in the toolbar
+      cy.findByRole('button', { name: 'Reset all filters' }).click();
 
       // Verify workload type is reset - should NOT show Code Fixing
       cy.findByTestId(PERFORMANCE_FILTER_TEST_IDS.workloadType)
@@ -320,8 +320,8 @@ describe('Model Catalog Performance Filters API Behavior', () => {
       modelCatalog.selectLatencyMetric('E2E');
       modelCatalog.clickApplyFilter();
 
-      // Click 'Reset all defaults (PatternFly's native button)
-      cy.findByRole('button', { name: 'Reset all defaults' }).click();
+      // Click 'Reset all filters' (PatternFly's native button)
+      cy.findByRole('button', { name: 'Reset all filters' }).click();
 
       // Latency filter should be reset to default (TTFT, not E2E)
       cy.findByTestId(PERFORMANCE_FILTER_TEST_IDS.latency)
@@ -344,6 +344,25 @@ describe('Model Catalog Performance Filters API Behavior', () => {
       cy.wait('@getModelsWithColdStart').then((interception) => {
         const decodedUrl = decodeURIComponent(interception.request.url);
         expect(decodedUrl).to.include('cold_start_time_to_load_seconds');
+      });
+    });
+
+    it('should use AND (not OR) for cold-start filter to exclude non-matching models', () => {
+      visitWithPerformanceToggle(true);
+
+      modelCatalog.openColdStartLatencyFilter();
+      modelCatalog.applyColdStartLatencyFilter();
+
+      cy.intercept('GET', '**/model_catalog/models*').as('getModelsWithColdStartAnd');
+
+      triggerFilterRefresh();
+
+      cy.wait('@getModelsWithColdStartAnd').then((interception) => {
+        const decodedUrl = decodeURIComponent(interception.request.url);
+        const filterQuery = decodedUrl.match(/filterQuery=([^&]+)/)?.[1] ?? '';
+        expect(filterQuery).to.include('cold_start_time_to_load_seconds');
+        expect(filterQuery).to.not.include(' OR ');
+        expect(filterQuery).to.not.include('performance_sub_type');
       });
     });
 
