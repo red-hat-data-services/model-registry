@@ -83,6 +83,13 @@ const (
 	ModelTransferJobPath       = ModelTransferJobListPath + "/:" + ModelTransferJobName
 	ModelTransferJobEventsPath = ModelTransferJobPath + "/events"
 
+	// Agent catalog
+	AgentId                   = "agent_id"
+	AgentCatalogPathPrefix    = ApiPathPrefix + "/agent_catalog"
+	AgentListPath             = AgentCatalogPathPrefix + "/agents"
+	AgentFilterOptionListPath = AgentCatalogPathPrefix + "/agents_filter_options"
+	AgentPath                 = AgentListPath + "/:" + AgentId
+
 	// MCP server catalog
 	McpServerId                   = "server_id"
 	McpServerCatalogPathPrefix    = ApiPathPrefix + "/mcp_catalog"
@@ -94,6 +101,11 @@ const (
 	// Swagger UI (interactive API docs)
 	SwaggerPath    = ApiPathPrefix + "/swagger"
 	SwaggerDocPath = SwaggerPath + "/doc.json"
+
+	// MCP catalog settings
+	McpCatalogSettingsPathPrefix           = SettingsPath + "/mcp_catalog"
+	McpCatalogSettingsSourceConfigListPath = McpCatalogSettingsPathPrefix + "/source_configs"
+	McpCatalogSettingsSourceConfigPath     = McpCatalogSettingsSourceConfigListPath + "/:" + CatalogSourceId
 )
 
 type App struct {
@@ -329,11 +341,23 @@ func (app *App) Routes() http.Handler {
 		apiRouter.DELETE(ModelCatalogSettingsSourceConfigPath, app.AttachNamespace(app.DeleteCatalogSourceConfigHandler))
 		apiRouter.POST(CatalogSourcePreviewPath, app.AttachNamespace(app.AttachModelCatalogRESTClient(app.CreateCatalogSourcePreviewHandler)))
 
+		// Agent catalog endpoints
+		apiRouter.GET(AgentListPath, app.AttachNamespace(app.AttachModelCatalogRESTClient(app.GetAllAgentsHandler)))
+		apiRouter.GET(AgentFilterOptionListPath, app.AttachNamespace(app.AttachModelCatalogRESTClient(app.GetAgentsFiltersHandler)))
+		apiRouter.GET(AgentPath, app.AttachNamespace(app.AttachModelCatalogRESTClient(app.GetAgentHandler)))
+
 		// MCP server catalog endpoints
 		apiRouter.GET(McpServerListPath, app.AttachNamespace(app.AttachModelCatalogRESTClient(app.GetAllMcpServersHandler)))
 		apiRouter.GET(McpServerFilterOptionListPath, app.AttachNamespace(app.AttachModelCatalogRESTClient(app.GetMcpServersFiltersHandler)))
 		apiRouter.GET(McpServerPath, app.AttachNamespace(app.AttachModelCatalogRESTClient(app.GetMcpServerHandler)))
 		apiRouter.GET(McpServersToolListPath, app.AttachNamespace(app.AttachModelCatalogRESTClient(app.GetMcpServersToolsHandler)))
+
+		// MCP catalog settings page
+		apiRouter.GET(McpCatalogSettingsSourceConfigListPath, app.AttachNamespace(app.GetAllMcpCatalogSourceConfigsHandler))
+		apiRouter.POST(McpCatalogSettingsSourceConfigListPath, app.AttachNamespace(app.CreateMcpCatalogSourceConfigHandler))
+		apiRouter.GET(McpCatalogSettingsSourceConfigPath, app.AttachNamespace(app.GetMcpCatalogSourceConfigHandler))
+		apiRouter.PATCH(McpCatalogSettingsSourceConfigPath, app.AttachNamespace(app.UpdateMcpCatalogSourceConfigHandler))
+		apiRouter.DELETE(McpCatalogSettingsSourceConfigPath, app.AttachNamespace(app.DeleteMcpCatalogSourceConfigHandler))
 	}
 
 	// App Router
