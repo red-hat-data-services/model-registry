@@ -34,6 +34,7 @@ import {
   McpServerListParams,
   McpToolList,
 } from './mcpServerCatalogTypes';
+import type { AgentCatalogSpecificAPIs } from './agentsCatalogTypes';
 
 export type HardwareConfiguration = {
   gpu_type: string;
@@ -300,7 +301,10 @@ export type McpCatalogSpecificAPIs = {
   getMcpServerToolList: GetMcpServerToolList;
 };
 
-export type ModelCatalogAPIs = CatalogBaseAPIs & ModelCatalogSpecificAPIs & McpCatalogSpecificAPIs;
+export type ModelCatalogAPIs = CatalogBaseAPIs &
+  ModelCatalogSpecificAPIs &
+  McpCatalogSpecificAPIs &
+  AgentCatalogSpecificAPIs;
 
 export type CatalogModelDetailsParams = {
   sourceId?: string;

@@ -11,3 +11,4 @@ export * from './mockMcpCatalogTestData';
 export * from './mockMcpCatalogSourceConfigList';
 export * from './mockModelArtifact';
 export * from './mockModelTransferJob';
+export * from './mockAgentsCatalogTestData';
