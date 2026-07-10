@@ -16,11 +16,9 @@ func TestMain(m *testing.M) {
 	os.Exit(testutils.TestMainPostgresHelper(m))
 }
 
-const testAgentTypeName = "kf.Agent"
-
 func testDatastoreSpec() *datastore.Spec {
 	return datastore.NewSpec().
-		AddContext(testAgentTypeName, datastore.NewSpecType(NewAgentRepository).
+		AddContext(AgentTypeName, datastore.NewSpecType(NewAgentRepository).
 			AddString("source_id").
 			AddString("displayName").
 			AddString("description").
@@ -31,16 +29,27 @@ func testDatastoreSpec() *datastore.Spec {
 			AddString("repositoryUrl").
 			AddStruct("env").
 			AddStruct("artifacts"),
+		).
+		AddArtifact(AgentTemplateArtifactTypeName, datastore.NewSpecType(NewAgentTemplateArtifactRepository).
+			AddString("content"),
 		)
 }
 
 func getAgentTypeID(t *testing.T, db *gorm.DB) int32 {
+	return getTypeIDByName(t, db, AgentTypeName)
+}
+
+func getAgentTemplateArtifactTypeID(t *testing.T, db *gorm.DB) int32 {
+	return getTypeIDByName(t, db, AgentTemplateArtifactTypeName)
+}
+
+func getTypeIDByName(t *testing.T, db *gorm.DB, name string) int32 {
 	var typeRecord schema.Type
-	err := db.Where("name = ?", testAgentTypeName).First(&typeRecord).Error
+	err := db.Where("name = ?", name).First(&typeRecord).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			typeRecord = schema.Type{
-				Name: testAgentTypeName,
+				Name: name,
 			}
 			err = db.Create(&typeRecord).Error
 			require.NoError(t, err)

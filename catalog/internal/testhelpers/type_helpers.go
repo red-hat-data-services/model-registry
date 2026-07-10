@@ -3,6 +3,7 @@ package testhelpers
 import (
 	"testing"
 
+	agentcatalogservice "github.com/kubeflow/hub/catalog/internal/catalog/agentcatalog/service"
 	"github.com/kubeflow/hub/catalog/internal/db/service"
 	"github.com/kubeflow/hub/internal/platform/datastore"
 	"github.com/kubeflow/hub/internal/platform/db/schema"
@@ -63,5 +64,21 @@ func GetMCPServerToolTypeIDForDBTest(t *testing.T, db *gorm.DB) int32 {
 	var typeRecord schema.Type
 	err := db.Where("name = ?", service.MCPServerToolTypeName).First(&typeRecord).Error
 	require.NoError(t, err, "Failed to query MCPServerTool type")
+	return typeRecord.ID
+}
+
+// GetAgentTypeIDForDBTest retrieves the Agent type ID for testing
+func GetAgentTypeIDForDBTest(t *testing.T, db *gorm.DB) int32 {
+	var typeRecord schema.Type
+	err := db.Where("name = ?", agentcatalogservice.AgentTypeName).First(&typeRecord).Error
+	require.NoError(t, err, "Failed to query Agent type")
+	return typeRecord.ID
+}
+
+// GetAgentTemplateArtifactTypeIDForDBTest retrieves the AgentTemplateArtifact type ID for testing
+func GetAgentTemplateArtifactTypeIDForDBTest(t *testing.T, db *gorm.DB) int32 {
+	var typeRecord schema.Type
+	err := db.Where("name = ?", agentcatalogservice.AgentTemplateArtifactTypeName).First(&typeRecord).Error
+	require.NoError(t, err, "Failed to query AgentTemplateArtifact type")
 	return typeRecord.ID
 }

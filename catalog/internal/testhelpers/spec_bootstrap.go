@@ -45,7 +45,7 @@ func init() {
 				AddString("metricsType"),
 		},
 		plugin.DatastoreEntry{
-			TypeName: "kf.Agent",
+			TypeName: agentcatalogservice.AgentTypeName,
 			Category: "context",
 			Spec: datastore.NewSpecType(agentcatalogservice.NewAgentRepository).
 				AddString("source_id").
@@ -58,6 +58,12 @@ func init() {
 				AddString("repositoryUrl").
 				AddStruct("env").
 				AddStruct("artifacts"),
+		},
+		plugin.DatastoreEntry{
+			TypeName: agentcatalogservice.AgentTemplateArtifactTypeName,
+			Category: "artifact",
+			Spec: datastore.NewSpecType(agentcatalogservice.NewAgentTemplateArtifactRepository).
+				AddString("content"),
 		},
 		plugin.DatastoreEntry{
 			TypeName: service.MCPServerTypeName,

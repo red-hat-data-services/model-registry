@@ -3501,7 +3501,6 @@ func GetMcpFilterOptionsListMock() models.FilterOptionsList {
 
 func GetMcpServerCatalogSourceMocks() []models.CatalogSource {
 	enabled := true
-	disabledBool := false
 	availableStatus := "available"
 
 	return []models.CatalogSource{
@@ -3511,27 +3510,6 @@ func GetMcpServerCatalogSourceMocks() []models.CatalogSource {
 			Enabled: &enabled,
 			Status:  &availableStatus,
 			Labels:  []string{"community_mcp_servers"},
-		},
-		{
-			Id:      "organization-mcp-source",
-			Name:    "Organization MCP Servers",
-			Enabled: &enabled,
-			Status:  &availableStatus,
-			Labels:  []string{"organization_mcp_servers"},
-		},
-		{
-			Id:      "standalone-mcp-source",
-			Name:    "Other MCP Servers",
-			Enabled: &enabled,
-			Status:  &availableStatus,
-			Labels:  []string{},
-		},
-		{
-			Id:      "disabled-mcp-source",
-			Name:    "Disabled MCP source",
-			Enabled: &disabledBool,
-			Status:  &availableStatus,
-			Labels:  []string{"disabled_servers"},
 		},
 	}
 }
