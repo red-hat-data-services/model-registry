@@ -72,6 +72,47 @@ func TestAgentTemplateArtifactRepository(t *testing.T) {
 		require.NoError(t, err, "an artifact of a different type attached to the same parent should not be deleted")
 	})
 
+	t.Run("TestSave_StoresQualifiedName", func(t *testing.T) {
+		parentID := saveAgent("test-source:qualified-name-agent")
+		qualifiedName := "test-source:qualified-name-agent:deploy.yaml"
+		content := "apiVersion: apps/v1"
+
+		saved := saveTemplate(qualifiedName, content, parentID)
+		require.NotNil(t, saved.GetAttributes().Name)
+		assert.Equal(t, qualifiedName, *saved.GetAttributes().Name,
+			"repository should store the fully qualified name")
+
+		// Verify the DB has the qualified name
+		var dbArtifact schema.Artifact
+		err := sharedDB.Where("id = ?", *saved.GetID()).First(&dbArtifact).Error
+		require.NoError(t, err)
+		require.NotNil(t, dbArtifact.Name)
+		assert.Equal(t, qualifiedName, *dbArtifact.Name,
+			"DB should store the fully qualified name source_id:agent_name:template_name")
+
+		// Verify list returns the artifact with the qualified name
+		list, err := templateRepo.List(models.AgentTemplateArtifactListOptions{ParentResourceID: &parentID})
+		require.NoError(t, err)
+		require.Len(t, list.Items, 1)
+		assert.Equal(t, qualifiedName, *list.Items[0].GetAttributes().Name,
+			"repository List should return the fully qualified name")
+	})
+
+	t.Run("TestList_FilterByName", func(t *testing.T) {
+		parentID := saveAgent("test-source:name-filter-agent")
+		saveTemplate("test-source:name-filter-agent:agent.yaml", "content-a", parentID)
+		saveTemplate("test-source:name-filter-agent:deploy.yaml", "content-b", parentID)
+
+		nameFilter := "agent.yaml"
+		list, err := templateRepo.List(models.AgentTemplateArtifactListOptions{
+			ParentResourceID: &parentID,
+			Name:             &nameFilter,
+		})
+		require.NoError(t, err)
+		require.Len(t, list.Items, 1)
+		assert.Contains(t, *list.Items[0].GetAttributes().Name, "agent.yaml")
+	})
+
 	t.Run("TestDeleteByParentID_NoArtifacts", func(t *testing.T) {
 		agentID := saveAgent("source:agent-empty")
 

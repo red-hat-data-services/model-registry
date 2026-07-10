@@ -125,7 +125,7 @@ func TestGetAgentArtifacts_NoFilterFetchesTemplates(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, result.Items, 1)
 	require.NotNil(t, result.Items[0].Name)
-	assert.Equal(t, "agent.yaml", *result.Items[0].Name)
+	assert.Equal(t, "agent.yaml", *result.Items[0].Name, "template name should be the base name, not the qualified stored name")
 
 	require.NotNil(t, templateRepo.capturedListOptions, "List should be called on the template repo")
 	require.NotNil(t, templateRepo.capturedListOptions.ParentResourceID)
@@ -246,7 +246,7 @@ func TestMapDBTemplateArtifactToAPI_AllFieldsPresent(t *testing.T) {
 	require.NotNil(t, result.Id)
 	assert.Equal(t, "42", *result.Id)
 	require.NotNil(t, result.Name)
-	assert.Equal(t, name, *result.Name)
+	assert.Equal(t, "agent.yaml", *result.Name, "should return base name, not qualified stored name")
 	assert.Equal(t, content, result.Content)
 	require.NotNil(t, result.CreateTimeSinceEpoch)
 	assert.Equal(t, "1000", *result.CreateTimeSinceEpoch)
@@ -292,4 +292,39 @@ func TestMapDBTemplateArtifactToAPI_NilContentPointer(t *testing.T) {
 	assert.Equal(t, "", result.Content)
 	require.NotNil(t, result.Name)
 	assert.Equal(t, name, *result.Name)
+}
+
+func TestTemplateBaseNameFromStoredName(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		expected string
+	}{
+		{name: "qualified name", input: "source:agent:deploy.yaml", expected: "deploy.yaml"},
+		{name: "no prefix", input: "agent.yaml", expected: "agent.yaml"},
+		{name: "single prefix", input: "source:agent.yaml", expected: "agent.yaml"},
+		{name: "empty string", input: "", expected: ""},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			assert.Equal(t, tc.expected, templateBaseNameFromStoredName(tc.input))
+		})
+	}
+}
+
+func TestDisplayNameFromStoredName(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		expected string
+	}{
+		{name: "qualified name", input: "source:agent-name", expected: "agent-name"},
+		{name: "no prefix", input: "agent-name", expected: "agent-name"},
+		{name: "empty string", input: "", expected: ""},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			assert.Equal(t, tc.expected, displayNameFromStoredName(tc.input))
+		})
+	}
 }
