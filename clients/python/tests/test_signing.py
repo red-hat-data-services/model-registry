@@ -178,6 +178,7 @@ class TestImageSigner:
         cmd = mock_runner.run.call_args[0][0]
         assert cmd == [
             "cosign", "sign", "-y",
+            "--use-signing-config=false",
             "--fulcio-url", FULCIO_URL,
             "--rekor-url", REKOR_URL,
             "quay.io/example/image@sha256:abc123"
@@ -204,6 +205,7 @@ class TestImageSigner:
         cmd = mock_runner.run.call_args[0][0]
         env = mock_runner.run.call_args[1]["env"]
         assert env["COSIGN_IDENTITY_TOKEN"] == "test-token"  # noqa: S105
+        assert "--use-signing-config=false" in cmd
         assert cmd.count("https://default-fulcio.example.com") == 1
         assert cmd.count("https://default-rekor.example.com") == 1
 
@@ -319,6 +321,40 @@ class TestImageSigner:
 
         cmd = mock_runner.run.call_args[0][0]
         assert cmd[-1] == "quay.io/example/image@sha256:abc123"
+        assert "--use-signing-config=false" not in cmd
+
+    @pytest.mark.parametrize(
+        ("fulcio_url", "rekor_url", "expect_flag"),
+        [
+            pytest.param(FULCIO_URL, REKOR_URL, True, id="both_urls_disables_signing_config"),
+            pytest.param(FULCIO_URL, None, True, id="only_fulcio_disables_signing_config"),
+            pytest.param(None, REKOR_URL, True, id="only_rekor_disables_signing_config"),
+            pytest.param(None, None, False, id="no_urls_keeps_signing_config"),
+        ],
+    )
+    def test_sign_use_signing_config_flag(self, tmp_path, mocker, fulcio_url, rekor_url, expect_flag):
+        """Test --use-signing-config=false is added when any explicit service URL is set."""
+        token_file = tmp_path / "token"
+        token_file.write_text("test-token")
+
+        signer = ImageSigner()
+        mock_runner = mocker.MagicMock()
+        signer.runner = mock_runner
+        sigstore_dir = tmp_path / ".sigstore"
+        sigstore_dir.mkdir()
+        mocker.patch.object(signer, "_get_sigstore_dir", return_value=sigstore_dir)
+
+        signer.sign(
+            image="quay.io/example/image@sha256:abc123",
+            identity_token_path=str(token_file),
+            fulcio_url=fulcio_url,
+            rekor_url=rekor_url,
+        )
+        cmd = mock_runner.run.call_args[0][0]
+        if expect_flag:
+            assert "--use-signing-config=false" in cmd
+        else:
+            assert "--use-signing-config=false" not in cmd
 
     def test_verify_image_is_last_argument(self, mocker):
         """Test that image reference is always the last argument for verify."""
