@@ -1,9 +1,10 @@
+/* eslint-disable camelcase */
 import '@testing-library/jest-dom';
 import * as React from 'react';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import McpCatalogCard from '~/app/pages/mcpCatalog/components/McpCatalogCard';
-import type { McpServer } from '~/app/mcpServerCatalogTypes';
+import { MetadataType, type McpServer } from '~/app/mcpServerCatalogTypes';
 
 const wrapper = ({ children }: { children: React.ReactNode }) => (
   <MemoryRouter>{children}</MemoryRouter>
@@ -96,6 +97,66 @@ describe('McpCatalogCard', () => {
   it('renders default icon when no logo is provided', () => {
     render(<McpCatalogCard server={mockServer} />, { wrapper });
     expect(screen.queryByTestId('mcp-catalog-card-logo-1')).not.toBeInTheDocument();
+  });
+
+  it.each([
+    ['partnerSupported', 'Partner Supported', '6'],
+    ['redHatSupported', 'Red Hat Supported', '7'],
+    ['communitySupported', 'Community Supported', '8'],
+  ])('renders %s as "%s"', (tier, display, id) => {
+    render(
+      <McpCatalogCard
+        server={{
+          ...mockServer,
+          id,
+          customProperties: {
+            supportTier: { metadataType: MetadataType.STRING, string_value: tier },
+          },
+        }}
+      />,
+      { wrapper },
+    );
+    expect(screen.getByTestId(`mcp-catalog-card-support-tier-${id}`)).toHaveTextContent(display);
+  });
+
+  it('does not render support tier label when customProperties is absent', () => {
+    render(<McpCatalogCard server={mockServer} />, { wrapper });
+    expect(screen.queryByTestId('mcp-catalog-card-support-tier-1')).not.toBeInTheDocument();
+  });
+
+  it('does not render support tier label for unknown tier values', () => {
+    render(
+      <McpCatalogCard
+        server={{
+          ...mockServer,
+          id: '9',
+          customProperties: {
+            supportTier: {
+              metadataType: MetadataType.STRING,
+              string_value: 'unknownTier',
+            },
+          },
+        }}
+      />,
+      { wrapper },
+    );
+    expect(screen.queryByTestId('mcp-catalog-card-support-tier-9')).not.toBeInTheDocument();
+  });
+
+  it('does not render support tier label when metadataType is not STRING', () => {
+    render(
+      <McpCatalogCard
+        server={{
+          ...mockServer,
+          id: '10',
+          customProperties: {
+            supportTier: { metadataType: MetadataType.BOOL, bool_value: true },
+          },
+        }}
+      />,
+      { wrapper },
+    );
+    expect(screen.queryByTestId('mcp-catalog-card-support-tier-10')).not.toBeInTheDocument();
   });
 
   it('renders displayName when provided', () => {
