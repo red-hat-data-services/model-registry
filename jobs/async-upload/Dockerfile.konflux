@@ -2,6 +2,8 @@
 #  Asynchronous Model-Sync Job image for Kubeflow Model Registry (https://github.com/kubeflow/model-registry/issues/1108)
 ###############################################################################
 
+FROM registry.redhat.io/rhtas/cosign-rhel9@sha256:0bc571d1d9c188579dc5c404134144f660beb62f69f784b48230ff84b3881499 AS cosign
+
 FROM quay.io/aipcc/base-images/cpu:3.5@sha256:1459233907bdcfe4fdb4f9a8d39de861bacd868d7a1e5cee083ddd46f93c306d AS base
 
 USER 0
@@ -11,6 +13,8 @@ ARG TARGETARCH
 # Install skopeo for Push/Pull of container images to integrate with Model Registry py client and Olot.
 RUN dnf install -y skopeo  && \
     dnf clean all
+
+COPY --from=cosign /usr/local/bin/cosign /usr/local/bin/cosign
 
 # security/env hardening
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -24,6 +28,8 @@ COPY ./poetry.lock ./pyproject.toml ./requirements-aipcc.txt ./
 # rfc3161-client has no pre-built wheels for ppc64le/s390x, so pip builds from
 # source via Rust/maturin. OPENSSL_NO_VENDOR tells openssl-sys to link against
 # the system OpenSSL instead of compiling its own (which requires perl).
+RUN cosign version
+
 RUN if [ "$TARGETARCH" = "ppc64le" ] || [ "$TARGETARCH" = "s390x" ]; then \
       export OPENSSL_NO_VENDOR=1; \
     fi && \

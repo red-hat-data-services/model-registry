@@ -45,7 +45,7 @@ hermeto fetch-deps --output /tmp/cachi2/output \
     "type": "pip",
     "path": "jobs/async-upload",
     "requirements_files": ["requirements-aipcc.txt"],
-    "binary": { "arch": "x86_64", "os": "linux" }
+    "binary": { "arch": "x86_64,aarch64,ppc64le,s390x", "os": "linux" }
   }]'
 
 hermeto inject-files /tmp/cachi2/output --for-output-dir /cachi2/output

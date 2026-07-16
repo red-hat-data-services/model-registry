@@ -43,11 +43,11 @@ blake3==1.0.8 \
     --hash=sha256:eccdaf82be60b55b5a451940752784038f6f509dbb6eefe23f1cea301d77c5d4 \
     --hash=sha256:fd5b3f45f3e77581da3e1b0ebd5622438a76f72ad8cbe8f53205f8cf1aace616
     # via rh-model-signing
-boto3==1.43.23 \
-    --hash=sha256:c75e68dcb9853136b149c11b21d2a047b3477f86b3f656eb1abe37cbf3921f34
+boto3==1.43.24 \
+    --hash=sha256:c7eaa31097c7b4924e11f9e9e0f5c381c79267d74ac1f9370d65416f4e391269
     # via model-registry
-botocore==1.43.23 \
-    --hash=sha256:c639f41cee5f43c709f2dcb874ed9d421b7f29dacd847b7623645770f696413b
+botocore==1.43.28 \
+    --hash=sha256:73a6b9d43eba8cfc226b836907b215ec7902b10b107b0eb4ff77b19e37d57e9d
     # via
     #   boto3
     #   s3transfer
@@ -299,8 +299,8 @@ sigstore-rekor-types==0.0.18 \
 six==1.17.0 \
     --hash=sha256:6388b9db719664e1ccea84c166718ff3d2bbf56490cbf14fb7478b3b782eb0e5
     # via python-dateutil
-tqdm==4.67.3 \
-    --hash=sha256:9cdaa3ef8944e8a64e15f580ac86aa264affc2da130173fa2f1893468a4befb7
+tqdm==4.68.2 \
+    --hash=sha256:1b7095c952716e988d0cf36d40957daff81c7b085ff5f16a8c879013db81ebc2
     # via huggingface-hub
 tuf==7.0.0 \
     --hash=sha256:9f81db703743f10696f250bfc5a50d5bf5c62b7b2f5b7ba29d6802ee89f99463
