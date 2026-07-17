@@ -12,7 +12,7 @@ DST="$PROJECT_ROOT/${2:-internal/server/openapi}"
 
 "$OPENAPI_GENERATOR" generate \
     -i "$SRC" -g go-server -o "$DST" --package-name openapi \
-    --ignore-file-override "$PROJECT_ROOT"/.openapi-generator-ignore --additional-properties=outputAsLibrary=true,enumClassPrefix=true,router=chi,sourceFolder=,onlyInterfaces=true,isGoSubmodule=true,enumClassPrefix=true,useOneOfDiscriminatorLookup=true,featureCORS=true \
+    --ignore-file-override "$PROJECT_ROOT"/.openapi-generator-ignore --additional-properties=outputAsLibrary=true,enumClassPrefix=true,router=chi,sourceFolder=,onlyInterfaces=true,isGoSubmodule=true,enumClassPrefix=true,useOneOfDiscriminatorLookup=true \
     --template-dir "$PROJECT_ROOT"/../templates/go-server
 
 # Python-based regex replace function
