@@ -18,7 +18,7 @@ MCP_MODEL_MAPPINGS="MCPArtifact=MCPArtifact,MCPConfigMapKey=MCPConfigMapKey,MCPC
 
 "$OPENAPI_GENERATOR" generate \
     -i "$SRC" -g go-server -o "$DST" --package-name openapi \
-    --ignore-file-override "$PROJECT_ROOT"/.openapi-generator-ignore --additional-properties=outputAsLibrary=true,enumClassPrefix=true,router=chi,sourceFolder=,onlyInterfaces=true,isGoSubmodule=true,enumClassPrefix=true,useOneOfDiscriminatorLookup=true,featureCORS=true \
+    --ignore-file-override "$PROJECT_ROOT"/.openapi-generator-ignore --additional-properties=outputAsLibrary=true,enumClassPrefix=true,router=chi,sourceFolder=,onlyInterfaces=true,isGoSubmodule=true,enumClassPrefix=true,useOneOfDiscriminatorLookup=true \
     --model-name-mappings="$MCP_MODEL_MAPPINGS" \
     --template-dir "$PROJECT_ROOT"/../templates/go-server
 

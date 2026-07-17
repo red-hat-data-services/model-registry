@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/signal"
 	"reflect"
+	"strings"
 	"syscall"
 	"time"
 
@@ -22,6 +23,7 @@ import (
 	"github.com/kubeflow/model-registry/internal/datastore"
 	"github.com/kubeflow/model-registry/internal/datastore/embedmd"
 	"github.com/kubeflow/model-registry/internal/db"
+	mrmiddleware "github.com/kubeflow/model-registry/internal/server/middleware"
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
 )
@@ -30,6 +32,7 @@ var catalogCfg = struct {
 	ListenAddress          string
 	ConfigPath             []string
 	PerformanceMetricsPath []string
+	CORSAllowedOrigins     []string
 }{
 	ListenAddress:          "0.0.0.0:8080",
 	ConfigPath:             []string{"sources.yaml"},
@@ -89,9 +92,21 @@ func init() {
 	fs.StringVarP(&catalogCfg.ListenAddress, "listen", "l", catalogCfg.ListenAddress, "Address to listen on")
 	fs.StringSliceVar(&catalogCfg.ConfigPath, "catalogs-path", catalogCfg.ConfigPath, "Path to catalog source configuration file")
 	fs.StringSliceVar(&catalogCfg.PerformanceMetricsPath, "performance-metrics", catalogCfg.PerformanceMetricsPath, "Path to performance metrics data directory")
+	fs.StringSliceVar(&catalogCfg.CORSAllowedOrigins, "cors-allowed-origins", nil,
+		"Comma-separated list of allowed CORS origins. If empty (default), CORS is disabled. Can also be set via CATALOG_CORS_ALLOWED_ORIGINS environment variable.")
 }
 
-func runCatalogServer(cmd *cobra.Command, args []string) error {
+func runCatalogServer(cmd *cobra.Command, _ []string) error {
+	if !cmd.Flags().Changed("cors-allowed-origins") {
+		if envVal := os.Getenv("CATALOG_CORS_ALLOWED_ORIGINS"); envVal != "" {
+			for _, origin := range strings.Split(envVal, ",") {
+				if o := strings.TrimSpace(origin); o != "" {
+					catalogCfg.CORSAllowedOrigins = append(catalogCfg.CORSAllowedOrigins, o)
+				}
+			}
+		}
+	}
+
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -197,7 +212,7 @@ func runCatalogServer(cmd *cobra.Command, args []string) error {
 
 	server := &http.Server{
 		Addr:    catalogCfg.ListenAddress,
-		Handler: openapi.NewRouter(ctrl, mcpCtrl),
+		Handler: mrmiddleware.CORSMiddleware(catalogCfg.CORSAllowedOrigins)(openapi.NewRouter(ctrl, mcpCtrl)),
 	}
 
 	g, gctx := errgroup.WithContext(ctx)
