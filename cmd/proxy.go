@@ -10,6 +10,7 @@ import (
 	"github.com/kubeflow/model-registry/internal/datastore"
 	"github.com/kubeflow/model-registry/internal/datastore/embedmd"
 	"github.com/kubeflow/model-registry/internal/proxy"
+	"github.com/kubeflow/model-registry/internal/server/middleware"
 	"github.com/kubeflow/model-registry/internal/server/openapi"
 	"github.com/kubeflow/model-registry/internal/tls"
 	"github.com/kubeflow/model-registry/pkg/api"
@@ -160,7 +161,7 @@ func runProxyServer(cmd *cobra.Command, args []string) error {
 		ModelRegistryServiceAPIService := openapi.NewModelRegistryServiceAPIService(conn)
 		ModelRegistryServiceAPIController := openapi.NewModelRegistryServiceAPIController(ModelRegistryServiceAPIService)
 
-		router.SetRouter(openapi.NewRouter(ModelRegistryServiceAPIController))
+		router.SetRouter(middleware.CORSMiddleware(cfg.CORSAllowedOrigins)(openapi.NewRouter(ModelRegistryServiceAPIController)))
 	}()
 
 	// Start the proxy server in a separate goroutine so that we can handle
@@ -204,4 +205,7 @@ func init() {
 	proxyCmd.Flags().BoolVar(&proxyCfg.Datastore.EmbedMD.TLSConfig.VerifyServerCert, "embedmd-database-ssl-verify-server-cert", false, "EmbedMD SSL verify server cert")
 
 	proxyCmd.Flags().StringVar(&proxyCfg.Datastore.Type, "datastore-type", proxyCfg.Datastore.Type, "Datastore type")
+
+	proxyCmd.Flags().StringSliceVar(&cfg.CORSAllowedOrigins, "cors-allowed-origins", nil,
+		"Comma-separated list of allowed CORS origins. If empty (default), CORS is disabled. Can also be set via MR_CORS_ALLOWED_ORIGINS environment variable.")
 }
