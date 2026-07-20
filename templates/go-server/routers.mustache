@@ -14,16 +14,10 @@ import (
 {{#routers}}
 	{{#mux}}
 	"github.com/gorilla/mux"
-	{{#featureCORS}}
-	"github.com/gorilla/handlers"
-	{{/featureCORS}}
 	{{/mux}}
 	{{#chi}}
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	{{#featureCORS}}
-	"github.com/go-chi/cors"
-	{{/featureCORS}}
 	{{/chi}}
 {{/routers}}
 	"github.com/golang/glog"
@@ -59,16 +53,6 @@ func NewRouter(routers ...Router) {{#routers}}{{#mux}}*mux.Router{{/mux}}{{#chi}
 	{{#chi}}
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
-	{{#featureCORS}}
-	router.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"https://*", "http://*"},
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token", "X-PINGOTHER"},
-		ExposedHeaders:   []string{"Link"},
-		AllowCredentials: false,
-		MaxAge:           300, // Maximum value not ignored by any of major browsers
-	}))
-	{{/featureCORS}}
 	{{/chi}}
 {{/routers}}
 	for _, api := range routers {
@@ -77,9 +61,6 @@ func NewRouter(routers ...Router) {{#routers}}{{#mux}}*mux.Router{{/mux}}{{#chi}
 	{{#mux}}
 			var handler http.Handler
 			handler = Logger(handler, name)
-			{{#featureCORS}}
-			handler = handlers.CORS()(handler)
-			{{/featureCORS}}
 
 			router.
 				Methods(route.Method).
