@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"strings"
 
 	"github.com/kubeflow/model-registry/internal/csi/modelregistry"
 	"github.com/kubeflow/model-registry/internal/csi/storage"
@@ -10,10 +11,11 @@ import (
 )
 
 const (
-	modelRegistryBaseUrlEnv     = "MODEL_REGISTRY_BASE_URL"
-	modelRegistrySchemeEnv      = "MODEL_REGISTRY_SCHEME"
-	modelRegistryBaseUrlDefault = "localhost:8080"
-	modelRegistrySchemeDefault  = "http"
+	modelRegistryBaseUrlEnv       = "MODEL_REGISTRY_BASE_URL"
+	modelRegistrySchemeEnv        = "MODEL_REGISTRY_SCHEME"
+	allowedArtifactURIPrefixesEnv = "ALLOWED_ARTIFACT_URI_PREFIXES"
+	modelRegistryBaseUrlDefault   = "localhost:8080"
+	modelRegistrySchemeDefault    = "http"
 )
 
 func main() {
@@ -36,13 +38,25 @@ func main() {
 		scheme = modelRegistrySchemeDefault
 	}
 
+	var allowedPrefixes []string
+	if prefixesStr, ok := os.LookupEnv(allowedArtifactURIPrefixesEnv); ok && prefixesStr != "" {
+		for _, p := range strings.Split(prefixesStr, ",") {
+			if trimmed := strings.TrimSpace(p); trimmed != "" {
+				allowedPrefixes = append(allowedPrefixes, trimmed)
+			}
+		}
+		log.Printf("Artifact URI allowlist configured with %d prefix(es): %v", len(allowedPrefixes), allowedPrefixes)
+	} else {
+		log.Printf("No artifact URI allowlist configured (%s not set), all URIs will be accepted", allowedArtifactURIPrefixesEnv)
+	}
+
 	cfg := openapi.NewConfiguration()
 	cfg.Host = baseUrl
 	cfg.Scheme = scheme
 
 	apiClient := modelregistry.NewAPIClient(cfg, sourceUri)
 
-	provider, err := storage.NewModelRegistryProvider(apiClient)
+	provider, err := storage.NewModelRegistryProvider(apiClient, allowedPrefixes)
 	if err != nil {
 		log.Fatalf("Error initiliazing model registry provider: %v", err)
 	}
