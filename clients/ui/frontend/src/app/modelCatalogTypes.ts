@@ -226,7 +226,7 @@ export type GetCatalogModelsBySource = (
   performanceParams?: {
     targetRPS?: number;
     latencyProperty?: string;
-    recommendations?: boolean;
+    orderBy?: string;
   },
 ) => Promise<CatalogModelList>;
 
@@ -362,7 +362,6 @@ export type CatalogFilterOptionsList = {
 
 export type PerformanceArtifactsParams = {
   targetRPS?: number;
-  recommendations?: boolean;
   rpsProperty?: string;
   latencyProperty?: string;
   hardwareCountProperty?: string;
