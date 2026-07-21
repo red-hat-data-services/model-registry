@@ -89,6 +89,19 @@ test/                            # Integration/E2E test scripts
 ```
 
 
+## Available Skills
+
+AI-agent skills live in `.agents/skills/` and are invoked with `/<skill-name>` in Claude Code (or compatible AI assistants).
+
+| Skill | Description | Invocation |
+|-------|-------------|------------|
+| `init-catalog` | Scaffold a new catalog plugin end-to-end so it compiles and starts without panics. | `/init-catalog` |
+| `sync-catalog` | Sync a catalog plugin's generated code and domain layer after OpenAPI spec changes. | `/sync-catalog` |
+| `catalog-add-route` | Add an endpoint or query parameter to a catalog plugin's OpenAPI spec. | `/catalog-add-route` |
+| `catalog-sample-data` | Generate sample YAML data for a catalog plugin and register it in sources.yaml. | `/catalog-sample-data` |
+| `create-agent-catalog-source` | Scan a repository for agent templates and generate a custom agent catalog source YAML for the catalog service. | `/create-agent-catalog-source [path-or-url]` |
+
+
 ## Commands
 
 ### Setup
