@@ -25,10 +25,12 @@ import ModelCatalogSortDropdown from '~/app/pages/modelCatalog/components/ModelC
 import {
   ModelCatalogNumberFilterKey,
   ModelCatalogStringFilterKey,
+  ModelCatalogSortOption,
   parseLatencyFilterKey,
   BASIC_FILTER_KEYS,
   PERFORMANCE_FILTER_KEYS,
   RESET_ALL_FILTERS_LABEL,
+  SortField,
 } from '~/concepts/modelCatalog/const';
 
 type ModelCatalogPageProps = {
@@ -88,12 +90,17 @@ const ModelCatalogGalleryView: React.FC<ModelCatalogPageProps> = ({
       ? parseLatencyFilterKey(activeLatencyField).propertyKey
       : undefined;
 
+    const orderBy =
+      sortBy === ModelCatalogSortOption.LOWEST_COLD_START
+        ? ModelCatalogNumberFilterKey.COLD_START_LOAD_TIME
+        : SortField.RECOMMENDED;
+
     return {
       targetRPS,
       latencyProperty,
-      recommendations: true,
+      orderBy,
     };
-  }, [performanceViewEnabled, filters, activeLatencyField]);
+  }, [performanceViewEnabled, filters, activeLatencyField, sortBy]);
 
   const { catalogModels, catalogModelsLoaded, catalogModelsLoadError } = useCatalogModelsBySources(
     '',
