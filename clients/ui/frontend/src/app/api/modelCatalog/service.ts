@@ -35,7 +35,7 @@ export const getCatalogModelsBySource =
     performanceParams?: {
       targetRPS?: number;
       latencyProperty?: string;
-      recommendations?: boolean;
+      orderBy?: string;
     },
   ): Promise<CatalogModelList> => {
     const computedFilterQuery =
@@ -55,8 +55,8 @@ export const getCatalogModelsBySource =
       ...(performanceParams?.latencyProperty && {
         latencyProperty: performanceParams.latencyProperty,
       }),
-      ...(performanceParams?.recommendations !== undefined && {
-        recommendations: performanceParams.recommendations,
+      ...(performanceParams?.orderBy && {
+        orderBy: performanceParams.orderBy,
       }),
     };
     return handleRestFailures(restGET(hostPath, '/models', allParams, opts)).then((response) => {
@@ -128,7 +128,6 @@ export const getPerformanceArtifacts =
     const allParams: Record<string, unknown> = {
       ...queryParams,
       ...(params?.targetRPS !== undefined && { targetRPS: params.targetRPS }),
-      ...(params?.recommendations !== undefined && { recommendations: params.recommendations }),
       ...(params?.rpsProperty && { rpsProperty: params.rpsProperty }),
       ...(params?.latencyProperty && { latencyProperty: params.latencyProperty }),
       ...(params?.hardwareCountProperty && { hardwareCountProperty: params.hardwareCountProperty }),
