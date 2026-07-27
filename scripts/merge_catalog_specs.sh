@@ -87,7 +87,7 @@ cp "$SOURCE_FILE" "$OUT_FILE"
 PLUGIN_FILES=()
 while IFS= read -r f; do
     PLUGIN_FILES+=("$f")
-done < <(find api/openapi/src/plugins -maxdepth 1 -name '*.yaml' -type f 2>/dev/null | sort || true)
+done < <(find api/openapi/src/plugins -maxdepth 1 -name '*.yaml' -not -name '*-v1.yaml' -type f 2>/dev/null | sort || true)
 
 for plugin_file in "${PLUGIN_FILES[@]}"; do
     temp_merged="$(mktemp -t merged_tempXXXXXX).yaml"
