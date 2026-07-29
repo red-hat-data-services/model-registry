@@ -302,7 +302,7 @@ func (ml *MCPLoader) loadServersFromProvider(ctx context.Context, cancel context
 					(&MCPPartiallyAvailableError{FailedServers: failedServers}).Error())
 			} else {
 				basecatalog.SaveSourceStatus(ml.services.CatalogSourceRepository, sourceID, basecatalog.SourceStatusError,
-					fmt.Sprintf("all MCP servers failed to load from source %s (failed: %v)", sourceID, failedServers))
+					fmt.Sprintf("All MCP servers failed to load from source %s (failed: %v)", sourceID, failedServers))
 			}
 		} else {
 			basecatalog.SaveSourceStatus(ml.services.CatalogSourceRepository, sourceID, basecatalog.SourceStatusAvailable, "")
