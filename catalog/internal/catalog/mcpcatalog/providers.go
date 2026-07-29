@@ -207,19 +207,88 @@ func NewYamlMCPProvider(source basecatalog.MCPSource) (MCPProvider, error) {
 	}, nil
 }
 
-// Servers implements MCPProvider
+// Servers implements MCPProvider. It emits all servers from the configured
+// paths, then sends a sentinel (zero-value MCPServerProviderRecord) to signal
+// that the initial batch is complete. It then watches each path for changes
+// and re-emits on every file change, followed by another sentinel.
+// The channel is closed when ctx is cancelled.
 func (yp *yamlMCPProvider) Servers(ctx context.Context) <-chan MCPServerProviderRecord {
 	recordChan := make(chan MCPServerProviderRecord)
 
 	go func() {
 		defer close(recordChan)
 
+		// Set up watchers before the initial emit so that changes arriving
+		// during or just after the read are not missed.
+		merged := make(chan struct{}, 1)
+		watchCount := 0
+		for _, path := range yp.paths {
+			ch, err := basecatalog.GetMonitor().Path(ctx, path)
+			if err != nil {
+				glog.Errorf("unable to watch MCP catalog file %s: %v", path, err)
+				continue
+			}
+			watchCount++
+			go func(c <-chan struct{}) {
+				for {
+					select {
+					case <-ctx.Done():
+						return
+					case _, ok := <-c:
+						if !ok {
+							return
+						}
+						// Non-blocking send: one pending notification is enough.
+						select {
+						case merged <- struct{}{}:
+						default:
+						}
+					}
+				}
+			}(ch)
+		}
+
+		// Emit the initial batch.
 		for _, path := range yp.paths {
 			select {
 			case <-ctx.Done():
 				return
 			default:
 				yp.emit(ctx, path, recordChan)
+			}
+		}
+
+		// Signal that the initial batch is done.
+		select {
+		case recordChan <- MCPServerProviderRecord{}:
+		case <-ctx.Done():
+			return
+		}
+
+		if watchCount == 0 {
+			// All watcher setups failed; no live updates possible.
+			return
+		}
+
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case <-merged:
+				glog.Infof("Reloading MCP catalog (file changed)")
+				for _, path := range yp.paths {
+					select {
+					case <-ctx.Done():
+						return
+					default:
+						yp.emit(ctx, path, recordChan)
+					}
+				}
+				select {
+				case recordChan <- MCPServerProviderRecord{}:
+				case <-ctx.Done():
+					return
+				}
 			}
 		}
 	}()
@@ -247,17 +316,19 @@ func (yp *yamlMCPProvider) emit(ctx context.Context, path string, recordChan cha
 	catalog, err := yp.read(path)
 	if err != nil {
 		glog.Errorf("Error reading MCP catalog from %s: %v", path, err)
-		recordChan <- MCPServerProviderRecord{Error: err}
+		select {
+		case recordChan <- MCPServerProviderRecord{Error: err}:
+		case <-ctx.Done():
+		}
 		return
 	}
 
 	for _, yamlServer := range catalog.MCPServers {
+		record := yamlServer.ToMCPServerProviderRecord()
 		select {
+		case recordChan <- record:
 		case <-ctx.Done():
 			return
-		default:
-			record := yamlServer.ToMCPServerProviderRecord()
-			recordChan <- record
 		}
 	}
 }
