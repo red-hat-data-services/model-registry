@@ -69,8 +69,11 @@ api/openapi/model-registry.yaml: api/openapi/src/model-registry.yaml api/openapi
 api/openapi/model-registry-v1.yaml: api/openapi/src/model-registry-v1.yaml api/openapi/src/lib/*.yaml bin/yq
 	scripts/merge_openapi.sh model-registry-v1.yaml
 
-api/openapi/catalog.yaml: api/openapi/src/catalog.yaml api/openapi/src/lib/*.yaml $(wildcard api/openapi/src/plugins/*.yaml) bin/yq
+api/openapi/catalog.yaml: api/openapi/src/catalog.yaml api/openapi/src/lib/*.yaml $(filter-out %-v1.yaml,$(wildcard api/openapi/src/plugins/*.yaml)) bin/yq
 	scripts/merge_catalog_specs.sh catalog.yaml
+
+api/openapi/catalog-v1.yaml: api/openapi/src/catalog-v1.yaml api/openapi/src/lib/*.yaml $(wildcard api/openapi/src/plugins/*-v1.yaml) bin/yq
+	scripts/merge_catalog_specs.sh catalog-v1.yaml
 
 # validate the openapi schema
 .PHONY: openapi/validate
@@ -78,9 +81,11 @@ openapi/validate: bin/openapi-generator-cli bin/yq
 	@scripts/merge_openapi.sh --check model-registry.yaml || (echo "api/openapi/model-registry.yaml is incorrectly formatted. Run 'make api/openapi/model-registry.yaml' to fix it."; exit 1)
 	@scripts/merge_openapi.sh --check model-registry-v1.yaml || (echo "api/openapi/model-registry-v1.yaml is incorrectly formatted. Run 'make api/openapi/model-registry-v1.yaml' to fix it."; exit 1)
 	@scripts/merge_catalog_specs.sh --check catalog.yaml || (echo "api/openapi/catalog.yaml is incorrectly formatted. Run 'make api/openapi/catalog.yaml' to fix it."; exit 1)
+	@scripts/merge_catalog_specs.sh --check catalog-v1.yaml || (echo "api/openapi/catalog-v1.yaml is incorrectly formatted. Run 'make api/openapi/catalog-v1.yaml' to fix it."; exit 1)
 	$(OPENAPI_GENERATOR) validate -i api/openapi/model-registry.yaml
 	$(OPENAPI_GENERATOR) validate -i api/openapi/model-registry-v1.yaml
 	$(OPENAPI_GENERATOR) validate -i api/openapi/catalog.yaml
+	$(OPENAPI_GENERATOR) validate -i api/openapi/catalog-v1.yaml
 
 # generate the openapi server implementation
 .PHONY: gen/openapi-server
