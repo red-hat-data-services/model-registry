@@ -84,10 +84,18 @@ cp "$SOURCE_FILE" "$OUT_FILE"
 # Step 2: Discover and merge plugin specs (before shared libraries,
 # so catalog-specific parameters appear before common.yaml parameters
 # in the final output — preserving the original key order)
+NAME="${BASENAME%.yaml}"
+VARIANT="${NAME#catalog}"
+if [[ -n "$VARIANT" ]]; then
+    FIND_ARGS=(-name "*${VARIANT}.yaml")
+else
+    FIND_ARGS=(-name '*.yaml' -not -name '*-v1.yaml')
+fi
+
 PLUGIN_FILES=()
 while IFS= read -r f; do
     PLUGIN_FILES+=("$f")
-done < <(find api/openapi/src/plugins -maxdepth 1 -name '*.yaml' -not -name '*-v1.yaml' -type f 2>/dev/null | sort || true)
+done < <(find api/openapi/src/plugins -maxdepth 1 "${FIND_ARGS[@]}" -type f 2>/dev/null | sort || true)
 
 for plugin_file in "${PLUGIN_FILES[@]}"; do
     temp_merged="$(mktemp -t merged_tempXXXXXX).yaml"
@@ -103,7 +111,7 @@ register_temp "$temp_with_libs"
 $YQ eval-all '. as $item ireduce ({}; . * $item)' "$OUT_FILE" api/openapi/src/lib/*.yaml >"$temp_with_libs"
 mv "$temp_with_libs" "$OUT_FILE"
 
-# Step 3: Re-order keys and sort for deterministic output
+# Step 4: Re-order keys and sort for deterministic output
 $YQ eval -i '
     {
         "openapi": .openapi,

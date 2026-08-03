@@ -43,7 +43,7 @@ For additional context see the [Model Registry documentation](https://www.kubefl
 ## Repository Map
 
 ```
-api/openapi/                     # OpenAPI specs (model-registry.yaml, catalog.yaml)
+api/openapi/                     # OpenAPI specs (model-registry.yaml, model-registry-v1.yaml, catalog.yaml, catalog-v1.yaml)
 ├── src/                           # Source YAML files merged into final specs
 catalog/                         # Catalog service — federated model discovery
 ├── clients/python/                # Python client for catalog API (Poetry)
@@ -312,7 +312,9 @@ go mod tidy                       # Ensure module files are clean
 The following directories contain auto-generated code. Modify the sources and regenerate instead:
 
 - `api/openapi/model-registry.yaml` — **merged output**, do NOT edit. Edit source files in `api/openapi/src/model-registry.yaml` and `api/openapi/src/lib/*.yaml`, then run `make api/openapi/model-registry.yaml`
+- `api/openapi/model-registry-v1.yaml` — **merged output**, do NOT edit. Edit source files in `api/openapi/src/model-registry-v1.yaml` and `api/openapi/src/lib/*.yaml`, then run `make api/openapi/model-registry-v1.yaml`
 - `api/openapi/catalog.yaml` — **merged output**, do NOT edit. Edit source files in `api/openapi/src/catalog.yaml` and `api/openapi/src/lib/*.yaml`, then run `make api/openapi/catalog.yaml`
+- `api/openapi/catalog-v1.yaml` — **merged output**, do NOT edit. Edit source files in `api/openapi/src/catalog-v1.yaml` and `api/openapi/src/lib/*.yaml`, then run `make api/openapi/catalog-v1.yaml`
 - `pkg/openapi/` — generated from the merged `api/openapi/model-registry.yaml` via `make gen/openapi`
 - `catalog/pkg/openapi/` — generated from the merged `api/openapi/catalog.yaml` via `make -C catalog gen/openapi`
 - `internal/server/openapi/` — generated from OpenAPI specs via `make gen/openapi-server`
@@ -388,5 +390,6 @@ When modifying the REST API:
 - [CONTRIBUTING.md](./CONTRIBUTING.md) — DCO, code of conduct, ARM/Mac setup, Kind deployment
 - [clients/ui/CONTRIBUTING.md](./clients/ui/CONTRIBUTING.md) — UI-specific contribution guide
 - [docs/dev_kind_environment.md](./docs/dev_kind_environment.md) — Kind local dev environment setup and troubleshooting
+- [docs/writing-a-catalog-plugin.md](./docs/writing-a-catalog-plugin.md) — step-by-step guide to creating a new catalog plugin with the `catalog-gen` tool
 - [devenv/README.md](./devenv/README.md) — Tilt-based dev environment
 - [Model Registry documentation](https://www.kubeflow.org/docs/components/model-registry/overview/)
