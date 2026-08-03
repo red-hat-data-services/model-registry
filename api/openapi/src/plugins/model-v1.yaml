@@ -181,7 +181,7 @@ paths:
           type: string
         in: path
         required: true
-  /api/model_catalog/v1/sources/{source_id}/models/{model_name}/artifacts:
+  /api/model_catalog/v1/sources/{source_id}/models/{model_name+}/artifacts:
     description: >-
       The REST endpoint/path used to list `CatalogArtifacts`.
     get:
@@ -207,7 +207,7 @@ paths:
           type: string
         in: path
         required: true
-      - name: model_name
+      - name: model_name+
         description: A unique identifier for the model.
         schema:
           type: string
@@ -220,7 +220,7 @@ paths:
       - $ref: "#/components/parameters/artifactOrderBy"
       - $ref: "#/components/parameters/sortOrder"
       - $ref: "#/components/parameters/nextPageToken"
-  /api/model_catalog/v1/sources/{source_id}/models/{model_name}/artifacts/performance:
+  /api/model_catalog/v1/sources/{source_id}/models/{model_name+}/artifacts/performance:
     description: >-
       Lists performance metrics artifacts (that is, artifacts of type `CatalogMetricsArtifact` where `metricsType` is `performance-metrics`).
     get:
@@ -246,7 +246,7 @@ paths:
           type: string
         in: path
         required: true
-      - name: model_name
+      - name: model_name+
         description: A unique identifier for the model.
         schema:
           type: string
