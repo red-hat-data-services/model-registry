@@ -75,6 +75,8 @@ type MCPServer struct {
 	// Last update timestamp for the server metadata.
 	LastUpdated     *time.Time          `json:"lastUpdated,omitempty"`
 	RuntimeMetadata *MCPRuntimeMetadata `json:"runtimeMetadata,omitempty"`
+	// MCP server.json conformant structure. Opaque to this API; the schema is defined by the MCP specification and may evolve independently. See https://registry.modelcontextprotocol.io/docs#/schemas/ServerJSON for details.
+	ServerJson map[string]interface{} `json:"serverJson,omitempty"`
 }
 
 type _MCPServer MCPServer
@@ -1010,6 +1012,38 @@ func (o *MCPServer) SetRuntimeMetadata(v MCPRuntimeMetadata) {
 	o.RuntimeMetadata = &v
 }
 
+// GetServerJson returns the ServerJson field value if set, zero value otherwise.
+func (o *MCPServer) GetServerJson() map[string]interface{} {
+	if o == nil || IsNil(o.ServerJson) {
+		var ret map[string]interface{}
+		return ret
+	}
+	return o.ServerJson
+}
+
+// GetServerJsonOk returns a tuple with the ServerJson field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *MCPServer) GetServerJsonOk() (map[string]interface{}, bool) {
+	if o == nil || IsNil(o.ServerJson) {
+		return map[string]interface{}{}, false
+	}
+	return o.ServerJson, true
+}
+
+// HasServerJson returns a boolean if a field has been set.
+func (o *MCPServer) HasServerJson() bool {
+	if o != nil && !IsNil(o.ServerJson) {
+		return true
+	}
+
+	return false
+}
+
+// SetServerJson gets a reference to the given map[string]interface{} and assigns it to the ServerJson field.
+func (o *MCPServer) SetServerJson(v map[string]interface{}) {
+	o.ServerJson = v
+}
+
 func (o MCPServer) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -1102,6 +1136,9 @@ func (o MCPServer) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.RuntimeMetadata) {
 		toSerialize["runtimeMetadata"] = o.RuntimeMetadata
+	}
+	if !IsNil(o.ServerJson) {
+		toSerialize["serverJson"] = o.ServerJson
 	}
 	return toSerialize, nil
 }
