@@ -78,6 +78,9 @@ func ConvertOpenapiMCPServerToDb(openapiServer *openapi.MCPServer) models.MCPSer
 	if runtimeMetadata, ok := openapiServer.GetRuntimeMetadataOk(); ok && runtimeMetadata != nil {
 		addJSONProperty(&properties, "runtimeMetadata", runtimeMetadata)
 	}
+	if len(openapiServer.ServerJson) > 0 {
+		addJSONProperty(&properties, "serverJson", openapiServer.ServerJson)
+	}
 
 	// Set properties on the server
 	dbServer.Properties = &properties
@@ -220,6 +223,12 @@ func convertDbMCPServerToOpenapiInternal(dbServer models.MCPServer, tools []open
 		var runtimeMetadata openapi.MCPRuntimeMetadata
 		if err := json.Unmarshal([]byte(runtimeJSON), &runtimeMetadata); err == nil {
 			openapiServer.RuntimeMetadata = &runtimeMetadata
+		}
+	}
+	if serverJsonStr := pa.GetString("serverJson"); serverJsonStr != "" {
+		var serverJson map[string]interface{}
+		if err := json.Unmarshal([]byte(serverJsonStr), &serverJson); err == nil {
+			openapiServer.ServerJson = serverJson
 		}
 	}
 
