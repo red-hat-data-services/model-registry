@@ -3623,13 +3623,13 @@ arches:
     name: go-srpm-macros
     evr: 3.8.1-1.el9
     sourcerpm: go-rpm-macros-3.8.1-1.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/k/kernel-headers-5.14.0-687.33.1.el9_8.ppc64le.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/k/kernel-headers-5.14.0-687.34.1.el9_8.ppc64le.rpm
     repoid: ubi-9-for-ppc64le-appstream-rpms
-    size: 2886025
-    checksum: sha256:a661ec3af814fe3b7f1b98f65e8b5ddf86b92a16bda045f3b91a5ccb09580651
+    size: 2886473
+    checksum: sha256:a5187f89609639fa405f819cdf62702e7c581101bac73fd0625075f26f8954ea
     name: kernel-headers
-    evr: 5.14.0-687.33.1.el9_8
-    sourcerpm: kernel-5.14.0-687.33.1.el9_8.src.rpm
+    evr: 5.14.0-687.34.1.el9_8
+    sourcerpm: kernel-5.14.0-687.34.1.el9_8.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/k/kernel-srpm-macros-1.0-14.el9.noarch.rpm
     repoid: ubi-9-for-ppc64le-appstream-rpms
     size: 14098
