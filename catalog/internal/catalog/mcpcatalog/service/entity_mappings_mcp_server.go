@@ -58,4 +58,5 @@ var mcpServerProperties = map[string]filter.PropertyDefinition{
 	"endpoints":                {Location: filter.PropertyTable, ValueType: filter.StringValueType, Column: "endpoints"},
 	"artifacts":                {Location: filter.PropertyTable, ValueType: filter.StringValueType, Column: "artifacts"},
 	"runtimeMetadata":          {Location: filter.PropertyTable, ValueType: filter.StringValueType, Column: "runtimeMetadata"},
+	"serverJson":               {Location: filter.PropertyTable, ValueType: filter.StringValueType, Column: "serverJson"},
 }

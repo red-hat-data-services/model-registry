@@ -129,6 +129,7 @@ type yamlMCPServer struct {
 	CustomProperties         *map[string]apimodels.MetadataValue `yaml:"customProperties,omitempty"`
 	CreateTimeSinceEpoch     *string                             `yaml:"createTimeSinceEpoch,omitempty"`
 	LastUpdateTimeSinceEpoch *string                             `yaml:"lastUpdateTimeSinceEpoch,omitempty"`
+	ServerJSON               map[string]any                      `yaml:"server_json,omitempty" json:"server_json,omitempty"`
 }
 
 // yamlMCPTool represents an MCP tool definition
@@ -461,6 +462,15 @@ func (ys *yamlMCPServer) ToMCPServerProviderRecord() MCPServerProviderRecord {
 			properties = append(properties, mrmodels.NewStringProperty("runtimeMetadata", string(jsonBytes), false))
 		} else {
 			glog.Warningf("failed to marshal runtimeMetadata for server %q: %v", ys.Name, err)
+		}
+	}
+
+	// Convert server_json to JSON
+	if len(ys.ServerJSON) > 0 {
+		if jsonBytes, err := json.Marshal(ys.ServerJSON); err == nil {
+			properties = append(properties, mrmodels.NewStringProperty("serverJson", string(jsonBytes), false))
+		} else {
+			glog.Warningf("failed to marshal server_json for server %q: %v", ys.Name, err)
 		}
 	}
 
