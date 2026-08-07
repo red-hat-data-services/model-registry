@@ -1118,3 +1118,87 @@ func TestYamlMCPServerSecurityIndicatorsPartial(t *testing.T) {
 	_, hasReadOnlyTools := boolProps["readOnlyTools"]
 	assert.False(t, hasReadOnlyTools, "readOnlyTools should not be present when unset")
 }
+
+func TestYamlMCPServerServerJSONConversion(t *testing.T) {
+	yamlServer := &yamlMCPServer{
+		Name: "server-json-test",
+		ServerJSON: map[string]any{
+			"$schema":     "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+			"name":        "com.example/test-server",
+			"description": "A test MCP server",
+			"version":     "1.0.0",
+			"repository": map[string]any{
+				"url":    "https://github.com/example/test-server",
+				"source": "github",
+			},
+			"packages": []any{
+				map[string]any{
+					"registryType": "oci",
+					"identifier":   "registry.example.com/test-server:1.0",
+					"transport": map[string]any{
+						"type": "streamable-http",
+						"url":  "http://localhost:8080/mcp",
+					},
+				},
+			},
+			"_meta": map[string]any{
+				"org.kubeflow.hub/mcp-runtime": map[string]any{
+					"defaultPort": 8080,
+				},
+			},
+		},
+	}
+
+	record := yamlServer.ToMCPServerProviderRecord()
+	assert.Nil(t, record.Error)
+	assert.NotNil(t, record.Server)
+
+	props := record.Server.GetProperties()
+	require.NotNil(t, props)
+
+	var serverJsonStr *string
+	for _, prop := range *props {
+		if prop.Name == "serverJson" && prop.StringValue != nil {
+			serverJsonStr = prop.StringValue
+			break
+		}
+	}
+	require.NotNil(t, serverJsonStr, "serverJson property should be set")
+
+	var parsed map[string]any
+	err := json.Unmarshal([]byte(*serverJsonStr), &parsed)
+	require.NoError(t, err)
+
+	assert.Equal(t, "com.example/test-server", parsed["name"])
+	assert.Equal(t, "1.0.0", parsed["version"])
+
+	repo, ok := parsed["repository"].(map[string]any)
+	require.True(t, ok)
+	assert.Equal(t, "github", repo["source"])
+
+	packages, ok := parsed["packages"].([]any)
+	require.True(t, ok)
+	require.Len(t, packages, 1)
+
+	meta, ok := parsed["_meta"].(map[string]any)
+	require.True(t, ok)
+	_, ok = meta["org.kubeflow.hub/mcp-runtime"]
+	assert.True(t, ok, "_meta should contain mcp-runtime key")
+}
+
+func TestYamlMCPServerServerJSONNil(t *testing.T) {
+	yamlServer := &yamlMCPServer{
+		Name: "no-server-json",
+	}
+
+	record := yamlServer.ToMCPServerProviderRecord()
+	assert.Nil(t, record.Error)
+
+	props := record.Server.GetProperties()
+	require.NotNil(t, props)
+
+	for _, prop := range *props {
+		assert.NotEqual(t, "serverJson", prop.Name,
+			"serverJson property should not be set when ServerJSON is nil")
+	}
+}

@@ -6,18 +6,22 @@ import (
 	"reflect"
 	"strings"
 	"sync"
+	"time"
 
+	"github.com/go-chi/chi/v5"
+	chimiddleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/golang/glog"
 	"github.com/kubeflow/hub/internal/core"
-	"github.com/kubeflow/hub/internal/platform/datastore"
 	"github.com/kubeflow/hub/internal/datastore/embedmd"
 	"github.com/kubeflow/hub/internal/db/models"
 	"github.com/kubeflow/hub/internal/db/service"
+	"github.com/kubeflow/hub/internal/platform/datastore"
 	platformproxy "github.com/kubeflow/hub/internal/platform/proxy"
+	"github.com/kubeflow/hub/internal/platform/tls"
 	"github.com/kubeflow/hub/internal/proxy"
 	"github.com/kubeflow/hub/internal/server/middleware"
-	"github.com/kubeflow/hub/internal/server/openapi"
-	"github.com/kubeflow/hub/internal/platform/tls"
+	v1 "github.com/kubeflow/hub/internal/server/openapi/v1"
+	"github.com/kubeflow/hub/internal/server/openapi/v1alpha3"
 	"github.com/kubeflow/hub/pkg/api"
 	"github.com/spf13/cobra"
 )
@@ -168,10 +172,33 @@ func runProxyServer(cmd *cobra.Command, args []string) error {
 			return
 		}
 
-		ModelRegistryServiceAPIService := openapi.NewModelRegistryServiceAPIService(conn)
-		ModelRegistryServiceAPIController := openapi.NewModelRegistryServiceAPIController(ModelRegistryServiceAPIService)
+		v1alpha3Service := v1alpha3.NewModelRegistryServiceAPIService(conn)
+		v1alpha3Controller := v1alpha3.NewModelRegistryServiceAPIController(v1alpha3Service)
 
-		router.SetRouter(middleware.WrapWithValidation(cfg.CORSAllowedOrigins, ModelRegistryServiceAPIController))
+		v1Service := v1.NewModelRegistryServiceAPIService(conn)
+		v1Controller := v1.NewModelRegistryServiceAPIController(v1Service)
+
+		mux := chi.NewRouter()
+		mux.Use(chimiddleware.Logger)
+
+		if cfg.AlphaSunsetDate != "" {
+			sunsetDate, err := time.Parse("2006-01-02", cfg.AlphaSunsetDate)
+			if err != nil {
+				errChan <- fmt.Errorf("invalid --alpha-sunset-date %q: must be YYYY-MM-DD: %w", cfg.AlphaSunsetDate, err)
+				return
+			}
+			mux.Use(middleware.DeprecationMiddleware(middleware.DeprecationConfig{SunsetDate: sunsetDate}))
+			glog.Infof("Alpha API (v1alpha3) deprecation headers enabled; sunset date: %s", cfg.AlphaSunsetDate)
+		}
+
+		for _, route := range v1alpha3Controller.OrderedRoutes() {
+			mux.Method(route.Method, route.Pattern, route.HandlerFunc)
+		}
+		for _, route := range v1Controller.OrderedRoutes() {
+			mux.Method(route.Method, route.Pattern, route.HandlerFunc)
+		}
+
+		router.SetRouter(middleware.WrapWithValidation(cfg.CORSAllowedOrigins, mux))
 
 		// Set the model registry service in the holder for health checks AFTER router is ready
 		// This ensures the readiness probe only passes when the router can serve actual requests
@@ -253,4 +280,8 @@ func init() {
 
 	proxyCmd.Flags().StringSliceVar(&cfg.CORSAllowedOrigins, "cors-allowed-origins", nil,
 		"Comma-separated list of allowed CORS origins. If empty (default), CORS is disabled.")
+
+	proxyCmd.Flags().StringVar(&cfg.AlphaSunsetDate, "alpha-sunset-date", "",
+		"Sunset date (YYYY-MM-DD) for the deprecated v1alpha3 API, per RFC 8594. "+
+			"If empty (default), no deprecation headers are added to v1alpha3 responses.")
 }

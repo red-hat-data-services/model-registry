@@ -408,15 +408,10 @@ func TestLeaderElector_WaitReturnsCorrectError(t *testing.T) {
 // TestRollingUpdateDoesNotDeadlock simulates a rolling update with replicas=1:
 //
 //  1. Old pod holds the leader lease and is healthy.
-//  2. New pod starts and attempts to acquire the lease.
-//  3. New pod cannot become leader (old pod holds the lease).
-//  4. New pod's Healthy() must return true (ErrNotAcquired proves DB is reachable).
-//  5. Kubernetes sees the new pod as ready, terminates the old pod.
-//  6. Old pod releases the lease on shutdown.
-//  7. New pod acquires the lease and becomes leader.
-//
-// Without the ErrNotAcquired fix, step 4 would return false → readiness probe
-// fails → Kubernetes never kills the old pod → deadlock.
+//  2. New pod starts — Healthy() returns true immediately (TryCreateTable proved DB reachable).
+//  3. Kubernetes sees the new pod as ready, terminates the old pod.
+//  4. Old pod releases the lease on shutdown.
+//  5. New pod acquires the lease and becomes leader.
 func TestRollingUpdateDoesNotDeadlock(t *testing.T) {
 	db, cleanup := testutils.SetupPostgresWithMigrations(t, testhelpers.MustDatastoreSpec(t))
 	defer cleanup()
@@ -424,7 +419,6 @@ func TestRollingUpdateDoesNotDeadlock(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	// --- Step 1: Old pod acquires the lease ---
 	oldCtx, oldCancel := context.WithCancel(ctx)
 	defer oldCancel()
 
@@ -439,45 +433,86 @@ func TestRollingUpdateDoesNotDeadlock(t *testing.T) {
 	require.Eventually(t, func() bool {
 		return oldBecameLeader.Load()
 	}, 3*time.Second, 100*time.Millisecond, "old pod should acquire leadership")
-	assert.True(t, oldPod.Healthy(), "old pod should be healthy")
 
-	// --- Step 2-3: New pod starts, cannot acquire (old pod holds lease) ---
 	newCtx, newCancel := context.WithCancel(ctx)
 	defer newCancel()
 
+	var newBecameLeader atomic.Bool
 	newPod, err := leader.NewLeaderElector(db, newCtx, "rolling-update-lock", 5*time.Second, 1*time.Second)
 	require.NoError(t, err)
-
-	// New pod starts unhealthy (cold start)
-	assert.False(t, newPod.Healthy(), "new pod should start unhealthy")
-
-	// --- Step 4: New pod gets ErrNotAcquired → becomes healthy ---
-	require.Eventually(t, func() bool {
-		return newPod.Healthy()
-	}, 5*time.Second, 100*time.Millisecond,
-		"new pod should become healthy while waiting for lease (ErrNotAcquired proves DB connectivity)")
-
-	// --- Step 5-6: Kubernetes terminates old pod (simulate with cancel) ---
-	t.Log("Simulating Kubernetes terminating old pod")
-	oldCancel()
-	err = oldPod.Wait()
-	assert.ErrorIs(t, err, context.Canceled)
-
-	// --- Step 7: New pod acquires leadership ---
-	var newBecameLeader atomic.Bool
 	newPod.OnBecomeLeader(func(ctx context.Context) {
 		newBecameLeader.Store(true)
 		<-ctx.Done()
 	})
 
+	// New pod is healthy immediately — no deadlock
+	assert.True(t, newPod.Healthy(), "new pod should be healthy immediately (DB reachable from TryCreateTable)")
+	assert.False(t, newBecameLeader.Load(), "new pod should not be leader yet")
+
+	// Simulate Kubernetes terminating old pod
+	t.Log("Simulating Kubernetes terminating old pod")
+	oldCancel()
+	assert.ErrorIs(t, oldPod.Wait(), context.Canceled)
+
+	// New pod acquires leadership after old pod releases
 	require.Eventually(t, func() bool {
 		return newBecameLeader.Load()
 	}, 10*time.Second, 200*time.Millisecond, "new pod should acquire leadership after old pod is terminated")
 
-	assert.True(t, newPod.Healthy(), "new pod should remain healthy as leader")
-
 	newCancel()
-	err = newPod.Wait()
+	assert.ErrorIs(t, newPod.Wait(), context.Canceled)
+}
+
+// TestCrashedPodStaleLockReclaim verifies that when a pod crashes without
+// releasing the lock, a new pod takes over via pglock's built-in two-phase
+// CAS takeover within leaseDuration.
+func TestCrashedPodStaleLockReclaim(t *testing.T) {
+	gormDB, cleanup := testutils.SetupPostgresWithMigrations(t, testhelpers.MustDatastoreSpec(t))
+	defer cleanup()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	lockDuration := 3 * time.Second
+	heartbeat := 1 * time.Second
+	lockName := "test_crash_reclaim"
+
+	// Bootstrap the schema by creating and immediately canceling a throwaway elector.
+	bootstrapCtx, bootstrapCancel := context.WithCancel(ctx)
+	bootstrapCancel()
+	bootstrap, err := leader.NewLeaderElector(gormDB, bootstrapCtx, lockName, lockDuration, heartbeat)
+	require.NoError(t, err)
+	_ = bootstrap.Wait()
+
+	// Simulate a crashed pod by inserting a stale lock row directly.
+	sqlDB, err := gormDB.DB()
+	require.NoError(t, err)
+
+	_, err = sqlDB.ExecContext(ctx,
+		`INSERT INTO locks (name, record_version_number, owner) VALUES ($1, $2, $3)
+		 ON CONFLICT (name) DO UPDATE SET record_version_number = $2, owner = $3`,
+		lockName, 9999, "pglock-dead-pod-123456")
+	require.NoError(t, err)
+
+	var becameLeader atomic.Bool
+	elector, err := leader.NewLeaderElector(gormDB, ctx, lockName, lockDuration, heartbeat)
+	require.NoError(t, err)
+	elector.OnBecomeLeader(func(ctx context.Context) {
+		becameLeader.Store(true)
+		<-ctx.Done()
+	})
+
+	// dbReachable is set after TryCreateTable in constructor
+	assert.True(t, elector.Healthy(), "pod should be healthy immediately after construction")
+
+	// pglock takes over stale lock within leaseDuration (two-phase CAS)
+	require.Eventually(t, func() bool {
+		return becameLeader.Load()
+	}, lockDuration+5*time.Second, 200*time.Millisecond,
+		"pod should take over stale lock and become leader within leaseDuration")
+
+	cancel()
+	err = elector.Wait()
 	assert.ErrorIs(t, err, context.Canceled)
 }
 

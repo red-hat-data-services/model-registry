@@ -53,6 +53,7 @@ func (p *Plugin) DatastoreEntries() []plugin.DatastoreEntry {
 				AddStruct("tags").
 				AddStruct("transports").
 				AddString("deploymentMode").
+				AddString("serverJson").
 				AddBoolean("verifiedSource").
 				AddBoolean("secureEndpoint").
 				AddBoolean("sast").

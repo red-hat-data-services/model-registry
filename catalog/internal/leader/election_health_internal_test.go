@@ -81,13 +81,14 @@ func newTestElector(ctx context.Context, locker lockClient, threshold int32) *Le
 		unhealthyThreshold: threshold,
 		retryBackoff:       &backoff{current: time.Millisecond, max: time.Millisecond},
 	}
-	// dbReachable starts false (zero value) — Healthy() returns false until
-	// first successful DB contact, matching NewLeaderElector behavior.
+	// In production, dbReachable is set after TryCreateTable succeeds.
+	// Match that behavior here.
+	e.dbReachable.Store(true)
 	go e.run()
 	return e
 }
 
-func TestHealthyStartsUnhealthy(t *testing.T) {
+func TestHealthyBecomesUnhealthyAfterThreshold(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -98,13 +99,11 @@ func TestHealthyStartsUnhealthy(t *testing.T) {
 
 	e := newTestElector(ctx, locker, 3)
 
-	assert.False(t, e.Healthy(), "should start unhealthy before first acquisition")
+	assert.True(t, e.Healthy(), "should start healthy (DB was reachable at construction)")
 
 	require.Eventually(t, func() bool {
-		return locker.calls.Load() >= 3
-	}, 2*time.Second, 5*time.Millisecond, "should have attempted acquisition at least 3 times")
-
-	assert.False(t, e.Healthy(), "should remain unhealthy with sustained failures")
+		return !e.Healthy()
+	}, 2*time.Second, 5*time.Millisecond, "should become unhealthy after threshold consecutive failures")
 
 	cancel()
 	_ = e.Wait()
@@ -116,41 +115,20 @@ func TestHealthyRecoveryAfterAcquisitionSucceeds(t *testing.T) {
 
 	locker := &failingLocker{
 		err:       errors.New("connection refused"),
-		failCount: 4,
+		failCount: 10,
 	}
 
 	e := newTestElector(ctx, locker, 3)
 
-	assert.False(t, e.Healthy(), "should start unhealthy")
+	require.Eventually(t, func() bool {
+		return !e.Healthy()
+	}, 2*time.Second, 5*time.Millisecond, "should become unhealthy after threshold failures")
 
 	require.Eventually(t, func() bool {
 		return e.Healthy()
 	}, 2*time.Second, 5*time.Millisecond, "should recover to healthy after successful acquisition")
 
 	assert.Equal(t, int32(0), e.consecutiveFailures.Load(), "consecutive failures should be reset")
-
-	cancel()
-	_ = e.Wait()
-}
-
-func TestHealthyBecomesHealthyOnFirstSuccess(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	locker := &failingLocker{
-		err:       errors.New("connection refused"),
-		failCount: 0, // succeeds on first call
-	}
-
-	e := newTestElector(ctx, locker, 3)
-
-	assert.False(t, e.Healthy(), "should start unhealthy")
-
-	require.Eventually(t, func() bool {
-		return e.Healthy()
-	}, 2*time.Second, 5*time.Millisecond, "should become healthy after first successful acquisition")
-
-	assert.Equal(t, int32(0), e.consecutiveFailures.Load())
 
 	cancel()
 	_ = e.Wait()
@@ -167,14 +145,11 @@ func TestHealthyThresholdBoundary(t *testing.T) {
 
 	e := newTestElector(ctx, locker, 2)
 
-	assert.False(t, e.Healthy(), "should start unhealthy (threshold=2)")
+	assert.True(t, e.Healthy(), "should start healthy (threshold=2)")
 
-	// Continued failures keep it unhealthy
 	require.Eventually(t, func() bool {
-		return locker.calls.Load() >= 2
-	}, 2*time.Second, 5*time.Millisecond, "should have attempted acquisition")
-
-	assert.False(t, e.Healthy(), "should remain unhealthy with sustained failures")
+		return !e.Healthy()
+	}, 2*time.Second, 5*time.Millisecond, "should become unhealthy after threshold failures")
 
 	cancel()
 	_ = e.Wait()
@@ -200,55 +175,6 @@ func (s *switchableLocker) setErr(err error) {
 	s.mu.Lock()
 	s.err = err
 	s.mu.Unlock()
-}
-
-func TestHealthyWhenLockHeldByAnother(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	locker := &failingLocker{
-		err:       pglock.ErrNotAcquired,
-		failCount: -1,
-	}
-
-	e := newTestElector(ctx, locker, 3)
-
-	assert.False(t, e.Healthy(), "should start unhealthy")
-
-	// ErrNotAcquired proves DB is reachable → should become healthy
-	require.Eventually(t, func() bool {
-		return e.Healthy()
-	}, 2*time.Second, 5*time.Millisecond, "should become healthy when lock is held by another pod")
-
-	assert.Equal(t, int32(0), e.consecutiveFailures.Load())
-
-	cancel()
-	_ = e.Wait()
-}
-
-func TestHealthyContentionThenInfraFailure(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	locker := &switchableLocker{err: pglock.ErrNotAcquired}
-
-	e := newTestElector(ctx, locker, 3)
-
-	// Contention → healthy
-	require.Eventually(t, func() bool {
-		return e.Healthy()
-	}, 2*time.Second, 5*time.Millisecond, "should become healthy during contention")
-
-	// Switch to infra failure
-	locker.setErr(errors.New("connection refused"))
-
-	// Should become unhealthy after threshold failures
-	require.Eventually(t, func() bool {
-		return !e.Healthy()
-	}, 2*time.Second, 5*time.Millisecond, "should become unhealthy after infra failure")
-
-	cancel()
-	_ = e.Wait()
 }
 
 func TestHealthyLoseLockBecomesUnhealthy(t *testing.T) {

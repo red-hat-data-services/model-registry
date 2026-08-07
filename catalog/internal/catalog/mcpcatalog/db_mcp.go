@@ -48,7 +48,7 @@ func (d *dbMCPCatalogImpl) GetFilterOptions(ctx context.Context) (*openapi.Filte
 
 	for _, prop := range contextProperties {
 		switch prop.Name {
-		case "artifacts", "base_name", "documentationUrl", "logo", "repositoryUrl", "sourceCode", "source_id", "tools", "version":
+		case "artifacts", "base_name", "documentationUrl", "logo", "repositoryUrl", "serverJson", "sourceCode", "source_id", "tools", "version":
 			continue
 		}
 
