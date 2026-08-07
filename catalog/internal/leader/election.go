@@ -43,7 +43,7 @@ type pglockAdapter struct {
 }
 
 func (a *pglockAdapter) acquireContext(ctx context.Context, name string) (lockHandle, error) {
-	lock, err := a.client.AcquireContext(ctx, name, pglock.FailIfLocked())
+	lock, err := a.client.AcquireContext(ctx, name)
 	if err != nil {
 		return nil, err
 	}
@@ -113,8 +113,8 @@ type LeaderElector struct {
 	activeCallbacks sync.WaitGroup
 
 	// Health tracking.
-	// dbReachable flips to true on first successful DB contact (acquisition
-	// or ErrNotAcquired). Pods that have never contacted the DB are not ready.
+	// dbReachable is set after TryCreateTable succeeds in the constructor,
+	// proving DB connectivity before the election loop starts.
 	// consecutiveFailures counts consecutive infrastructure errors (DB
 	// unreachable, lost heartbeat). Healthy() returns false when the DB has
 	// never been reached OR failures exceed the threshold.
@@ -197,10 +197,11 @@ func NewLeaderElector(
 			return &pglockAdapter{client: c}, nil
 		},
 	}
-	// dbReachable starts false (zero value) — pod is not ready until first
-	// successful DB contact. No need to hack the failure counter.
+	// TryCreateTable succeeded — DB is reachable. Setting this before the
+	// election loop starts lets the readiness probe pass while AcquireContext
+	// blocks waiting for an existing leader to release the lock.
+	e.dbReachable.Store(true)
 
-	// Start the background goroutine immediately
 	go e.run()
 
 	return e, nil
@@ -295,8 +296,8 @@ func (e *LeaderElector) run() {
 		}
 
 		if err != nil {
-			// pglock returns ErrNotAcquired (not context.Canceled) when the
-			// context is cancelled during acquisition — check context first.
+			// pglock may return a wrapped error instead of context.Canceled
+			// when the context is cancelled during acquisition.
 			if ctx.Err() != nil {
 				glog.Info("Leader election canceled, shutting down")
 				e.err = ctx.Err()
@@ -304,16 +305,7 @@ func (e *LeaderElector) run() {
 			}
 
 			var delay time.Duration
-			if errors.Is(err, pglock.ErrNotAcquired) {
-				// Lock held by another pod — DB is reachable, pod is healthy.
-				// Keep retry interval short so we acquire quickly when the
-				// lease is released (e.g., during rolling updates).
-				e.dbReachable.Store(true)
-				e.consecutiveFailures.Store(0)
-				backoff.reset()
-				delay = backoff.next()
-				glog.Infof("Lock held by another instance, retrying in %v", delay)
-			} else if isFatalError(err) {
+			if isFatalError(err) {
 				if e.resetFunc == nil {
 					// No recovery path — exit so the pod restarts and recreates the schema.
 					glog.Errorf("Fatal leader election error (schema lost): %v — exiting for pod restart", err)

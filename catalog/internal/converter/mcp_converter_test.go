@@ -1,6 +1,7 @@
 package converter_test
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/kubeflow/hub/catalog/internal/catalog/mcpcatalog/models"
@@ -70,4 +71,57 @@ func TestConvertDbMCPToolToOpenapi_StripsQualifiedPrefix(t *testing.T) {
 			assert.Equal(t, tc.expectedName, result.Name)
 		})
 	}
+}
+
+func TestConvertDbMCPServerToOpenapi_IncludesServerJson(t *testing.T) {
+	baseName := "server-json-server"
+	version := "1.0.0"
+	serverJsonMap := map[string]any{
+		"$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+		"name":    "com.example/test",
+		"version": "1.0.0",
+		"packages": []any{
+			map[string]any{"registryType": "oci", "identifier": "registry.example.com/test:1.0"},
+		},
+	}
+	jsonBytes, err := json.Marshal(serverJsonMap)
+	require.NoError(t, err)
+	serverJsonStr := string(jsonBytes)
+
+	server := &models.MCPServerImpl{
+		Attributes: &models.MCPServerAttributes{
+			Name: &baseName,
+		},
+		Properties: &[]dbmodels.Properties{
+			{Name: "version", StringValue: &version},
+			{Name: "serverJson", StringValue: &serverJsonStr},
+		},
+	}
+
+	result := converter.ConvertDbMCPServerToOpenapi(server)
+	require.NotNil(t, result)
+	require.NotNil(t, result.ServerJson)
+	assert.Equal(t, "com.example/test", result.ServerJson["name"])
+	assert.Equal(t, "1.0.0", result.ServerJson["version"])
+
+	packages, ok := result.ServerJson["packages"].([]any)
+	require.True(t, ok)
+	require.Len(t, packages, 1)
+}
+
+func TestConvertDbMCPServerToOpenapi_NoServerJson(t *testing.T) {
+	baseName := "no-server-json"
+	version := "1.0.0"
+	server := &models.MCPServerImpl{
+		Attributes: &models.MCPServerAttributes{
+			Name: &baseName,
+		},
+		Properties: &[]dbmodels.Properties{
+			{Name: "version", StringValue: &version},
+		},
+	}
+
+	result := converter.ConvertDbMCPServerToOpenapi(server)
+	require.NotNil(t, result)
+	assert.Nil(t, result.ServerJson)
 }
