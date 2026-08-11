@@ -122,5 +122,7 @@ func (p *Plugin) RegisterRoutes(router chi.Router) error {
 		router.Method(route.Method, route.Pattern, route.HandlerFunc)
 	}
 
+	router.Get("/api/mcp_catalog/v1alpha1/mcp_servers/{server_id}/logo", LogoHandler(mcpProvider))
+
 	return nil
 }

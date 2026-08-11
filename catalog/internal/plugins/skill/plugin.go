@@ -35,8 +35,11 @@ func (p *Plugin) DatastoreEntries() []plugin.DatastoreEntry {
 		{
 			TypeName: "kf.Skill",
 			Category: "context",
-			Spec: datastore.NewSpecType(skillservice.NewSkillRepository).
-				AddString("source_id"),
+			// Property names/kinds come from skillcatalog's shared field table so the
+			// datastore schema can't drift from the loader's writer and API mapper.
+			Spec: skillcatalog.AddSkillProperties(
+				datastore.NewSpecType(skillservice.NewSkillRepository),
+			),
 		},
 	}
 }
@@ -49,7 +52,17 @@ func (p *Plugin) Init(_ context.Context, cfg plugin.Config) error {
 	}
 
 	base := basecatalog.NewBaseLoader(cfg.ConfigPaths)
-	p.loader = skillcatalog.NewSkillLoader(p.services, base)
+
+	// Sync fan-out and per-clone limits default to their compiled-in values and
+	// are overridable via SKILL_CATALOG_* environment variables (see env_config.go).
+	// Private-repo credentials are read at clone time from token files in the mounted
+	// git-credentials directory, named by each repository's credentialRef.
+	loaderOpts := []skillcatalog.LoaderOption{
+		skillcatalog.WithSyncLimits(skillcatalog.SyncLimitsFromEnv()),
+		skillcatalog.WithResolveLimits(skillcatalog.ResolveLimitsFromEnv()),
+		skillcatalog.WithCredentialsDir(skillcatalog.CredentialsDirFromEnv()),
+	}
+	p.loader = skillcatalog.NewSkillLoader(p.services, base, loaderOpts...)
 
 	p.PluginBase = plugin.NewPluginBase(plugin.PluginBaseConfig{
 		Name:        "skill",
@@ -58,7 +71,7 @@ func (p *Plugin) Init(_ context.Context, cfg plugin.Config) error {
 		FileWatcher: basecatalog.GetMonitor(),
 		SourceIDs: func() mapset.Set[string] {
 			ids := mapset.NewSet[string]()
-			for id := range p.loader.Sources.AllSources() {
+			for id := range p.loader.AllSources() {
 				ids.Add(id)
 			}
 			return ids
