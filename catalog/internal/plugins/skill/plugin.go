@@ -13,7 +13,8 @@ import (
 	skillservice "github.com/kubeflow/hub/catalog/internal/catalog/skillcatalog/service"
 	"github.com/kubeflow/hub/catalog/internal/db/models"
 	"github.com/kubeflow/hub/catalog/internal/plugin"
-	"github.com/kubeflow/hub/catalog/internal/server/openapi"
+	v1 "github.com/kubeflow/hub/catalog/internal/server/openapi/v1"
+	v1alpha1 "github.com/kubeflow/hub/catalog/internal/server/openapi/v1alpha1"
 	"github.com/kubeflow/hub/internal/platform/datastore"
 )
 
@@ -94,7 +95,7 @@ func (p *Plugin) Init(_ context.Context, cfg plugin.Config) error {
 // SkillPreviewer returns the skill source previewer for cross-plugin access. The
 // model plugin injects it into the shared sources/preview endpoint so an
 // assetType: skills preview resolves through the skill catalog's own resolver.
-func (p *Plugin) SkillPreviewer() openapi.SkillSourcePreviewer { return p.previewer }
+func (p *Plugin) SkillPreviewer() v1.SkillSourcePreviewer { return p.previewer }
 
 // SkillSources returns the loader's source collection for cross-plugin access.
 // The model plugin injects it into FindSources so skill sources appear alongside
@@ -105,11 +106,20 @@ func (p *Plugin) SkillSources() *skillcatalog.SkillSourceCollection {
 
 func (p *Plugin) RegisterRoutes(router chi.Router) error {
 	provider := skillcatalog.NewDBSkillCatalog(p.services)
-	ctrl := openapi.NewSkillCatalogServiceAPIController(
-		openapi.NewSkillCatalogServiceAPIService(provider, p.loader.SourceCollection()),
-	)
 
-	for _, route := range ctrl.OrderedRoutes() {
+	// v1alpha1 routes
+	alphaCtrl := v1alpha1.NewSkillCatalogServiceAPIController(
+		v1alpha1.NewSkillCatalogServiceAPIService(provider, p.loader.SourceCollection()),
+	)
+	for _, route := range alphaCtrl.OrderedRoutes() {
+		router.Method(route.Method, route.Pattern, route.HandlerFunc)
+	}
+
+	// v1 routes
+	v1Ctrl := v1.NewSkillCatalogServiceAPIController(
+		v1.NewSkillCatalogServiceAPIService(provider, p.loader.SourceCollection()),
+	)
+	for _, route := range v1Ctrl.OrderedRoutes() {
 		router.Method(route.Method, route.Pattern, route.HandlerFunc)
 	}
 
