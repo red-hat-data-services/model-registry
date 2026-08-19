@@ -322,15 +322,6 @@ paths:
       tags:
         - ModelCatalogService
       parameters:
-        - name: recommendations
-          in: query
-          deprecated: true
-          description: >-
-            Deprecated: use `orderBy=RECOMMENDED` instead. Sort models by lowest recommended latency using Pareto filtering.
-          required: false
-          schema:
-            type: boolean
-            default: false
         - name: targetRPS
           in: query
           description: Target requests per second for latency calculations
@@ -423,10 +414,9 @@ paths:
 
             The `RECOMMENDED` sort applies Pareto filtering and ranks models by recommended latency.
             The Pareto-related parameters (`targetRPS`, `latencyProperty`, `rpsProperty`,
-            `hardwareCountProperty`, `hardwareTypeProperty`) are applied the same way as with the
-            deprecated `recommendations` parameter. With the default `sortOrder=ASC`, the most
-            recommended models (lowest latency) appear first. Use `sortOrder=DESC` to show the least
-            recommended configurations first.
+            `hardwareCountProperty`, `hardwareTypeProperty`) tune the ranking. With the default
+            `sortOrder=ASC`, the most recommended models (lowest latency) appear first. Use
+            `sortOrder=DESC` to show the least recommended configurations first.
 
             In addition, models can be sorted by properties. For example:
             - `provider.string_value` sorts by provider name
@@ -710,7 +700,7 @@ paths:
           type: string
         in: path
         required: true
-  /api/model_catalog/v1/sources/{source_id}/models/{model_name+}/artifacts:
+  /api/model_catalog/v1/sources/{source_id}/models/{model_name}/artifacts:
     description: >-
       The REST endpoint/path used to list `CatalogArtifacts`.
     get:
@@ -736,20 +726,19 @@ paths:
           type: string
         in: path
         required: true
-      - name: model_name+
+      - name: model_name
         description: A unique identifier for the model.
         schema:
           type: string
         in: path
         required: true
       - $ref: "#/components/parameters/artifactType"
-      - $ref: "#/components/parameters/artifact_type"
       - $ref: "#/components/parameters/artifactFilterQuery"
       - $ref: "#/components/parameters/pageSize"
       - $ref: "#/components/parameters/artifactOrderBy"
       - $ref: "#/components/parameters/sortOrder"
       - $ref: "#/components/parameters/nextPageToken"
-  /api/model_catalog/v1/sources/{source_id}/models/{model_name+}/artifacts/performance:
+  /api/model_catalog/v1/sources/{source_id}/models/{model_name}/artifacts/performance:
     description: >-
       Lists performance metrics artifacts (that is, artifacts of type `CatalogMetricsArtifact` where `metricsType` is `performance-metrics`).
     get:
@@ -775,7 +764,7 @@ paths:
           type: string
         in: path
         required: true
-      - name: model_name+
+      - name: model_name
         description: A unique identifier for the model.
         schema:
           type: string
@@ -3025,21 +3014,6 @@ components:
         artifactType:
           value: model-artifact
       name: artifactType
-      description: "Specifies the artifact type for listing artifacts."
-      schema:
-        type: array
-        items:
-          $ref: "#/components/schemas/ArtifactTypeQueryParam"
-      in: query
-      required: false
-    artifact_type:
-      deprecated: true
-      style: form
-      explode: true
-      examples:
-        artifact_type:
-          value: model-artifact
-      name: artifact_type
       description: "Specifies the artifact type for listing artifacts."
       schema:
         type: array
