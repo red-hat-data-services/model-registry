@@ -39,6 +39,7 @@ type ParsedSkill struct {
 	Name          string
 	Description   string
 	License       string
+	Author        string
 	Compatibility string
 	AllowedTools  []string
 	Metadata      map[string]any
@@ -85,13 +86,16 @@ func ParseSkillMD(content []byte, expectedName string) (*ParsedSkill, error) {
 	skill.Compatibility = skill.stringField(raw, "compatibility")
 	skill.AllowedTools = parseAllowedTools(raw["allowed-tools"])
 	skill.Metadata = skill.mapField(raw, "metadata")
+	skill.Author = skill.resolveAuthor(raw)
 
 	// Name (lenient: warn, never skip).
 	switch {
+	case skill.Name == "" && expectedName == "":
+		skill.warnf("frontmatter is missing 'name' for a root-level SKILL.md")
 	case skill.Name == "":
 		skill.Name = expectedName
 		skill.warnf("frontmatter is missing 'name'; using directory name %q", expectedName)
-	case skill.Name != expectedName:
+	case expectedName != "" && skill.Name != expectedName:
 		skill.warnf("frontmatter name %q does not match directory %q", skill.Name, expectedName)
 	}
 
@@ -112,14 +116,43 @@ func ParseSkillMD(content []byte, expectedName string) (*ParsedSkill, error) {
 	return skill, nil
 }
 
+// resolveAuthor determines the skill's author. It prefers a top-level `author`
+// frontmatter field (like license); when absent it falls back to the spec's
+// canonical metadata.author. Either way `author` is removed from the metadata map
+// so it surfaces only as the dedicated Author field, not also as a custom property.
+func (s *ParsedSkill) resolveAuthor(raw map[string]any) string {
+	var author string
+	if v, ok := raw["author"]; ok && v != nil {
+		if str, isStr := v.(string); isStr {
+			author = str
+		} else {
+			s.warnf("frontmatter field %q is not a string and was ignored", "author")
+		}
+	}
+	if s.Metadata != nil {
+		if mdAuthor, ok := s.Metadata["author"]; ok {
+			if str, isStr := mdAuthor.(string); isStr && strings.TrimSpace(author) == "" {
+				author = str
+			}
+			// The "author" metadata key is reserved for the dedicated Author field;
+			// remove it (whatever its type) so it never also surfaces as a custom
+			// property.
+			delete(s.Metadata, "author")
+		}
+	}
+	return strings.TrimSpace(author)
+}
+
 // warnf appends a formatted non-fatal warning.
 func (s *ParsedSkill) warnf(format string, args ...any) {
 	s.Warnings = append(s.Warnings, fmt.Sprintf(format, args...))
 }
 
-// stringField reads a string frontmatter field. An absent field yields ""; a
-// present field of the wrong type is warned and ignored (returns "") rather than
-// failing the whole parse.
+// stringField reads a single-line string frontmatter field. An absent field
+// yields ""; a present field of the wrong type is warned and ignored (returns "")
+// rather than failing the whole parse. The value is trimmed so a description (or
+// other single-line field) authored as a block scalar (`>`/`|`, which keep a
+// trailing newline) or with stray whitespace does not carry it into the entity.
 func (s *ParsedSkill) stringField(raw map[string]any, key string) string {
 	v, ok := raw[key]
 	if !ok || v == nil {
@@ -130,7 +163,7 @@ func (s *ParsedSkill) stringField(raw map[string]any, key string) string {
 		s.warnf("frontmatter field %q is not a string and was ignored", key)
 		return ""
 	}
-	return str
+	return strings.TrimSpace(str)
 }
 
 // mapField reads a map frontmatter field. An absent field yields nil; a present

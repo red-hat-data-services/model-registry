@@ -104,6 +104,7 @@ func (l *AgentLoader) loadFromYAML(ctx context.Context, sourceID string, source 
 	}
 
 	validNames := mapset.NewSet[string]()
+	successCount := 0
 
 	for _, ya := range catalog.Agents {
 		select {
@@ -148,10 +149,14 @@ func (l *AgentLoader) loadFromYAML(ctx context.Context, sourceID string, source 
 					}
 				}
 			}
+
+			successCount++
 		}()
 	}
 
 	if ctx.Err() == nil {
+		glog.Infof("%s: loaded %d agents", sourceID, successCount)
+
 		if _, err := l.removeOrphanedAgentsFromSource(sourceID, validNames); err != nil {
 			glog.Errorf("error removing orphaned agents from source %s: %v", sourceID, err)
 		}
