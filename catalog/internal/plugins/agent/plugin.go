@@ -13,7 +13,8 @@ import (
 	"github.com/kubeflow/hub/catalog/internal/catalog/basecatalog"
 	"github.com/kubeflow/hub/catalog/internal/db/models"
 	"github.com/kubeflow/hub/catalog/internal/plugin"
-	"github.com/kubeflow/hub/catalog/internal/server/openapi"
+	v1 "github.com/kubeflow/hub/catalog/internal/server/openapi/v1"
+	v1alpha1 "github.com/kubeflow/hub/catalog/internal/server/openapi/v1alpha1"
 	"github.com/kubeflow/hub/internal/platform/datastore"
 )
 
@@ -89,10 +90,18 @@ func (p *Plugin) AgentSources() *agentcatalog.AgentSourceCollection {
 
 func (p *Plugin) RegisterRoutes(router chi.Router) error {
 	provider := agentcatalog.NewDBAgentCatalog(p.services, p.loader.Sources)
-	svc := openapi.NewAgentCatalogServiceAPIService(provider, p.loader.Sources)
-	ctrl := openapi.NewAgentCatalogServiceAPIController(svc)
 
-	for _, route := range ctrl.OrderedRoutes() {
+	// v1alpha1 routes
+	alphaSvc := v1alpha1.NewAgentCatalogServiceAPIService(provider, p.loader.Sources)
+	alphaCtrl := v1alpha1.NewAgentCatalogServiceAPIController(alphaSvc)
+	for _, route := range alphaCtrl.OrderedRoutes() {
+		router.Method(route.Method, route.Pattern, route.HandlerFunc)
+	}
+
+	// v1 routes
+	v1Svc := v1.NewAgentCatalogServiceAPIService(provider, p.loader.Sources)
+	v1Ctrl := v1.NewAgentCatalogServiceAPIController(v1Svc)
+	for _, route := range v1Ctrl.OrderedRoutes() {
 		router.Method(route.Method, route.Pattern, route.HandlerFunc)
 	}
 
