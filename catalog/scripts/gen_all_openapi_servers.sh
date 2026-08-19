@@ -12,5 +12,7 @@ for script in "$PROJECT_ROOT"/plugins/*/scripts/gen_openapi_server.sh; do
     "$script"
 done
 
-"$PROJECT_ROOT/scripts/gen_type_asserts.sh" "$PROJECT_ROOT/internal/server/openapi"
-"$REPO_ROOT/bin/goimports" -w "$PROJECT_ROOT/internal/server/openapi"
+"$PROJECT_ROOT/scripts/gen_type_asserts.sh" "$PROJECT_ROOT/internal/server/openapi/v1alpha1"
+"$PROJECT_ROOT/scripts/gen_type_asserts.sh" "$PROJECT_ROOT/internal/server/openapi/v1"
+"$REPO_ROOT/bin/goimports" -w "$PROJECT_ROOT/internal/server/openapi/v1alpha1"
+"$REPO_ROOT/bin/goimports" -w "$PROJECT_ROOT/internal/server/openapi/v1"

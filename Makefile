@@ -302,6 +302,12 @@ test-cover:
 	${GO} test $$(${GO} list ./internal/... ./pkg/... | grep -v controller) -coverprofile=coverage.txt
 	${GO} tool cover -html=coverage.txt -o coverage.html
 
+# verify the v1 OpenAPI specs follow the parameter/field naming convention
+# (path params: snake_case, query params & body/response fields: camelCase)
+.PHONY: test/openapi-naming
+test/openapi-naming:
+	${GO} test ./api/openapi/...
+
 .PHONY: run/proxy
 run/proxy: gen
 	${GO} run main.go proxy --logtostderr=true

@@ -27,12 +27,20 @@ usage() {
 
 PLUGIN_NAME="${1:-}"
 OUT_PATH="${2:-}"
+VERSION="${3:-}"
 
 if [[ -z "$PLUGIN_NAME" || -z "$OUT_PATH" ]]; then
     usage
 fi
 
-PLUGIN_FILE="api/openapi/src/plugins/$PLUGIN_NAME.yaml"
+if [[ "$VERSION" == "v1" ]]; then
+    CATALOG_FILE="api/openapi/src/catalog-v1.yaml"
+    PLUGIN_FILE="api/openapi/src/plugins/${PLUGIN_NAME}-v1.yaml"
+else
+    CATALOG_FILE="api/openapi/src/catalog.yaml"
+    PLUGIN_FILE="api/openapi/src/plugins/${PLUGIN_NAME}.yaml"
+fi
+
 if [[ ! -f "$PLUGIN_FILE" ]]; then
     echo "Error: Plugin spec not found at $PLUGIN_FILE" >&2
     exit 1
@@ -43,7 +51,7 @@ fi
 # then plugin spec (adds plugin-specific paths/schemas),
 # then shared libs last (common.yaml provides base types, overrides on conflicts)
 $YQ eval-all '. as $item ireduce ({}; . * $item)' \
-    api/openapi/src/catalog.yaml \
+    "$CATALOG_FILE" \
     "$PLUGIN_FILE" \
     api/openapi/src/lib/*.yaml \
     >"$OUT_PATH"
