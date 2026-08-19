@@ -15,10 +15,12 @@ import (
 	"github.com/kubeflow/hub/catalog/internal/catalog/modelcatalog"
 	modelcatalogmodels "github.com/kubeflow/hub/catalog/internal/catalog/modelcatalog/models"
 	modelcatalogservice "github.com/kubeflow/hub/catalog/internal/catalog/modelcatalog/service"
+	"github.com/kubeflow/hub/catalog/internal/catalog/skillcatalog"
 	"github.com/kubeflow/hub/catalog/internal/db/models"
 	dbservice "github.com/kubeflow/hub/catalog/internal/db/service"
 	"github.com/kubeflow/hub/catalog/internal/plugin"
-	"github.com/kubeflow/hub/catalog/internal/server/openapi"
+	v1 "github.com/kubeflow/hub/catalog/internal/server/openapi/v1"
+	v1alpha1 "github.com/kubeflow/hub/catalog/internal/server/openapi/v1alpha1"
 	"github.com/kubeflow/hub/internal/platform/datastore"
 )
 
@@ -32,6 +34,19 @@ type mcpSourceProvider interface {
 // Used to get agent sources for the unified FindSources endpoint.
 type agentSourceProvider interface {
 	AgentSources() *agentcatalog.AgentSourceCollection
+}
+
+// skillPreviewProvider is a local interface satisfied by the skill plugin. It
+// supplies the previewer that lets the shared sources/preview endpoint handle
+// assetType: skills without the model service depending on the skill catalog.
+type skillPreviewProvider interface {
+	SkillPreviewer() v1.SkillSourcePreviewer
+}
+
+// skillSourceProvider is a local interface satisfied by the skill plugin.
+// Used to get skill sources for the unified FindSources endpoint.
+type skillSourceProvider interface {
+	SkillSources() *skillcatalog.SkillSourceCollection
 }
 
 type Plugin struct {
@@ -127,6 +142,15 @@ func (p *Plugin) Init(_ context.Context, cfg plugin.Config) error {
 				poRefresher.Trigger()
 				return nil
 			})
+			// Models are fully written before OnLeaderReady is called (WaitForInflightWrites
+			// runs first), so the event handler above will not fire for the initial load.
+			// Do a synchronous refresh here so filter options are populated immediately.
+			if err := p.services.PropertyOptionsRepository.Refresh(models.ContextPropertyOptionType); err != nil {
+				return fmt.Errorf("refreshing context property options: %w", err)
+			}
+			if err := p.services.PropertyOptionsRepository.Refresh(models.ArtifactPropertyOptionType); err != nil {
+				return fmt.Errorf("refreshing artifact property options: %w", err)
+			}
 			return nil
 		},
 	})
@@ -171,17 +195,50 @@ func (p *Plugin) RegisterRoutes(router chi.Router) error {
 		}
 	}
 
-	svc := openapi.NewModelCatalogServiceAPIService(
-		modelcatalog.NewDBCatalog(p.services, p.loader.Sources),
+	var alphaOpts []v1alpha1.ModelCatalogServiceOption
+	var v1Opts []v1.ModelCatalogServiceOption
+	if skillPlugin, ok := plugin.Get("skill"); ok {
+		if sp, ok := skillPlugin.(skillPreviewProvider); ok {
+			previewer := sp.SkillPreviewer()
+			alphaOpts = append(alphaOpts, v1alpha1.WithSkillPreviewer(previewer))
+			v1Opts = append(v1Opts, v1.WithSkillPreviewer(previewer))
+		}
+		if ss, ok := skillPlugin.(skillSourceProvider); ok {
+			sources := ss.SkillSources()
+			alphaOpts = append(alphaOpts, v1alpha1.WithSkillSources(sources))
+			v1Opts = append(v1Opts, v1.WithSkillSources(sources))
+		}
+	}
+
+	dbCatalog := modelcatalog.NewDBCatalog(p.services, p.loader.Sources)
+
+	// v1alpha1 routes
+	alphaSvc := v1alpha1.NewModelCatalogServiceAPIService(
+		dbCatalog,
 		p.loader.Sources,
 		mcpSources,
 		agentSources,
 		p.loader.Labels,
 		p.services.CatalogSourceRepository,
+		alphaOpts...,
 	)
-	ctrl := openapi.NewModelCatalogServiceAPIController(svc)
+	alphaCtrl := v1alpha1.NewModelCatalogServiceAPIController(alphaSvc)
+	for _, route := range alphaCtrl.OrderedRoutes() {
+		router.Method(route.Method, route.Pattern, route.HandlerFunc)
+	}
 
-	for _, route := range ctrl.OrderedRoutes() {
+	// v1 routes
+	v1Svc := v1.NewModelCatalogServiceAPIService(
+		dbCatalog,
+		p.loader.Sources,
+		mcpSources,
+		agentSources,
+		p.loader.Labels,
+		p.services.CatalogSourceRepository,
+		v1Opts...,
+	)
+	v1Ctrl := v1.NewModelCatalogServiceAPIController(v1Svc)
+	for _, route := range v1Ctrl.OrderedRoutes() {
 		router.Method(route.Method, route.Pattern, route.HandlerFunc)
 	}
 
