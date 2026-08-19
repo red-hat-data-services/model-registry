@@ -13,7 +13,8 @@ import (
 	"github.com/kubeflow/hub/catalog/internal/db/models"
 	dbservice "github.com/kubeflow/hub/catalog/internal/db/service"
 	"github.com/kubeflow/hub/catalog/internal/plugin"
-	"github.com/kubeflow/hub/catalog/internal/server/openapi"
+	v1 "github.com/kubeflow/hub/catalog/internal/server/openapi/v1"
+	v1alpha1 "github.com/kubeflow/hub/catalog/internal/server/openapi/v1alpha1"
 	"github.com/kubeflow/hub/internal/platform/datastore"
 )
 
@@ -114,11 +115,20 @@ func (p *Plugin) RegisterRoutes(router chi.Router) error {
 	mcpProvider := mcpcatalog.NewDBMCPCatalog(p.services, p.loader.Sources, func(name string) (map[string]basecatalog.FieldFilter, bool) {
 		return p.loader.Sources.GetNamedQuery(name)
 	})
-	ctrl := openapi.NewMCPCatalogServiceAPIController(
-		openapi.NewMCPCatalogServiceAPIService(mcpProvider, p.loader.Sources),
-	)
 
-	for _, route := range ctrl.OrderedRoutes() {
+	// v1alpha1 routes
+	alphaCtrl := v1alpha1.NewMCPCatalogServiceAPIController(
+		v1alpha1.NewMCPCatalogServiceAPIService(mcpProvider, p.loader.Sources),
+	)
+	for _, route := range alphaCtrl.OrderedRoutes() {
+		router.Method(route.Method, route.Pattern, route.HandlerFunc)
+	}
+
+	// v1 routes
+	v1Ctrl := v1.NewMCPCatalogServiceAPIController(
+		v1.NewMCPCatalogServiceAPIService(mcpProvider, p.loader.Sources),
+	)
+	for _, route := range v1Ctrl.OrderedRoutes() {
 		router.Method(route.Method, route.Pattern, route.HandlerFunc)
 	}
 

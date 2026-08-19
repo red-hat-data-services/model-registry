@@ -316,7 +316,7 @@ The following directories contain auto-generated code. Modify the sources and re
 - `api/openapi/catalog.yaml` — **merged output**, do NOT edit. Edit source files in `api/openapi/src/catalog.yaml` and `api/openapi/src/lib/*.yaml`, then run `make api/openapi/catalog.yaml`
 - `api/openapi/catalog-v1.yaml` — **merged output**, do NOT edit. Edit source files in `api/openapi/src/catalog-v1.yaml` and `api/openapi/src/lib/*.yaml`, then run `make api/openapi/catalog-v1.yaml`
 - `pkg/openapi/` — generated from the merged `api/openapi/model-registry.yaml` via `make gen/openapi`
-- `catalog/pkg/openapi/` — generated from the merged `api/openapi/catalog.yaml` via `make -C catalog gen/openapi`
+- `catalog/pkg/openapi/` — generated from the merged `api/openapi/catalog-v1.yaml` via `make -C catalog gen/openapi`
 - `internal/server/openapi/` — generated from OpenAPI specs via `make gen/openapi-server`
 - `internal/converter/generated/` — generated from converter interfaces via `make gen/converter`
 
@@ -379,8 +379,8 @@ When modifying the database schema:
 
 When modifying the REST API:
 
-1. **Edit ONLY the source specs** in `api/openapi/src/` (e.g., `api/openapi/src/model-registry.yaml`, `api/openapi/src/lib/*.yaml`). NEVER edit the merged output files `api/openapi/model-registry.yaml` or `api/openapi/catalog.yaml` directly — they are generated.
-2. Merge sources into the final spec: `make api/openapi/model-registry.yaml` (or `make api/openapi/catalog.yaml`)
+1. **Edit ONLY the source specs** in `api/openapi/src/` (e.g., `api/openapi/src/model-registry.yaml`, `api/openapi/src/lib/*.yaml`). NEVER edit the merged output files `api/openapi/model-registry.yaml` or `api/openapi/catalog-v1.yaml` directly — they are generated.
+2. Merge sources into the final spec: `make api/openapi/model-registry.yaml` (or `make api/openapi/catalog-v1.yaml`)
 3. Validate: `make openapi/validate`
 4. Regenerate server and client code: `make gen/openapi gen/openapi-server`
 5. Update any affected handler logic in `internal/`

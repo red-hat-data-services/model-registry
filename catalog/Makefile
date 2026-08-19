@@ -14,9 +14,9 @@ gen/openapi-server:
 .PHONY: gen/openapi
 gen/openapi: pkg/openapi/client.go
 
-pkg/openapi/client.go: ../api/openapi/catalog.yaml
+pkg/openapi/client.go: ../api/openapi/catalog-v1.yaml
 	${OPENAPI_GENERATOR} generate \
-		-i ../api/openapi/catalog.yaml -g go -o pkg/openapi --package-name openapi \
+		-i ../api/openapi/catalog-v1.yaml -g go -o pkg/openapi --package-name openapi \
 		--ignore-file-override ./.openapi-generator-ignore --additional-properties=isGoSubmodule=true,enumClassPrefix=true,useOneOfDiscriminatorLookup=true,generateUnmarshalJSON=false
 	$(PROJECT_BIN)/goimports -w pkg/openapi
 
@@ -38,11 +38,21 @@ clean-pkg-openapi:
 clean-graphql:
 	rm -f $(GENQLIENT_OUTPUT)
 
+PLUGINS := $(patsubst plugins/%/scripts/gen_openapi_server.sh,%,$(wildcard plugins/*/scripts/gen_openapi_server.sh))
+
+# Only removes files that gen_openapi_server.sh actually (re)creates for each
+# plugin (api_<plugin>_catalog_service.go, api_<plugin>.go) plus shared
+# generator output. Hand-written implementation files such as
+# api_<plugin>_catalog_service_service.go (and their tests) must NOT match
+# here, or `make clean gen` deletes manually maintained code.
 .PHONY: clean-internal-server-openapi
 clean-internal-server-openapi:
-	while IFS= read -r file; do rm -f "internal/server/openapi/$$file"; done < internal/server/openapi/.openapi-generator/FILES
-	rm -f internal/server/openapi/api_model_catalog_service.go internal/server/openapi/api_mcp_catalog_service.go
-	rm -f internal/server/openapi/api_model.go internal/server/openapi/api_mcp.go
+	for ver in v1alpha1 v1; do \
+		for plugin in $(PLUGINS); do \
+			rm -f internal/server/openapi/$$ver/api_$${plugin}_catalog_service.go internal/server/openapi/$$ver/api_$${plugin}.go; \
+		done; \
+		rm -f internal/server/openapi/$$ver/impl.go internal/server/openapi/$$ver/error.go internal/server/openapi/$$ver/helpers.go internal/server/openapi/$$ver/routers.go internal/server/openapi/$$ver/logger.go internal/server/openapi/$$ver/type_asserts.go internal/server/openapi/$$ver/model_*.go; \
+	done
 
 .PHONY: gen/catalog-plugin
 gen/catalog-plugin:
