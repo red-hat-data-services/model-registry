@@ -2,29 +2,16 @@
 
 set -e
 
-echo "Generating agent plugin server stubs"
-
 OPENAPI_GENERATOR=${OPENAPI_GENERATOR:-openapi-generator-cli}
 
 PROJECT_ROOT=$(realpath "$(dirname "$0")/../../..")
 REPO_ROOT=$(realpath "$PROJECT_ROOT/..")
-DST="$PROJECT_ROOT/internal/server/openapi"
 
-# Assemble standalone spec for agent plugin
-SPEC=$(mktemp -t agent_plugin_spec_XXXXXX.yaml)
-GENDIR=$(mktemp -d -t agent_openapi_gen_XXXXXX)
-trap 'rm -rf "$SPEC" "$GENDIR"' EXIT
+VERSIONS=("v1alpha1" "v1")
+if [[ -n "$1" ]]; then
+    VERSIONS=("$1")
+fi
 
-"$REPO_ROOT/scripts/assemble_plugin_spec.sh" agent "$SPEC"
-
-# Generate into an isolated temp directory so we never touch other plugins' files.
-# No .openapi-generator-ignore cross-plugin entries needed.
-"$OPENAPI_GENERATOR" generate \
-    -i "$SPEC" -g go-server -o "$GENDIR" --package-name openapi \
-    --additional-properties=outputAsLibrary=true,enumClassPrefix=true,router=chi,sourceFolder=,onlyInterfaces=true,isGoSubmodule=true,enumClassPrefix=true,useOneOfDiscriminatorLookup=true \
-    --template-dir "$REPO_ROOT/templates/go-server"
-
-# Python-based regex replace function
 py-re-replace() {
   python3 -c "
 import fileinput, re, sys
@@ -35,25 +22,44 @@ for filepath in filepaths:
 " "$@"
 }
 
-# Fix package imports in temp files before copying
-py-re-replace 1 'github\.com/kubeflow/hub/pkg/openapi' 'github.com/kubeflow/hub/catalog/pkg/openapi' \
-    "$GENDIR/api_agent_catalog_service.go" \
-    "$GENDIR/api.go"
+TMPFILES=()
+trap 'rm -rf "${TMPFILES[@]}"' EXIT
 
-# Fix broken array-of-enum syntax in api.go interface (generator emits "model.[]Foo" instead of "[]model.Foo")
-py-re-replace 0 'model\.\[\]' '[]model.' "$GENDIR/api.go"
+for VER in "${VERSIONS[@]}"; do
+    echo "Generating agent plugin server stubs ($VER)"
+    DST="$PROJECT_ROOT/internal/server/openapi/$VER"
+    mkdir -p "$DST"
 
-# Copy this plugin's files to the shared output directory
-cp "$GENDIR/api_agent_catalog_service.go" "$DST/"
-cp "$GENDIR/api.go" "$DST/api_agent.go"
+    SPEC=$(mktemp -t agent_plugin_spec_XXXXXX.yaml)
+    GENDIR=$(mktemp -d -t agent_openapi_gen_XXXXXX)
+    TMPFILES+=("$SPEC" "$GENDIR")
 
-# Copy shared infrastructure (impl.go, error.go, etc.) so they stay in sync
-cp "$GENDIR"/impl.go "$GENDIR"/error.go "$GENDIR"/helpers.go "$GENDIR"/routers.go "$GENDIR"/logger.go "$DST/" 2>/dev/null || true
+    "$REPO_ROOT/scripts/assemble_plugin_spec.sh" agent "$SPEC" "$VER"
 
-# Copy model type files — needed by gen_type_asserts.sh (untracked, not committed)
-cp "$GENDIR"/model_*.go "$DST/" 2>/dev/null || true
+    "$OPENAPI_GENERATOR" generate \
+        -i "$SPEC" -g go-server -o "$GENDIR" --package-name "$VER" \
+        --additional-properties=outputAsLibrary=true,enumClassPrefix=true,router=chi,sourceFolder=,onlyInterfaces=true,isGoSubmodule=true,enumClassPrefix=true,useOneOfDiscriminatorLookup=true \
+        --template-dir "$REPO_ROOT/templates/go-server"
 
-# Format
-"$REPO_ROOT/bin/goimports" -w "$DST/api_agent_catalog_service.go" "$DST/api_agent.go"
+    # Fix package imports in temp files
+    py-re-replace 1 'github\.com/kubeflow/hub/pkg/openapi' 'github.com/kubeflow/hub/catalog/pkg/openapi' \
+        "$GENDIR/api_agent_catalog_service.go" \
+        "$GENDIR/api.go"
 
-echo "Agent plugin server stubs generated"
+    # Fix broken array-of-enum syntax in api.go interface
+    py-re-replace 0 'model\.\[\]' '[]model.' "$GENDIR/api.go"
+
+    # Copy this plugin's files to the shared output directory
+    cp "$GENDIR/api_agent_catalog_service.go" "$DST/"
+    cp "$GENDIR/api.go" "$DST/api_agent.go"
+
+    # Copy shared infrastructure
+    cp "$GENDIR"/impl.go "$GENDIR"/error.go "$GENDIR"/helpers.go "$GENDIR"/routers.go "$GENDIR"/logger.go "$DST/" 2>/dev/null || true
+
+    # Copy model type files — needed by gen_type_asserts.sh
+    cp "$GENDIR"/model_*.go "$DST/" 2>/dev/null || true
+
+    "$REPO_ROOT/bin/goimports" -w "$DST/api_agent_catalog_service.go" "$DST/api_agent.go"
+
+    echo "Agent plugin server stubs generated ($VER)"
+done

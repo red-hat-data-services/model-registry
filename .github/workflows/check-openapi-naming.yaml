@@ -1,0 +1,22 @@
+name: Validate OpenAPI naming conventions
+on:
+  pull_request:
+    paths:
+      - "api/openapi/model-registry-v1.yaml"
+      - "api/openapi/catalog-v1.yaml"
+      - "api/openapi/naming_test.go"
+      - ".github/workflows/check-openapi-naming.yaml"
+
+permissions: # set contents: read at top-level, per OpenSSF ScoreCard rule TokenPermissionsID
+  contents: read
+
+jobs:
+  naming:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.26.3"
+      - name: Check OpenAPI naming conventions
+        run: make test/openapi-naming
