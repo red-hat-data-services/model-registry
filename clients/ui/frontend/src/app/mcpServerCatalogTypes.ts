@@ -172,6 +172,7 @@ export type McpServer = {
   endpoints?: McpEndpoints;
   runtimeMetadata?: McpRuntimeMetadata;
   customProperties?: McpCustomProperties;
+  serverJson?: Record<string, unknown>;
 };
 
 export type McpServerList = PaginationParams & { items?: McpServer[] };
