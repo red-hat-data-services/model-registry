@@ -14,13 +14,13 @@
 //	    enabled: true
 //	    labels: [community]
 //	    properties:
-//	      trustTier: communityContributed       # optional provenance label
 //	      syncIntervalMinutes: 60               # optional
 //	      repositories:                         # inline form (UI-added sources)
 //	        - url: https://github.com/example/skills.git
 //	          refs: [main, v1.0]
 //	          scanPaths: [skills/]
-//	          authSecretName: git-creds
+//	          credentialRef: github            # file in the mounted credentials dir
+//	          trustTier: communityContributed  # optional provenance label
 //	          provider: Example Org
 //	          category: DevOps
 //	          labels: [community]
@@ -41,6 +41,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/kubeflow/hub/catalog/internal/catalog/basecatalog"
@@ -57,6 +58,12 @@ const (
 	propRepositories    = "repositories"
 )
 
+// validCredentialRef matches a safe credential key: a plain filename with no path
+// separators and no dot-only name, so it can be joined to the mounted credentials
+// directory without escaping it. This prevents a source config from pointing the
+// resolver at an arbitrary host file (e.g. credentialRef: ../../etc/passwd).
+var validCredentialRef = regexp.MustCompile(`^[A-Za-z0-9]([A-Za-z0-9._-]*[A-Za-z0-9])?$`)
+
 // SkillOverride carries per-skill custom-metadata overrides for a repository entry.
 type SkillOverride struct {
 	Name     string   `json:"name"`
@@ -71,17 +78,25 @@ type SkillRepository struct {
 	URL string `json:"url"`
 	// CanonicalURL is the upstream identity when URL points at a mirror.
 	CanonicalURL string `json:"canonicalUrl,omitempty"`
-	// Refs are the tags, releases, branches, or commit SHAs to index. When empty
-	// the repository's default branch is used.
+	// Refs are the immutable refs to index: tags or commit SHAs. Branches and HEAD
+	// are refused (skills must be reproducibly pinned), and a repository with no
+	// refs is a configuration error rather than a default-branch sync.
 	Refs []string `json:"refs,omitempty"`
 	// ScanPaths limits the SKILL.md scan to these subdirectories (default: whole repo).
 	ScanPaths []string `json:"scanPaths,omitempty"`
-	// AuthSecretName references a Secret providing credentials for private repos.
-	AuthSecretName string `json:"authSecretName,omitempty"`
-	// Provider, Category, Labels are custom metadata stamped onto the repo's skills.
-	Provider string   `json:"provider,omitempty"`
-	Category string   `json:"category,omitempty"`
-	Labels   []string `json:"labels,omitempty"`
+	// CredentialRef names the file, within the mounted git-credentials directory,
+	// that holds this repository's token. That directory is a Kubernetes Secret
+	// mounted as a volume, so operators (or the UI) can add credentials at runtime
+	// without a redeploy. The key must be a plain filename (validated); empty means
+	// an anonymous clone.
+	CredentialRef string `json:"credentialRef,omitempty"`
+	// TrustTier, Provider, Category, Labels are custom metadata stamped onto the
+	// repo's skills. TrustTier is a provenance badge with no ordering or special
+	// semantics; empty means no badge.
+	TrustTier string   `json:"trustTier,omitempty"`
+	Provider  string   `json:"provider,omitempty"`
+	Category  string   `json:"category,omitempty"`
+	Labels    []string `json:"labels,omitempty"`
 	// IncludedSkills / ExcludedSkills are wildcard filters over skill names.
 	IncludedSkills []string `json:"includedSkills,omitempty"`
 	ExcludedSkills []string `json:"excludedSkills,omitempty"`
@@ -93,14 +108,12 @@ type SkillRepository struct {
 // PluginSource. Repositories are resolved to a single list regardless of whether
 // they were provided inline or via a file.
 type SkillSourceSpec struct {
-	TrustTier           string
 	SyncIntervalMinutes int
 	Repositories        []SkillRepository
 }
 
 // skillSourceProperties is the strict schema of a skill source's `properties` map.
 type skillSourceProperties struct {
-	TrustTier           string            `json:"trustTier,omitempty"`
 	SyncIntervalMinutes int               `json:"syncIntervalMinutes,omitempty"`
 	YAMLCatalogPath     string            `json:"yamlCatalogPath,omitempty"`
 	Repositories        []SkillRepository `json:"repositories,omitempty"`
@@ -124,9 +137,6 @@ func ParseSkillSource(source basecatalog.PluginSource) (*SkillSourceSpec, error)
 		return nil, fmt.Errorf("skill source %q: %w", source.GetId(), err)
 	}
 
-	if err := validateTrustTier(props.TrustTier); err != nil {
-		return nil, fmt.Errorf("skill source %q: %w", source.GetId(), err)
-	}
 	if props.SyncIntervalMinutes < 0 {
 		return nil, fmt.Errorf("skill source %q: syncIntervalMinutes must not be negative", source.GetId())
 	}
@@ -140,7 +150,6 @@ func ParseSkillSource(source basecatalog.PluginSource) (*SkillSourceSpec, error)
 	}
 
 	return &SkillSourceSpec{
-		TrustTier:           props.TrustTier,
 		SyncIntervalMinutes: props.SyncIntervalMinutes,
 		Repositories:        repos,
 	}, nil
@@ -222,6 +231,12 @@ func validateRepositories(repos []SkillRepository) error {
 	for i, r := range repos {
 		if r.URL == "" {
 			return fmt.Errorf("repository[%d]: url is required", i)
+		}
+		if r.CredentialRef != "" && !validCredentialRef.MatchString(r.CredentialRef) {
+			return fmt.Errorf("repository[%d]: credentialRef %q must be a plain filename (letters, digits, '.', '_', '-')", i, r.CredentialRef)
+		}
+		if err := validateTrustTier(r.TrustTier); err != nil {
+			return fmt.Errorf("repository[%d]: %w", i, err)
 		}
 		key := normalizeRepoURL(r.URL)
 		if prev, dup := seen[key]; dup {
