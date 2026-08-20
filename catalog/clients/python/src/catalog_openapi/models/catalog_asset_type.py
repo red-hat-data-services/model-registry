@@ -28,10 +28,10 @@ class CatalogAssetType(str, Enum):
     """
     MODELS = 'models'
     MCP_SERVERS = 'mcp_servers'
+    AGENTS = 'agents'
+    SKILLS = 'skills'
 
     @classmethod
     def from_json(cls, json_str: str) -> Self:
         """Create an instance of CatalogAssetType from a JSON string"""
         return cls(json.loads(json_str))
-
-

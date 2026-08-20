@@ -17,25 +17,21 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr, field_validator
+from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List
+from catalog_openapi.models.agent import Agent
 from typing import Optional, Set
 from typing_extensions import Self
 
-class MetadataBoolValue(BaseModel):
+class AgentList(BaseModel):
     """
-    A bool property value.
+    A list of agent entities.
     """ # noqa: E501
-    bool_value: StrictBool
-    metadata_type: StrictStr = Field(alias="metadataType")
-    __properties: ClassVar[List[str]] = ["bool_value", "metadataType"]
-
-    @field_validator('metadata_type')
-    def metadata_type_validate_enum(cls, value):
-        """Validates the enum"""
-        if value not in set(['MetadataBoolValue']):
-            raise ValueError("must be one of enum values ('MetadataBoolValue')")
-        return value
+    next_page_token: StrictStr = Field(description="Token to use to retrieve next page of results.", alias="nextPageToken")
+    page_size: StrictInt = Field(description="Maximum number of resources to return in the result.", alias="pageSize")
+    size: StrictInt = Field(description="Number of items in result list.")
+    items: List[Agent] = Field(description="Array of `Agent` entities.")
+    __properties: ClassVar[List[str]] = ["nextPageToken", "pageSize", "size", "items"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -55,7 +51,7 @@ class MetadataBoolValue(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of MetadataBoolValue from a JSON string"""
+        """Create an instance of AgentList from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -76,11 +72,18 @@ class MetadataBoolValue(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of each item in items (list)
+        _items = []
+        if self.items:
+            for _item_items in self.items:
+                if _item_items:
+                    _items.append(_item_items.to_dict())
+            _dict['items'] = _items
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of MetadataBoolValue from a dict"""
+        """Create an instance of AgentList from a dict"""
         if obj is None:
             return None
 
@@ -88,7 +91,9 @@ class MetadataBoolValue(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "bool_value": obj.get("bool_value"),
-            "metadataType": obj.get("metadataType") if obj.get("metadataType") is not None else 'MetadataBoolValue'
+            "nextPageToken": obj.get("nextPageToken"),
+            "pageSize": obj.get("pageSize"),
+            "size": obj.get("size"),
+            "items": [Agent.from_dict(_item) for _item in obj["items"]] if obj.get("items") is not None else None
         })
         return _obj

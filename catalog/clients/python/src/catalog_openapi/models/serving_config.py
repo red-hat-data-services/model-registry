@@ -17,25 +17,18 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr, field_validator
-from typing import Any, ClassVar, Dict, List
+from pydantic import BaseModel, ConfigDict, Field
+from typing import Any, ClassVar, Dict, List, Optional
+from catalog_openapi.models.tool_calling_config import ToolCallingConfig
 from typing import Optional, Set
 from typing_extensions import Self
 
-class MetadataBoolValue(BaseModel):
+class ServingConfig(BaseModel):
     """
-    A bool property value.
+    Serving and deployment configuration for the model. Each property represents a distinct configuration concern with its own typed schema. All properties are optional.
     """ # noqa: E501
-    bool_value: StrictBool
-    metadata_type: StrictStr = Field(alias="metadataType")
-    __properties: ClassVar[List[str]] = ["bool_value", "metadataType"]
-
-    @field_validator('metadata_type')
-    def metadata_type_validate_enum(cls, value):
-        """Validates the enum"""
-        if value not in set(['MetadataBoolValue']):
-            raise ValueError("must be one of enum values ('MetadataBoolValue')")
-        return value
+    tool_calling: Optional[ToolCallingConfig] = Field(default=None, alias="toolCalling")
+    __properties: ClassVar[List[str]] = ["toolCalling"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -55,7 +48,7 @@ class MetadataBoolValue(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of MetadataBoolValue from a JSON string"""
+        """Create an instance of ServingConfig from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -76,11 +69,14 @@ class MetadataBoolValue(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of tool_calling
+        if self.tool_calling:
+            _dict['toolCalling'] = self.tool_calling.to_dict()
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of MetadataBoolValue from a dict"""
+        """Create an instance of ServingConfig from a dict"""
         if obj is None:
             return None
 
@@ -88,7 +84,6 @@ class MetadataBoolValue(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "bool_value": obj.get("bool_value"),
-            "metadataType": obj.get("metadataType") if obj.get("metadataType") is not None else 'MetadataBoolValue'
+            "toolCalling": ToolCallingConfig.from_dict(obj["toolCalling"]) if obj.get("toolCalling") is not None else None
         })
         return _obj

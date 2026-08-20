@@ -17,16 +17,16 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
+from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from typing_extensions import Annotated
 from catalog_openapi.models.metadata_value import MetadataValue
 from typing import Optional, Set
 from typing_extensions import Self
 
-class CatalogMetricsArtifact(BaseModel):
+class AgentTemplateArtifact(BaseModel):
     """
-    A metadata Artifact Entity.
+    Agent deployment template artifact. Contains the full agent.yaml specification as a JSON-encoded string.
     """ # noqa: E501
     custom_properties: Optional[Dict[str, MetadataValue]] = Field(default=None, description="User provided custom properties which are not defined by its type.", alias="customProperties")
     description: Optional[StrictStr] = Field(default=None, description="An optional description about the resource.")
@@ -36,15 +36,8 @@ class CatalogMetricsArtifact(BaseModel):
     create_time_since_epoch: Optional[StrictStr] = Field(default=None, description="Output only. Create time of the resource in millisecond since epoch.", alias="createTimeSinceEpoch")
     last_update_time_since_epoch: Optional[StrictStr] = Field(default=None, description="Output only. Last update time of the resource since epoch in millisecond since epoch.", alias="lastUpdateTimeSinceEpoch")
     artifact_type: StrictStr = Field(alias="artifactType")
-    metrics_type: StrictStr = Field(alias="metricsType")
-    __properties: ClassVar[List[str]] = ["customProperties", "description", "externalId", "name", "id", "createTimeSinceEpoch", "lastUpdateTimeSinceEpoch", "artifactType", "metricsType"]
-
-    @field_validator('metrics_type')
-    def metrics_type_validate_enum(cls, value):
-        """Validates the enum"""
-        if value not in set(['performance-metrics', 'accuracy-metrics', 'security-metrics']):
-            raise ValueError("must be one of enum values ('performance-metrics', 'accuracy-metrics', 'security-metrics')")
-        return value
+    content: StrictStr = Field(description="The agent.yaml specification as a JSON-encoded string. Describes the agent's deployment configuration including name, framework, environment variables, and other metadata.")
+    __properties: ClassVar[List[str]] = ["customProperties", "description", "externalId", "name", "id", "createTimeSinceEpoch", "lastUpdateTimeSinceEpoch", "artifactType", "content"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -64,7 +57,7 @@ class CatalogMetricsArtifact(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of CatalogMetricsArtifact from a JSON string"""
+        """Create an instance of AgentTemplateArtifact from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -100,7 +93,7 @@ class CatalogMetricsArtifact(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of CatalogMetricsArtifact from a dict"""
+        """Create an instance of AgentTemplateArtifact from a dict"""
         if obj is None:
             return None
 
@@ -120,7 +113,7 @@ class CatalogMetricsArtifact(BaseModel):
             "id": obj.get("id"),
             "createTimeSinceEpoch": obj.get("createTimeSinceEpoch"),
             "lastUpdateTimeSinceEpoch": obj.get("lastUpdateTimeSinceEpoch"),
-            "artifactType": obj.get("artifactType") if obj.get("artifactType") is not None else 'metrics-artifact',
-            "metricsType": obj.get("metricsType")
+            "artifactType": obj.get("artifactType") if obj.get("artifactType") is not None else 'template-artifact',
+            "content": obj.get("content")
         })
         return _obj

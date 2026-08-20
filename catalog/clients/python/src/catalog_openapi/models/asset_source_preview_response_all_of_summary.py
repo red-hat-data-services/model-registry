@@ -17,25 +17,19 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr, field_validator
+from pydantic import BaseModel, ConfigDict, Field, StrictInt
 from typing import Any, ClassVar, Dict, List
 from typing import Optional, Set
 from typing_extensions import Self
 
-class MetadataBoolValue(BaseModel):
+class AssetSourcePreviewResponseAllOfSummary(BaseModel):
     """
-    A bool property value.
+    Summary of the preview results
     """ # noqa: E501
-    bool_value: StrictBool
-    metadata_type: StrictStr = Field(alias="metadataType")
-    __properties: ClassVar[List[str]] = ["bool_value", "metadataType"]
-
-    @field_validator('metadata_type')
-    def metadata_type_validate_enum(cls, value):
-        """Validates the enum"""
-        if value not in set(['MetadataBoolValue']):
-            raise ValueError("must be one of enum values ('MetadataBoolValue')")
-        return value
+    total_assets: StrictInt = Field(description="Total number of assets evaluated", alias="totalAssets")
+    included_assets: StrictInt = Field(description="Number of assets that would be included", alias="includedAssets")
+    excluded_assets: StrictInt = Field(description="Number of assets that would be excluded", alias="excludedAssets")
+    __properties: ClassVar[List[str]] = ["totalAssets", "includedAssets", "excludedAssets"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -55,7 +49,7 @@ class MetadataBoolValue(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of MetadataBoolValue from a JSON string"""
+        """Create an instance of AssetSourcePreviewResponseAllOfSummary from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -80,7 +74,7 @@ class MetadataBoolValue(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of MetadataBoolValue from a dict"""
+        """Create an instance of AssetSourcePreviewResponseAllOfSummary from a dict"""
         if obj is None:
             return None
 
@@ -88,7 +82,8 @@ class MetadataBoolValue(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "bool_value": obj.get("bool_value"),
-            "metadataType": obj.get("metadataType") if obj.get("metadataType") is not None else 'MetadataBoolValue'
+            "totalAssets": obj.get("totalAssets"),
+            "includedAssets": obj.get("includedAssets"),
+            "excludedAssets": obj.get("excludedAssets")
         })
         return _obj

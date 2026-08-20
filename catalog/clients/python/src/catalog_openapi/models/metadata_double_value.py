@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictFloat, StrictInt, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictFloat, StrictInt, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Union
 from typing import Optional, Set
 from typing_extensions import Self
@@ -29,6 +29,13 @@ class MetadataDoubleValue(BaseModel):
     double_value: Union[StrictFloat, StrictInt]
     metadata_type: StrictStr = Field(alias="metadataType")
     __properties: ClassVar[List[str]] = ["double_value", "metadataType"]
+
+    @field_validator('metadata_type')
+    def metadata_type_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['MetadataDoubleValue']):
+            raise ValueError("must be one of enum values ('MetadataDoubleValue')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -85,5 +92,3 @@ class MetadataDoubleValue(BaseModel):
             "metadataType": obj.get("metadataType") if obj.get("metadataType") is not None else 'MetadataDoubleValue'
         })
         return _obj
-
-

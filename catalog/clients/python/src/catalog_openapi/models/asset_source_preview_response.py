@@ -19,22 +19,22 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List
+from catalog_openapi.models.asset_preview_result import AssetPreviewResult
+from catalog_openapi.models.asset_source_preview_response_all_of_summary import AssetSourcePreviewResponseAllOfSummary
 from catalog_openapi.models.catalog_asset_type import CatalogAssetType
-from catalog_openapi.models.catalog_source_preview_response_all_of_summary import CatalogSourcePreviewResponseAllOfSummary
-from catalog_openapi.models.model_preview_result import ModelPreviewResult
 from typing import Optional, Set
 from typing_extensions import Self
 
-class CatalogSourcePreviewResponse(BaseModel):
+class AssetSourcePreviewResponse(BaseModel):
     """
-    Response containing models and their inclusion/exclusion status.
+    Response containing assets and their inclusion/exclusion status.
     """ # noqa: E501
     next_page_token: StrictStr = Field(description="Token to use to retrieve next page of results.", alias="nextPageToken")
     page_size: StrictInt = Field(description="Maximum number of resources to return in the result.", alias="pageSize")
     size: StrictInt = Field(description="Number of items in result list.")
     asset_type: CatalogAssetType = Field(alias="assetType")
-    items: List[ModelPreviewResult] = Field(description="Array of model preview results.")
-    summary: CatalogSourcePreviewResponseAllOfSummary
+    items: List[AssetPreviewResult] = Field(description="Array of asset preview results.")
+    summary: AssetSourcePreviewResponseAllOfSummary
     __properties: ClassVar[List[str]] = ["nextPageToken", "pageSize", "size", "assetType", "items", "summary"]
 
     model_config = ConfigDict(
@@ -55,7 +55,7 @@ class CatalogSourcePreviewResponse(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of CatalogSourcePreviewResponse from a JSON string"""
+        """Create an instance of AssetSourcePreviewResponse from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -90,7 +90,7 @@ class CatalogSourcePreviewResponse(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of CatalogSourcePreviewResponse from a dict"""
+        """Create an instance of AssetSourcePreviewResponse from a dict"""
         if obj is None:
             return None
 
@@ -102,7 +102,7 @@ class CatalogSourcePreviewResponse(BaseModel):
             "pageSize": obj.get("pageSize"),
             "size": obj.get("size"),
             "assetType": obj.get("assetType") if obj.get("assetType") is not None else CatalogAssetType.MODELS,
-            "items": [ModelPreviewResult.from_dict(_item) for _item in obj["items"]] if obj.get("items") is not None else None,
-            "summary": CatalogSourcePreviewResponseAllOfSummary.from_dict(obj["summary"]) if obj.get("summary") is not None else None
+            "items": [AssetPreviewResult.from_dict(_item) for _item in obj["items"]] if obj.get("items") is not None else None,
+            "summary": AssetSourcePreviewResponseAllOfSummary.from_dict(obj["summary"]) if obj.get("summary") is not None else None
         })
         return _obj
