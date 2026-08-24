@@ -708,27 +708,27 @@ arches:
     name: mpdecimal
     evr: 2.5.1-3.el9
     sourcerpm: mpdecimal-2.5.1-3.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/p/python3.12-3.12.13-3.el9_8.1.ppc64le.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/p/python3.12-3.12.14-1.el9_8.ppc64le.rpm
     repoid: ubi-9-for-ppc64le-appstream-rpms
-    size: 32808
-    checksum: sha256:18f196faebc9865f11e1ca27f82cc69b92e5354cc5580072793beabb70eeec91
+    size: 32494
+    checksum: sha256:8e3fcabf92bf5be325dbb114ab2921b92c3a3007c9bab8b24f93d3c2a5bb44c8
     name: python3.12
-    evr: 3.12.13-3.el9_8.1
-    sourcerpm: python3.12-3.12.13-3.el9_8.1.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/p/python3.12-devel-3.12.13-3.el9_8.1.ppc64le.rpm
+    evr: 3.12.14-1.el9_8
+    sourcerpm: python3.12-3.12.14-1.el9_8.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/p/python3.12-devel-3.12.14-1.el9_8.ppc64le.rpm
     repoid: ubi-9-for-ppc64le-appstream-rpms
-    size: 338710
-    checksum: sha256:814b238f29a6e865bab595c09b10813b795fc2d65bfd3dc7c2d2c84b1e27bd1a
+    size: 338324
+    checksum: sha256:2b8ca99850b8755bd9fbb5394b2522bd7b104600d102fd1b48f29adb4c8c37ff
     name: python3.12-devel
-    evr: 3.12.13-3.el9_8.1
-    sourcerpm: python3.12-3.12.13-3.el9_8.1.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/p/python3.12-libs-3.12.13-3.el9_8.1.ppc64le.rpm
+    evr: 3.12.14-1.el9_8
+    sourcerpm: python3.12-3.12.14-1.el9_8.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/p/python3.12-libs-3.12.14-1.el9_8.ppc64le.rpm
     repoid: ubi-9-for-ppc64le-appstream-rpms
-    size: 10087484
-    checksum: sha256:56acbc33e3d1bf7f5795fc53937a8e60e2d2f62e5eb668f017ecaa0255e42cd4
+    size: 10093244
+    checksum: sha256:32e4a045a4ce07f8db54811f223def1404fbabe4b7b521d48a56c7480f6b1057
     name: python3.12-libs
-    evr: 3.12.13-3.el9_8.1
-    sourcerpm: python3.12-3.12.13-3.el9_8.1.src.rpm
+    evr: 3.12.14-1.el9_8
+    sourcerpm: python3.12-3.12.14-1.el9_8.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/p/python3.12-pip-wheel-23.2.1-5.el9.noarch.rpm
     repoid: ubi-9-for-ppc64le-appstream-rpms
     size: 1527128
