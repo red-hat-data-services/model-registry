@@ -1880,25 +1880,11 @@ arches:
     name: python-unversioned-command
     evr: 3.9.25-7.el9_8.3
     sourcerpm: python3.9-3.9.25-7.el9_8.3.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/p/python3.12-3.12.14-1.el9_8.aarch64.rpm
-    repoid: ubi-9-for-aarch64-appstream-rpms
-    size: 32440
-    checksum: sha256:127b8467e15c3f233d87bdb85c57809332eefb2e7b483aca7a08790dd9b62b74
-    name: python3.12
-    evr: 3.12.14-1.el9_8
-    sourcerpm: python3.12-3.12.14-1.el9_8.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/p/python3.12-devel-3.12.14-1.el9_8.aarch64.rpm
     repoid: ubi-9-for-aarch64-appstream-rpms
     size: 338273
     checksum: sha256:89b3da83c56d333c4e6b8f20e85d5df93560c82731a254b6e00ab91e011c61a8
     name: python3.12-devel
-    evr: 3.12.14-1.el9_8
-    sourcerpm: python3.12-3.12.14-1.el9_8.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/p/python3.12-libs-3.12.14-1.el9_8.aarch64.rpm
-    repoid: ubi-9-for-aarch64-appstream-rpms
-    size: 10145691
-    checksum: sha256:cca9ebdb4242036911ccc7271de7cb9e3d621c152b402f781ae22b700ab02231
-    name: python3.12-libs
     evr: 3.12.14-1.el9_8
     sourcerpm: python3.12-3.12.14-1.el9_8.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/q/qt5-srpm-macros-5.15.9-1.el9.noarch.rpm
@@ -5380,25 +5366,11 @@ arches:
     name: python-unversioned-command
     evr: 3.9.25-7.el9_8.3
     sourcerpm: python3.9-3.9.25-7.el9_8.3.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/p/python3.12-3.12.14-1.el9_8.ppc64le.rpm
-    repoid: ubi-9-for-ppc64le-appstream-rpms
-    size: 32494
-    checksum: sha256:8e3fcabf92bf5be325dbb114ab2921b92c3a3007c9bab8b24f93d3c2a5bb44c8
-    name: python3.12
-    evr: 3.12.14-1.el9_8
-    sourcerpm: python3.12-3.12.14-1.el9_8.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/p/python3.12-devel-3.12.14-1.el9_8.ppc64le.rpm
     repoid: ubi-9-for-ppc64le-appstream-rpms
     size: 338324
     checksum: sha256:2b8ca99850b8755bd9fbb5394b2522bd7b104600d102fd1b48f29adb4c8c37ff
     name: python3.12-devel
-    evr: 3.12.14-1.el9_8
-    sourcerpm: python3.12-3.12.14-1.el9_8.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/p/python3.12-libs-3.12.14-1.el9_8.ppc64le.rpm
-    repoid: ubi-9-for-ppc64le-appstream-rpms
-    size: 10093244
-    checksum: sha256:32e4a045a4ce07f8db54811f223def1404fbabe4b7b521d48a56c7480f6b1057
-    name: python3.12-libs
     evr: 3.12.14-1.el9_8
     sourcerpm: python3.12-3.12.14-1.el9_8.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/q/qt5-srpm-macros-5.15.9-1.el9.noarch.rpm
@@ -8900,25 +8872,11 @@ arches:
     name: python-unversioned-command
     evr: 3.9.25-7.el9_8.3
     sourcerpm: python3.9-3.9.25-7.el9_8.3.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/p/python3.12-3.12.14-1.el9_8.s390x.rpm
-    repoid: ubi-9-for-s390x-appstream-rpms
-    size: 32298
-    checksum: sha256:1d9c6400225666643a98052596e6a10a3e0f84c81daf0fef28867331749bf2f9
-    name: python3.12
-    evr: 3.12.14-1.el9_8
-    sourcerpm: python3.12-3.12.14-1.el9_8.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/p/python3.12-devel-3.12.14-1.el9_8.s390x.rpm
     repoid: ubi-9-for-s390x-appstream-rpms
     size: 338253
     checksum: sha256:3388967387eb568f8e59ef6bc06a0313794db4aa602c883fbb511f9eff70fcad
     name: python3.12-devel
-    evr: 3.12.14-1.el9_8
-    sourcerpm: python3.12-3.12.14-1.el9_8.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/p/python3.12-libs-3.12.14-1.el9_8.s390x.rpm
-    repoid: ubi-9-for-s390x-appstream-rpms
-    size: 9974169
-    checksum: sha256:000bf9abc0a7627f453b50e1a94181a2f6729927d8d3324aa27ab8b251fb1ed1
-    name: python3.12-libs
     evr: 3.12.14-1.el9_8
     sourcerpm: python3.12-3.12.14-1.el9_8.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/q/qt5-srpm-macros-5.15.9-1.el9.noarch.rpm
@@ -12400,25 +12358,11 @@ arches:
     name: python-unversioned-command
     evr: 3.9.25-7.el9_8.3
     sourcerpm: python3.9-3.9.25-7.el9_8.3.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/p/python3.12-3.12.14-1.el9_8.x86_64.rpm
-    repoid: ubi-9-for-x86_64-appstream-rpms
-    size: 32484
-    checksum: sha256:10640d8db1555fb7ae4e63c62be4b8f341032fb3ee52cc7176047438ab893b1f
-    name: python3.12
-    evr: 3.12.14-1.el9_8
-    sourcerpm: python3.12-3.12.14-1.el9_8.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/p/python3.12-devel-3.12.14-1.el9_8.x86_64.rpm
     repoid: ubi-9-for-x86_64-appstream-rpms
     size: 338289
     checksum: sha256:3a7a0b4139eab58579f787f806083bd622b09346c4a72a4f282b833c39b2d6b3
     name: python3.12-devel
-    evr: 3.12.14-1.el9_8
-    sourcerpm: python3.12-3.12.14-1.el9_8.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/p/python3.12-libs-3.12.14-1.el9_8.x86_64.rpm
-    repoid: ubi-9-for-x86_64-appstream-rpms
-    size: 10211157
-    checksum: sha256:0eaade47a20924ba0fe3fb0a93898e053772248793069f40c1ba80c5115fddbb
-    name: python3.12-libs
     evr: 3.12.14-1.el9_8
     sourcerpm: python3.12-3.12.14-1.el9_8.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/q/qt5-srpm-macros-5.15.9-1.el9.noarch.rpm
