@@ -26,9 +26,9 @@ from catalog_openapi.models.catalog_label_list import CatalogLabelList
 from catalog_openapi.models.catalog_model import CatalogModel
 from catalog_openapi.models.catalog_model_list import CatalogModelList
 from catalog_openapi.models.catalog_source_list import CatalogSourceList
-from catalog_openapi.models.catalog_source_preview_response import CatalogSourcePreviewResponse
 from catalog_openapi.models.filter_options_list import FilterOptionsList
 from catalog_openapi.models.order_by_field import OrderByField
+from catalog_openapi.models.preview_catalog_source_response import PreviewCatalogSourceResponse
 from catalog_openapi.models.sort_order import SortOrder
 
 from catalog_openapi.api_client import ApiClient, RequestSerialized
@@ -53,10 +53,10 @@ class ModelCatalogServiceApi:
     def find_labels(
         self,
         asset_type: Annotated[Optional[CatalogAssetType], Field(description="Filter by asset type.")] = None,
-        page_size: Annotated[Optional[StrictStr], Field(description="Number of entities in each page.")] = None,
+        page_size: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="Number of entities in each page.")] = None,
         order_by: Annotated[Optional[StrictStr], Field(description="Specifies the key to order catalog labels by. You can provide any string key that may exist in the label maps. Labels that contain the specified key will be sorted by that key's value. Labels that don't contain the key will maintain their original order and appear after labels that do contain the key. ")] = None,
         sort_order: Annotated[Optional[SortOrder], Field(description="Specifies the sort order for listing entities, defaults to ASC.")] = None,
-        next_page_token: Annotated[Optional[StrictStr], Field(description="Token to use to retrieve next page of results.")] = None,
+        next_page_token: Annotated[Optional[StrictStr], Field(description="Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -78,11 +78,11 @@ class ModelCatalogServiceApi:
         :type asset_type: CatalogAssetType
         :param page_size: Number of entities in each page.
         :type page_size: str
-        :param order_by: Specifies the key to order catalog labels by. You can provide any string key that may exist in the label maps. Labels that contain the specified key will be sorted by that key's value. Labels that don't contain the key will maintain their original order and appear after labels that do contain the key. 
+        :param order_by: Specifies the key to order catalog labels by. You can provide any string key that may exist in the label maps. Labels that contain the specified key will be sorted by that key's value. Labels that don't contain the key will maintain their original order and appear after labels that do contain the key.
         :type order_by: str
         :param sort_order: Specifies the sort order for listing entities, defaults to ASC.
         :type sort_order: SortOrder
-        :param next_page_token: Token to use to retrieve next page of results.
+        :param next_page_token: Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.
         :type next_page_token: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -140,10 +140,10 @@ class ModelCatalogServiceApi:
     def find_labels_with_http_info(
         self,
         asset_type: Annotated[Optional[CatalogAssetType], Field(description="Filter by asset type.")] = None,
-        page_size: Annotated[Optional[StrictStr], Field(description="Number of entities in each page.")] = None,
+        page_size: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="Number of entities in each page.")] = None,
         order_by: Annotated[Optional[StrictStr], Field(description="Specifies the key to order catalog labels by. You can provide any string key that may exist in the label maps. Labels that contain the specified key will be sorted by that key's value. Labels that don't contain the key will maintain their original order and appear after labels that do contain the key. ")] = None,
         sort_order: Annotated[Optional[SortOrder], Field(description="Specifies the sort order for listing entities, defaults to ASC.")] = None,
-        next_page_token: Annotated[Optional[StrictStr], Field(description="Token to use to retrieve next page of results.")] = None,
+        next_page_token: Annotated[Optional[StrictStr], Field(description="Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -165,11 +165,11 @@ class ModelCatalogServiceApi:
         :type asset_type: CatalogAssetType
         :param page_size: Number of entities in each page.
         :type page_size: str
-        :param order_by: Specifies the key to order catalog labels by. You can provide any string key that may exist in the label maps. Labels that contain the specified key will be sorted by that key's value. Labels that don't contain the key will maintain their original order and appear after labels that do contain the key. 
+        :param order_by: Specifies the key to order catalog labels by. You can provide any string key that may exist in the label maps. Labels that contain the specified key will be sorted by that key's value. Labels that don't contain the key will maintain their original order and appear after labels that do contain the key.
         :type order_by: str
         :param sort_order: Specifies the sort order for listing entities, defaults to ASC.
         :type sort_order: SortOrder
-        :param next_page_token: Token to use to retrieve next page of results.
+        :param next_page_token: Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.
         :type next_page_token: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -227,10 +227,10 @@ class ModelCatalogServiceApi:
     def find_labels_without_preload_content(
         self,
         asset_type: Annotated[Optional[CatalogAssetType], Field(description="Filter by asset type.")] = None,
-        page_size: Annotated[Optional[StrictStr], Field(description="Number of entities in each page.")] = None,
+        page_size: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="Number of entities in each page.")] = None,
         order_by: Annotated[Optional[StrictStr], Field(description="Specifies the key to order catalog labels by. You can provide any string key that may exist in the label maps. Labels that contain the specified key will be sorted by that key's value. Labels that don't contain the key will maintain their original order and appear after labels that do contain the key. ")] = None,
         sort_order: Annotated[Optional[SortOrder], Field(description="Specifies the sort order for listing entities, defaults to ASC.")] = None,
-        next_page_token: Annotated[Optional[StrictStr], Field(description="Token to use to retrieve next page of results.")] = None,
+        next_page_token: Annotated[Optional[StrictStr], Field(description="Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -252,11 +252,11 @@ class ModelCatalogServiceApi:
         :type asset_type: CatalogAssetType
         :param page_size: Number of entities in each page.
         :type page_size: str
-        :param order_by: Specifies the key to order catalog labels by. You can provide any string key that may exist in the label maps. Labels that contain the specified key will be sorted by that key's value. Labels that don't contain the key will maintain their original order and appear after labels that do contain the key. 
+        :param order_by: Specifies the key to order catalog labels by. You can provide any string key that may exist in the label maps. Labels that contain the specified key will be sorted by that key's value. Labels that don't contain the key will maintain their original order and appear after labels that do contain the key.
         :type order_by: str
         :param sort_order: Specifies the sort order for listing entities, defaults to ASC.
         :type sort_order: SortOrder
-        :param next_page_token: Token to use to retrieve next page of results.
+        :param next_page_token: Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.
         :type next_page_token: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -336,25 +336,25 @@ class ModelCatalogServiceApi:
         # process the path parameters
         # process the query parameters
         if asset_type is not None:
-            
+
             _query_params.append(('assetType', asset_type.value))
-            
+
         if page_size is not None:
-            
+
             _query_params.append(('pageSize', page_size))
-            
+
         if order_by is not None:
-            
+
             _query_params.append(('orderBy', order_by))
-            
+
         if sort_order is not None:
-            
+
             _query_params.append(('sortOrder', sort_order.value))
-            
+
         if next_page_token is not None:
-            
+
             _query_params.append(('nextPageToken', next_page_token))
-            
+
         # process the header parameters
         # process the form parameters
         # process the body parameter
@@ -395,7 +395,7 @@ class ModelCatalogServiceApi:
     @validate_call
     def find_models(
         self,
-        recommendations: Annotated[Optional[StrictBool], Field(description="Sort models by lowest recommended latency using Pareto filtering")] = None,
+        recommendations: Annotated[Optional[StrictBool], Field(description="Deprecated: use `orderBy=RECOMMENDED` instead. Sort models by lowest recommended latency using Pareto filtering.")] = None,
         target_rps: Annotated[Optional[StrictInt], Field(description="Target requests per second for latency calculations")] = None,
         latency_property: Annotated[Optional[StrictStr], Field(description="Property name for latency metric")] = None,
         rps_property: Annotated[Optional[StrictStr], Field(description="Property name for RPS metric")] = None,
@@ -404,11 +404,11 @@ class ModelCatalogServiceApi:
         source: Annotated[Optional[List[StrictStr]], Field(description="Filter models by source. Multiple values can be separated by commas to filter by multiple sources (OR logic). For example: ?source=huggingface,local will return models from either huggingface OR local sources.")] = None,
         q: Annotated[Optional[StrictStr], Field(description="Free-form keyword search used to filter the response.")] = None,
         source_label: Annotated[Optional[List[StrictStr]], Field(description="Filter models by the label associated with the source. Multiple values can be separated by commas. If one of the values is the string `null`, then models from every source without a label will be returned.")] = None,
-        filter_query: Annotated[Optional[StrictStr], Field(description="A SQL-like query string to filter the list of entities. The query supports rich filtering capabilities with automatic type inference.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Data Types:** - Strings: `\"value\"` or `'value'` - Numbers: `42`, `3.14`, `1e-5` - Booleans: `true`, `false` (case-insensitive)  **Property Access:** - Standard properties: `name`, `id`, `state`, `createTimeSinceEpoch` - Custom properties: Any user-defined property name - Escaped properties: Use backticks for special characters: `` `custom-property` `` - Type-specific access: `property.string_value`, `property.double_value`, `property.int_value`, `property.bool_value`  **Examples:** - Basic: `name = \"my-model\"` - Comparison: `accuracy > 0.95` - Pattern: `name LIKE \"%tensorflow%\"` - Complex: `(name = \"model-a\" OR name = \"model-b\") AND state = \"LIVE\"` - Custom property: `framework.string_value = \"pytorch\"` - Escaped property: `` `mlflow.source.type` = \"notebook\" `` ")] = None,
-        page_size: Annotated[Optional[StrictStr], Field(description="Number of entities in each page.")] = None,
-        order_by: Annotated[Optional[OrderByField], Field(description="Specifies the order by criteria for listing entities.  Supported values are: - CREATE_TIME - LAST_UPDATE_TIME - ID - NAME - ACCURACY  Defaults to `NAME`.  The `ACCURACY` sort will sort by the `overall_average` property in any linked metrics artifact.  In addition, models can be sorted by properties. For example: - `provider.string_value` sorts by provider name - `artifacts.ifeval.double_value` sorts by the min/max value a property called ifeval across all associated artifacts")] = None,
+        filter_query: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="A SQL-like query string to filter the list of entities. The query supports rich filtering capabilities with automatic type inference.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Data Types:** - Strings: `\"value\"` or `'value'` - Numbers: `42`, `3.14`, `1e-5` - Booleans: `true`, `false` (case-insensitive)  **Property Access:** - Standard properties: `name`, `id`, `state`, `createTimeSinceEpoch` - Custom properties: Any user-defined property name - Escaped properties: Use backticks for special characters: `` `custom-property` `` - Type-specific access: `property.string_value`, `property.double_value`, `property.int_value`, `property.bool_value`  **Examples:** - Basic: `name = \"my-model\"` - Comparison: `accuracy > 0.95` - Pattern: `name LIKE \"%tensorflow%\"` - Complex: `(name = \"model-a\" OR name = \"model-b\") AND state = \"LIVE\"` - Custom property: `framework.string_value = \"pytorch\"` - Escaped property: `` `mlflow.source.type` = \"notebook\" `` ")] = None,
+        page_size: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="Number of entities in each page.")] = None,
+        order_by: Annotated[Optional[OrderByField], Field(description="Specifies the order by criteria for listing entities.  Supported values are: - CREATE_TIME - LAST_UPDATE_TIME - ID - NAME - ACCURACY - RECOMMENDED  Defaults to `NAME`.  The `ACCURACY` sort will sort by the `overall_average` property in any linked metrics artifact.  The `RECOMMENDED` sort applies Pareto filtering and ranks models by recommended latency. The Pareto-related parameters (`targetRPS`, `latencyProperty`, `rpsProperty`, `hardwareCountProperty`, `hardwareTypeProperty`) are applied the same way as with the deprecated `recommendations` parameter. With the default `sortOrder=ASC`, the most recommended models (lowest latency) appear first. Use `sortOrder=DESC` to show the least recommended configurations first.  In addition, models can be sorted by properties. For example: - `provider.string_value` sorts by provider name - `artifacts.ifeval.double_value` sorts by the min/max value a property called ifeval across all associated artifacts")] = None,
         sort_order: Annotated[Optional[SortOrder], Field(description="Specifies the sort order for listing entities, defaults to ASC.")] = None,
-        next_page_token: Annotated[Optional[StrictStr], Field(description="Token to use to retrieve next page of results.")] = None,
+        next_page_token: Annotated[Optional[StrictStr], Field(description="Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -425,7 +425,7 @@ class ModelCatalogServiceApi:
         """Search catalog models across sources.
 
 
-        :param recommendations: Sort models by lowest recommended latency using Pareto filtering
+        :param recommendations: Deprecated: use `orderBy=RECOMMENDED` instead. Sort models by lowest recommended latency using Pareto filtering.
         :type recommendations: bool
         :param target_rps: Target requests per second for latency calculations
         :type target_rps: int
@@ -443,15 +443,15 @@ class ModelCatalogServiceApi:
         :type q: str
         :param source_label: Filter models by the label associated with the source. Multiple values can be separated by commas. If one of the values is the string `null`, then models from every source without a label will be returned.
         :type source_label: List[str]
-        :param filter_query: A SQL-like query string to filter the list of entities. The query supports rich filtering capabilities with automatic type inference.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Data Types:** - Strings: `\"value\"` or `'value'` - Numbers: `42`, `3.14`, `1e-5` - Booleans: `true`, `false` (case-insensitive)  **Property Access:** - Standard properties: `name`, `id`, `state`, `createTimeSinceEpoch` - Custom properties: Any user-defined property name - Escaped properties: Use backticks for special characters: `` `custom-property` `` - Type-specific access: `property.string_value`, `property.double_value`, `property.int_value`, `property.bool_value`  **Examples:** - Basic: `name = \"my-model\"` - Comparison: `accuracy > 0.95` - Pattern: `name LIKE \"%tensorflow%\"` - Complex: `(name = \"model-a\" OR name = \"model-b\") AND state = \"LIVE\"` - Custom property: `framework.string_value = \"pytorch\"` - Escaped property: `` `mlflow.source.type` = \"notebook\" `` 
+        :param filter_query: A SQL-like query string to filter the list of entities. The query supports rich filtering capabilities with automatic type inference.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Data Types:** - Strings: `\"value\"` or `'value'` - Numbers: `42`, `3.14`, `1e-5` - Booleans: `true`, `false` (case-insensitive)  **Property Access:** - Standard properties: `name`, `id`, `state`, `createTimeSinceEpoch` - Custom properties: Any user-defined property name - Escaped properties: Use backticks for special characters: `` `custom-property` `` - Type-specific access: `property.string_value`, `property.double_value`, `property.int_value`, `property.bool_value`  **Examples:** - Basic: `name = \"my-model\"` - Comparison: `accuracy > 0.95` - Pattern: `name LIKE \"%tensorflow%\"` - Complex: `(name = \"model-a\" OR name = \"model-b\") AND state = \"LIVE\"` - Custom property: `framework.string_value = \"pytorch\"` - Escaped property: `` `mlflow.source.type` = \"notebook\" ``
         :type filter_query: str
         :param page_size: Number of entities in each page.
         :type page_size: str
-        :param order_by: Specifies the order by criteria for listing entities.  Supported values are: - CREATE_TIME - LAST_UPDATE_TIME - ID - NAME - ACCURACY  Defaults to `NAME`.  The `ACCURACY` sort will sort by the `overall_average` property in any linked metrics artifact.  In addition, models can be sorted by properties. For example: - `provider.string_value` sorts by provider name - `artifacts.ifeval.double_value` sorts by the min/max value a property called ifeval across all associated artifacts
+        :param order_by: Specifies the order by criteria for listing entities.  Supported values are: - CREATE_TIME - LAST_UPDATE_TIME - ID - NAME - ACCURACY - RECOMMENDED  Defaults to `NAME`.  The `ACCURACY` sort will sort by the `overall_average` property in any linked metrics artifact.  The `RECOMMENDED` sort applies Pareto filtering and ranks models by recommended latency. The Pareto-related parameters (`targetRPS`, `latencyProperty`, `rpsProperty`, `hardwareCountProperty`, `hardwareTypeProperty`) are applied the same way as with the deprecated `recommendations` parameter. With the default `sortOrder=ASC`, the most recommended models (lowest latency) appear first. Use `sortOrder=DESC` to show the least recommended configurations first.  In addition, models can be sorted by properties. For example: - `provider.string_value` sorts by provider name - `artifacts.ifeval.double_value` sorts by the min/max value a property called ifeval across all associated artifacts
         :type order_by: OrderByField
         :param sort_order: Specifies the sort order for listing entities, defaults to ASC.
         :type sort_order: SortOrder
-        :param next_page_token: Token to use to retrieve next page of results.
+        :param next_page_token: Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.
         :type next_page_token: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -517,7 +517,7 @@ class ModelCatalogServiceApi:
     @validate_call
     def find_models_with_http_info(
         self,
-        recommendations: Annotated[Optional[StrictBool], Field(description="Sort models by lowest recommended latency using Pareto filtering")] = None,
+        recommendations: Annotated[Optional[StrictBool], Field(description="Deprecated: use `orderBy=RECOMMENDED` instead. Sort models by lowest recommended latency using Pareto filtering.")] = None,
         target_rps: Annotated[Optional[StrictInt], Field(description="Target requests per second for latency calculations")] = None,
         latency_property: Annotated[Optional[StrictStr], Field(description="Property name for latency metric")] = None,
         rps_property: Annotated[Optional[StrictStr], Field(description="Property name for RPS metric")] = None,
@@ -526,11 +526,11 @@ class ModelCatalogServiceApi:
         source: Annotated[Optional[List[StrictStr]], Field(description="Filter models by source. Multiple values can be separated by commas to filter by multiple sources (OR logic). For example: ?source=huggingface,local will return models from either huggingface OR local sources.")] = None,
         q: Annotated[Optional[StrictStr], Field(description="Free-form keyword search used to filter the response.")] = None,
         source_label: Annotated[Optional[List[StrictStr]], Field(description="Filter models by the label associated with the source. Multiple values can be separated by commas. If one of the values is the string `null`, then models from every source without a label will be returned.")] = None,
-        filter_query: Annotated[Optional[StrictStr], Field(description="A SQL-like query string to filter the list of entities. The query supports rich filtering capabilities with automatic type inference.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Data Types:** - Strings: `\"value\"` or `'value'` - Numbers: `42`, `3.14`, `1e-5` - Booleans: `true`, `false` (case-insensitive)  **Property Access:** - Standard properties: `name`, `id`, `state`, `createTimeSinceEpoch` - Custom properties: Any user-defined property name - Escaped properties: Use backticks for special characters: `` `custom-property` `` - Type-specific access: `property.string_value`, `property.double_value`, `property.int_value`, `property.bool_value`  **Examples:** - Basic: `name = \"my-model\"` - Comparison: `accuracy > 0.95` - Pattern: `name LIKE \"%tensorflow%\"` - Complex: `(name = \"model-a\" OR name = \"model-b\") AND state = \"LIVE\"` - Custom property: `framework.string_value = \"pytorch\"` - Escaped property: `` `mlflow.source.type` = \"notebook\" `` ")] = None,
-        page_size: Annotated[Optional[StrictStr], Field(description="Number of entities in each page.")] = None,
-        order_by: Annotated[Optional[OrderByField], Field(description="Specifies the order by criteria for listing entities.  Supported values are: - CREATE_TIME - LAST_UPDATE_TIME - ID - NAME - ACCURACY  Defaults to `NAME`.  The `ACCURACY` sort will sort by the `overall_average` property in any linked metrics artifact.  In addition, models can be sorted by properties. For example: - `provider.string_value` sorts by provider name - `artifacts.ifeval.double_value` sorts by the min/max value a property called ifeval across all associated artifacts")] = None,
+        filter_query: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="A SQL-like query string to filter the list of entities. The query supports rich filtering capabilities with automatic type inference.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Data Types:** - Strings: `\"value\"` or `'value'` - Numbers: `42`, `3.14`, `1e-5` - Booleans: `true`, `false` (case-insensitive)  **Property Access:** - Standard properties: `name`, `id`, `state`, `createTimeSinceEpoch` - Custom properties: Any user-defined property name - Escaped properties: Use backticks for special characters: `` `custom-property` `` - Type-specific access: `property.string_value`, `property.double_value`, `property.int_value`, `property.bool_value`  **Examples:** - Basic: `name = \"my-model\"` - Comparison: `accuracy > 0.95` - Pattern: `name LIKE \"%tensorflow%\"` - Complex: `(name = \"model-a\" OR name = \"model-b\") AND state = \"LIVE\"` - Custom property: `framework.string_value = \"pytorch\"` - Escaped property: `` `mlflow.source.type` = \"notebook\" `` ")] = None,
+        page_size: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="Number of entities in each page.")] = None,
+        order_by: Annotated[Optional[OrderByField], Field(description="Specifies the order by criteria for listing entities.  Supported values are: - CREATE_TIME - LAST_UPDATE_TIME - ID - NAME - ACCURACY - RECOMMENDED  Defaults to `NAME`.  The `ACCURACY` sort will sort by the `overall_average` property in any linked metrics artifact.  The `RECOMMENDED` sort applies Pareto filtering and ranks models by recommended latency. The Pareto-related parameters (`targetRPS`, `latencyProperty`, `rpsProperty`, `hardwareCountProperty`, `hardwareTypeProperty`) are applied the same way as with the deprecated `recommendations` parameter. With the default `sortOrder=ASC`, the most recommended models (lowest latency) appear first. Use `sortOrder=DESC` to show the least recommended configurations first.  In addition, models can be sorted by properties. For example: - `provider.string_value` sorts by provider name - `artifacts.ifeval.double_value` sorts by the min/max value a property called ifeval across all associated artifacts")] = None,
         sort_order: Annotated[Optional[SortOrder], Field(description="Specifies the sort order for listing entities, defaults to ASC.")] = None,
-        next_page_token: Annotated[Optional[StrictStr], Field(description="Token to use to retrieve next page of results.")] = None,
+        next_page_token: Annotated[Optional[StrictStr], Field(description="Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -547,7 +547,7 @@ class ModelCatalogServiceApi:
         """Search catalog models across sources.
 
 
-        :param recommendations: Sort models by lowest recommended latency using Pareto filtering
+        :param recommendations: Deprecated: use `orderBy=RECOMMENDED` instead. Sort models by lowest recommended latency using Pareto filtering.
         :type recommendations: bool
         :param target_rps: Target requests per second for latency calculations
         :type target_rps: int
@@ -565,15 +565,15 @@ class ModelCatalogServiceApi:
         :type q: str
         :param source_label: Filter models by the label associated with the source. Multiple values can be separated by commas. If one of the values is the string `null`, then models from every source without a label will be returned.
         :type source_label: List[str]
-        :param filter_query: A SQL-like query string to filter the list of entities. The query supports rich filtering capabilities with automatic type inference.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Data Types:** - Strings: `\"value\"` or `'value'` - Numbers: `42`, `3.14`, `1e-5` - Booleans: `true`, `false` (case-insensitive)  **Property Access:** - Standard properties: `name`, `id`, `state`, `createTimeSinceEpoch` - Custom properties: Any user-defined property name - Escaped properties: Use backticks for special characters: `` `custom-property` `` - Type-specific access: `property.string_value`, `property.double_value`, `property.int_value`, `property.bool_value`  **Examples:** - Basic: `name = \"my-model\"` - Comparison: `accuracy > 0.95` - Pattern: `name LIKE \"%tensorflow%\"` - Complex: `(name = \"model-a\" OR name = \"model-b\") AND state = \"LIVE\"` - Custom property: `framework.string_value = \"pytorch\"` - Escaped property: `` `mlflow.source.type` = \"notebook\" `` 
+        :param filter_query: A SQL-like query string to filter the list of entities. The query supports rich filtering capabilities with automatic type inference.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Data Types:** - Strings: `\"value\"` or `'value'` - Numbers: `42`, `3.14`, `1e-5` - Booleans: `true`, `false` (case-insensitive)  **Property Access:** - Standard properties: `name`, `id`, `state`, `createTimeSinceEpoch` - Custom properties: Any user-defined property name - Escaped properties: Use backticks for special characters: `` `custom-property` `` - Type-specific access: `property.string_value`, `property.double_value`, `property.int_value`, `property.bool_value`  **Examples:** - Basic: `name = \"my-model\"` - Comparison: `accuracy > 0.95` - Pattern: `name LIKE \"%tensorflow%\"` - Complex: `(name = \"model-a\" OR name = \"model-b\") AND state = \"LIVE\"` - Custom property: `framework.string_value = \"pytorch\"` - Escaped property: `` `mlflow.source.type` = \"notebook\" ``
         :type filter_query: str
         :param page_size: Number of entities in each page.
         :type page_size: str
-        :param order_by: Specifies the order by criteria for listing entities.  Supported values are: - CREATE_TIME - LAST_UPDATE_TIME - ID - NAME - ACCURACY  Defaults to `NAME`.  The `ACCURACY` sort will sort by the `overall_average` property in any linked metrics artifact.  In addition, models can be sorted by properties. For example: - `provider.string_value` sorts by provider name - `artifacts.ifeval.double_value` sorts by the min/max value a property called ifeval across all associated artifacts
+        :param order_by: Specifies the order by criteria for listing entities.  Supported values are: - CREATE_TIME - LAST_UPDATE_TIME - ID - NAME - ACCURACY - RECOMMENDED  Defaults to `NAME`.  The `ACCURACY` sort will sort by the `overall_average` property in any linked metrics artifact.  The `RECOMMENDED` sort applies Pareto filtering and ranks models by recommended latency. The Pareto-related parameters (`targetRPS`, `latencyProperty`, `rpsProperty`, `hardwareCountProperty`, `hardwareTypeProperty`) are applied the same way as with the deprecated `recommendations` parameter. With the default `sortOrder=ASC`, the most recommended models (lowest latency) appear first. Use `sortOrder=DESC` to show the least recommended configurations first.  In addition, models can be sorted by properties. For example: - `provider.string_value` sorts by provider name - `artifacts.ifeval.double_value` sorts by the min/max value a property called ifeval across all associated artifacts
         :type order_by: OrderByField
         :param sort_order: Specifies the sort order for listing entities, defaults to ASC.
         :type sort_order: SortOrder
-        :param next_page_token: Token to use to retrieve next page of results.
+        :param next_page_token: Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.
         :type next_page_token: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -639,7 +639,7 @@ class ModelCatalogServiceApi:
     @validate_call
     def find_models_without_preload_content(
         self,
-        recommendations: Annotated[Optional[StrictBool], Field(description="Sort models by lowest recommended latency using Pareto filtering")] = None,
+        recommendations: Annotated[Optional[StrictBool], Field(description="Deprecated: use `orderBy=RECOMMENDED` instead. Sort models by lowest recommended latency using Pareto filtering.")] = None,
         target_rps: Annotated[Optional[StrictInt], Field(description="Target requests per second for latency calculations")] = None,
         latency_property: Annotated[Optional[StrictStr], Field(description="Property name for latency metric")] = None,
         rps_property: Annotated[Optional[StrictStr], Field(description="Property name for RPS metric")] = None,
@@ -648,11 +648,11 @@ class ModelCatalogServiceApi:
         source: Annotated[Optional[List[StrictStr]], Field(description="Filter models by source. Multiple values can be separated by commas to filter by multiple sources (OR logic). For example: ?source=huggingface,local will return models from either huggingface OR local sources.")] = None,
         q: Annotated[Optional[StrictStr], Field(description="Free-form keyword search used to filter the response.")] = None,
         source_label: Annotated[Optional[List[StrictStr]], Field(description="Filter models by the label associated with the source. Multiple values can be separated by commas. If one of the values is the string `null`, then models from every source without a label will be returned.")] = None,
-        filter_query: Annotated[Optional[StrictStr], Field(description="A SQL-like query string to filter the list of entities. The query supports rich filtering capabilities with automatic type inference.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Data Types:** - Strings: `\"value\"` or `'value'` - Numbers: `42`, `3.14`, `1e-5` - Booleans: `true`, `false` (case-insensitive)  **Property Access:** - Standard properties: `name`, `id`, `state`, `createTimeSinceEpoch` - Custom properties: Any user-defined property name - Escaped properties: Use backticks for special characters: `` `custom-property` `` - Type-specific access: `property.string_value`, `property.double_value`, `property.int_value`, `property.bool_value`  **Examples:** - Basic: `name = \"my-model\"` - Comparison: `accuracy > 0.95` - Pattern: `name LIKE \"%tensorflow%\"` - Complex: `(name = \"model-a\" OR name = \"model-b\") AND state = \"LIVE\"` - Custom property: `framework.string_value = \"pytorch\"` - Escaped property: `` `mlflow.source.type` = \"notebook\" `` ")] = None,
-        page_size: Annotated[Optional[StrictStr], Field(description="Number of entities in each page.")] = None,
-        order_by: Annotated[Optional[OrderByField], Field(description="Specifies the order by criteria for listing entities.  Supported values are: - CREATE_TIME - LAST_UPDATE_TIME - ID - NAME - ACCURACY  Defaults to `NAME`.  The `ACCURACY` sort will sort by the `overall_average` property in any linked metrics artifact.  In addition, models can be sorted by properties. For example: - `provider.string_value` sorts by provider name - `artifacts.ifeval.double_value` sorts by the min/max value a property called ifeval across all associated artifacts")] = None,
+        filter_query: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="A SQL-like query string to filter the list of entities. The query supports rich filtering capabilities with automatic type inference.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Data Types:** - Strings: `\"value\"` or `'value'` - Numbers: `42`, `3.14`, `1e-5` - Booleans: `true`, `false` (case-insensitive)  **Property Access:** - Standard properties: `name`, `id`, `state`, `createTimeSinceEpoch` - Custom properties: Any user-defined property name - Escaped properties: Use backticks for special characters: `` `custom-property` `` - Type-specific access: `property.string_value`, `property.double_value`, `property.int_value`, `property.bool_value`  **Examples:** - Basic: `name = \"my-model\"` - Comparison: `accuracy > 0.95` - Pattern: `name LIKE \"%tensorflow%\"` - Complex: `(name = \"model-a\" OR name = \"model-b\") AND state = \"LIVE\"` - Custom property: `framework.string_value = \"pytorch\"` - Escaped property: `` `mlflow.source.type` = \"notebook\" `` ")] = None,
+        page_size: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="Number of entities in each page.")] = None,
+        order_by: Annotated[Optional[OrderByField], Field(description="Specifies the order by criteria for listing entities.  Supported values are: - CREATE_TIME - LAST_UPDATE_TIME - ID - NAME - ACCURACY - RECOMMENDED  Defaults to `NAME`.  The `ACCURACY` sort will sort by the `overall_average` property in any linked metrics artifact.  The `RECOMMENDED` sort applies Pareto filtering and ranks models by recommended latency. The Pareto-related parameters (`targetRPS`, `latencyProperty`, `rpsProperty`, `hardwareCountProperty`, `hardwareTypeProperty`) are applied the same way as with the deprecated `recommendations` parameter. With the default `sortOrder=ASC`, the most recommended models (lowest latency) appear first. Use `sortOrder=DESC` to show the least recommended configurations first.  In addition, models can be sorted by properties. For example: - `provider.string_value` sorts by provider name - `artifacts.ifeval.double_value` sorts by the min/max value a property called ifeval across all associated artifacts")] = None,
         sort_order: Annotated[Optional[SortOrder], Field(description="Specifies the sort order for listing entities, defaults to ASC.")] = None,
-        next_page_token: Annotated[Optional[StrictStr], Field(description="Token to use to retrieve next page of results.")] = None,
+        next_page_token: Annotated[Optional[StrictStr], Field(description="Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -669,7 +669,7 @@ class ModelCatalogServiceApi:
         """Search catalog models across sources.
 
 
-        :param recommendations: Sort models by lowest recommended latency using Pareto filtering
+        :param recommendations: Deprecated: use `orderBy=RECOMMENDED` instead. Sort models by lowest recommended latency using Pareto filtering.
         :type recommendations: bool
         :param target_rps: Target requests per second for latency calculations
         :type target_rps: int
@@ -687,15 +687,15 @@ class ModelCatalogServiceApi:
         :type q: str
         :param source_label: Filter models by the label associated with the source. Multiple values can be separated by commas. If one of the values is the string `null`, then models from every source without a label will be returned.
         :type source_label: List[str]
-        :param filter_query: A SQL-like query string to filter the list of entities. The query supports rich filtering capabilities with automatic type inference.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Data Types:** - Strings: `\"value\"` or `'value'` - Numbers: `42`, `3.14`, `1e-5` - Booleans: `true`, `false` (case-insensitive)  **Property Access:** - Standard properties: `name`, `id`, `state`, `createTimeSinceEpoch` - Custom properties: Any user-defined property name - Escaped properties: Use backticks for special characters: `` `custom-property` `` - Type-specific access: `property.string_value`, `property.double_value`, `property.int_value`, `property.bool_value`  **Examples:** - Basic: `name = \"my-model\"` - Comparison: `accuracy > 0.95` - Pattern: `name LIKE \"%tensorflow%\"` - Complex: `(name = \"model-a\" OR name = \"model-b\") AND state = \"LIVE\"` - Custom property: `framework.string_value = \"pytorch\"` - Escaped property: `` `mlflow.source.type` = \"notebook\" `` 
+        :param filter_query: A SQL-like query string to filter the list of entities. The query supports rich filtering capabilities with automatic type inference.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Data Types:** - Strings: `\"value\"` or `'value'` - Numbers: `42`, `3.14`, `1e-5` - Booleans: `true`, `false` (case-insensitive)  **Property Access:** - Standard properties: `name`, `id`, `state`, `createTimeSinceEpoch` - Custom properties: Any user-defined property name - Escaped properties: Use backticks for special characters: `` `custom-property` `` - Type-specific access: `property.string_value`, `property.double_value`, `property.int_value`, `property.bool_value`  **Examples:** - Basic: `name = \"my-model\"` - Comparison: `accuracy > 0.95` - Pattern: `name LIKE \"%tensorflow%\"` - Complex: `(name = \"model-a\" OR name = \"model-b\") AND state = \"LIVE\"` - Custom property: `framework.string_value = \"pytorch\"` - Escaped property: `` `mlflow.source.type` = \"notebook\" ``
         :type filter_query: str
         :param page_size: Number of entities in each page.
         :type page_size: str
-        :param order_by: Specifies the order by criteria for listing entities.  Supported values are: - CREATE_TIME - LAST_UPDATE_TIME - ID - NAME - ACCURACY  Defaults to `NAME`.  The `ACCURACY` sort will sort by the `overall_average` property in any linked metrics artifact.  In addition, models can be sorted by properties. For example: - `provider.string_value` sorts by provider name - `artifacts.ifeval.double_value` sorts by the min/max value a property called ifeval across all associated artifacts
+        :param order_by: Specifies the order by criteria for listing entities.  Supported values are: - CREATE_TIME - LAST_UPDATE_TIME - ID - NAME - ACCURACY - RECOMMENDED  Defaults to `NAME`.  The `ACCURACY` sort will sort by the `overall_average` property in any linked metrics artifact.  The `RECOMMENDED` sort applies Pareto filtering and ranks models by recommended latency. The Pareto-related parameters (`targetRPS`, `latencyProperty`, `rpsProperty`, `hardwareCountProperty`, `hardwareTypeProperty`) are applied the same way as with the deprecated `recommendations` parameter. With the default `sortOrder=ASC`, the most recommended models (lowest latency) appear first. Use `sortOrder=DESC` to show the least recommended configurations first.  In addition, models can be sorted by properties. For example: - `provider.string_value` sorts by provider name - `artifacts.ifeval.double_value` sorts by the min/max value a property called ifeval across all associated artifacts
         :type order_by: OrderByField
         :param sort_order: Specifies the sort order for listing entities, defaults to ASC.
         :type sort_order: SortOrder
-        :param next_page_token: Token to use to retrieve next page of results.
+        :param next_page_token: Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.
         :type next_page_token: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -795,61 +795,61 @@ class ModelCatalogServiceApi:
         # process the path parameters
         # process the query parameters
         if recommendations is not None:
-            
+
             _query_params.append(('recommendations', recommendations))
-            
+
         if target_rps is not None:
-            
+
             _query_params.append(('targetRPS', target_rps))
-            
+
         if latency_property is not None:
-            
+
             _query_params.append(('latencyProperty', latency_property))
-            
+
         if rps_property is not None:
-            
+
             _query_params.append(('rpsProperty', rps_property))
-            
+
         if hardware_count_property is not None:
-            
+
             _query_params.append(('hardwareCountProperty', hardware_count_property))
-            
+
         if hardware_type_property is not None:
-            
+
             _query_params.append(('hardwareTypeProperty', hardware_type_property))
-            
+
         if source is not None:
-            
+
             _query_params.append(('source', source))
-            
+
         if q is not None:
-            
+
             _query_params.append(('q', q))
-            
+
         if source_label is not None:
-            
+
             _query_params.append(('sourceLabel', source_label))
-            
+
         if filter_query is not None:
-            
+
             _query_params.append(('filterQuery', filter_query))
-            
+
         if page_size is not None:
-            
+
             _query_params.append(('pageSize', page_size))
-            
+
         if order_by is not None:
-            
+
             _query_params.append(('orderBy', order_by.value))
-            
+
         if sort_order is not None:
-            
+
             _query_params.append(('sortOrder', sort_order.value))
-            
+
         if next_page_token is not None:
-            
+
             _query_params.append(('nextPageToken', next_page_token))
-            
+
         # process the header parameters
         # process the form parameters
         # process the body parameter
@@ -1142,12 +1142,12 @@ class ModelCatalogServiceApi:
     @validate_call
     def find_sources(
         self,
-        name: Annotated[Optional[StrictStr], Field(description="Name of entity to search.")] = None,
+        name: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="Name of entity to search.")] = None,
         asset_type: Annotated[Optional[CatalogAssetType], Field(description="Filter by asset type.")] = None,
-        page_size: Annotated[Optional[StrictStr], Field(description="Number of entities in each page.")] = None,
+        page_size: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="Number of entities in each page.")] = None,
         order_by: Annotated[Optional[OrderByField], Field(description="Specifies the order by criteria for listing entities.")] = None,
         sort_order: Annotated[Optional[SortOrder], Field(description="Specifies the sort order for listing entities, defaults to ASC.")] = None,
-        next_page_token: Annotated[Optional[StrictStr], Field(description="Token to use to retrieve next page of results.")] = None,
+        next_page_token: Annotated[Optional[StrictStr], Field(description="Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1175,7 +1175,7 @@ class ModelCatalogServiceApi:
         :type order_by: OrderByField
         :param sort_order: Specifies the sort order for listing entities, defaults to ASC.
         :type sort_order: SortOrder
-        :param next_page_token: Token to use to retrieve next page of results.
+        :param next_page_token: Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.
         :type next_page_token: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -1233,12 +1233,12 @@ class ModelCatalogServiceApi:
     @validate_call
     def find_sources_with_http_info(
         self,
-        name: Annotated[Optional[StrictStr], Field(description="Name of entity to search.")] = None,
+        name: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="Name of entity to search.")] = None,
         asset_type: Annotated[Optional[CatalogAssetType], Field(description="Filter by asset type.")] = None,
-        page_size: Annotated[Optional[StrictStr], Field(description="Number of entities in each page.")] = None,
+        page_size: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="Number of entities in each page.")] = None,
         order_by: Annotated[Optional[OrderByField], Field(description="Specifies the order by criteria for listing entities.")] = None,
         sort_order: Annotated[Optional[SortOrder], Field(description="Specifies the sort order for listing entities, defaults to ASC.")] = None,
-        next_page_token: Annotated[Optional[StrictStr], Field(description="Token to use to retrieve next page of results.")] = None,
+        next_page_token: Annotated[Optional[StrictStr], Field(description="Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1266,7 +1266,7 @@ class ModelCatalogServiceApi:
         :type order_by: OrderByField
         :param sort_order: Specifies the sort order for listing entities, defaults to ASC.
         :type sort_order: SortOrder
-        :param next_page_token: Token to use to retrieve next page of results.
+        :param next_page_token: Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.
         :type next_page_token: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -1324,12 +1324,12 @@ class ModelCatalogServiceApi:
     @validate_call
     def find_sources_without_preload_content(
         self,
-        name: Annotated[Optional[StrictStr], Field(description="Name of entity to search.")] = None,
+        name: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="Name of entity to search.")] = None,
         asset_type: Annotated[Optional[CatalogAssetType], Field(description="Filter by asset type.")] = None,
-        page_size: Annotated[Optional[StrictStr], Field(description="Number of entities in each page.")] = None,
+        page_size: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="Number of entities in each page.")] = None,
         order_by: Annotated[Optional[OrderByField], Field(description="Specifies the order by criteria for listing entities.")] = None,
         sort_order: Annotated[Optional[SortOrder], Field(description="Specifies the sort order for listing entities, defaults to ASC.")] = None,
-        next_page_token: Annotated[Optional[StrictStr], Field(description="Token to use to retrieve next page of results.")] = None,
+        next_page_token: Annotated[Optional[StrictStr], Field(description="Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1357,7 +1357,7 @@ class ModelCatalogServiceApi:
         :type order_by: OrderByField
         :param sort_order: Specifies the sort order for listing entities, defaults to ASC.
         :type sort_order: SortOrder
-        :param next_page_token: Token to use to retrieve next page of results.
+        :param next_page_token: Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.
         :type next_page_token: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -1439,29 +1439,29 @@ class ModelCatalogServiceApi:
         # process the path parameters
         # process the query parameters
         if name is not None:
-            
+
             _query_params.append(('name', name))
-            
+
         if asset_type is not None:
-            
+
             _query_params.append(('assetType', asset_type.value))
-            
+
         if page_size is not None:
-            
+
             _query_params.append(('pageSize', page_size))
-            
+
         if order_by is not None:
-            
+
             _query_params.append(('orderBy', order_by.value))
-            
+
         if sort_order is not None:
-            
+
             _query_params.append(('sortOrder', sort_order.value))
-            
+
         if next_page_token is not None:
-            
+
             _query_params.append(('nextPageToken', next_page_token))
-            
+
         # process the header parameters
         # process the form parameters
         # process the body parameter
@@ -1506,11 +1506,11 @@ class ModelCatalogServiceApi:
         model_name: Annotated[StrictStr, Field(description="A unique identifier for the model.")],
         artifact_type: Annotated[Optional[List[ArtifactTypeQueryParam]], Field(description="Specifies the artifact type for listing artifacts.")] = None,
         artifact_type2: Annotated[Optional[List[ArtifactTypeQueryParam]], Field(description="Specifies the artifact type for listing artifacts.")] = None,
-        filter_query: Annotated[Optional[StrictStr], Field(description="A SQL-like query string to filter catalog artifacts. The query supports rich filtering capabilities with automatic type inference.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Data Types:** - Strings: `\"value\"` or `'value'` - Numbers: `42`, `3.14`, `1e-5` - Booleans: `true`, `false` (case-insensitive)  **Property Access (Artifacts):** - Standard properties: `name`, `id`, `uri`, `artifactType`, `createTimeSinceEpoch` - Custom properties: Any user-defined property name in `customProperties` - Escaped properties: Use backticks for special characters: `` `custom-property` `` - Type-specific access: `property.string_value`, `property.double_value`, `property.int_value`, `property.bool_value`  **Examples:** - Basic: `name = \"my-artifact\"` - Comparison: `ttft_mean > 90` - Pattern: `uri LIKE \"%s3.amazonaws.com%\"` - Complex: `(artifactType = \"model-artifact\" OR artifactType = \"metrics-artifact\") AND name LIKE \"%pytorch%\"` - Custom property: `format.string_value = \"pytorch\"` - Escaped property: `` `custom-key` = \"value\" `` ")] = None,
-        page_size: Annotated[Optional[StrictStr], Field(description="Number of entities in each page.")] = None,
+        filter_query: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="A SQL-like query string to filter catalog artifacts. The query supports rich filtering capabilities with automatic type inference.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Data Types:** - Strings: `\"value\"` or `'value'` - Numbers: `42`, `3.14`, `1e-5` - Booleans: `true`, `false` (case-insensitive)  **Property Access (Artifacts):** - Standard properties: `name`, `id`, `uri`, `artifactType`, `createTimeSinceEpoch` - Custom properties: Any user-defined property name in `customProperties` - Escaped properties: Use backticks for special characters: `` `custom-property` `` - Type-specific access: `property.string_value`, `property.double_value`, `property.int_value`, `property.bool_value`  **Examples:** - Basic: `name = \"my-artifact\"` - Comparison: `ttft_mean > 90` - Pattern: `uri LIKE \"%s3.amazonaws.com%\"` - Complex: `(artifactType = \"model-artifact\" OR artifactType = \"metrics-artifact\") AND name LIKE \"%pytorch%\"` - Custom property: `format.string_value = \"pytorch\"` - Escaped property: `` `custom-key` = \"value\" `` ")] = None,
+        page_size: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="Number of entities in each page.")] = None,
         order_by: Annotated[Optional[StrictStr], Field(description="Specifies the order by criteria for listing artifacts.  **Standard Fields:** - `ID` - Order by artifact ID - `NAME` - Order by artifact name - `CREATE_TIME` - Order by creation timestamp - `LAST_UPDATE_TIME` - Order by last update timestamp  **Custom Property Ordering:**  Artifacts can be ordered by custom properties using the format: `<property_name>.<value_type>`  Supported value types: - `double_value` - For numeric (floating-point) properties - `int_value` - For integer properties - `string_value` - For string properties  Examples: - `mmlu.double_value` - Order by the 'mmlu' benchmark score - `accuracy.double_value` - Order by accuracy metric - `framework_type.string_value` - Order by framework type - `hardware_count.int_value` - Order by hardware count - `ttft_mean.double_value` - Order by time-to-first-token mean  **Behavior:** - If an invalid value type is specified (e.g., `accuracy.invalid_type`), an error is returned - If an invalid format is used (e.g., `accuracy` without `.value_type`), it falls back to ID ordering - If a property doesn't exist, it falls back to ID ordering - Artifacts with the specified property are ordered first (by the property value), followed by artifacts without the property (ordered by ID) - Empty property names (e.g., `.double_value`) return an error ")] = None,
         sort_order: Annotated[Optional[SortOrder], Field(description="Specifies the sort order for listing entities, defaults to ASC.")] = None,
-        next_page_token: Annotated[Optional[StrictStr], Field(description="Token to use to retrieve next page of results.")] = None,
+        next_page_token: Annotated[Optional[StrictStr], Field(description="Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1535,15 +1535,15 @@ class ModelCatalogServiceApi:
         :type artifact_type: List[ArtifactTypeQueryParam]
         :param artifact_type2: Specifies the artifact type for listing artifacts.
         :type artifact_type2: List[ArtifactTypeQueryParam]
-        :param filter_query: A SQL-like query string to filter catalog artifacts. The query supports rich filtering capabilities with automatic type inference.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Data Types:** - Strings: `\"value\"` or `'value'` - Numbers: `42`, `3.14`, `1e-5` - Booleans: `true`, `false` (case-insensitive)  **Property Access (Artifacts):** - Standard properties: `name`, `id`, `uri`, `artifactType`, `createTimeSinceEpoch` - Custom properties: Any user-defined property name in `customProperties` - Escaped properties: Use backticks for special characters: `` `custom-property` `` - Type-specific access: `property.string_value`, `property.double_value`, `property.int_value`, `property.bool_value`  **Examples:** - Basic: `name = \"my-artifact\"` - Comparison: `ttft_mean > 90` - Pattern: `uri LIKE \"%s3.amazonaws.com%\"` - Complex: `(artifactType = \"model-artifact\" OR artifactType = \"metrics-artifact\") AND name LIKE \"%pytorch%\"` - Custom property: `format.string_value = \"pytorch\"` - Escaped property: `` `custom-key` = \"value\" `` 
+        :param filter_query: A SQL-like query string to filter catalog artifacts. The query supports rich filtering capabilities with automatic type inference.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Data Types:** - Strings: `\"value\"` or `'value'` - Numbers: `42`, `3.14`, `1e-5` - Booleans: `true`, `false` (case-insensitive)  **Property Access (Artifacts):** - Standard properties: `name`, `id`, `uri`, `artifactType`, `createTimeSinceEpoch` - Custom properties: Any user-defined property name in `customProperties` - Escaped properties: Use backticks for special characters: `` `custom-property` `` - Type-specific access: `property.string_value`, `property.double_value`, `property.int_value`, `property.bool_value`  **Examples:** - Basic: `name = \"my-artifact\"` - Comparison: `ttft_mean > 90` - Pattern: `uri LIKE \"%s3.amazonaws.com%\"` - Complex: `(artifactType = \"model-artifact\" OR artifactType = \"metrics-artifact\") AND name LIKE \"%pytorch%\"` - Custom property: `format.string_value = \"pytorch\"` - Escaped property: `` `custom-key` = \"value\" ``
         :type filter_query: str
         :param page_size: Number of entities in each page.
         :type page_size: str
-        :param order_by: Specifies the order by criteria for listing artifacts.  **Standard Fields:** - `ID` - Order by artifact ID - `NAME` - Order by artifact name - `CREATE_TIME` - Order by creation timestamp - `LAST_UPDATE_TIME` - Order by last update timestamp  **Custom Property Ordering:**  Artifacts can be ordered by custom properties using the format: `<property_name>.<value_type>`  Supported value types: - `double_value` - For numeric (floating-point) properties - `int_value` - For integer properties - `string_value` - For string properties  Examples: - `mmlu.double_value` - Order by the 'mmlu' benchmark score - `accuracy.double_value` - Order by accuracy metric - `framework_type.string_value` - Order by framework type - `hardware_count.int_value` - Order by hardware count - `ttft_mean.double_value` - Order by time-to-first-token mean  **Behavior:** - If an invalid value type is specified (e.g., `accuracy.invalid_type`), an error is returned - If an invalid format is used (e.g., `accuracy` without `.value_type`), it falls back to ID ordering - If a property doesn't exist, it falls back to ID ordering - Artifacts with the specified property are ordered first (by the property value), followed by artifacts without the property (ordered by ID) - Empty property names (e.g., `.double_value`) return an error 
+        :param order_by: Specifies the order by criteria for listing artifacts.  **Standard Fields:** - `ID` - Order by artifact ID - `NAME` - Order by artifact name - `CREATE_TIME` - Order by creation timestamp - `LAST_UPDATE_TIME` - Order by last update timestamp  **Custom Property Ordering:**  Artifacts can be ordered by custom properties using the format: `<property_name>.<value_type>`  Supported value types: - `double_value` - For numeric (floating-point) properties - `int_value` - For integer properties - `string_value` - For string properties  Examples: - `mmlu.double_value` - Order by the 'mmlu' benchmark score - `accuracy.double_value` - Order by accuracy metric - `framework_type.string_value` - Order by framework type - `hardware_count.int_value` - Order by hardware count - `ttft_mean.double_value` - Order by time-to-first-token mean  **Behavior:** - If an invalid value type is specified (e.g., `accuracy.invalid_type`), an error is returned - If an invalid format is used (e.g., `accuracy` without `.value_type`), it falls back to ID ordering - If a property doesn't exist, it falls back to ID ordering - Artifacts with the specified property are ordered first (by the property value), followed by artifacts without the property (ordered by ID) - Empty property names (e.g., `.double_value`) return an error
         :type order_by: str
         :param sort_order: Specifies the sort order for listing entities, defaults to ASC.
         :type sort_order: SortOrder
-        :param next_page_token: Token to use to retrieve next page of results.
+        :param next_page_token: Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.
         :type next_page_token: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -1607,11 +1607,11 @@ class ModelCatalogServiceApi:
         model_name: Annotated[StrictStr, Field(description="A unique identifier for the model.")],
         artifact_type: Annotated[Optional[List[ArtifactTypeQueryParam]], Field(description="Specifies the artifact type for listing artifacts.")] = None,
         artifact_type2: Annotated[Optional[List[ArtifactTypeQueryParam]], Field(description="Specifies the artifact type for listing artifacts.")] = None,
-        filter_query: Annotated[Optional[StrictStr], Field(description="A SQL-like query string to filter catalog artifacts. The query supports rich filtering capabilities with automatic type inference.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Data Types:** - Strings: `\"value\"` or `'value'` - Numbers: `42`, `3.14`, `1e-5` - Booleans: `true`, `false` (case-insensitive)  **Property Access (Artifacts):** - Standard properties: `name`, `id`, `uri`, `artifactType`, `createTimeSinceEpoch` - Custom properties: Any user-defined property name in `customProperties` - Escaped properties: Use backticks for special characters: `` `custom-property` `` - Type-specific access: `property.string_value`, `property.double_value`, `property.int_value`, `property.bool_value`  **Examples:** - Basic: `name = \"my-artifact\"` - Comparison: `ttft_mean > 90` - Pattern: `uri LIKE \"%s3.amazonaws.com%\"` - Complex: `(artifactType = \"model-artifact\" OR artifactType = \"metrics-artifact\") AND name LIKE \"%pytorch%\"` - Custom property: `format.string_value = \"pytorch\"` - Escaped property: `` `custom-key` = \"value\" `` ")] = None,
-        page_size: Annotated[Optional[StrictStr], Field(description="Number of entities in each page.")] = None,
+        filter_query: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="A SQL-like query string to filter catalog artifacts. The query supports rich filtering capabilities with automatic type inference.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Data Types:** - Strings: `\"value\"` or `'value'` - Numbers: `42`, `3.14`, `1e-5` - Booleans: `true`, `false` (case-insensitive)  **Property Access (Artifacts):** - Standard properties: `name`, `id`, `uri`, `artifactType`, `createTimeSinceEpoch` - Custom properties: Any user-defined property name in `customProperties` - Escaped properties: Use backticks for special characters: `` `custom-property` `` - Type-specific access: `property.string_value`, `property.double_value`, `property.int_value`, `property.bool_value`  **Examples:** - Basic: `name = \"my-artifact\"` - Comparison: `ttft_mean > 90` - Pattern: `uri LIKE \"%s3.amazonaws.com%\"` - Complex: `(artifactType = \"model-artifact\" OR artifactType = \"metrics-artifact\") AND name LIKE \"%pytorch%\"` - Custom property: `format.string_value = \"pytorch\"` - Escaped property: `` `custom-key` = \"value\" `` ")] = None,
+        page_size: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="Number of entities in each page.")] = None,
         order_by: Annotated[Optional[StrictStr], Field(description="Specifies the order by criteria for listing artifacts.  **Standard Fields:** - `ID` - Order by artifact ID - `NAME` - Order by artifact name - `CREATE_TIME` - Order by creation timestamp - `LAST_UPDATE_TIME` - Order by last update timestamp  **Custom Property Ordering:**  Artifacts can be ordered by custom properties using the format: `<property_name>.<value_type>`  Supported value types: - `double_value` - For numeric (floating-point) properties - `int_value` - For integer properties - `string_value` - For string properties  Examples: - `mmlu.double_value` - Order by the 'mmlu' benchmark score - `accuracy.double_value` - Order by accuracy metric - `framework_type.string_value` - Order by framework type - `hardware_count.int_value` - Order by hardware count - `ttft_mean.double_value` - Order by time-to-first-token mean  **Behavior:** - If an invalid value type is specified (e.g., `accuracy.invalid_type`), an error is returned - If an invalid format is used (e.g., `accuracy` without `.value_type`), it falls back to ID ordering - If a property doesn't exist, it falls back to ID ordering - Artifacts with the specified property are ordered first (by the property value), followed by artifacts without the property (ordered by ID) - Empty property names (e.g., `.double_value`) return an error ")] = None,
         sort_order: Annotated[Optional[SortOrder], Field(description="Specifies the sort order for listing entities, defaults to ASC.")] = None,
-        next_page_token: Annotated[Optional[StrictStr], Field(description="Token to use to retrieve next page of results.")] = None,
+        next_page_token: Annotated[Optional[StrictStr], Field(description="Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1636,15 +1636,15 @@ class ModelCatalogServiceApi:
         :type artifact_type: List[ArtifactTypeQueryParam]
         :param artifact_type2: Specifies the artifact type for listing artifacts.
         :type artifact_type2: List[ArtifactTypeQueryParam]
-        :param filter_query: A SQL-like query string to filter catalog artifacts. The query supports rich filtering capabilities with automatic type inference.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Data Types:** - Strings: `\"value\"` or `'value'` - Numbers: `42`, `3.14`, `1e-5` - Booleans: `true`, `false` (case-insensitive)  **Property Access (Artifacts):** - Standard properties: `name`, `id`, `uri`, `artifactType`, `createTimeSinceEpoch` - Custom properties: Any user-defined property name in `customProperties` - Escaped properties: Use backticks for special characters: `` `custom-property` `` - Type-specific access: `property.string_value`, `property.double_value`, `property.int_value`, `property.bool_value`  **Examples:** - Basic: `name = \"my-artifact\"` - Comparison: `ttft_mean > 90` - Pattern: `uri LIKE \"%s3.amazonaws.com%\"` - Complex: `(artifactType = \"model-artifact\" OR artifactType = \"metrics-artifact\") AND name LIKE \"%pytorch%\"` - Custom property: `format.string_value = \"pytorch\"` - Escaped property: `` `custom-key` = \"value\" `` 
+        :param filter_query: A SQL-like query string to filter catalog artifacts. The query supports rich filtering capabilities with automatic type inference.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Data Types:** - Strings: `\"value\"` or `'value'` - Numbers: `42`, `3.14`, `1e-5` - Booleans: `true`, `false` (case-insensitive)  **Property Access (Artifacts):** - Standard properties: `name`, `id`, `uri`, `artifactType`, `createTimeSinceEpoch` - Custom properties: Any user-defined property name in `customProperties` - Escaped properties: Use backticks for special characters: `` `custom-property` `` - Type-specific access: `property.string_value`, `property.double_value`, `property.int_value`, `property.bool_value`  **Examples:** - Basic: `name = \"my-artifact\"` - Comparison: `ttft_mean > 90` - Pattern: `uri LIKE \"%s3.amazonaws.com%\"` - Complex: `(artifactType = \"model-artifact\" OR artifactType = \"metrics-artifact\") AND name LIKE \"%pytorch%\"` - Custom property: `format.string_value = \"pytorch\"` - Escaped property: `` `custom-key` = \"value\" ``
         :type filter_query: str
         :param page_size: Number of entities in each page.
         :type page_size: str
-        :param order_by: Specifies the order by criteria for listing artifacts.  **Standard Fields:** - `ID` - Order by artifact ID - `NAME` - Order by artifact name - `CREATE_TIME` - Order by creation timestamp - `LAST_UPDATE_TIME` - Order by last update timestamp  **Custom Property Ordering:**  Artifacts can be ordered by custom properties using the format: `<property_name>.<value_type>`  Supported value types: - `double_value` - For numeric (floating-point) properties - `int_value` - For integer properties - `string_value` - For string properties  Examples: - `mmlu.double_value` - Order by the 'mmlu' benchmark score - `accuracy.double_value` - Order by accuracy metric - `framework_type.string_value` - Order by framework type - `hardware_count.int_value` - Order by hardware count - `ttft_mean.double_value` - Order by time-to-first-token mean  **Behavior:** - If an invalid value type is specified (e.g., `accuracy.invalid_type`), an error is returned - If an invalid format is used (e.g., `accuracy` without `.value_type`), it falls back to ID ordering - If a property doesn't exist, it falls back to ID ordering - Artifacts with the specified property are ordered first (by the property value), followed by artifacts without the property (ordered by ID) - Empty property names (e.g., `.double_value`) return an error 
+        :param order_by: Specifies the order by criteria for listing artifacts.  **Standard Fields:** - `ID` - Order by artifact ID - `NAME` - Order by artifact name - `CREATE_TIME` - Order by creation timestamp - `LAST_UPDATE_TIME` - Order by last update timestamp  **Custom Property Ordering:**  Artifacts can be ordered by custom properties using the format: `<property_name>.<value_type>`  Supported value types: - `double_value` - For numeric (floating-point) properties - `int_value` - For integer properties - `string_value` - For string properties  Examples: - `mmlu.double_value` - Order by the 'mmlu' benchmark score - `accuracy.double_value` - Order by accuracy metric - `framework_type.string_value` - Order by framework type - `hardware_count.int_value` - Order by hardware count - `ttft_mean.double_value` - Order by time-to-first-token mean  **Behavior:** - If an invalid value type is specified (e.g., `accuracy.invalid_type`), an error is returned - If an invalid format is used (e.g., `accuracy` without `.value_type`), it falls back to ID ordering - If a property doesn't exist, it falls back to ID ordering - Artifacts with the specified property are ordered first (by the property value), followed by artifacts without the property (ordered by ID) - Empty property names (e.g., `.double_value`) return an error
         :type order_by: str
         :param sort_order: Specifies the sort order for listing entities, defaults to ASC.
         :type sort_order: SortOrder
-        :param next_page_token: Token to use to retrieve next page of results.
+        :param next_page_token: Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.
         :type next_page_token: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -1708,11 +1708,11 @@ class ModelCatalogServiceApi:
         model_name: Annotated[StrictStr, Field(description="A unique identifier for the model.")],
         artifact_type: Annotated[Optional[List[ArtifactTypeQueryParam]], Field(description="Specifies the artifact type for listing artifacts.")] = None,
         artifact_type2: Annotated[Optional[List[ArtifactTypeQueryParam]], Field(description="Specifies the artifact type for listing artifacts.")] = None,
-        filter_query: Annotated[Optional[StrictStr], Field(description="A SQL-like query string to filter catalog artifacts. The query supports rich filtering capabilities with automatic type inference.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Data Types:** - Strings: `\"value\"` or `'value'` - Numbers: `42`, `3.14`, `1e-5` - Booleans: `true`, `false` (case-insensitive)  **Property Access (Artifacts):** - Standard properties: `name`, `id`, `uri`, `artifactType`, `createTimeSinceEpoch` - Custom properties: Any user-defined property name in `customProperties` - Escaped properties: Use backticks for special characters: `` `custom-property` `` - Type-specific access: `property.string_value`, `property.double_value`, `property.int_value`, `property.bool_value`  **Examples:** - Basic: `name = \"my-artifact\"` - Comparison: `ttft_mean > 90` - Pattern: `uri LIKE \"%s3.amazonaws.com%\"` - Complex: `(artifactType = \"model-artifact\" OR artifactType = \"metrics-artifact\") AND name LIKE \"%pytorch%\"` - Custom property: `format.string_value = \"pytorch\"` - Escaped property: `` `custom-key` = \"value\" `` ")] = None,
-        page_size: Annotated[Optional[StrictStr], Field(description="Number of entities in each page.")] = None,
+        filter_query: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="A SQL-like query string to filter catalog artifacts. The query supports rich filtering capabilities with automatic type inference.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Data Types:** - Strings: `\"value\"` or `'value'` - Numbers: `42`, `3.14`, `1e-5` - Booleans: `true`, `false` (case-insensitive)  **Property Access (Artifacts):** - Standard properties: `name`, `id`, `uri`, `artifactType`, `createTimeSinceEpoch` - Custom properties: Any user-defined property name in `customProperties` - Escaped properties: Use backticks for special characters: `` `custom-property` `` - Type-specific access: `property.string_value`, `property.double_value`, `property.int_value`, `property.bool_value`  **Examples:** - Basic: `name = \"my-artifact\"` - Comparison: `ttft_mean > 90` - Pattern: `uri LIKE \"%s3.amazonaws.com%\"` - Complex: `(artifactType = \"model-artifact\" OR artifactType = \"metrics-artifact\") AND name LIKE \"%pytorch%\"` - Custom property: `format.string_value = \"pytorch\"` - Escaped property: `` `custom-key` = \"value\" `` ")] = None,
+        page_size: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="Number of entities in each page.")] = None,
         order_by: Annotated[Optional[StrictStr], Field(description="Specifies the order by criteria for listing artifacts.  **Standard Fields:** - `ID` - Order by artifact ID - `NAME` - Order by artifact name - `CREATE_TIME` - Order by creation timestamp - `LAST_UPDATE_TIME` - Order by last update timestamp  **Custom Property Ordering:**  Artifacts can be ordered by custom properties using the format: `<property_name>.<value_type>`  Supported value types: - `double_value` - For numeric (floating-point) properties - `int_value` - For integer properties - `string_value` - For string properties  Examples: - `mmlu.double_value` - Order by the 'mmlu' benchmark score - `accuracy.double_value` - Order by accuracy metric - `framework_type.string_value` - Order by framework type - `hardware_count.int_value` - Order by hardware count - `ttft_mean.double_value` - Order by time-to-first-token mean  **Behavior:** - If an invalid value type is specified (e.g., `accuracy.invalid_type`), an error is returned - If an invalid format is used (e.g., `accuracy` without `.value_type`), it falls back to ID ordering - If a property doesn't exist, it falls back to ID ordering - Artifacts with the specified property are ordered first (by the property value), followed by artifacts without the property (ordered by ID) - Empty property names (e.g., `.double_value`) return an error ")] = None,
         sort_order: Annotated[Optional[SortOrder], Field(description="Specifies the sort order for listing entities, defaults to ASC.")] = None,
-        next_page_token: Annotated[Optional[StrictStr], Field(description="Token to use to retrieve next page of results.")] = None,
+        next_page_token: Annotated[Optional[StrictStr], Field(description="Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1737,15 +1737,15 @@ class ModelCatalogServiceApi:
         :type artifact_type: List[ArtifactTypeQueryParam]
         :param artifact_type2: Specifies the artifact type for listing artifacts.
         :type artifact_type2: List[ArtifactTypeQueryParam]
-        :param filter_query: A SQL-like query string to filter catalog artifacts. The query supports rich filtering capabilities with automatic type inference.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Data Types:** - Strings: `\"value\"` or `'value'` - Numbers: `42`, `3.14`, `1e-5` - Booleans: `true`, `false` (case-insensitive)  **Property Access (Artifacts):** - Standard properties: `name`, `id`, `uri`, `artifactType`, `createTimeSinceEpoch` - Custom properties: Any user-defined property name in `customProperties` - Escaped properties: Use backticks for special characters: `` `custom-property` `` - Type-specific access: `property.string_value`, `property.double_value`, `property.int_value`, `property.bool_value`  **Examples:** - Basic: `name = \"my-artifact\"` - Comparison: `ttft_mean > 90` - Pattern: `uri LIKE \"%s3.amazonaws.com%\"` - Complex: `(artifactType = \"model-artifact\" OR artifactType = \"metrics-artifact\") AND name LIKE \"%pytorch%\"` - Custom property: `format.string_value = \"pytorch\"` - Escaped property: `` `custom-key` = \"value\" `` 
+        :param filter_query: A SQL-like query string to filter catalog artifacts. The query supports rich filtering capabilities with automatic type inference.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Data Types:** - Strings: `\"value\"` or `'value'` - Numbers: `42`, `3.14`, `1e-5` - Booleans: `true`, `false` (case-insensitive)  **Property Access (Artifacts):** - Standard properties: `name`, `id`, `uri`, `artifactType`, `createTimeSinceEpoch` - Custom properties: Any user-defined property name in `customProperties` - Escaped properties: Use backticks for special characters: `` `custom-property` `` - Type-specific access: `property.string_value`, `property.double_value`, `property.int_value`, `property.bool_value`  **Examples:** - Basic: `name = \"my-artifact\"` - Comparison: `ttft_mean > 90` - Pattern: `uri LIKE \"%s3.amazonaws.com%\"` - Complex: `(artifactType = \"model-artifact\" OR artifactType = \"metrics-artifact\") AND name LIKE \"%pytorch%\"` - Custom property: `format.string_value = \"pytorch\"` - Escaped property: `` `custom-key` = \"value\" ``
         :type filter_query: str
         :param page_size: Number of entities in each page.
         :type page_size: str
-        :param order_by: Specifies the order by criteria for listing artifacts.  **Standard Fields:** - `ID` - Order by artifact ID - `NAME` - Order by artifact name - `CREATE_TIME` - Order by creation timestamp - `LAST_UPDATE_TIME` - Order by last update timestamp  **Custom Property Ordering:**  Artifacts can be ordered by custom properties using the format: `<property_name>.<value_type>`  Supported value types: - `double_value` - For numeric (floating-point) properties - `int_value` - For integer properties - `string_value` - For string properties  Examples: - `mmlu.double_value` - Order by the 'mmlu' benchmark score - `accuracy.double_value` - Order by accuracy metric - `framework_type.string_value` - Order by framework type - `hardware_count.int_value` - Order by hardware count - `ttft_mean.double_value` - Order by time-to-first-token mean  **Behavior:** - If an invalid value type is specified (e.g., `accuracy.invalid_type`), an error is returned - If an invalid format is used (e.g., `accuracy` without `.value_type`), it falls back to ID ordering - If a property doesn't exist, it falls back to ID ordering - Artifacts with the specified property are ordered first (by the property value), followed by artifacts without the property (ordered by ID) - Empty property names (e.g., `.double_value`) return an error 
+        :param order_by: Specifies the order by criteria for listing artifacts.  **Standard Fields:** - `ID` - Order by artifact ID - `NAME` - Order by artifact name - `CREATE_TIME` - Order by creation timestamp - `LAST_UPDATE_TIME` - Order by last update timestamp  **Custom Property Ordering:**  Artifacts can be ordered by custom properties using the format: `<property_name>.<value_type>`  Supported value types: - `double_value` - For numeric (floating-point) properties - `int_value` - For integer properties - `string_value` - For string properties  Examples: - `mmlu.double_value` - Order by the 'mmlu' benchmark score - `accuracy.double_value` - Order by accuracy metric - `framework_type.string_value` - Order by framework type - `hardware_count.int_value` - Order by hardware count - `ttft_mean.double_value` - Order by time-to-first-token mean  **Behavior:** - If an invalid value type is specified (e.g., `accuracy.invalid_type`), an error is returned - If an invalid format is used (e.g., `accuracy` without `.value_type`), it falls back to ID ordering - If a property doesn't exist, it falls back to ID ordering - Artifacts with the specified property are ordered first (by the property value), followed by artifacts without the property (ordered by ID) - Empty property names (e.g., `.double_value`) return an error
         :type order_by: str
         :param sort_order: Specifies the sort order for listing entities, defaults to ASC.
         :type sort_order: SortOrder
-        :param next_page_token: Token to use to retrieve next page of results.
+        :param next_page_token: Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.
         :type next_page_token: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -1838,33 +1838,33 @@ class ModelCatalogServiceApi:
             _path_params['model_name'] = model_name
         # process the query parameters
         if artifact_type is not None:
-            
+
             _query_params.append(('artifactType', artifact_type))
-            
+
         if artifact_type2 is not None:
-            
+
             _query_params.append(('artifact_type', artifact_type2))
-            
+
         if filter_query is not None:
-            
+
             _query_params.append(('filterQuery', filter_query))
-            
+
         if page_size is not None:
-            
+
             _query_params.append(('pageSize', page_size))
-            
+
         if order_by is not None:
-            
+
             _query_params.append(('orderBy', order_by))
-            
+
         if sort_order is not None:
-            
+
             _query_params.append(('sortOrder', sort_order.value))
-            
+
         if next_page_token is not None:
-            
+
             _query_params.append(('nextPageToken', next_page_token))
-            
+
         # process the header parameters
         # process the form parameters
         # process the body parameter
@@ -1913,11 +1913,11 @@ class ModelCatalogServiceApi:
         latency_property: Annotated[Optional[StrictStr], Field(description="Custom property name for latency metric (e.g., ttft_p90, p90_latency).")] = None,
         hardware_count_property: Annotated[Optional[StrictStr], Field(description="Custom property name for hardware count metric.")] = None,
         hardware_type_property: Annotated[Optional[StrictStr], Field(description="Custom property name for hardware type grouping.")] = None,
-        filter_query: Annotated[Optional[StrictStr], Field(description="A SQL-like query string to filter catalog artifacts. The query supports rich filtering capabilities with automatic type inference.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Data Types:** - Strings: `\"value\"` or `'value'` - Numbers: `42`, `3.14`, `1e-5` - Booleans: `true`, `false` (case-insensitive)  **Property Access (Artifacts):** - Standard properties: `name`, `id`, `uri`, `artifactType`, `createTimeSinceEpoch` - Custom properties: Any user-defined property name in `customProperties` - Escaped properties: Use backticks for special characters: `` `custom-property` `` - Type-specific access: `property.string_value`, `property.double_value`, `property.int_value`, `property.bool_value`  **Examples:** - Basic: `name = \"my-artifact\"` - Comparison: `ttft_mean > 90` - Pattern: `uri LIKE \"%s3.amazonaws.com%\"` - Complex: `(artifactType = \"model-artifact\" OR artifactType = \"metrics-artifact\") AND name LIKE \"%pytorch%\"` - Custom property: `format.string_value = \"pytorch\"` - Escaped property: `` `custom-key` = \"value\" `` ")] = None,
-        page_size: Annotated[Optional[StrictStr], Field(description="Number of entities in each page.")] = None,
+        filter_query: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="A SQL-like query string to filter catalog artifacts. The query supports rich filtering capabilities with automatic type inference.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Data Types:** - Strings: `\"value\"` or `'value'` - Numbers: `42`, `3.14`, `1e-5` - Booleans: `true`, `false` (case-insensitive)  **Property Access (Artifacts):** - Standard properties: `name`, `id`, `uri`, `artifactType`, `createTimeSinceEpoch` - Custom properties: Any user-defined property name in `customProperties` - Escaped properties: Use backticks for special characters: `` `custom-property` `` - Type-specific access: `property.string_value`, `property.double_value`, `property.int_value`, `property.bool_value`  **Examples:** - Basic: `name = \"my-artifact\"` - Comparison: `ttft_mean > 90` - Pattern: `uri LIKE \"%s3.amazonaws.com%\"` - Complex: `(artifactType = \"model-artifact\" OR artifactType = \"metrics-artifact\") AND name LIKE \"%pytorch%\"` - Custom property: `format.string_value = \"pytorch\"` - Escaped property: `` `custom-key` = \"value\" `` ")] = None,
+        page_size: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="Number of entities in each page.")] = None,
         order_by: Annotated[Optional[StrictStr], Field(description="Specifies the order by criteria for listing artifacts.  **Standard Fields:** - `ID` - Order by artifact ID - `NAME` - Order by artifact name - `CREATE_TIME` - Order by creation timestamp - `LAST_UPDATE_TIME` - Order by last update timestamp  **Custom Property Ordering:**  Artifacts can be ordered by custom properties using the format: `<property_name>.<value_type>`  Supported value types: - `double_value` - For numeric (floating-point) properties - `int_value` - For integer properties - `string_value` - For string properties  Examples: - `mmlu.double_value` - Order by the 'mmlu' benchmark score - `accuracy.double_value` - Order by accuracy metric - `framework_type.string_value` - Order by framework type - `hardware_count.int_value` - Order by hardware count - `ttft_mean.double_value` - Order by time-to-first-token mean  **Behavior:** - If an invalid value type is specified (e.g., `accuracy.invalid_type`), an error is returned - If an invalid format is used (e.g., `accuracy` without `.value_type`), it falls back to ID ordering - If a property doesn't exist, it falls back to ID ordering - Artifacts with the specified property are ordered first (by the property value), followed by artifacts without the property (ordered by ID) - Empty property names (e.g., `.double_value`) return an error ")] = None,
         sort_order: Annotated[Optional[SortOrder], Field(description="Specifies the sort order for listing entities, defaults to ASC.")] = None,
-        next_page_token: Annotated[Optional[StrictStr], Field(description="Token to use to retrieve next page of results.")] = None,
+        next_page_token: Annotated[Optional[StrictStr], Field(description="Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1950,15 +1950,15 @@ class ModelCatalogServiceApi:
         :type hardware_count_property: str
         :param hardware_type_property: Custom property name for hardware type grouping.
         :type hardware_type_property: str
-        :param filter_query: A SQL-like query string to filter catalog artifacts. The query supports rich filtering capabilities with automatic type inference.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Data Types:** - Strings: `\"value\"` or `'value'` - Numbers: `42`, `3.14`, `1e-5` - Booleans: `true`, `false` (case-insensitive)  **Property Access (Artifacts):** - Standard properties: `name`, `id`, `uri`, `artifactType`, `createTimeSinceEpoch` - Custom properties: Any user-defined property name in `customProperties` - Escaped properties: Use backticks for special characters: `` `custom-property` `` - Type-specific access: `property.string_value`, `property.double_value`, `property.int_value`, `property.bool_value`  **Examples:** - Basic: `name = \"my-artifact\"` - Comparison: `ttft_mean > 90` - Pattern: `uri LIKE \"%s3.amazonaws.com%\"` - Complex: `(artifactType = \"model-artifact\" OR artifactType = \"metrics-artifact\") AND name LIKE \"%pytorch%\"` - Custom property: `format.string_value = \"pytorch\"` - Escaped property: `` `custom-key` = \"value\" `` 
+        :param filter_query: A SQL-like query string to filter catalog artifacts. The query supports rich filtering capabilities with automatic type inference.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Data Types:** - Strings: `\"value\"` or `'value'` - Numbers: `42`, `3.14`, `1e-5` - Booleans: `true`, `false` (case-insensitive)  **Property Access (Artifacts):** - Standard properties: `name`, `id`, `uri`, `artifactType`, `createTimeSinceEpoch` - Custom properties: Any user-defined property name in `customProperties` - Escaped properties: Use backticks for special characters: `` `custom-property` `` - Type-specific access: `property.string_value`, `property.double_value`, `property.int_value`, `property.bool_value`  **Examples:** - Basic: `name = \"my-artifact\"` - Comparison: `ttft_mean > 90` - Pattern: `uri LIKE \"%s3.amazonaws.com%\"` - Complex: `(artifactType = \"model-artifact\" OR artifactType = \"metrics-artifact\") AND name LIKE \"%pytorch%\"` - Custom property: `format.string_value = \"pytorch\"` - Escaped property: `` `custom-key` = \"value\" ``
         :type filter_query: str
         :param page_size: Number of entities in each page.
         :type page_size: str
-        :param order_by: Specifies the order by criteria for listing artifacts.  **Standard Fields:** - `ID` - Order by artifact ID - `NAME` - Order by artifact name - `CREATE_TIME` - Order by creation timestamp - `LAST_UPDATE_TIME` - Order by last update timestamp  **Custom Property Ordering:**  Artifacts can be ordered by custom properties using the format: `<property_name>.<value_type>`  Supported value types: - `double_value` - For numeric (floating-point) properties - `int_value` - For integer properties - `string_value` - For string properties  Examples: - `mmlu.double_value` - Order by the 'mmlu' benchmark score - `accuracy.double_value` - Order by accuracy metric - `framework_type.string_value` - Order by framework type - `hardware_count.int_value` - Order by hardware count - `ttft_mean.double_value` - Order by time-to-first-token mean  **Behavior:** - If an invalid value type is specified (e.g., `accuracy.invalid_type`), an error is returned - If an invalid format is used (e.g., `accuracy` without `.value_type`), it falls back to ID ordering - If a property doesn't exist, it falls back to ID ordering - Artifacts with the specified property are ordered first (by the property value), followed by artifacts without the property (ordered by ID) - Empty property names (e.g., `.double_value`) return an error 
+        :param order_by: Specifies the order by criteria for listing artifacts.  **Standard Fields:** - `ID` - Order by artifact ID - `NAME` - Order by artifact name - `CREATE_TIME` - Order by creation timestamp - `LAST_UPDATE_TIME` - Order by last update timestamp  **Custom Property Ordering:**  Artifacts can be ordered by custom properties using the format: `<property_name>.<value_type>`  Supported value types: - `double_value` - For numeric (floating-point) properties - `int_value` - For integer properties - `string_value` - For string properties  Examples: - `mmlu.double_value` - Order by the 'mmlu' benchmark score - `accuracy.double_value` - Order by accuracy metric - `framework_type.string_value` - Order by framework type - `hardware_count.int_value` - Order by hardware count - `ttft_mean.double_value` - Order by time-to-first-token mean  **Behavior:** - If an invalid value type is specified (e.g., `accuracy.invalid_type`), an error is returned - If an invalid format is used (e.g., `accuracy` without `.value_type`), it falls back to ID ordering - If a property doesn't exist, it falls back to ID ordering - Artifacts with the specified property are ordered first (by the property value), followed by artifacts without the property (ordered by ID) - Empty property names (e.g., `.double_value`) return an error
         :type order_by: str
         :param sort_order: Specifies the sort order for listing entities, defaults to ASC.
         :type sort_order: SortOrder
-        :param next_page_token: Token to use to retrieve next page of results.
+        :param next_page_token: Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.
         :type next_page_token: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -2030,11 +2030,11 @@ class ModelCatalogServiceApi:
         latency_property: Annotated[Optional[StrictStr], Field(description="Custom property name for latency metric (e.g., ttft_p90, p90_latency).")] = None,
         hardware_count_property: Annotated[Optional[StrictStr], Field(description="Custom property name for hardware count metric.")] = None,
         hardware_type_property: Annotated[Optional[StrictStr], Field(description="Custom property name for hardware type grouping.")] = None,
-        filter_query: Annotated[Optional[StrictStr], Field(description="A SQL-like query string to filter catalog artifacts. The query supports rich filtering capabilities with automatic type inference.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Data Types:** - Strings: `\"value\"` or `'value'` - Numbers: `42`, `3.14`, `1e-5` - Booleans: `true`, `false` (case-insensitive)  **Property Access (Artifacts):** - Standard properties: `name`, `id`, `uri`, `artifactType`, `createTimeSinceEpoch` - Custom properties: Any user-defined property name in `customProperties` - Escaped properties: Use backticks for special characters: `` `custom-property` `` - Type-specific access: `property.string_value`, `property.double_value`, `property.int_value`, `property.bool_value`  **Examples:** - Basic: `name = \"my-artifact\"` - Comparison: `ttft_mean > 90` - Pattern: `uri LIKE \"%s3.amazonaws.com%\"` - Complex: `(artifactType = \"model-artifact\" OR artifactType = \"metrics-artifact\") AND name LIKE \"%pytorch%\"` - Custom property: `format.string_value = \"pytorch\"` - Escaped property: `` `custom-key` = \"value\" `` ")] = None,
-        page_size: Annotated[Optional[StrictStr], Field(description="Number of entities in each page.")] = None,
+        filter_query: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="A SQL-like query string to filter catalog artifacts. The query supports rich filtering capabilities with automatic type inference.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Data Types:** - Strings: `\"value\"` or `'value'` - Numbers: `42`, `3.14`, `1e-5` - Booleans: `true`, `false` (case-insensitive)  **Property Access (Artifacts):** - Standard properties: `name`, `id`, `uri`, `artifactType`, `createTimeSinceEpoch` - Custom properties: Any user-defined property name in `customProperties` - Escaped properties: Use backticks for special characters: `` `custom-property` `` - Type-specific access: `property.string_value`, `property.double_value`, `property.int_value`, `property.bool_value`  **Examples:** - Basic: `name = \"my-artifact\"` - Comparison: `ttft_mean > 90` - Pattern: `uri LIKE \"%s3.amazonaws.com%\"` - Complex: `(artifactType = \"model-artifact\" OR artifactType = \"metrics-artifact\") AND name LIKE \"%pytorch%\"` - Custom property: `format.string_value = \"pytorch\"` - Escaped property: `` `custom-key` = \"value\" `` ")] = None,
+        page_size: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="Number of entities in each page.")] = None,
         order_by: Annotated[Optional[StrictStr], Field(description="Specifies the order by criteria for listing artifacts.  **Standard Fields:** - `ID` - Order by artifact ID - `NAME` - Order by artifact name - `CREATE_TIME` - Order by creation timestamp - `LAST_UPDATE_TIME` - Order by last update timestamp  **Custom Property Ordering:**  Artifacts can be ordered by custom properties using the format: `<property_name>.<value_type>`  Supported value types: - `double_value` - For numeric (floating-point) properties - `int_value` - For integer properties - `string_value` - For string properties  Examples: - `mmlu.double_value` - Order by the 'mmlu' benchmark score - `accuracy.double_value` - Order by accuracy metric - `framework_type.string_value` - Order by framework type - `hardware_count.int_value` - Order by hardware count - `ttft_mean.double_value` - Order by time-to-first-token mean  **Behavior:** - If an invalid value type is specified (e.g., `accuracy.invalid_type`), an error is returned - If an invalid format is used (e.g., `accuracy` without `.value_type`), it falls back to ID ordering - If a property doesn't exist, it falls back to ID ordering - Artifacts with the specified property are ordered first (by the property value), followed by artifacts without the property (ordered by ID) - Empty property names (e.g., `.double_value`) return an error ")] = None,
         sort_order: Annotated[Optional[SortOrder], Field(description="Specifies the sort order for listing entities, defaults to ASC.")] = None,
-        next_page_token: Annotated[Optional[StrictStr], Field(description="Token to use to retrieve next page of results.")] = None,
+        next_page_token: Annotated[Optional[StrictStr], Field(description="Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -2067,15 +2067,15 @@ class ModelCatalogServiceApi:
         :type hardware_count_property: str
         :param hardware_type_property: Custom property name for hardware type grouping.
         :type hardware_type_property: str
-        :param filter_query: A SQL-like query string to filter catalog artifacts. The query supports rich filtering capabilities with automatic type inference.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Data Types:** - Strings: `\"value\"` or `'value'` - Numbers: `42`, `3.14`, `1e-5` - Booleans: `true`, `false` (case-insensitive)  **Property Access (Artifacts):** - Standard properties: `name`, `id`, `uri`, `artifactType`, `createTimeSinceEpoch` - Custom properties: Any user-defined property name in `customProperties` - Escaped properties: Use backticks for special characters: `` `custom-property` `` - Type-specific access: `property.string_value`, `property.double_value`, `property.int_value`, `property.bool_value`  **Examples:** - Basic: `name = \"my-artifact\"` - Comparison: `ttft_mean > 90` - Pattern: `uri LIKE \"%s3.amazonaws.com%\"` - Complex: `(artifactType = \"model-artifact\" OR artifactType = \"metrics-artifact\") AND name LIKE \"%pytorch%\"` - Custom property: `format.string_value = \"pytorch\"` - Escaped property: `` `custom-key` = \"value\" `` 
+        :param filter_query: A SQL-like query string to filter catalog artifacts. The query supports rich filtering capabilities with automatic type inference.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Data Types:** - Strings: `\"value\"` or `'value'` - Numbers: `42`, `3.14`, `1e-5` - Booleans: `true`, `false` (case-insensitive)  **Property Access (Artifacts):** - Standard properties: `name`, `id`, `uri`, `artifactType`, `createTimeSinceEpoch` - Custom properties: Any user-defined property name in `customProperties` - Escaped properties: Use backticks for special characters: `` `custom-property` `` - Type-specific access: `property.string_value`, `property.double_value`, `property.int_value`, `property.bool_value`  **Examples:** - Basic: `name = \"my-artifact\"` - Comparison: `ttft_mean > 90` - Pattern: `uri LIKE \"%s3.amazonaws.com%\"` - Complex: `(artifactType = \"model-artifact\" OR artifactType = \"metrics-artifact\") AND name LIKE \"%pytorch%\"` - Custom property: `format.string_value = \"pytorch\"` - Escaped property: `` `custom-key` = \"value\" ``
         :type filter_query: str
         :param page_size: Number of entities in each page.
         :type page_size: str
-        :param order_by: Specifies the order by criteria for listing artifacts.  **Standard Fields:** - `ID` - Order by artifact ID - `NAME` - Order by artifact name - `CREATE_TIME` - Order by creation timestamp - `LAST_UPDATE_TIME` - Order by last update timestamp  **Custom Property Ordering:**  Artifacts can be ordered by custom properties using the format: `<property_name>.<value_type>`  Supported value types: - `double_value` - For numeric (floating-point) properties - `int_value` - For integer properties - `string_value` - For string properties  Examples: - `mmlu.double_value` - Order by the 'mmlu' benchmark score - `accuracy.double_value` - Order by accuracy metric - `framework_type.string_value` - Order by framework type - `hardware_count.int_value` - Order by hardware count - `ttft_mean.double_value` - Order by time-to-first-token mean  **Behavior:** - If an invalid value type is specified (e.g., `accuracy.invalid_type`), an error is returned - If an invalid format is used (e.g., `accuracy` without `.value_type`), it falls back to ID ordering - If a property doesn't exist, it falls back to ID ordering - Artifacts with the specified property are ordered first (by the property value), followed by artifacts without the property (ordered by ID) - Empty property names (e.g., `.double_value`) return an error 
+        :param order_by: Specifies the order by criteria for listing artifacts.  **Standard Fields:** - `ID` - Order by artifact ID - `NAME` - Order by artifact name - `CREATE_TIME` - Order by creation timestamp - `LAST_UPDATE_TIME` - Order by last update timestamp  **Custom Property Ordering:**  Artifacts can be ordered by custom properties using the format: `<property_name>.<value_type>`  Supported value types: - `double_value` - For numeric (floating-point) properties - `int_value` - For integer properties - `string_value` - For string properties  Examples: - `mmlu.double_value` - Order by the 'mmlu' benchmark score - `accuracy.double_value` - Order by accuracy metric - `framework_type.string_value` - Order by framework type - `hardware_count.int_value` - Order by hardware count - `ttft_mean.double_value` - Order by time-to-first-token mean  **Behavior:** - If an invalid value type is specified (e.g., `accuracy.invalid_type`), an error is returned - If an invalid format is used (e.g., `accuracy` without `.value_type`), it falls back to ID ordering - If a property doesn't exist, it falls back to ID ordering - Artifacts with the specified property are ordered first (by the property value), followed by artifacts without the property (ordered by ID) - Empty property names (e.g., `.double_value`) return an error
         :type order_by: str
         :param sort_order: Specifies the sort order for listing entities, defaults to ASC.
         :type sort_order: SortOrder
-        :param next_page_token: Token to use to retrieve next page of results.
+        :param next_page_token: Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.
         :type next_page_token: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -2147,11 +2147,11 @@ class ModelCatalogServiceApi:
         latency_property: Annotated[Optional[StrictStr], Field(description="Custom property name for latency metric (e.g., ttft_p90, p90_latency).")] = None,
         hardware_count_property: Annotated[Optional[StrictStr], Field(description="Custom property name for hardware count metric.")] = None,
         hardware_type_property: Annotated[Optional[StrictStr], Field(description="Custom property name for hardware type grouping.")] = None,
-        filter_query: Annotated[Optional[StrictStr], Field(description="A SQL-like query string to filter catalog artifacts. The query supports rich filtering capabilities with automatic type inference.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Data Types:** - Strings: `\"value\"` or `'value'` - Numbers: `42`, `3.14`, `1e-5` - Booleans: `true`, `false` (case-insensitive)  **Property Access (Artifacts):** - Standard properties: `name`, `id`, `uri`, `artifactType`, `createTimeSinceEpoch` - Custom properties: Any user-defined property name in `customProperties` - Escaped properties: Use backticks for special characters: `` `custom-property` `` - Type-specific access: `property.string_value`, `property.double_value`, `property.int_value`, `property.bool_value`  **Examples:** - Basic: `name = \"my-artifact\"` - Comparison: `ttft_mean > 90` - Pattern: `uri LIKE \"%s3.amazonaws.com%\"` - Complex: `(artifactType = \"model-artifact\" OR artifactType = \"metrics-artifact\") AND name LIKE \"%pytorch%\"` - Custom property: `format.string_value = \"pytorch\"` - Escaped property: `` `custom-key` = \"value\" `` ")] = None,
-        page_size: Annotated[Optional[StrictStr], Field(description="Number of entities in each page.")] = None,
+        filter_query: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="A SQL-like query string to filter catalog artifacts. The query supports rich filtering capabilities with automatic type inference.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Data Types:** - Strings: `\"value\"` or `'value'` - Numbers: `42`, `3.14`, `1e-5` - Booleans: `true`, `false` (case-insensitive)  **Property Access (Artifacts):** - Standard properties: `name`, `id`, `uri`, `artifactType`, `createTimeSinceEpoch` - Custom properties: Any user-defined property name in `customProperties` - Escaped properties: Use backticks for special characters: `` `custom-property` `` - Type-specific access: `property.string_value`, `property.double_value`, `property.int_value`, `property.bool_value`  **Examples:** - Basic: `name = \"my-artifact\"` - Comparison: `ttft_mean > 90` - Pattern: `uri LIKE \"%s3.amazonaws.com%\"` - Complex: `(artifactType = \"model-artifact\" OR artifactType = \"metrics-artifact\") AND name LIKE \"%pytorch%\"` - Custom property: `format.string_value = \"pytorch\"` - Escaped property: `` `custom-key` = \"value\" `` ")] = None,
+        page_size: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="Number of entities in each page.")] = None,
         order_by: Annotated[Optional[StrictStr], Field(description="Specifies the order by criteria for listing artifacts.  **Standard Fields:** - `ID` - Order by artifact ID - `NAME` - Order by artifact name - `CREATE_TIME` - Order by creation timestamp - `LAST_UPDATE_TIME` - Order by last update timestamp  **Custom Property Ordering:**  Artifacts can be ordered by custom properties using the format: `<property_name>.<value_type>`  Supported value types: - `double_value` - For numeric (floating-point) properties - `int_value` - For integer properties - `string_value` - For string properties  Examples: - `mmlu.double_value` - Order by the 'mmlu' benchmark score - `accuracy.double_value` - Order by accuracy metric - `framework_type.string_value` - Order by framework type - `hardware_count.int_value` - Order by hardware count - `ttft_mean.double_value` - Order by time-to-first-token mean  **Behavior:** - If an invalid value type is specified (e.g., `accuracy.invalid_type`), an error is returned - If an invalid format is used (e.g., `accuracy` without `.value_type`), it falls back to ID ordering - If a property doesn't exist, it falls back to ID ordering - Artifacts with the specified property are ordered first (by the property value), followed by artifacts without the property (ordered by ID) - Empty property names (e.g., `.double_value`) return an error ")] = None,
         sort_order: Annotated[Optional[SortOrder], Field(description="Specifies the sort order for listing entities, defaults to ASC.")] = None,
-        next_page_token: Annotated[Optional[StrictStr], Field(description="Token to use to retrieve next page of results.")] = None,
+        next_page_token: Annotated[Optional[StrictStr], Field(description="Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -2184,15 +2184,15 @@ class ModelCatalogServiceApi:
         :type hardware_count_property: str
         :param hardware_type_property: Custom property name for hardware type grouping.
         :type hardware_type_property: str
-        :param filter_query: A SQL-like query string to filter catalog artifacts. The query supports rich filtering capabilities with automatic type inference.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Data Types:** - Strings: `\"value\"` or `'value'` - Numbers: `42`, `3.14`, `1e-5` - Booleans: `true`, `false` (case-insensitive)  **Property Access (Artifacts):** - Standard properties: `name`, `id`, `uri`, `artifactType`, `createTimeSinceEpoch` - Custom properties: Any user-defined property name in `customProperties` - Escaped properties: Use backticks for special characters: `` `custom-property` `` - Type-specific access: `property.string_value`, `property.double_value`, `property.int_value`, `property.bool_value`  **Examples:** - Basic: `name = \"my-artifact\"` - Comparison: `ttft_mean > 90` - Pattern: `uri LIKE \"%s3.amazonaws.com%\"` - Complex: `(artifactType = \"model-artifact\" OR artifactType = \"metrics-artifact\") AND name LIKE \"%pytorch%\"` - Custom property: `format.string_value = \"pytorch\"` - Escaped property: `` `custom-key` = \"value\" `` 
+        :param filter_query: A SQL-like query string to filter catalog artifacts. The query supports rich filtering capabilities with automatic type inference.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Data Types:** - Strings: `\"value\"` or `'value'` - Numbers: `42`, `3.14`, `1e-5` - Booleans: `true`, `false` (case-insensitive)  **Property Access (Artifacts):** - Standard properties: `name`, `id`, `uri`, `artifactType`, `createTimeSinceEpoch` - Custom properties: Any user-defined property name in `customProperties` - Escaped properties: Use backticks for special characters: `` `custom-property` `` - Type-specific access: `property.string_value`, `property.double_value`, `property.int_value`, `property.bool_value`  **Examples:** - Basic: `name = \"my-artifact\"` - Comparison: `ttft_mean > 90` - Pattern: `uri LIKE \"%s3.amazonaws.com%\"` - Complex: `(artifactType = \"model-artifact\" OR artifactType = \"metrics-artifact\") AND name LIKE \"%pytorch%\"` - Custom property: `format.string_value = \"pytorch\"` - Escaped property: `` `custom-key` = \"value\" ``
         :type filter_query: str
         :param page_size: Number of entities in each page.
         :type page_size: str
-        :param order_by: Specifies the order by criteria for listing artifacts.  **Standard Fields:** - `ID` - Order by artifact ID - `NAME` - Order by artifact name - `CREATE_TIME` - Order by creation timestamp - `LAST_UPDATE_TIME` - Order by last update timestamp  **Custom Property Ordering:**  Artifacts can be ordered by custom properties using the format: `<property_name>.<value_type>`  Supported value types: - `double_value` - For numeric (floating-point) properties - `int_value` - For integer properties - `string_value` - For string properties  Examples: - `mmlu.double_value` - Order by the 'mmlu' benchmark score - `accuracy.double_value` - Order by accuracy metric - `framework_type.string_value` - Order by framework type - `hardware_count.int_value` - Order by hardware count - `ttft_mean.double_value` - Order by time-to-first-token mean  **Behavior:** - If an invalid value type is specified (e.g., `accuracy.invalid_type`), an error is returned - If an invalid format is used (e.g., `accuracy` without `.value_type`), it falls back to ID ordering - If a property doesn't exist, it falls back to ID ordering - Artifacts with the specified property are ordered first (by the property value), followed by artifacts without the property (ordered by ID) - Empty property names (e.g., `.double_value`) return an error 
+        :param order_by: Specifies the order by criteria for listing artifacts.  **Standard Fields:** - `ID` - Order by artifact ID - `NAME` - Order by artifact name - `CREATE_TIME` - Order by creation timestamp - `LAST_UPDATE_TIME` - Order by last update timestamp  **Custom Property Ordering:**  Artifacts can be ordered by custom properties using the format: `<property_name>.<value_type>`  Supported value types: - `double_value` - For numeric (floating-point) properties - `int_value` - For integer properties - `string_value` - For string properties  Examples: - `mmlu.double_value` - Order by the 'mmlu' benchmark score - `accuracy.double_value` - Order by accuracy metric - `framework_type.string_value` - Order by framework type - `hardware_count.int_value` - Order by hardware count - `ttft_mean.double_value` - Order by time-to-first-token mean  **Behavior:** - If an invalid value type is specified (e.g., `accuracy.invalid_type`), an error is returned - If an invalid format is used (e.g., `accuracy` without `.value_type`), it falls back to ID ordering - If a property doesn't exist, it falls back to ID ordering - Artifacts with the specified property are ordered first (by the property value), followed by artifacts without the property (ordered by ID) - Empty property names (e.g., `.double_value`) return an error
         :type order_by: str
         :param sort_order: Specifies the sort order for listing entities, defaults to ASC.
         :type sort_order: SortOrder
-        :param next_page_token: Token to use to retrieve next page of results.
+        :param next_page_token: Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.
         :type next_page_token: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -2291,49 +2291,49 @@ class ModelCatalogServiceApi:
             _path_params['model_name'] = model_name
         # process the query parameters
         if target_rps is not None:
-            
+
             _query_params.append(('targetRPS', target_rps))
-            
+
         if recommendations is not None:
-            
+
             _query_params.append(('recommendations', recommendations))
-            
+
         if rps_property is not None:
-            
+
             _query_params.append(('rpsProperty', rps_property))
-            
+
         if latency_property is not None:
-            
+
             _query_params.append(('latencyProperty', latency_property))
-            
+
         if hardware_count_property is not None:
-            
+
             _query_params.append(('hardwareCountProperty', hardware_count_property))
-            
+
         if hardware_type_property is not None:
-            
+
             _query_params.append(('hardwareTypeProperty', hardware_type_property))
-            
+
         if filter_query is not None:
-            
+
             _query_params.append(('filterQuery', filter_query))
-            
+
         if page_size is not None:
-            
+
             _query_params.append(('pageSize', page_size))
-            
+
         if order_by is not None:
-            
+
             _query_params.append(('orderBy', order_by))
-            
+
         if sort_order is not None:
-            
+
             _query_params.append(('sortOrder', sort_order.value))
-            
+
         if next_page_token is not None:
-            
+
             _query_params.append(('nextPageToken', next_page_token))
-            
+
         # process the header parameters
         # process the form parameters
         # process the body parameter
@@ -2656,11 +2656,11 @@ class ModelCatalogServiceApi:
     @validate_call
     def preview_catalog_source(
         self,
-        config: Annotated[Union[StrictBytes, StrictStr, Tuple[StrictStr, StrictBytes]], Field(description="YAML file containing the catalog source configuration. The file should contain a source definition with type and properties fields, including optional includedModels and excludedModels filters.  Model filter patterns support the `*` wildcard only and are case-insensitive. Patterns match the entire model name (e.g., `ibm-granite/*` matches all models starting with \\\"ibm-granite/\\\").")],
-        page_size: Annotated[Optional[StrictStr], Field(description="Number of entities in each page.")] = None,
-        next_page_token: Annotated[Optional[StrictStr], Field(description="Token to use to retrieve next page of results.")] = None,
-        filter_status: Annotated[Optional[StrictStr], Field(description="Filter the response to show specific model statuses: - `all` (default): Show all models regardless of inclusion status - `included`: Show only models that pass the configured filters - `excluded`: Show only models that are filtered out")] = None,
-        catalog_data: Annotated[Optional[Union[StrictBytes, StrictStr, Tuple[StrictStr, StrictBytes]]], Field(description="Optional YAML file containing the catalog data (models).  This field enables stateless preview of new sources before saving them. When provided, the catalog data is read directly from this file instead of from the `yamlCatalogPath` property in the config.  **Two modes of operation:** 1. **Stateless mode (recommended for new sources):** Upload both `config` and    `catalogData` files. The models are read from `catalogData`, allowing preview    without saving anything to the server. 2. **Path mode (for existing sources):** Upload only `config` with a `yamlCatalogPath`    property pointing to a catalog file on the server filesystem.  If both `catalogData` and `yamlCatalogPath` are provided, `catalogData` takes precedence.")] = None,
+        config: Annotated[Union[StrictBytes, StrictStr, Tuple[StrictStr, StrictBytes]], Field(description="YAML file containing the catalog source configuration. The file should contain a source definition with `type` and `properties` fields, and an optional `assetType` field to specify the kind of assets being previewed (defaults to `models`).  **For model sources** (`assetType: models` or omitted): Use `includedModels` and `excludedModels` filter patterns.  **For MCP server sources** (`assetType: mcp_servers`): Use `includedServers` and `excludedServers` filter patterns.  Filter patterns support the `*` wildcard only and are case-insensitive. Patterns match the entire asset name (e.g., `ibm-granite/*` matches all models starting with \\\"ibm-granite/\\\", `kubernetes*` matches all servers starting with \\\"kubernetes\\\").")],
+        page_size: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="Number of entities in each page.")] = None,
+        next_page_token: Annotated[Optional[StrictStr], Field(description="Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.")] = None,
+        filter_status: Annotated[Optional[StrictStr], Field(description="Filter the response to show specific asset statuses: - `all` (default): Show all assets regardless of inclusion status - `included`: Show only assets that pass the configured filters - `excluded`: Show only assets that are filtered out")] = None,
+        catalog_data: Annotated[Optional[Union[StrictBytes, StrictStr, Tuple[StrictStr, StrictBytes]]], Field(description="Optional YAML file containing the catalog data.  For model sources, the file should contain a `models:` key with a list of model entries. For MCP server sources, the file should contain an `mcp_servers:` key with a list of server entries.  This field enables stateless preview of new sources before saving them. When provided, the catalog data is read directly from this file instead of from the `yamlCatalogPath` property in the config.  **Two modes of operation:** 1. **Stateless mode (recommended for new sources):** Upload both `config` and    `catalogData` files. The assets are read from `catalogData`, allowing preview    without saving anything to the server. 2. **Path mode (for existing sources):** Upload only `config` with a `yamlCatalogPath`    property pointing to a catalog file on the server filesystem.  If both `catalogData` and `yamlCatalogPath` are provided, `catalogData` takes precedence.")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -2673,20 +2673,20 @@ class ModelCatalogServiceApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> CatalogSourcePreviewResponse:
+    ) -> PreviewCatalogSourceResponse:
         """Preview catalog source configuration
 
-        Accepts a catalog source configuration and returns a list of models showing which would be included or excluded based on the configured filters. This allows users to test and validate their source configurations before applying them.  **Two modes of operation:**  1. **Stateless mode (recommended for new sources):** Upload both `config` and    `catalogData` files via multipart form. The models are read directly from    the uploaded `catalogData`, enabling preview of new sources before saving    anything to the server. This is ideal for testing configurations.  2. **Path mode (for existing sources):** Upload only `config` with a `yamlCatalogPath`    property. The models are read from the specified file path on the server.    Use this for previewing changes to existing saved sources.
+        Accepts a catalog source configuration and returns a list of assets showing which would be included or excluded based on the configured filters. This allows users to test and validate their source configurations before applying them.  The response type varies based on the `assetType` field in the uploaded config: - `models` (default): Returns a `CatalogSourcePreviewResponse` with `ModelPreviewResult` items   and model-specific summary fields (`totalModels`, `includedModels`, `excludedModels`). - `mcp_servers`: Returns an `AssetSourcePreviewResponse` with `AssetPreviewResult` items   and generic summary fields (`totalAssets`, `includedAssets`, `excludedAssets`). - `skills`: Returns an `AssetSourcePreviewResponse` with `AssetPreviewResult` items.   Unlike model and MCP previews, a `git-skills-plugin` source is previewed by   shallow-cloning a repository to enumerate its skills, so `catalogData` does   not apply. Preview is scoped to a single repository at a time (each repo is   a network clone): the config must provide exactly one entry inline under   `properties.repositories`; more than one is rejected, and the file-based   `yamlCatalogPath` form is not supported for preview (skills are read from   git, not a catalog file).  **Two modes of operation:**  1. **Stateless mode (recommended for new sources):** Upload both `config` and    `catalogData` files via multipart form. The assets are read directly from    the uploaded `catalogData`, enabling preview of new sources before saving    anything to the server. This is ideal for testing configurations.  2. **Path mode (for existing sources):** Upload only `config` with a `yamlCatalogPath`    property. The assets are read from the specified file path on the server.    Use this for previewing changes to existing saved sources.
 
-        :param config: YAML file containing the catalog source configuration. The file should contain a source definition with type and properties fields, including optional includedModels and excludedModels filters.  Model filter patterns support the `*` wildcard only and are case-insensitive. Patterns match the entire model name (e.g., `ibm-granite/*` matches all models starting with \\\"ibm-granite/\\\"). (required)
+        :param config: YAML file containing the catalog source configuration. The file should contain a source definition with `type` and `properties` fields, and an optional `assetType` field to specify the kind of assets being previewed (defaults to `models`).  **For model sources** (`assetType: models` or omitted): Use `includedModels` and `excludedModels` filter patterns.  **For MCP server sources** (`assetType: mcp_servers`): Use `includedServers` and `excludedServers` filter patterns.  Filter patterns support the `*` wildcard only and are case-insensitive. Patterns match the entire asset name (e.g., `ibm-granite/*` matches all models starting with \\\"ibm-granite/\\\", `kubernetes*` matches all servers starting with \\\"kubernetes\\\"). (required)
         :type config: bytearray
         :param page_size: Number of entities in each page.
         :type page_size: str
-        :param next_page_token: Token to use to retrieve next page of results.
+        :param next_page_token: Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.
         :type next_page_token: str
-        :param filter_status: Filter the response to show specific model statuses: - `all` (default): Show all models regardless of inclusion status - `included`: Show only models that pass the configured filters - `excluded`: Show only models that are filtered out
+        :param filter_status: Filter the response to show specific asset statuses: - `all` (default): Show all assets regardless of inclusion status - `included`: Show only assets that pass the configured filters - `excluded`: Show only assets that are filtered out
         :type filter_status: str
-        :param catalog_data: Optional YAML file containing the catalog data (models).  This field enables stateless preview of new sources before saving them. When provided, the catalog data is read directly from this file instead of from the `yamlCatalogPath` property in the config.  **Two modes of operation:** 1. **Stateless mode (recommended for new sources):** Upload both `config` and    `catalogData` files. The models are read from `catalogData`, allowing preview    without saving anything to the server. 2. **Path mode (for existing sources):** Upload only `config` with a `yamlCatalogPath`    property pointing to a catalog file on the server filesystem.  If both `catalogData` and `yamlCatalogPath` are provided, `catalogData` takes precedence.
+        :param catalog_data: Optional YAML file containing the catalog data.  For model sources, the file should contain a `models:` key with a list of model entries. For MCP server sources, the file should contain an `mcp_servers:` key with a list of server entries.  This field enables stateless preview of new sources before saving them. When provided, the catalog data is read directly from this file instead of from the `yamlCatalogPath` property in the config.  **Two modes of operation:** 1. **Stateless mode (recommended for new sources):** Upload both `config` and    `catalogData` files. The assets are read from `catalogData`, allowing preview    without saving anything to the server. 2. **Path mode (for existing sources):** Upload only `config` with a `yamlCatalogPath`    property pointing to a catalog file on the server filesystem.  If both `catalogData` and `yamlCatalogPath` are provided, `catalogData` takes precedence.
         :type catalog_data: bytearray
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -2723,7 +2723,7 @@ class ModelCatalogServiceApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "CatalogSourcePreviewResponse",
+            '200': "PreviewCatalogSourceResponse",
             '400': "Error",
             '401': "Error",
             '422': "Error",
@@ -2743,11 +2743,11 @@ class ModelCatalogServiceApi:
     @validate_call
     def preview_catalog_source_with_http_info(
         self,
-        config: Annotated[Union[StrictBytes, StrictStr, Tuple[StrictStr, StrictBytes]], Field(description="YAML file containing the catalog source configuration. The file should contain a source definition with type and properties fields, including optional includedModels and excludedModels filters.  Model filter patterns support the `*` wildcard only and are case-insensitive. Patterns match the entire model name (e.g., `ibm-granite/*` matches all models starting with \\\"ibm-granite/\\\").")],
-        page_size: Annotated[Optional[StrictStr], Field(description="Number of entities in each page.")] = None,
-        next_page_token: Annotated[Optional[StrictStr], Field(description="Token to use to retrieve next page of results.")] = None,
-        filter_status: Annotated[Optional[StrictStr], Field(description="Filter the response to show specific model statuses: - `all` (default): Show all models regardless of inclusion status - `included`: Show only models that pass the configured filters - `excluded`: Show only models that are filtered out")] = None,
-        catalog_data: Annotated[Optional[Union[StrictBytes, StrictStr, Tuple[StrictStr, StrictBytes]]], Field(description="Optional YAML file containing the catalog data (models).  This field enables stateless preview of new sources before saving them. When provided, the catalog data is read directly from this file instead of from the `yamlCatalogPath` property in the config.  **Two modes of operation:** 1. **Stateless mode (recommended for new sources):** Upload both `config` and    `catalogData` files. The models are read from `catalogData`, allowing preview    without saving anything to the server. 2. **Path mode (for existing sources):** Upload only `config` with a `yamlCatalogPath`    property pointing to a catalog file on the server filesystem.  If both `catalogData` and `yamlCatalogPath` are provided, `catalogData` takes precedence.")] = None,
+        config: Annotated[Union[StrictBytes, StrictStr, Tuple[StrictStr, StrictBytes]], Field(description="YAML file containing the catalog source configuration. The file should contain a source definition with `type` and `properties` fields, and an optional `assetType` field to specify the kind of assets being previewed (defaults to `models`).  **For model sources** (`assetType: models` or omitted): Use `includedModels` and `excludedModels` filter patterns.  **For MCP server sources** (`assetType: mcp_servers`): Use `includedServers` and `excludedServers` filter patterns.  Filter patterns support the `*` wildcard only and are case-insensitive. Patterns match the entire asset name (e.g., `ibm-granite/*` matches all models starting with \\\"ibm-granite/\\\", `kubernetes*` matches all servers starting with \\\"kubernetes\\\").")],
+        page_size: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="Number of entities in each page.")] = None,
+        next_page_token: Annotated[Optional[StrictStr], Field(description="Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.")] = None,
+        filter_status: Annotated[Optional[StrictStr], Field(description="Filter the response to show specific asset statuses: - `all` (default): Show all assets regardless of inclusion status - `included`: Show only assets that pass the configured filters - `excluded`: Show only assets that are filtered out")] = None,
+        catalog_data: Annotated[Optional[Union[StrictBytes, StrictStr, Tuple[StrictStr, StrictBytes]]], Field(description="Optional YAML file containing the catalog data.  For model sources, the file should contain a `models:` key with a list of model entries. For MCP server sources, the file should contain an `mcp_servers:` key with a list of server entries.  This field enables stateless preview of new sources before saving them. When provided, the catalog data is read directly from this file instead of from the `yamlCatalogPath` property in the config.  **Two modes of operation:** 1. **Stateless mode (recommended for new sources):** Upload both `config` and    `catalogData` files. The assets are read from `catalogData`, allowing preview    without saving anything to the server. 2. **Path mode (for existing sources):** Upload only `config` with a `yamlCatalogPath`    property pointing to a catalog file on the server filesystem.  If both `catalogData` and `yamlCatalogPath` are provided, `catalogData` takes precedence.")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -2760,20 +2760,20 @@ class ModelCatalogServiceApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[CatalogSourcePreviewResponse]:
+    ) -> ApiResponse[PreviewCatalogSourceResponse]:
         """Preview catalog source configuration
 
-        Accepts a catalog source configuration and returns a list of models showing which would be included or excluded based on the configured filters. This allows users to test and validate their source configurations before applying them.  **Two modes of operation:**  1. **Stateless mode (recommended for new sources):** Upload both `config` and    `catalogData` files via multipart form. The models are read directly from    the uploaded `catalogData`, enabling preview of new sources before saving    anything to the server. This is ideal for testing configurations.  2. **Path mode (for existing sources):** Upload only `config` with a `yamlCatalogPath`    property. The models are read from the specified file path on the server.    Use this for previewing changes to existing saved sources.
+        Accepts a catalog source configuration and returns a list of assets showing which would be included or excluded based on the configured filters. This allows users to test and validate their source configurations before applying them.  The response type varies based on the `assetType` field in the uploaded config: - `models` (default): Returns a `CatalogSourcePreviewResponse` with `ModelPreviewResult` items   and model-specific summary fields (`totalModels`, `includedModels`, `excludedModels`). - `mcp_servers`: Returns an `AssetSourcePreviewResponse` with `AssetPreviewResult` items   and generic summary fields (`totalAssets`, `includedAssets`, `excludedAssets`). - `skills`: Returns an `AssetSourcePreviewResponse` with `AssetPreviewResult` items.   Unlike model and MCP previews, a `git-skills-plugin` source is previewed by   shallow-cloning a repository to enumerate its skills, so `catalogData` does   not apply. Preview is scoped to a single repository at a time (each repo is   a network clone): the config must provide exactly one entry inline under   `properties.repositories`; more than one is rejected, and the file-based   `yamlCatalogPath` form is not supported for preview (skills are read from   git, not a catalog file).  **Two modes of operation:**  1. **Stateless mode (recommended for new sources):** Upload both `config` and    `catalogData` files via multipart form. The assets are read directly from    the uploaded `catalogData`, enabling preview of new sources before saving    anything to the server. This is ideal for testing configurations.  2. **Path mode (for existing sources):** Upload only `config` with a `yamlCatalogPath`    property. The assets are read from the specified file path on the server.    Use this for previewing changes to existing saved sources.
 
-        :param config: YAML file containing the catalog source configuration. The file should contain a source definition with type and properties fields, including optional includedModels and excludedModels filters.  Model filter patterns support the `*` wildcard only and are case-insensitive. Patterns match the entire model name (e.g., `ibm-granite/*` matches all models starting with \\\"ibm-granite/\\\"). (required)
+        :param config: YAML file containing the catalog source configuration. The file should contain a source definition with `type` and `properties` fields, and an optional `assetType` field to specify the kind of assets being previewed (defaults to `models`).  **For model sources** (`assetType: models` or omitted): Use `includedModels` and `excludedModels` filter patterns.  **For MCP server sources** (`assetType: mcp_servers`): Use `includedServers` and `excludedServers` filter patterns.  Filter patterns support the `*` wildcard only and are case-insensitive. Patterns match the entire asset name (e.g., `ibm-granite/*` matches all models starting with \\\"ibm-granite/\\\", `kubernetes*` matches all servers starting with \\\"kubernetes\\\"). (required)
         :type config: bytearray
         :param page_size: Number of entities in each page.
         :type page_size: str
-        :param next_page_token: Token to use to retrieve next page of results.
+        :param next_page_token: Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.
         :type next_page_token: str
-        :param filter_status: Filter the response to show specific model statuses: - `all` (default): Show all models regardless of inclusion status - `included`: Show only models that pass the configured filters - `excluded`: Show only models that are filtered out
+        :param filter_status: Filter the response to show specific asset statuses: - `all` (default): Show all assets regardless of inclusion status - `included`: Show only assets that pass the configured filters - `excluded`: Show only assets that are filtered out
         :type filter_status: str
-        :param catalog_data: Optional YAML file containing the catalog data (models).  This field enables stateless preview of new sources before saving them. When provided, the catalog data is read directly from this file instead of from the `yamlCatalogPath` property in the config.  **Two modes of operation:** 1. **Stateless mode (recommended for new sources):** Upload both `config` and    `catalogData` files. The models are read from `catalogData`, allowing preview    without saving anything to the server. 2. **Path mode (for existing sources):** Upload only `config` with a `yamlCatalogPath`    property pointing to a catalog file on the server filesystem.  If both `catalogData` and `yamlCatalogPath` are provided, `catalogData` takes precedence.
+        :param catalog_data: Optional YAML file containing the catalog data.  For model sources, the file should contain a `models:` key with a list of model entries. For MCP server sources, the file should contain an `mcp_servers:` key with a list of server entries.  This field enables stateless preview of new sources before saving them. When provided, the catalog data is read directly from this file instead of from the `yamlCatalogPath` property in the config.  **Two modes of operation:** 1. **Stateless mode (recommended for new sources):** Upload both `config` and    `catalogData` files. The assets are read from `catalogData`, allowing preview    without saving anything to the server. 2. **Path mode (for existing sources):** Upload only `config` with a `yamlCatalogPath`    property pointing to a catalog file on the server filesystem.  If both `catalogData` and `yamlCatalogPath` are provided, `catalogData` takes precedence.
         :type catalog_data: bytearray
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -2810,7 +2810,7 @@ class ModelCatalogServiceApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "CatalogSourcePreviewResponse",
+            '200': "PreviewCatalogSourceResponse",
             '400': "Error",
             '401': "Error",
             '422': "Error",
@@ -2830,11 +2830,11 @@ class ModelCatalogServiceApi:
     @validate_call
     def preview_catalog_source_without_preload_content(
         self,
-        config: Annotated[Union[StrictBytes, StrictStr, Tuple[StrictStr, StrictBytes]], Field(description="YAML file containing the catalog source configuration. The file should contain a source definition with type and properties fields, including optional includedModels and excludedModels filters.  Model filter patterns support the `*` wildcard only and are case-insensitive. Patterns match the entire model name (e.g., `ibm-granite/*` matches all models starting with \\\"ibm-granite/\\\").")],
-        page_size: Annotated[Optional[StrictStr], Field(description="Number of entities in each page.")] = None,
-        next_page_token: Annotated[Optional[StrictStr], Field(description="Token to use to retrieve next page of results.")] = None,
-        filter_status: Annotated[Optional[StrictStr], Field(description="Filter the response to show specific model statuses: - `all` (default): Show all models regardless of inclusion status - `included`: Show only models that pass the configured filters - `excluded`: Show only models that are filtered out")] = None,
-        catalog_data: Annotated[Optional[Union[StrictBytes, StrictStr, Tuple[StrictStr, StrictBytes]]], Field(description="Optional YAML file containing the catalog data (models).  This field enables stateless preview of new sources before saving them. When provided, the catalog data is read directly from this file instead of from the `yamlCatalogPath` property in the config.  **Two modes of operation:** 1. **Stateless mode (recommended for new sources):** Upload both `config` and    `catalogData` files. The models are read from `catalogData`, allowing preview    without saving anything to the server. 2. **Path mode (for existing sources):** Upload only `config` with a `yamlCatalogPath`    property pointing to a catalog file on the server filesystem.  If both `catalogData` and `yamlCatalogPath` are provided, `catalogData` takes precedence.")] = None,
+        config: Annotated[Union[StrictBytes, StrictStr, Tuple[StrictStr, StrictBytes]], Field(description="YAML file containing the catalog source configuration. The file should contain a source definition with `type` and `properties` fields, and an optional `assetType` field to specify the kind of assets being previewed (defaults to `models`).  **For model sources** (`assetType: models` or omitted): Use `includedModels` and `excludedModels` filter patterns.  **For MCP server sources** (`assetType: mcp_servers`): Use `includedServers` and `excludedServers` filter patterns.  Filter patterns support the `*` wildcard only and are case-insensitive. Patterns match the entire asset name (e.g., `ibm-granite/*` matches all models starting with \\\"ibm-granite/\\\", `kubernetes*` matches all servers starting with \\\"kubernetes\\\").")],
+        page_size: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="Number of entities in each page.")] = None,
+        next_page_token: Annotated[Optional[StrictStr], Field(description="Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.")] = None,
+        filter_status: Annotated[Optional[StrictStr], Field(description="Filter the response to show specific asset statuses: - `all` (default): Show all assets regardless of inclusion status - `included`: Show only assets that pass the configured filters - `excluded`: Show only assets that are filtered out")] = None,
+        catalog_data: Annotated[Optional[Union[StrictBytes, StrictStr, Tuple[StrictStr, StrictBytes]]], Field(description="Optional YAML file containing the catalog data.  For model sources, the file should contain a `models:` key with a list of model entries. For MCP server sources, the file should contain an `mcp_servers:` key with a list of server entries.  This field enables stateless preview of new sources before saving them. When provided, the catalog data is read directly from this file instead of from the `yamlCatalogPath` property in the config.  **Two modes of operation:** 1. **Stateless mode (recommended for new sources):** Upload both `config` and    `catalogData` files. The assets are read from `catalogData`, allowing preview    without saving anything to the server. 2. **Path mode (for existing sources):** Upload only `config` with a `yamlCatalogPath`    property pointing to a catalog file on the server filesystem.  If both `catalogData` and `yamlCatalogPath` are provided, `catalogData` takes precedence.")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -2850,17 +2850,17 @@ class ModelCatalogServiceApi:
     ) -> RESTResponseType:
         """Preview catalog source configuration
 
-        Accepts a catalog source configuration and returns a list of models showing which would be included or excluded based on the configured filters. This allows users to test and validate their source configurations before applying them.  **Two modes of operation:**  1. **Stateless mode (recommended for new sources):** Upload both `config` and    `catalogData` files via multipart form. The models are read directly from    the uploaded `catalogData`, enabling preview of new sources before saving    anything to the server. This is ideal for testing configurations.  2. **Path mode (for existing sources):** Upload only `config` with a `yamlCatalogPath`    property. The models are read from the specified file path on the server.    Use this for previewing changes to existing saved sources.
+        Accepts a catalog source configuration and returns a list of assets showing which would be included or excluded based on the configured filters. This allows users to test and validate their source configurations before applying them.  The response type varies based on the `assetType` field in the uploaded config: - `models` (default): Returns a `CatalogSourcePreviewResponse` with `ModelPreviewResult` items   and model-specific summary fields (`totalModels`, `includedModels`, `excludedModels`). - `mcp_servers`: Returns an `AssetSourcePreviewResponse` with `AssetPreviewResult` items   and generic summary fields (`totalAssets`, `includedAssets`, `excludedAssets`). - `skills`: Returns an `AssetSourcePreviewResponse` with `AssetPreviewResult` items.   Unlike model and MCP previews, a `git-skills-plugin` source is previewed by   shallow-cloning a repository to enumerate its skills, so `catalogData` does   not apply. Preview is scoped to a single repository at a time (each repo is   a network clone): the config must provide exactly one entry inline under   `properties.repositories`; more than one is rejected, and the file-based   `yamlCatalogPath` form is not supported for preview (skills are read from   git, not a catalog file).  **Two modes of operation:**  1. **Stateless mode (recommended for new sources):** Upload both `config` and    `catalogData` files via multipart form. The assets are read directly from    the uploaded `catalogData`, enabling preview of new sources before saving    anything to the server. This is ideal for testing configurations.  2. **Path mode (for existing sources):** Upload only `config` with a `yamlCatalogPath`    property. The assets are read from the specified file path on the server.    Use this for previewing changes to existing saved sources.
 
-        :param config: YAML file containing the catalog source configuration. The file should contain a source definition with type and properties fields, including optional includedModels and excludedModels filters.  Model filter patterns support the `*` wildcard only and are case-insensitive. Patterns match the entire model name (e.g., `ibm-granite/*` matches all models starting with \\\"ibm-granite/\\\"). (required)
+        :param config: YAML file containing the catalog source configuration. The file should contain a source definition with `type` and `properties` fields, and an optional `assetType` field to specify the kind of assets being previewed (defaults to `models`).  **For model sources** (`assetType: models` or omitted): Use `includedModels` and `excludedModels` filter patterns.  **For MCP server sources** (`assetType: mcp_servers`): Use `includedServers` and `excludedServers` filter patterns.  Filter patterns support the `*` wildcard only and are case-insensitive. Patterns match the entire asset name (e.g., `ibm-granite/*` matches all models starting with \\\"ibm-granite/\\\", `kubernetes*` matches all servers starting with \\\"kubernetes\\\"). (required)
         :type config: bytearray
         :param page_size: Number of entities in each page.
         :type page_size: str
-        :param next_page_token: Token to use to retrieve next page of results.
+        :param next_page_token: Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.
         :type next_page_token: str
-        :param filter_status: Filter the response to show specific model statuses: - `all` (default): Show all models regardless of inclusion status - `included`: Show only models that pass the configured filters - `excluded`: Show only models that are filtered out
+        :param filter_status: Filter the response to show specific asset statuses: - `all` (default): Show all assets regardless of inclusion status - `included`: Show only assets that pass the configured filters - `excluded`: Show only assets that are filtered out
         :type filter_status: str
-        :param catalog_data: Optional YAML file containing the catalog data (models).  This field enables stateless preview of new sources before saving them. When provided, the catalog data is read directly from this file instead of from the `yamlCatalogPath` property in the config.  **Two modes of operation:** 1. **Stateless mode (recommended for new sources):** Upload both `config` and    `catalogData` files. The models are read from `catalogData`, allowing preview    without saving anything to the server. 2. **Path mode (for existing sources):** Upload only `config` with a `yamlCatalogPath`    property pointing to a catalog file on the server filesystem.  If both `catalogData` and `yamlCatalogPath` are provided, `catalogData` takes precedence.
+        :param catalog_data: Optional YAML file containing the catalog data.  For model sources, the file should contain a `models:` key with a list of model entries. For MCP server sources, the file should contain an `mcp_servers:` key with a list of server entries.  This field enables stateless preview of new sources before saving them. When provided, the catalog data is read directly from this file instead of from the `yamlCatalogPath` property in the config.  **Two modes of operation:** 1. **Stateless mode (recommended for new sources):** Upload both `config` and    `catalogData` files. The assets are read from `catalogData`, allowing preview    without saving anything to the server. 2. **Path mode (for existing sources):** Upload only `config` with a `yamlCatalogPath`    property pointing to a catalog file on the server filesystem.  If both `catalogData` and `yamlCatalogPath` are provided, `catalogData` takes precedence.
         :type catalog_data: bytearray
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -2897,7 +2897,7 @@ class ModelCatalogServiceApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "CatalogSourcePreviewResponse",
+            '200': "PreviewCatalogSourceResponse",
             '400': "Error",
             '401': "Error",
             '422': "Error",
@@ -2940,17 +2940,17 @@ class ModelCatalogServiceApi:
         # process the path parameters
         # process the query parameters
         if page_size is not None:
-            
+
             _query_params.append(('pageSize', page_size))
-            
+
         if next_page_token is not None:
-            
+
             _query_params.append(('nextPageToken', next_page_token))
-            
+
         if filter_status is not None:
-            
+
             _query_params.append(('filterStatus', filter_status))
-            
+
         # process the header parameters
         # process the form parameters
         if config is not None:
@@ -3001,5 +3001,3 @@ class ModelCatalogServiceApi:
             _host=_host,
             _request_auth=_request_auth
         )
-
-

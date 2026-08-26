@@ -7,7 +7,7 @@ import (
 
 	"github.com/kubeflow/hub/catalog/internal/catalog/skillcatalog/models"
 	"github.com/kubeflow/hub/catalog/internal/db/pagination"
-	"github.com/kubeflow/hub/internal/platform/db/dbutil"
+	catalogsvc "github.com/kubeflow/hub/catalog/internal/db/service"
 	dbmodels "github.com/kubeflow/hub/internal/platform/db/entity"
 	service "github.com/kubeflow/hub/internal/platform/db/repository"
 	"github.com/kubeflow/hub/internal/platform/db/schema"
@@ -275,28 +275,14 @@ func (r *SkillRepositoryImpl) DeleteByID(id int32) error {
 	return nil
 }
 
-// GetDistinctSourceIDs retrieves all unique source_id values from skills.
-func (r *SkillRepositoryImpl) GetDistinctSourceIDs() ([]string, error) {
-	config := r.GetConfig()
-	var sourceIDs []string
-
-	propTableName := utils.GetTableName(config.DB, &schema.ContextProperty{})
-	tableName := utils.GetTableName(config.DB, &schema.Context{})
-
-	err := config.DB.Table(propTableName+" cp").
-		Select("DISTINCT cp.string_value").
-		Joins("INNER JOIN "+tableName+" c ON cp.context_id = c.id").
-		Where("cp.name = ? AND c.type_id = ?", "source_id", config.TypeID).
-		Pluck("string_value", &sourceIDs).Error
-
-	if err != nil {
-		err = dbutil.SanitizeDatabaseError(err)
-		return nil, fmt.Errorf("error querying distinct source IDs: %w", err)
-	}
-	return sourceIDs, nil
-}
-
 // GetTypeID returns the datastore type ID for the skill context type.
 func (r *SkillRepositoryImpl) GetTypeID() int32 {
 	return r.GetConfig().TypeID
+}
+
+func (r *SkillRepositoryImpl) GetDistinctSourceIDs() ([]string, error) {
+	cfg := r.GetConfig()
+	entityTable := utils.GetTableName(cfg.DB, &schema.Context{})
+	propTable := utils.GetTableName(cfg.DB, &schema.ContextProperty{})
+	return catalogsvc.GetDistinctSourceIDs(cfg.DB, entityTable, propTable, cfg.PropertyFieldName, cfg.TypeID)
 }

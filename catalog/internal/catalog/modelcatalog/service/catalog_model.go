@@ -8,12 +8,13 @@ import (
 	"github.com/golang/glog"
 	"github.com/kubeflow/hub/catalog/internal/catalog/modelcatalog/models"
 	catpagination "github.com/kubeflow/hub/catalog/internal/db/pagination"
+	catalogsvc "github.com/kubeflow/hub/catalog/internal/db/service"
 	"github.com/kubeflow/hub/internal/platform/db/dbutil"
-	dbfilter "github.com/kubeflow/hub/internal/platform/db/filter"
 	dbmodels "github.com/kubeflow/hub/internal/platform/db/entity"
+	dbfilter "github.com/kubeflow/hub/internal/platform/db/filter"
+	service "github.com/kubeflow/hub/internal/platform/db/repository"
 	"github.com/kubeflow/hub/internal/platform/db/schema"
 	"github.com/kubeflow/hub/internal/platform/db/scopes"
-	service "github.com/kubeflow/hub/internal/platform/db/repository"
 	"github.com/kubeflow/hub/internal/platform/db/utils"
 	"gorm.io/gorm"
 )
@@ -269,44 +270,15 @@ func (r *CatalogModelRepositoryImpl) DeleteByID(id int32) error {
 	return nil
 }
 
-// GetDistinctSourceIDs retrieves all unique source_id values from catalog models.
-// This method queries the ContextProperty table to find distinct string_value entries
-// where the property name is 'source_id'.
-func (r *CatalogModelRepositoryImpl) GetDistinctSourceIDs() ([]string, error) {
-	config := r.GetConfig()
-
-	var sourceIDs []string
-
-	// Execute the SQL query to get distinct source_id values
-	query := `SELECT DISTINCT string_value FROM "ContextProperty" WHERE name='source_id'`
-
-	rows, err := config.DB.Raw(query).Rows()
-	if err != nil {
-		// Sanitize database errors to avoid exposing internal details to users
-		err = dbutil.SanitizeDatabaseError(err)
-		return nil, fmt.Errorf("error querying distinct source IDs: %w", err)
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var sourceID string
-		if err := rows.Scan(&sourceID); err != nil {
-			err = dbutil.SanitizeDatabaseError(err)
-			return nil, fmt.Errorf("error scanning source ID: %w", err)
-		}
-		sourceIDs = append(sourceIDs, sourceID)
-	}
-
-	if err := rows.Err(); err != nil {
-		err = dbutil.SanitizeDatabaseError(err)
-		return nil, fmt.Errorf("error iterating source ID rows: %w", err)
-	}
-
-	return sourceIDs, nil
-}
-
 func (r *CatalogModelRepositoryImpl) GetTypeID() int32 {
 	return r.GetConfig().TypeID
+}
+
+func (r *CatalogModelRepositoryImpl) GetDistinctSourceIDs() ([]string, error) {
+	cfg := r.GetConfig()
+	entityTable := utils.GetTableName(cfg.DB, &schema.Context{})
+	propTable := utils.GetTableName(cfg.DB, &schema.ContextProperty{})
+	return catalogsvc.GetDistinctSourceIDs(cfg.DB, entityTable, propTable, cfg.PropertyFieldName, cfg.TypeID)
 }
 
 func applyCatalogModelListFilters(query *gorm.DB, listOptions *models.CatalogModelListOptions) *gorm.DB {

@@ -16,7 +16,7 @@ from pydantic import validate_call, Field, StrictFloat, StrictStr, StrictInt
 from typing import Any, Dict, List, Optional, Tuple, Union
 from typing_extensions import Annotated
 
-from pydantic import Field, StrictBool, StrictStr
+from pydantic import Field, StrictBool, StrictStr, field_validator
 from typing import List, Optional
 from typing_extensions import Annotated
 from catalog_openapi.models.filter_options_list import FilterOptionsList
@@ -49,11 +49,11 @@ class MCPCatalogServiceApi:
     def find_mcp_server_tools(
         self,
         server_id: Annotated[StrictStr, Field(description="A unique identifier for an `MCPServer`.")],
-        filter_query: Annotated[Optional[StrictStr], Field(description="A SQL-like query string to filter MCP tools for a specific MCP server.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Examples:** - `name = \"list_models\"` - `accessType = \"read_only\"` - `name ILIKE \"%search%\"` - `(accessType = \"read_only\" OR accessType = \"execute\") AND name LIKE \"%model%\"` ")] = None,
-        page_size: Annotated[Optional[StrictStr], Field(description="Number of entities in each page.")] = None,
+        filter_query: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="A SQL-like query string to filter MCP tools for a specific MCP server.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Examples:** - `name = \"list_models\"` - `accessType = \"read_only\"` - `name ILIKE \"%search%\"` - `(accessType = \"read_only\" OR accessType = \"execute\") AND name LIKE \"%model%\"` ")] = None,
+        page_size: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="Number of entities in each page.")] = None,
         order_by: Annotated[Optional[OrderByField], Field(description="Specifies the order by criteria for listing entities.")] = None,
         sort_order: Annotated[Optional[SortOrder], Field(description="Specifies the sort order for listing entities, defaults to ASC.")] = None,
-        next_page_token: Annotated[Optional[StrictStr], Field(description="Token to use to retrieve next page of results.")] = None,
+        next_page_token: Annotated[Optional[StrictStr], Field(description="Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -72,7 +72,7 @@ class MCPCatalogServiceApi:
 
         :param server_id: A unique identifier for an `MCPServer`. (required)
         :type server_id: str
-        :param filter_query: A SQL-like query string to filter MCP tools for a specific MCP server.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Examples:** - `name = \"list_models\"` - `accessType = \"read_only\"` - `name ILIKE \"%search%\"` - `(accessType = \"read_only\" OR accessType = \"execute\") AND name LIKE \"%model%\"` 
+        :param filter_query: A SQL-like query string to filter MCP tools for a specific MCP server.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Examples:** - `name = \"list_models\"` - `accessType = \"read_only\"` - `name ILIKE \"%search%\"` - `(accessType = \"read_only\" OR accessType = \"execute\") AND name LIKE \"%model%\"`
         :type filter_query: str
         :param page_size: Number of entities in each page.
         :type page_size: str
@@ -80,7 +80,7 @@ class MCPCatalogServiceApi:
         :type order_by: OrderByField
         :param sort_order: Specifies the sort order for listing entities, defaults to ASC.
         :type sort_order: SortOrder
-        :param next_page_token: Token to use to retrieve next page of results.
+        :param next_page_token: Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.
         :type next_page_token: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -138,11 +138,11 @@ class MCPCatalogServiceApi:
     def find_mcp_server_tools_with_http_info(
         self,
         server_id: Annotated[StrictStr, Field(description="A unique identifier for an `MCPServer`.")],
-        filter_query: Annotated[Optional[StrictStr], Field(description="A SQL-like query string to filter MCP tools for a specific MCP server.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Examples:** - `name = \"list_models\"` - `accessType = \"read_only\"` - `name ILIKE \"%search%\"` - `(accessType = \"read_only\" OR accessType = \"execute\") AND name LIKE \"%model%\"` ")] = None,
-        page_size: Annotated[Optional[StrictStr], Field(description="Number of entities in each page.")] = None,
+        filter_query: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="A SQL-like query string to filter MCP tools for a specific MCP server.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Examples:** - `name = \"list_models\"` - `accessType = \"read_only\"` - `name ILIKE \"%search%\"` - `(accessType = \"read_only\" OR accessType = \"execute\") AND name LIKE \"%model%\"` ")] = None,
+        page_size: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="Number of entities in each page.")] = None,
         order_by: Annotated[Optional[OrderByField], Field(description="Specifies the order by criteria for listing entities.")] = None,
         sort_order: Annotated[Optional[SortOrder], Field(description="Specifies the sort order for listing entities, defaults to ASC.")] = None,
-        next_page_token: Annotated[Optional[StrictStr], Field(description="Token to use to retrieve next page of results.")] = None,
+        next_page_token: Annotated[Optional[StrictStr], Field(description="Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -161,7 +161,7 @@ class MCPCatalogServiceApi:
 
         :param server_id: A unique identifier for an `MCPServer`. (required)
         :type server_id: str
-        :param filter_query: A SQL-like query string to filter MCP tools for a specific MCP server.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Examples:** - `name = \"list_models\"` - `accessType = \"read_only\"` - `name ILIKE \"%search%\"` - `(accessType = \"read_only\" OR accessType = \"execute\") AND name LIKE \"%model%\"` 
+        :param filter_query: A SQL-like query string to filter MCP tools for a specific MCP server.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Examples:** - `name = \"list_models\"` - `accessType = \"read_only\"` - `name ILIKE \"%search%\"` - `(accessType = \"read_only\" OR accessType = \"execute\") AND name LIKE \"%model%\"`
         :type filter_query: str
         :param page_size: Number of entities in each page.
         :type page_size: str
@@ -169,7 +169,7 @@ class MCPCatalogServiceApi:
         :type order_by: OrderByField
         :param sort_order: Specifies the sort order for listing entities, defaults to ASC.
         :type sort_order: SortOrder
-        :param next_page_token: Token to use to retrieve next page of results.
+        :param next_page_token: Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.
         :type next_page_token: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -227,11 +227,11 @@ class MCPCatalogServiceApi:
     def find_mcp_server_tools_without_preload_content(
         self,
         server_id: Annotated[StrictStr, Field(description="A unique identifier for an `MCPServer`.")],
-        filter_query: Annotated[Optional[StrictStr], Field(description="A SQL-like query string to filter MCP tools for a specific MCP server.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Examples:** - `name = \"list_models\"` - `accessType = \"read_only\"` - `name ILIKE \"%search%\"` - `(accessType = \"read_only\" OR accessType = \"execute\") AND name LIKE \"%model%\"` ")] = None,
-        page_size: Annotated[Optional[StrictStr], Field(description="Number of entities in each page.")] = None,
+        filter_query: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="A SQL-like query string to filter MCP tools for a specific MCP server.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Examples:** - `name = \"list_models\"` - `accessType = \"read_only\"` - `name ILIKE \"%search%\"` - `(accessType = \"read_only\" OR accessType = \"execute\") AND name LIKE \"%model%\"` ")] = None,
+        page_size: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="Number of entities in each page.")] = None,
         order_by: Annotated[Optional[OrderByField], Field(description="Specifies the order by criteria for listing entities.")] = None,
         sort_order: Annotated[Optional[SortOrder], Field(description="Specifies the sort order for listing entities, defaults to ASC.")] = None,
-        next_page_token: Annotated[Optional[StrictStr], Field(description="Token to use to retrieve next page of results.")] = None,
+        next_page_token: Annotated[Optional[StrictStr], Field(description="Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -250,7 +250,7 @@ class MCPCatalogServiceApi:
 
         :param server_id: A unique identifier for an `MCPServer`. (required)
         :type server_id: str
-        :param filter_query: A SQL-like query string to filter MCP tools for a specific MCP server.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Examples:** - `name = \"list_models\"` - `accessType = \"read_only\"` - `name ILIKE \"%search%\"` - `(accessType = \"read_only\" OR accessType = \"execute\") AND name LIKE \"%model%\"` 
+        :param filter_query: A SQL-like query string to filter MCP tools for a specific MCP server.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Examples:** - `name = \"list_models\"` - `accessType = \"read_only\"` - `name ILIKE \"%search%\"` - `(accessType = \"read_only\" OR accessType = \"execute\") AND name LIKE \"%model%\"`
         :type filter_query: str
         :param page_size: Number of entities in each page.
         :type page_size: str
@@ -258,7 +258,7 @@ class MCPCatalogServiceApi:
         :type order_by: OrderByField
         :param sort_order: Specifies the sort order for listing entities, defaults to ASC.
         :type sort_order: SortOrder
-        :param next_page_token: Token to use to retrieve next page of results.
+        :param next_page_token: Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.
         :type next_page_token: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -341,25 +341,25 @@ class MCPCatalogServiceApi:
             _path_params['server_id'] = server_id
         # process the query parameters
         if filter_query is not None:
-            
+
             _query_params.append(('filterQuery', filter_query))
-            
+
         if page_size is not None:
-            
+
             _query_params.append(('pageSize', page_size))
-            
+
         if order_by is not None:
-            
+
             _query_params.append(('orderBy', order_by.value))
-            
+
         if sort_order is not None:
-            
+
             _query_params.append(('sortOrder', sort_order.value))
-            
+
         if next_page_token is not None:
-            
+
             _query_params.append(('nextPageToken', next_page_token))
-            
+
         # process the header parameters
         # process the form parameters
         # process the body parameter
@@ -403,14 +403,14 @@ class MCPCatalogServiceApi:
         name: Annotated[Optional[StrictStr], Field(description="Filter MCP servers by server name using SQL LIKE pattern matching.")] = None,
         q: Annotated[Optional[StrictStr], Field(description="Free-form keyword search across name, description, and provider.")] = None,
         source_label: Annotated[Optional[List[StrictStr]], Field(description="Filter MCP servers by the label associated with the source. Multiple values can be separated by commas. If one of the values is the string `null`, then MCP servers from every source without a label will be returned.")] = None,
-        filter_query: Annotated[Optional[StrictStr], Field(description="A SQL-like query string to filter MCP servers.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Examples:** - `license = \"Apache 2.0\"` - `verifiedSource = true` - `provider ILIKE \"%local%\"` - `(license = \"Apache 2.0\" OR license = \"MIT\") AND verifiedSource = true` ")] = None,
+        filter_query: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="A SQL-like query string to filter MCP servers.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Examples:** - `license = \"Apache 2.0\"` - `verifiedSource = true` - `provider ILIKE \"%local%\"` - `(license = \"Apache 2.0\" OR license = \"MIT\") AND verifiedSource = true` ")] = None,
         named_query: Annotated[Optional[StrictStr], Field(description="Predefined filter template name to apply when listing MCP servers.")] = None,
         include_tools: Annotated[Optional[StrictBool], Field(description="Whether to include the tools array in each MCP server result.")] = None,
         tool_limit: Annotated[Optional[Annotated[int, Field(le=100, strict=True, ge=0)]], Field(description="Maximum number of tools to include when includeTools is true.")] = None,
-        page_size: Annotated[Optional[StrictStr], Field(description="Number of entities in each page.")] = None,
+        page_size: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="Number of entities in each page.")] = None,
         order_by: Annotated[Optional[OrderByField], Field(description="Specifies the order by criteria for listing entities.")] = None,
         sort_order: Annotated[Optional[SortOrder], Field(description="Specifies the sort order for listing entities, defaults to ASC.")] = None,
-        next_page_token: Annotated[Optional[StrictStr], Field(description="Token to use to retrieve next page of results.")] = None,
+        next_page_token: Annotated[Optional[StrictStr], Field(description="Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -433,7 +433,7 @@ class MCPCatalogServiceApi:
         :type q: str
         :param source_label: Filter MCP servers by the label associated with the source. Multiple values can be separated by commas. If one of the values is the string `null`, then MCP servers from every source without a label will be returned.
         :type source_label: List[str]
-        :param filter_query: A SQL-like query string to filter MCP servers.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Examples:** - `license = \"Apache 2.0\"` - `verifiedSource = true` - `provider ILIKE \"%local%\"` - `(license = \"Apache 2.0\" OR license = \"MIT\") AND verifiedSource = true` 
+        :param filter_query: A SQL-like query string to filter MCP servers.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Examples:** - `license = \"Apache 2.0\"` - `verifiedSource = true` - `provider ILIKE \"%local%\"` - `(license = \"Apache 2.0\" OR license = \"MIT\") AND verifiedSource = true`
         :type filter_query: str
         :param named_query: Predefined filter template name to apply when listing MCP servers.
         :type named_query: str
@@ -447,7 +447,7 @@ class MCPCatalogServiceApi:
         :type order_by: OrderByField
         :param sort_order: Specifies the sort order for listing entities, defaults to ASC.
         :type sort_order: SortOrder
-        :param next_page_token: Token to use to retrieve next page of results.
+        :param next_page_token: Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.
         :type next_page_token: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -512,14 +512,14 @@ class MCPCatalogServiceApi:
         name: Annotated[Optional[StrictStr], Field(description="Filter MCP servers by server name using SQL LIKE pattern matching.")] = None,
         q: Annotated[Optional[StrictStr], Field(description="Free-form keyword search across name, description, and provider.")] = None,
         source_label: Annotated[Optional[List[StrictStr]], Field(description="Filter MCP servers by the label associated with the source. Multiple values can be separated by commas. If one of the values is the string `null`, then MCP servers from every source without a label will be returned.")] = None,
-        filter_query: Annotated[Optional[StrictStr], Field(description="A SQL-like query string to filter MCP servers.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Examples:** - `license = \"Apache 2.0\"` - `verifiedSource = true` - `provider ILIKE \"%local%\"` - `(license = \"Apache 2.0\" OR license = \"MIT\") AND verifiedSource = true` ")] = None,
+        filter_query: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="A SQL-like query string to filter MCP servers.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Examples:** - `license = \"Apache 2.0\"` - `verifiedSource = true` - `provider ILIKE \"%local%\"` - `(license = \"Apache 2.0\" OR license = \"MIT\") AND verifiedSource = true` ")] = None,
         named_query: Annotated[Optional[StrictStr], Field(description="Predefined filter template name to apply when listing MCP servers.")] = None,
         include_tools: Annotated[Optional[StrictBool], Field(description="Whether to include the tools array in each MCP server result.")] = None,
         tool_limit: Annotated[Optional[Annotated[int, Field(le=100, strict=True, ge=0)]], Field(description="Maximum number of tools to include when includeTools is true.")] = None,
-        page_size: Annotated[Optional[StrictStr], Field(description="Number of entities in each page.")] = None,
+        page_size: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="Number of entities in each page.")] = None,
         order_by: Annotated[Optional[OrderByField], Field(description="Specifies the order by criteria for listing entities.")] = None,
         sort_order: Annotated[Optional[SortOrder], Field(description="Specifies the sort order for listing entities, defaults to ASC.")] = None,
-        next_page_token: Annotated[Optional[StrictStr], Field(description="Token to use to retrieve next page of results.")] = None,
+        next_page_token: Annotated[Optional[StrictStr], Field(description="Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -542,7 +542,7 @@ class MCPCatalogServiceApi:
         :type q: str
         :param source_label: Filter MCP servers by the label associated with the source. Multiple values can be separated by commas. If one of the values is the string `null`, then MCP servers from every source without a label will be returned.
         :type source_label: List[str]
-        :param filter_query: A SQL-like query string to filter MCP servers.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Examples:** - `license = \"Apache 2.0\"` - `verifiedSource = true` - `provider ILIKE \"%local%\"` - `(license = \"Apache 2.0\" OR license = \"MIT\") AND verifiedSource = true` 
+        :param filter_query: A SQL-like query string to filter MCP servers.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Examples:** - `license = \"Apache 2.0\"` - `verifiedSource = true` - `provider ILIKE \"%local%\"` - `(license = \"Apache 2.0\" OR license = \"MIT\") AND verifiedSource = true`
         :type filter_query: str
         :param named_query: Predefined filter template name to apply when listing MCP servers.
         :type named_query: str
@@ -556,7 +556,7 @@ class MCPCatalogServiceApi:
         :type order_by: OrderByField
         :param sort_order: Specifies the sort order for listing entities, defaults to ASC.
         :type sort_order: SortOrder
-        :param next_page_token: Token to use to retrieve next page of results.
+        :param next_page_token: Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.
         :type next_page_token: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -621,14 +621,14 @@ class MCPCatalogServiceApi:
         name: Annotated[Optional[StrictStr], Field(description="Filter MCP servers by server name using SQL LIKE pattern matching.")] = None,
         q: Annotated[Optional[StrictStr], Field(description="Free-form keyword search across name, description, and provider.")] = None,
         source_label: Annotated[Optional[List[StrictStr]], Field(description="Filter MCP servers by the label associated with the source. Multiple values can be separated by commas. If one of the values is the string `null`, then MCP servers from every source without a label will be returned.")] = None,
-        filter_query: Annotated[Optional[StrictStr], Field(description="A SQL-like query string to filter MCP servers.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Examples:** - `license = \"Apache 2.0\"` - `verifiedSource = true` - `provider ILIKE \"%local%\"` - `(license = \"Apache 2.0\" OR license = \"MIT\") AND verifiedSource = true` ")] = None,
+        filter_query: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="A SQL-like query string to filter MCP servers.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Examples:** - `license = \"Apache 2.0\"` - `verifiedSource = true` - `provider ILIKE \"%local%\"` - `(license = \"Apache 2.0\" OR license = \"MIT\") AND verifiedSource = true` ")] = None,
         named_query: Annotated[Optional[StrictStr], Field(description="Predefined filter template name to apply when listing MCP servers.")] = None,
         include_tools: Annotated[Optional[StrictBool], Field(description="Whether to include the tools array in each MCP server result.")] = None,
         tool_limit: Annotated[Optional[Annotated[int, Field(le=100, strict=True, ge=0)]], Field(description="Maximum number of tools to include when includeTools is true.")] = None,
-        page_size: Annotated[Optional[StrictStr], Field(description="Number of entities in each page.")] = None,
+        page_size: Annotated[Optional[Annotated[str, Field(strict=True)]], Field(description="Number of entities in each page.")] = None,
         order_by: Annotated[Optional[OrderByField], Field(description="Specifies the order by criteria for listing entities.")] = None,
         sort_order: Annotated[Optional[SortOrder], Field(description="Specifies the sort order for listing entities, defaults to ASC.")] = None,
-        next_page_token: Annotated[Optional[StrictStr], Field(description="Token to use to retrieve next page of results.")] = None,
+        next_page_token: Annotated[Optional[StrictStr], Field(description="Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -651,7 +651,7 @@ class MCPCatalogServiceApi:
         :type q: str
         :param source_label: Filter MCP servers by the label associated with the source. Multiple values can be separated by commas. If one of the values is the string `null`, then MCP servers from every source without a label will be returned.
         :type source_label: List[str]
-        :param filter_query: A SQL-like query string to filter MCP servers.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Examples:** - `license = \"Apache 2.0\"` - `verifiedSource = true` - `provider ILIKE \"%local%\"` - `(license = \"Apache 2.0\" OR license = \"MIT\") AND verifiedSource = true` 
+        :param filter_query: A SQL-like query string to filter MCP servers.  **Supported Operators:** - Comparison: `=`, `!=`, `<>`, `>`, `<`, `>=`, `<=` - Pattern matching: `LIKE`, `ILIKE` (case-insensitive) - Set membership: `IN` - Logical: `AND`, `OR` - Grouping: `()` for complex expressions  **Examples:** - `license = \"Apache 2.0\"` - `verifiedSource = true` - `provider ILIKE \"%local%\"` - `(license = \"Apache 2.0\" OR license = \"MIT\") AND verifiedSource = true`
         :type filter_query: str
         :param named_query: Predefined filter template name to apply when listing MCP servers.
         :type named_query: str
@@ -665,7 +665,7 @@ class MCPCatalogServiceApi:
         :type order_by: OrderByField
         :param sort_order: Specifies the sort order for listing entities, defaults to ASC.
         :type sort_order: SortOrder
-        :param next_page_token: Token to use to retrieve next page of results.
+        :param next_page_token: Opaque pagination token returned by a previous list call. Do not construct manually; use the value from a prior response's nextPageToken field.
         :type next_page_token: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -757,49 +757,49 @@ class MCPCatalogServiceApi:
         # process the path parameters
         # process the query parameters
         if name is not None:
-            
+
             _query_params.append(('name', name))
-            
+
         if q is not None:
-            
+
             _query_params.append(('q', q))
-            
+
         if source_label is not None:
-            
+
             _query_params.append(('sourceLabel', source_label))
-            
+
         if filter_query is not None:
-            
+
             _query_params.append(('filterQuery', filter_query))
-            
+
         if named_query is not None:
-            
+
             _query_params.append(('namedQuery', named_query))
-            
+
         if include_tools is not None:
-            
+
             _query_params.append(('includeTools', include_tools))
-            
+
         if tool_limit is not None:
-            
+
             _query_params.append(('toolLimit', tool_limit))
-            
+
         if page_size is not None:
-            
+
             _query_params.append(('pageSize', page_size))
-            
+
         if order_by is not None:
-            
+
             _query_params.append(('orderBy', order_by.value))
-            
+
         if sort_order is not None:
-            
+
             _query_params.append(('sortOrder', sort_order.value))
-            
+
         if next_page_token is not None:
-            
+
             _query_params.append(('nextPageToken', next_page_token))
-            
+
         # process the header parameters
         # process the form parameters
         # process the body parameter
@@ -1346,13 +1346,13 @@ class MCPCatalogServiceApi:
             _path_params['server_id'] = server_id
         # process the query parameters
         if include_tools is not None:
-            
+
             _query_params.append(('includeTools', include_tools))
-            
+
         if tool_limit is not None:
-            
+
             _query_params.append(('toolLimit', tool_limit))
-            
+
         # process the header parameters
         # process the form parameters
         # process the body parameter
@@ -1668,5 +1668,3 @@ class MCPCatalogServiceApi:
             _host=_host,
             _request_auth=_request_auth
         )
-
-

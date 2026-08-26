@@ -17,8 +17,8 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
-from typing import Any, ClassVar, Dict, List
+from pydantic import BaseModel, ConfigDict, Field, StrictBytes, StrictStr, field_validator
+from typing import Any, ClassVar, Dict, List, Union
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -27,9 +27,16 @@ class MetadataProtoValue(BaseModel):
     A proto property value.
     """ # noqa: E501
     type: StrictStr = Field(description="url describing proto value")
-    proto_value: StrictStr = Field(description="Base64 encoded bytes for proto value")
+    proto_value: Union[StrictBytes, StrictStr] = Field(description="Base64 encoded bytes for proto value")
     metadata_type: StrictStr = Field(alias="metadataType")
     __properties: ClassVar[List[str]] = ["type", "proto_value", "metadataType"]
+
+    @field_validator('metadata_type')
+    def metadata_type_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['MetadataProtoValue']):
+            raise ValueError("must be one of enum values ('MetadataProtoValue')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -87,5 +94,3 @@ class MetadataProtoValue(BaseModel):
             "metadataType": obj.get("metadataType") if obj.get("metadataType") is not None else 'MetadataProtoValue'
         })
         return _obj
-
-

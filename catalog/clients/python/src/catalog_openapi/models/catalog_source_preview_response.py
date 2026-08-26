@@ -19,6 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List
+from catalog_openapi.models.catalog_asset_type import CatalogAssetType
 from catalog_openapi.models.catalog_source_preview_response_all_of_summary import CatalogSourcePreviewResponseAllOfSummary
 from catalog_openapi.models.model_preview_result import ModelPreviewResult
 from typing import Optional, Set
@@ -31,9 +32,10 @@ class CatalogSourcePreviewResponse(BaseModel):
     next_page_token: StrictStr = Field(description="Token to use to retrieve next page of results.", alias="nextPageToken")
     page_size: StrictInt = Field(description="Maximum number of resources to return in the result.", alias="pageSize")
     size: StrictInt = Field(description="Number of items in result list.")
+    asset_type: CatalogAssetType = Field(alias="assetType")
     items: List[ModelPreviewResult] = Field(description="Array of model preview results.")
     summary: CatalogSourcePreviewResponseAllOfSummary
-    __properties: ClassVar[List[str]] = ["nextPageToken", "pageSize", "size", "items", "summary"]
+    __properties: ClassVar[List[str]] = ["nextPageToken", "pageSize", "size", "assetType", "items", "summary"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -99,9 +101,8 @@ class CatalogSourcePreviewResponse(BaseModel):
             "nextPageToken": obj.get("nextPageToken"),
             "pageSize": obj.get("pageSize"),
             "size": obj.get("size"),
+            "assetType": obj.get("assetType") if obj.get("assetType") is not None else CatalogAssetType.MODELS,
             "items": [ModelPreviewResult.from_dict(_item) for _item in obj["items"]] if obj.get("items") is not None else None,
             "summary": CatalogSourcePreviewResponseAllOfSummary.from_dict(obj["summary"]) if obj.get("summary") is not None else None
         })
         return _obj
-
-
