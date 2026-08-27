@@ -19,6 +19,7 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
+from typing_extensions import Annotated
 from catalog_openapi.models.metadata_value import MetadataValue
 from typing import Optional, Set
 from typing_extensions import Self
@@ -30,7 +31,7 @@ class CatalogModelArtifact(BaseModel):
     custom_properties: Optional[Dict[str, MetadataValue]] = Field(default=None, description="User provided custom properties which are not defined by its type.", alias="customProperties")
     description: Optional[StrictStr] = Field(default=None, description="An optional description about the resource.")
     external_id: Optional[StrictStr] = Field(default=None, description="The external id that come from the clients’ system. This field is optional. If set, it must be unique among all resources within a database instance.", alias="externalId")
-    name: Optional[StrictStr] = Field(default=None, description="The client provided name of the artifact. This field is optional. If set, it must be unique among all the artifacts of the same artifact type within a database instance and cannot be changed once set.")
+    name: Optional[Annotated[str, Field(min_length=1, strict=True)]] = Field(default=None, description="The client provided name of the artifact. This field is optional. If set, it must be unique among all the artifacts of the same artifact type within a database instance and cannot be changed once set.")
     id: Optional[StrictStr] = Field(default=None, description="The unique server generated id of the resource.")
     create_time_since_epoch: Optional[StrictStr] = Field(default=None, description="Output only. Create time of the resource in millisecond since epoch.", alias="createTimeSinceEpoch")
     last_update_time_since_epoch: Optional[StrictStr] = Field(default=None, description="Output only. Last update time of the resource since epoch in millisecond since epoch.", alias="lastUpdateTimeSinceEpoch")
@@ -116,5 +117,3 @@ class CatalogModelArtifact(BaseModel):
             "uri": obj.get("uri")
         })
         return _obj
-
-
