@@ -17,9 +17,10 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from catalog_openapi.models.metadata_value import MetadataValue
+from catalog_openapi.models.serving_config import ServingConfig
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -44,7 +45,10 @@ class CatalogModel(BaseModel):
     create_time_since_epoch: Optional[StrictStr] = Field(default=None, description="Output only. Create time of the resource in millisecond since epoch.", alias="createTimeSinceEpoch")
     last_update_time_since_epoch: Optional[StrictStr] = Field(default=None, description="Output only. Last update time of the resource since epoch in millisecond since epoch.", alias="lastUpdateTimeSinceEpoch")
     source_id: Optional[StrictStr] = Field(default=None, description="ID of the source this model belongs to.")
-    __properties: ClassVar[List[str]] = ["description", "readme", "maturity", "language", "tasks", "provider", "logo", "license", "licenseLink", "libraryName", "customProperties", "externalId", "name", "id", "createTimeSinceEpoch", "lastUpdateTimeSinceEpoch", "source_id"]
+    validated_tasks: Optional[List[StrictStr]] = Field(default=None, description="List of tasks for this model which have been validated by the catalog provider.", alias="validatedTasks")
+    serving_config: Optional[ServingConfig] = Field(default=None, alias="servingConfig")
+    artifact_counts: Optional[Dict[str, StrictInt]] = Field(default=None, description="Read-only counts of artifacts by category. Only populated on the single-model detail endpoint (GetModel). Keys with zero count are omitted. When no artifacts exist, the field is omitted entirely.", alias="artifactCounts")
+    __properties: ClassVar[List[str]] = ["description", "readme", "maturity", "language", "tasks", "provider", "logo", "license", "licenseLink", "libraryName", "customProperties", "externalId", "name", "id", "createTimeSinceEpoch", "lastUpdateTimeSinceEpoch", "source_id", "validatedTasks", "servingConfig", "artifactCounts"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -78,8 +82,11 @@ class CatalogModel(BaseModel):
           are ignored.
         * OpenAPI `readOnly` fields are excluded.
         * OpenAPI `readOnly` fields are excluded.
+        * OpenAPI `readOnly` fields are excluded.
         """
-        excluded_fields: Set[str] = set([])
+        excluded_fields: Set[str] = set([
+            "artifact_counts",
+        ])
 
         _dict = self.model_dump(
             by_alias=True,
@@ -93,6 +100,9 @@ class CatalogModel(BaseModel):
                 if self.custom_properties[_key_custom_properties]:
                     _field_dict[_key_custom_properties] = self.custom_properties[_key_custom_properties].to_dict()
             _dict['customProperties'] = _field_dict
+        # override the default output from pydantic by calling `to_dict()` of serving_config
+        if self.serving_config:
+            _dict['servingConfig'] = self.serving_config.to_dict()
         return _dict
 
     @classmethod
@@ -126,8 +136,9 @@ class CatalogModel(BaseModel):
             "id": obj.get("id"),
             "createTimeSinceEpoch": obj.get("createTimeSinceEpoch"),
             "lastUpdateTimeSinceEpoch": obj.get("lastUpdateTimeSinceEpoch"),
-            "source_id": obj.get("source_id")
+            "source_id": obj.get("source_id"),
+            "validatedTasks": obj.get("validatedTasks"),
+            "servingConfig": ServingConfig.from_dict(obj["servingConfig"]) if obj.get("servingConfig") is not None else None,
+            "artifactCounts": obj.get("artifactCounts")
         })
         return _obj
-
-

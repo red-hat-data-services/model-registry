@@ -534,6 +534,7 @@ func (r *GenericRepository[TEntity, TSchema, TProp, TListOpts]) GetConfig() Gene
 	return r.config
 }
 
+
 func (r *GenericRepository[TEntity, TSchema, TProp, TListOpts]) ApplyStandardPagination(query *gorm.DB, listOptions TListOpts, entities any) *gorm.DB {
 	pageSize := listOptions.GetPageSize()
 	orderBy := listOptions.GetOrderBy()

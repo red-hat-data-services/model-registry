@@ -17,18 +17,33 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List
+from typing_extensions import Annotated
 from typing import Optional, Set
 from typing_extensions import Self
 
 class MetadataIntValue(BaseModel):
     """
-    An integer (int64) property value.
+    An integer (int32) property value.
     """ # noqa: E501
-    int_value: StrictStr
+    int_value: Annotated[str, Field(strict=True)]
     metadata_type: StrictStr = Field(alias="metadataType")
     __properties: ClassVar[List[str]] = ["int_value", "metadataType"]
+
+    @field_validator('int_value')
+    def int_value_validate_regular_expression(cls, value):
+        """Validates the regular expression"""
+        if not re.match(r"^-?([1-9][0-9]{0,8}|0)$", value):
+            raise ValueError(r"must validate the regular expression /^-?([1-9][0-9]{0,8}|0)$/")
+        return value
+
+    @field_validator('metadata_type')
+    def metadata_type_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['MetadataIntValue']):
+            raise ValueError("must be one of enum values ('MetadataIntValue')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -85,5 +100,3 @@ class MetadataIntValue(BaseModel):
             "metadataType": obj.get("metadataType") if obj.get("metadataType") is not None else 'MetadataIntValue'
         })
         return _obj
-
-

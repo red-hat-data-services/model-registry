@@ -30,11 +30,10 @@ class OrderByField(str, Enum):
     LAST_UPDATE_TIME = 'LAST_UPDATE_TIME'
     ID = 'ID'
     NAME = 'NAME'
+    RECOMMENDED = 'RECOMMENDED'
     ACCURACY = 'ACCURACY'
 
     @classmethod
     def from_json(cls, json_str: str) -> Self:
         """Create an instance of OrderByField from a JSON string"""
         return cls(json.loads(json_str))
-
-

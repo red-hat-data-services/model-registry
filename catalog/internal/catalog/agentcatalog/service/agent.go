@@ -7,8 +7,8 @@ import (
 
 	"github.com/kubeflow/hub/catalog/internal/catalog/agentcatalog/models"
 	"github.com/kubeflow/hub/catalog/internal/db/pagination"
+	catalogsvc "github.com/kubeflow/hub/catalog/internal/db/service"
 	dbmodels "github.com/kubeflow/hub/internal/platform/db/entity"
-	"github.com/kubeflow/hub/internal/platform/db/dbutil"
 	service "github.com/kubeflow/hub/internal/platform/db/repository"
 	"github.com/kubeflow/hub/internal/platform/db/schema"
 	"github.com/kubeflow/hub/internal/platform/db/scopes"
@@ -270,27 +270,13 @@ func (r *AgentRepositoryImpl) DeleteByID(id int32) error {
 	return nil
 }
 
-// GetDistinctSourceIDs retrieves all unique source_id values from agents.
-func (r *AgentRepositoryImpl) GetDistinctSourceIDs() ([]string, error) {
-	config := r.GetConfig()
-	var sourceIDs []string
-
-	propTableName := utils.GetTableName(config.DB, &schema.ContextProperty{})
-	tableName := utils.GetTableName(config.DB, &schema.Context{})
-
-	err := config.DB.Table(propTableName + " cp").
-		Select("DISTINCT cp.string_value").
-		Joins("INNER JOIN " + tableName + " c ON cp.context_id = c.id").
-		Where("cp.name = ? AND c.type_id = ?", "source_id", config.TypeID).
-		Pluck("string_value", &sourceIDs).Error
-
-	if err != nil {
-		err = dbutil.SanitizeDatabaseError(err)
-		return nil, fmt.Errorf("error querying distinct source IDs: %w", err)
-	}
-	return sourceIDs, nil
-}
-
 func (r *AgentRepositoryImpl) GetTypeID() int32 {
 	return r.GetConfig().TypeID
+}
+
+func (r *AgentRepositoryImpl) GetDistinctSourceIDs() ([]string, error) {
+	cfg := r.GetConfig()
+	entityTable := utils.GetTableName(cfg.DB, &schema.Context{})
+	propTable := utils.GetTableName(cfg.DB, &schema.ContextProperty{})
+	return catalogsvc.GetDistinctSourceIDs(cfg.DB, entityTable, propTable, cfg.PropertyFieldName, cfg.TypeID)
 }

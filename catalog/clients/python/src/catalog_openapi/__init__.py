@@ -18,9 +18,9 @@ __version__ = "1.0.0"
 
 # Define package exports
 __all__ = [
+    "AgentCatalogServiceApi",
     "MCPCatalogServiceApi",
     "ModelCatalogServiceApi",
-    "SkillCatalogServiceApi",
     "ApiResponse",
     "ApiClient",
     "Configuration",
@@ -30,7 +30,17 @@ __all__ = [
     "ApiKeyError",
     "ApiAttributeError",
     "ApiException",
+    "Agent",
+    "AgentArtifactList",
+    "AgentArtifactTypeQueryParam",
+    "AgentEnvVar",
+    "AgentImageArtifact",
+    "AgentList",
+    "AgentTemplateArtifact",
     "ArtifactTypeQueryParam",
+    "AssetPreviewResult",
+    "AssetSourcePreviewResponse",
+    "AssetSourcePreviewResponseAllOfSummary",
     "BaseModel",
     "BaseResource",
     "BaseResourceDates",
@@ -86,16 +96,16 @@ __all__ = [
     "MetadataValue",
     "ModelPreviewResult",
     "OrderByField",
-    "Skill",
-    "SkillList",
-    "SkillTrustTier",
+    "PreviewCatalogSourceResponse",
+    "ServingConfig",
     "SortOrder",
+    "ToolCallingConfig",
 ]
 
 # import apis into sdk package
+from catalog_openapi.api.agent_catalog_service_api import AgentCatalogServiceApi as AgentCatalogServiceApi
 from catalog_openapi.api.mcp_catalog_service_api import MCPCatalogServiceApi as MCPCatalogServiceApi
 from catalog_openapi.api.model_catalog_service_api import ModelCatalogServiceApi as ModelCatalogServiceApi
-from catalog_openapi.api.skill_catalog_service_api import SkillCatalogServiceApi as SkillCatalogServiceApi
 
 # import ApiClient
 from catalog_openapi.api_response import ApiResponse as ApiResponse
@@ -109,7 +119,17 @@ from catalog_openapi.exceptions import ApiAttributeError as ApiAttributeError
 from catalog_openapi.exceptions import ApiException as ApiException
 
 # import models into sdk package
+from catalog_openapi.models.agent import Agent as Agent
+from catalog_openapi.models.agent_artifact_list import AgentArtifactList as AgentArtifactList
+from catalog_openapi.models.agent_artifact_type_query_param import AgentArtifactTypeQueryParam as AgentArtifactTypeQueryParam
+from catalog_openapi.models.agent_env_var import AgentEnvVar as AgentEnvVar
+from catalog_openapi.models.agent_image_artifact import AgentImageArtifact as AgentImageArtifact
+from catalog_openapi.models.agent_list import AgentList as AgentList
+from catalog_openapi.models.agent_template_artifact import AgentTemplateArtifact as AgentTemplateArtifact
 from catalog_openapi.models.artifact_type_query_param import ArtifactTypeQueryParam as ArtifactTypeQueryParam
+from catalog_openapi.models.asset_preview_result import AssetPreviewResult as AssetPreviewResult
+from catalog_openapi.models.asset_source_preview_response import AssetSourcePreviewResponse as AssetSourcePreviewResponse
+from catalog_openapi.models.asset_source_preview_response_all_of_summary import AssetSourcePreviewResponseAllOfSummary as AssetSourcePreviewResponseAllOfSummary
 from catalog_openapi.models.base_model import BaseModel as BaseModel
 from catalog_openapi.models.base_resource import BaseResource as BaseResource
 from catalog_openapi.models.base_resource_dates import BaseResourceDates as BaseResourceDates
@@ -165,8 +185,7 @@ from catalog_openapi.models.metadata_struct_value import MetadataStructValue as 
 from catalog_openapi.models.metadata_value import MetadataValue as MetadataValue
 from catalog_openapi.models.model_preview_result import ModelPreviewResult as ModelPreviewResult
 from catalog_openapi.models.order_by_field import OrderByField as OrderByField
-from catalog_openapi.models.skill import Skill as Skill
-from catalog_openapi.models.skill_list import SkillList as SkillList
-from catalog_openapi.models.skill_trust_tier import SkillTrustTier as SkillTrustTier
+from catalog_openapi.models.preview_catalog_source_response import PreviewCatalogSourceResponse as PreviewCatalogSourceResponse
+from catalog_openapi.models.serving_config import ServingConfig as ServingConfig
 from catalog_openapi.models.sort_order import SortOrder as SortOrder
-
+from catalog_openapi.models.tool_calling_config import ToolCallingConfig as ToolCallingConfig

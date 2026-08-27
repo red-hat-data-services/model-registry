@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List
 from typing import Optional, Set
 from typing_extensions import Self
@@ -29,6 +29,13 @@ class MetadataStringValue(BaseModel):
     string_value: StrictStr
     metadata_type: StrictStr = Field(alias="metadataType")
     __properties: ClassVar[List[str]] = ["string_value", "metadataType"]
+
+    @field_validator('metadata_type')
+    def metadata_type_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['MetadataStringValue']):
+            raise ValueError("must be one of enum values ('MetadataStringValue')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -85,5 +92,3 @@ class MetadataStringValue(BaseModel):
             "metadataType": obj.get("metadataType") if obj.get("metadataType") is not None else 'MetadataStringValue'
         })
         return _obj
-
-

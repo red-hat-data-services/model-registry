@@ -17,21 +17,20 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
-from typing import Any, ClassVar, Dict, List
-from catalog_openapi.models.skill import Skill
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
+from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
-class SkillList(BaseModel):
+class ToolCallingConfig(BaseModel):
     """
-    A list of skill entities.
+    Tool-calling arguments for this model.
     """ # noqa: E501
-    next_page_token: StrictStr = Field(description="Token to use to retrieve next page of results.", alias="nextPageToken")
-    page_size: StrictInt = Field(description="Maximum number of resources to return in the result.", alias="pageSize")
-    size: StrictInt = Field(description="Number of items in result list.")
-    items: List[Skill] = Field(description="Array of `Skill` entities.")
-    __properties: ClassVar[List[str]] = ["nextPageToken", "pageSize", "size", "items"]
+    tool_call_parser: Optional[StrictStr] = Field(default=None, description="The tool-call parser identifier for the serving runtime.", alias="toolCallParser")
+    chat_template: Optional[StrictStr] = Field(default=None, description="Path to the chat template file packaged with the model.", alias="chatTemplate")
+    enable_auto_tool_choice: Optional[StrictBool] = Field(default=True, description="Whether to enable automatic tool choice in the serving runtime.", alias="enableAutoToolChoice")
+    required_args: Optional[List[StrictStr]] = Field(default=None, description="Additional CLI arguments required for tool calling beyond the parser, template, and auto-tool-choice flags. Each entry is a complete argument (e.g., \"--config_format mistral\").", alias="requiredArgs")
+    __properties: ClassVar[List[str]] = ["toolCallParser", "chatTemplate", "enableAutoToolChoice", "requiredArgs"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -51,7 +50,7 @@ class SkillList(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of SkillList from a JSON string"""
+        """Create an instance of ToolCallingConfig from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -72,18 +71,11 @@ class SkillList(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of each item in items (list)
-        _items = []
-        if self.items:
-            for _item_items in self.items:
-                if _item_items:
-                    _items.append(_item_items.to_dict())
-            _dict['items'] = _items
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of SkillList from a dict"""
+        """Create an instance of ToolCallingConfig from a dict"""
         if obj is None:
             return None
 
@@ -91,11 +83,9 @@ class SkillList(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "nextPageToken": obj.get("nextPageToken"),
-            "pageSize": obj.get("pageSize"),
-            "size": obj.get("size"),
-            "items": [Skill.from_dict(_item) for _item in obj["items"]] if obj.get("items") is not None else None
+            "toolCallParser": obj.get("toolCallParser"),
+            "chatTemplate": obj.get("chatTemplate"),
+            "enableAutoToolChoice": obj.get("enableAutoToolChoice") if obj.get("enableAutoToolChoice") is not None else True,
+            "requiredArgs": obj.get("requiredArgs")
         })
         return _obj
-
-
