@@ -18,22 +18,17 @@ from enum import Enum
 from typing_extensions import Self
 
 
-class SkillTrustTier(str, Enum):
+class AgentArtifactTypeQueryParam(str, Enum):
     """
-    Provenance label applied to a skill from its source configuration. A plain label shown as a badge and usable for filtering; it carries no ordering or special semantics. Downstream products may map these to their own display names.
+    Supported artifact types for querying agent artifacts.
     """
 
     """
     allowed enum values
     """
-    PLATFORMPROVIDED = 'platformProvided'
-    PARTNERVERIFIED = 'partnerVerified'
-    ORGANIZATIONAPPROVED = 'organizationApproved'
-    COMMUNITYCONTRIBUTED = 'communityContributed'
+    TEMPLATE_MINUS_ARTIFACT = 'template-artifact'
 
     @classmethod
     def from_json(cls, json_str: str) -> Self:
-        """Create an instance of SkillTrustTier from a JSON string"""
+        """Create an instance of AgentArtifactTypeQueryParam from a JSON string"""
         return cls(json.loads(json_str))
-
-

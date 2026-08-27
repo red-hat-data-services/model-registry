@@ -20,6 +20,7 @@ import json
 from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
+from typing_extensions import Annotated
 from catalog_openapi.models.mcp_artifact import MCPArtifact
 from catalog_openapi.models.mcp_endpoints import MCPEndpoints
 from catalog_openapi.models.mcp_runtime_metadata import MCPRuntimeMetadata
@@ -40,6 +41,7 @@ class MCPServer(BaseModel):
     id: Optional[StrictStr] = Field(default=None, description="The unique server generated id of the resource.")
     create_time_since_epoch: Optional[StrictStr] = Field(default=None, description="Output only. Create time of the resource in millisecond since epoch.", alias="createTimeSinceEpoch")
     last_update_time_since_epoch: Optional[StrictStr] = Field(default=None, description="Output only. Last update time of the resource since epoch in millisecond since epoch.", alias="lastUpdateTimeSinceEpoch")
+    display_name: Optional[Annotated[str, Field(strict=True, max_length=255)]] = Field(default=None, description="Optional human-friendly display label for this MCP server.", alias="displayName")
     source_id: Optional[StrictStr] = Field(default=None, description="Catalog source that provides this server.")
     provider: Optional[StrictStr] = Field(default=None, description="Organization providing the server.")
     logo: Optional[StrictStr] = Field(default=None, description="MCP server logo.")
@@ -61,7 +63,8 @@ class MCPServer(BaseModel):
     published_date: Optional[datetime] = Field(default=None, description="Initial publication timestamp for the server.", alias="publishedDate")
     last_updated: Optional[datetime] = Field(default=None, description="Last update timestamp for the server metadata.", alias="lastUpdated")
     runtime_metadata: Optional[MCPRuntimeMetadata] = Field(default=None, alias="runtimeMetadata")
-    __properties: ClassVar[List[str]] = ["customProperties", "description", "externalId", "name", "id", "createTimeSinceEpoch", "lastUpdateTimeSinceEpoch", "source_id", "provider", "logo", "version", "tags", "license", "license_link", "toolCount", "tools", "securityIndicators", "deploymentMode", "transports", "artifacts", "endpoints", "readme", "documentationUrl", "repositoryUrl", "sourceCode", "publishedDate", "lastUpdated", "runtimeMetadata"]
+    server_json: Optional[Dict[str, Any]] = Field(default=None, description="MCP server.json conformant structure. Opaque to this API; the schema is defined by the MCP specification and may evolve independently. See https://registry.modelcontextprotocol.io/docs#/schemas/ServerJSON for details.", alias="serverJson")
+    __properties: ClassVar[List[str]] = ["customProperties", "description", "externalId", "name", "id", "createTimeSinceEpoch", "lastUpdateTimeSinceEpoch", "displayName", "source_id", "provider", "logo", "version", "tags", "license", "license_link", "toolCount", "tools", "securityIndicators", "deploymentMode", "transports", "artifacts", "endpoints", "readme", "documentationUrl", "repositoryUrl", "sourceCode", "publishedDate", "lastUpdated", "runtimeMetadata", "serverJson"]
 
     @field_validator('deployment_mode')
     def deployment_mode_validate_enum(cls, value):
@@ -181,6 +184,7 @@ class MCPServer(BaseModel):
             "id": obj.get("id"),
             "createTimeSinceEpoch": obj.get("createTimeSinceEpoch"),
             "lastUpdateTimeSinceEpoch": obj.get("lastUpdateTimeSinceEpoch"),
+            "displayName": obj.get("displayName"),
             "source_id": obj.get("source_id"),
             "provider": obj.get("provider"),
             "logo": obj.get("logo"),
@@ -201,8 +205,7 @@ class MCPServer(BaseModel):
             "sourceCode": obj.get("sourceCode"),
             "publishedDate": obj.get("publishedDate"),
             "lastUpdated": obj.get("lastUpdated"),
-            "runtimeMetadata": MCPRuntimeMetadata.from_dict(obj["runtimeMetadata"]) if obj.get("runtimeMetadata") is not None else None
+            "runtimeMetadata": MCPRuntimeMetadata.from_dict(obj["runtimeMetadata"]) if obj.get("runtimeMetadata") is not None else None,
+            "serverJson": obj.get("serverJson")
         })
         return _obj
-
-
