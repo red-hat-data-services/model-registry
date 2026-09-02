@@ -117,6 +117,7 @@ gen-requirements-aipcc:
         --generate-hashes \
 		--index-url $(AIPCC_INDEX_URL) \
 		--python-version $(AIPCC_PYTHON_VERSION) \
+		--python-platform linux \
 		--emit-index-url \
 		-o requirements-aipcc.txt
 
