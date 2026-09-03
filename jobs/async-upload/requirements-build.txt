@@ -23,11 +23,13 @@ flit-core==3.12.0
     #   markdown-it-py
     #   mdurl
     #   mypy-extensions
-    #   packaging
-    #   pathspec
     #   rfc8785
     #   sigstore
     #   typing-extensions
+flit-core==4.0.2
+    # via
+    #   packaging
+    #   pathspec
     #   wheel
 hatch-fancy-pypi-readme==25.1.0
     # via
@@ -48,7 +50,7 @@ hatchling==1.27.0
     # via
     #   securesystemslib
     #   tuf
-hatchling==1.29.0
+hatchling==1.32.0
     # via
     #   annotated-types
     #   attrs
@@ -69,13 +71,14 @@ hatchling==1.29.0
     #   rh-model-signing
     #   typing-inspection
     #   urllib3
-maturin==1.13.1
+maturin==1.14.1
     # via
     #   blake3
     #   cryptography
     #   pydantic-core
     #   rfc3161-client
     #   rpds-py
+    #   uv-build
 mypy-extensions==1.1.0
     # via mypy
 mypy==1.15.0
@@ -86,26 +89,27 @@ packaging==25.0 ; python_version >= "3.11" and python_version < "4.0"
     #   setuptools-scm
     #   vcs-versioning
     #   wheel
-pathspec==1.0.4
+pathspec==1.1.1
     # via hatchling
 pkgconfig==1.6.0
     # via aiohttp
 pluggy==1.6.0
     # via hatchling
-poetry-core==2.3.2
+poetry-core==2.4.1
     # via
     #   aiohappyeyeballs
     #   model-registry
     #   olot
     #   pkgconfig
     #   rich
+    #   tomlkit
 pycparser==3.0 ; python_version >= "3.11" and python_version < "4.0" and platform_python_implementation != "PyPy" and implementation_name != "PyPy"
     # via cffi
 semantic-version==2.10.0
     # via setuptools-rust
-setuptools-rust==1.12.1
+setuptools-rust==1.13.0
     # via maturin
-setuptools-scm==10.0.5
+setuptools-scm==10.2.1
     # via
     #   charset-normalizer
     #   hatch-vcs
@@ -119,22 +123,23 @@ setuptools-scm==9.2.2
     # via
     #   hatch-vcs
     #   urllib3
-trove-classifiers==2026.1.14.14
+tomlkit==0.15.1
     # via hatchling
-types-psutil==7.2.2.20260408
+trove-classifiers==2026.6.1.19
+    # via hatchling
+types-psutil==7.2.2.20260518
     # via mypy
-types-setuptools==82.0.0.20260408
+types-setuptools==84.0.0.20260812
     # via mypy
 typing-extensions==4.15.0 ; python_version >= "3.11" and python_version < "4.0"
     # via
     #   mypy
     #   setuptools-scm
-# uv-build removed: sigstore-models installs from a pure-Python wheel so its
-# build backend is never invoked; keeping uv-build here breaks Cachi2 prefetch
-# because its sdist ships a stale Cargo.lock (cargo vendor --locked fails).
-vcs-versioning==1.1.1
+uv-build==0.9.30
+    # via sigstore-models
+vcs-versioning==2.2.2
     # via setuptools-scm
-wheel==0.46.3
+wheel==0.48.0
     # via
     #   nest-asyncio2
     #   pycparser
@@ -143,7 +148,7 @@ wheel==0.46.3
     #   tqdm
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==82.0.1
+setuptools==84.0.0
     # via
     #   aiohttp
     #   aiosignal
