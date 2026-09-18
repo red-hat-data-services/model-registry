@@ -208,7 +208,7 @@ const CredentialsSection: React.FC<CredentialsSectionProps> = ({
         </ThemeAwareFormGroupWrapper>
         {validationError && (
           <Alert isInline variant="danger" title={ERROR_MESSAGES.VALIDATION_FAILED}>
-            {validationError.message}
+            {ERROR_MESSAGES.VALIDATION_FAILED_BODY}
           </Alert>
         )}
         {isValidationSuccess && !isTokenLocked && (
