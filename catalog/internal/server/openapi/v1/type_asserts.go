@@ -561,10 +561,10 @@ func AssertCatalogSourcePreviewResponseAllOfSummaryConstraints(obj model.Catalog
 // AssertCatalogSourcePreviewResponseAllOfSummaryRequired checks if the required fields are not zero-ed
 func AssertCatalogSourcePreviewResponseAllOfSummaryRequired(obj model.CatalogSourcePreviewResponseAllOfSummary) error {
 	elements := map[string]interface{}{
-		"totalModels":    obj.TotalModels,
-		"includedModels": obj.IncludedModels,
-		"excludedModels": obj.ExcludedModels,
-		"hasGatedModels": obj.HasGatedModels,
+		"totalModels":                obj.TotalModels,
+		"includedModels":             obj.IncludedModels,
+		"excludedModels":             obj.ExcludedModels,
+		"hasGatedAccessDeniedModels": obj.HasGatedAccessDeniedModels,
 	}
 	for name, el := range elements {
 		if isZero := IsZeroValue(el); isZero {
