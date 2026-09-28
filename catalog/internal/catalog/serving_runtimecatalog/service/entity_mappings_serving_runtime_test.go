@@ -5,6 +5,7 @@ import (
 
 	"github.com/kubeflow/hub/internal/platform/db/filter"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var expectedServingRuntimeProperties = map[string]filter.PropertyDefinition{
@@ -46,4 +47,29 @@ func TestServingRuntimeEntityMappings(t *testing.T) {
 	assert.Equal(t, filter.Custom, got.Location)
 
 	assert.False(t, mappings.IsChildEntity(""))
+}
+
+func TestServingRuntimeEqualityExpansion(t *testing.T) {
+	mappings := newServingRuntimeEntityMappings()
+	expander, ok := mappings.(filter.EqualityExpander)
+	require.True(t, ok, "serving runtime mappings must implement EqualityExpander")
+
+	// Unqualified name expands to also match the stored "<sourceID>:name" form.
+	likeArg, use := expander.GetEqualityExpansion("", "name", "vllm")
+	assert.True(t, use)
+	assert.Equal(t, "%:vllm", likeArg)
+
+	// Already-qualified name is matched literally, no expansion.
+	_, use = expander.GetEqualityExpansion("", "name", "first:vllm")
+	assert.False(t, use)
+
+	// externalId is stored unqualified, so it must not be expanded.
+	_, use = expander.GetEqualityExpansion("", "externalId", "my-ext-id")
+	assert.False(t, use)
+
+	// Empty value and unrelated properties are not expanded.
+	_, use = expander.GetEqualityExpansion("", "name", "")
+	assert.False(t, use)
+	_, use = expander.GetEqualityExpansion("", "description", "foo")
+	assert.False(t, use)
 }

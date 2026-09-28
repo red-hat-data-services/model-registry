@@ -1,6 +1,10 @@
 package service
 
-import "github.com/kubeflow/hub/internal/platform/db/filter"
+import (
+	"strings"
+
+	"github.com/kubeflow/hub/internal/platform/db/filter"
+)
 
 type servingRuntimeEntityMappings struct{}
 
@@ -27,6 +31,25 @@ func (m *servingRuntimeEntityMappings) GetPropertyDefinitionForRestEntity(_ filt
 
 func (m *servingRuntimeEntityMappings) IsChildEntity(_ filter.RestEntityType) bool {
 	return false
+}
+
+// GetEqualityExpansion lets an unqualified name filter match the stored name.
+// The entity name is stored qualified as "<sourceID>:<name>" (see loader.go),
+// while the API exposes the unqualified name, so `filterQuery=name = 'vllm'`
+// must also match a stored "<sourceID>:vllm". externalId is stored unqualified,
+// so it is not expanded here.
+func (m *servingRuntimeEntityMappings) GetEqualityExpansion(_ filter.RestEntityType, propertyName string, value any) (likeArg any, useExpansion bool) {
+	strVal, ok := value.(string)
+	if !ok || strVal == "" {
+		return nil, false
+	}
+	if propertyName == "name" {
+		if strings.Contains(strVal, ":") {
+			return nil, false // already qualified; match literally
+		}
+		return "%:" + escapeLike(strVal), true
+	}
+	return nil, false
 }
 
 var servingRuntimeProperties = map[string]filter.PropertyDefinition{
