@@ -42,7 +42,7 @@ type ServingRuntime struct {
 	Provider *string `json:"provider,omitempty"`
 	// Full Markdown documentation for this runtime.
 	Readme *string `json:"readme,omitempty"`
-	// Runtime logo. A data URL is recommended; a plain http(s) URL is also accepted (served via the /logo endpoint).
+	// Runtime logo. A data URL is recommended; a plain http(s) URL is also accepted.
 	Logo *string `json:"logo,omitempty"`
 	// Categorization tags.
 	Tags []string `json:"tags,omitempty"`

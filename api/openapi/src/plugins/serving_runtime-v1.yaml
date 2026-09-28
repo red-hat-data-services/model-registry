@@ -160,7 +160,7 @@ components:
               type: string
               description: >-
                 Runtime logo. A data URL is recommended; a plain http(s) URL is
-                also accepted (served via the /logo endpoint).
+                also accepted.
             tags:
               type: array
               description: Categorization tags.
