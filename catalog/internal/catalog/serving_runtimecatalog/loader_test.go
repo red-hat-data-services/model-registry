@@ -724,3 +724,17 @@ func TestRemoveOrphanedVersionsPaginatesAcrossPages(t *testing.T) {
 
 	assert.Len(t, runtimeVersions(t, services, *runtime.GetID()), total, "no valid versions should have been removed")
 }
+
+func TestServingRuntimeLoaderRejectsColonInSourceID(t *testing.T) {
+	_, services := setupServingRuntimeLoader(t)
+	dir := t.TempDir()
+	dataPath := filepath.Join(dir, "runtimes.yaml")
+	configPath := filepath.Join(dir, "sources.yaml")
+	writeRuntimeFile(t, dataPath, "serving_runtimes:\n  - name: vllm\n    versions: [{version: '1', image: example:v1}]\n")
+	writeRuntimeFile(t, configPath, "serving_runtime_catalogs:\n  - {id: 'rh:prod', type: yaml, properties: {yamlCatalogPath: runtimes.yaml}}\n")
+	state := basecatalog.NewBaseLoader([]string{configPath})
+	loader := NewServingRuntimeLoader(services, state)
+	err := loader.ParseAllConfigs()
+	require.Error(t, err, "a source id containing ':' must be rejected, since stored names are qualified as sourceID:name")
+	assert.Contains(t, err.Error(), "rh:prod")
+}

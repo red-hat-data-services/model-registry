@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -397,6 +398,9 @@ func (l *ServingRuntimeLoader) updateSources(path string, config *basecatalog.So
 		glog.Infof("reading serving_runtime catalog config type %s...", source.Type)
 		if source.GetId() == "" {
 			return fmt.Errorf("invalid serving_runtime source: missing id")
+		}
+		if strings.Contains(source.GetId(), ":") {
+			return fmt.Errorf("invalid serving_runtime source: id %q must not contain ':'", source.GetId())
 		}
 		if _, exists := sources[source.GetId()]; exists {
 			return fmt.Errorf("invalid serving_runtime source: duplicate id %s", source.GetId())
