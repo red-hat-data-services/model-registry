@@ -950,6 +950,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/ServingRuntimeResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -973,6 +975,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/ServingRuntimeVersionListResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
