@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -euo pipefail
 
 OPENAPI_GENERATOR=${OPENAPI_GENERATOR:-openapi-generator-cli}
 
@@ -8,7 +8,7 @@ PROJECT_ROOT=$(realpath "$(dirname "$0")/../../..")
 REPO_ROOT=$(realpath "$PROJECT_ROOT/..")
 
 VERSIONS=("v1")
-if [[ -n "$1" ]]; then
+if [[ -n "${1:-}" ]]; then
     VERSIONS=("$1")
 fi
 
@@ -24,7 +24,7 @@ for filepath in filepaths:
 }
 
 TMPFILES=()
-trap 'rm -rf "${TMPFILES[@]}"' EXIT
+trap 'rm -rf "${TMPFILES[@]+"${TMPFILES[@]}"}"' EXIT
 
 for VER in "${VERSIONS[@]}"; do
     echo "Generating serving_runtime plugin server stubs ($VER)"
@@ -52,10 +52,15 @@ for VER in "${VERSIONS[@]}"; do
     cp "$GENDIR/api.go" "$DST/api_serving_runtime.go"
 
     # Copy shared infrastructure
-    cp "$GENDIR"/impl.go "$GENDIR"/error.go "$GENDIR"/helpers.go "$GENDIR"/routers.go "$GENDIR"/logger.go "$DST/" 2>/dev/null || true
+    cp "$GENDIR"/impl.go "$GENDIR"/error.go "$GENDIR"/helpers.go "$GENDIR"/routers.go "$GENDIR"/logger.go "$DST/"
 
     # Copy model type files — needed by gen_type_asserts.sh
-    cp "$GENDIR"/model_*.go "$DST/" 2>/dev/null || true
+    shopt -s nullglob
+    models=("$GENDIR"/model_*.go)
+    shopt -u nullglob
+    if ((${#models[@]})); then
+        cp "${models[@]}" "$DST/"
+    fi
 
     "$REPO_ROOT/bin/goimports" -w "$DST/api_serving_runtime_catalog_service.go" "$DST/api_serving_runtime.go"
 
