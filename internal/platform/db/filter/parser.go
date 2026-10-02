@@ -89,7 +89,7 @@ type PropertyRef struct {
 	EscapedName string   `@EscapedIdent`
 	Name        string   `| @Ident`
 	Path        []string `("." @Ident)*`
-	Type        string   `("." @("string_value" | "double_value" | "int_value" | "bool_value"))?`
+	Type        string   `("." @("string_value" | "double_value" | "int_value" | "bool_value" | "array_value"))?`
 }
 
 //nolint:govet
