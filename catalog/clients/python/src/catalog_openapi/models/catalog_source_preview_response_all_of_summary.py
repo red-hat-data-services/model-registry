@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 from typing import Any, ClassVar
 
-from pydantic import BaseModel, ConfigDict, Field, StrictInt
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt
 from typing_extensions import Self
 
 
@@ -27,7 +27,8 @@ class CatalogSourcePreviewResponseAllOfSummary(BaseModel):
     total_models: StrictInt = Field(description="Total number of models evaluated", alias="totalModels")
     included_models: StrictInt = Field(description="Number of models that would be included", alias="includedModels")
     excluded_models: StrictInt = Field(description="Number of models that would be excluded", alias="excludedModels")
-    __properties: ClassVar[list[str]] = ["totalModels", "includedModels", "excludedModels"]
+    has_gated_access_denied_models: StrictBool = Field(description="Whether any evaluated model is a gated Hugging Face model without access (`hfAccessType` gated_auto/gated_manual and `hfGatedAccessGranted` is false or unset), including models outside the current page.", alias="hasGatedAccessDeniedModels")
+    __properties: ClassVar[list[str]] = ["totalModels", "includedModels", "excludedModels", "hasGatedAccessDeniedModels"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -82,8 +83,7 @@ class CatalogSourcePreviewResponseAllOfSummary(BaseModel):
         _obj = cls.model_validate({
             "totalModels": obj.get("totalModels"),
             "includedModels": obj.get("includedModels"),
-            "excludedModels": obj.get("excludedModels")
+            "excludedModels": obj.get("excludedModels"),
+            "hasGatedAccessDeniedModels": obj.get("hasGatedAccessDeniedModels")
         })
         return _obj
-
-
