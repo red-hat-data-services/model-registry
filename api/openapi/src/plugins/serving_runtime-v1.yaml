@@ -133,6 +133,78 @@ paths:
         in: path
         required: true
 
+  /api/serving_runtime_catalog/v1/serving_runtimes/{id}/logo:
+    description: >-
+      The REST endpoint/path used to fetch the logo image for a `ServingRuntime`.
+    get:
+      # This operation is served by a custom handler because it returns raw
+      # image bytes or a redirect rather than a JSON response.
+      x-internal: true
+      summary: Get the logo image for a `ServingRuntime`.
+      description: >-
+        Returns the runtime's logo. Inline data URLs are decoded and served as
+        an image; plain http(s) URLs redirect the client to the external logo.
+      tags:
+        - ServingRuntimeCatalogService
+      parameters:
+        - name: id
+          description: The unique identifier of the `ServingRuntime`.
+          schema:
+            type: string
+          in: path
+          required: true
+      responses:
+        "200":
+          description: The serving runtime logo image.
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+            image/gif:
+              schema:
+                type: string
+                format: binary
+            image/webp:
+              schema:
+                type: string
+                format: binary
+            image/svg+xml:
+              schema:
+                type: string
+                format: binary
+            image/x-icon:
+              schema:
+                type: string
+                format: binary
+            image/vnd.microsoft.icon:
+              schema:
+                type: string
+                format: binary
+        "302":
+          description: Redirect to a plain http(s) logo URL.
+          headers:
+            Location:
+              description: The external logo URL.
+              schema:
+                type: string
+                format: uri
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "413":
+          description: The stored logo exceeds the size limit.
+        "415":
+          description: The stored logo has an unsupported media type.
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+      operationId: getServingRuntimeLogo
+
 # Parameters (pageSize, orderBy, filterQuery, sortOrder, nextPageToken) and shared
 # responses (BadRequest, FilterOptionsResponse, etc.) are provided by lib/common.yaml
 # and catalog-v1.yaml during spec assembly. Only plugin-specific schemas and responses
@@ -164,7 +236,7 @@ components:
               type: string
               description: >-
                 Runtime logo. A data URL is recommended; a plain http(s) URL is
-                also accepted.
+                also accepted (served via the /logo endpoint).
             tags:
               type: array
               description: Categorization tags.

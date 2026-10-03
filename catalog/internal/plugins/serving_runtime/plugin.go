@@ -118,6 +118,7 @@ func (p *Plugin) RegisterRoutes(router chi.Router) error {
 	for _, route := range v1Ctrl.OrderedRoutes() {
 		router.Method(route.Method, route.Pattern, route.HandlerFunc)
 	}
+	router.Get("/api/serving_runtime_catalog/v1/serving_runtimes/{id}/logo", LogoHandler(provider))
 
 	return nil
 }

@@ -29,10 +29,9 @@ class CatalogAssetType(str, Enum):
     MCP_SERVERS = "mcp_servers"
     AGENTS = "agents"
     SKILLS = "skills"
+    SERVING_RUNTIMES = "serving_runtimes"
 
     @classmethod
     def from_json(cls, json_str: str) -> Self:
         """Create an instance of CatalogAssetType from a JSON string"""
         return cls(json.loads(json_str))
-
-
