@@ -316,7 +316,8 @@ func (qb *QueryBuilder) buildPropertyReference(expr *FilterExpression) *Property
 	var explicitType string
 	if parts := strings.Split(propertyName, "."); len(parts) >= 2 {
 		lastPart := parts[len(parts)-1]
-		if lastPart == "string_value" || lastPart == "double_value" || lastPart == "int_value" || lastPart == "bool_value" {
+		switch lastPart {
+		case StringValueType, DoubleValueType, IntValueType, BoolValueType, ArrayValueType:
 			propertyName = strings.Join(parts[:len(parts)-1], ".")
 			explicitType = lastPart
 		}
@@ -571,6 +572,9 @@ func (qb *QueryBuilder) buildPropertyTableConditionString(propRef *PropertyRefer
 		intColumn := fmt.Sprintf("%s.int_value", propertyTable)
 		doubleColumn := fmt.Sprintf("%s.double_value", propertyTable)
 		condition = qb.buildDualColumnCondition(intColumn, doubleColumn, operator, value)
+	} else if valueType == ArrayValueType && qb.db.Name() == "postgres" {
+		valueColumn := fmt.Sprintf("%s.%s", propertyTable, StringValueType)
+		condition = qb.buildJSONOperatorCondition(valueColumn, operator, value)
 	} else {
 		var valueColumn string
 		if valueType == ArrayValueType {
@@ -581,7 +585,7 @@ func (qb *QueryBuilder) buildPropertyTableConditionString(propRef *PropertyRefer
 		condition = qb.buildOperatorCondition(valueColumn, operator, value)
 	}
 
-	subquery := fmt.Sprintf("EXISTS (SELECT 1 FROM %s WHERE %s.%s = %s.id AND %s.name = ? AND %s)",
+	subquery := fmt.Sprintf("EXISTS (SELECT 1 FROM %s WHERE %s.%s = %s.id AND %s.name = ? AND (%s))",
 		propertyTable, propertyTable, joinColumn, qb.tablePrefix, propertyTable, condition.condition)
 
 	args := []any{propRef.Name}

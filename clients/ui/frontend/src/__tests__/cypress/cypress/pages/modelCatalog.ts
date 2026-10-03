@@ -448,7 +448,7 @@ class ModelCatalog {
   }
 
   findContainerSizeFilter() {
-    return cy.findByTestId('container-size-filter');
+    return cy.findByTestId('container-image-size-filter');
   }
 
   // Cold start latency filter helpers
@@ -482,6 +482,18 @@ class ModelCatalog {
 
   selectSortOption(testId: string) {
     this.findSortDropdown().click();
+    cy.findByTestId(testId).click();
+    return this;
+  }
+
+  selectAnySortOption(testId: string) {
+    cy.get('body').then(($body) => {
+      if ($body.find('[data-testid="model-catalog-sort-dropdown"]').length) {
+        this.findSortDropdown().click();
+      } else {
+        this.findCategorySortDropdown().click();
+      }
+    });
     cy.findByTestId(testId).click();
     return this;
   }
