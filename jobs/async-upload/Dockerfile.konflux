@@ -10,6 +10,8 @@ USER 0
 
 ARG TARGETARCH
 
+RUN python -m pip uninstall -y uv  #uv fails FIPS on s390x
+
 # Install skopeo for Push/Pull of container images to integrate with Model Registry py client and Olot.
 RUN dnf install -y skopeo  && \
     dnf clean all
