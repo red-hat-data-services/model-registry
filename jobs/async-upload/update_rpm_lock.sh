@@ -12,7 +12,7 @@ ACTIVATION_KEY="$1"
 ORG_ID="$2"
 
 podman run --rm -v ${PWD}:/work -w /work -i \
--v ${XDG_RUNTIME_DIR}/containers/auth.json:/run/containers/0/auth.json:ro \
+-v ${XDG_RUNTIME_DIR}/containers/auth.json:/run/containers/0/auth.json:ro,z \
 registry.access.redhat.com/ubi9/ubi:9.6 /bin/bash <<EOF
     set -e
     subscription-manager config --rhsm.manage_repos=0

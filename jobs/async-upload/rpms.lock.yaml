@@ -11,20 +11,20 @@ arches:
     name: containers-common
     evr: 2:1-117.el9_6
     sourcerpm: containers-common-1-117.el9_6.src.rpm
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/aarch64/appstream/os/Packages/c/criu-3.19-1.2.el9_6.aarch64.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/aarch64/appstream/os/Packages/c/criu-3.19-1.3.el9_6.aarch64.rpm
     repoid: rhel-9-for-aarch64-appstream-eus-rpms
-    size: 555563
-    checksum: sha256:a5c87a7ba8b66f13633cb1634f1678fae4acf5fe16027414117153da8a6c6ed4
+    size: 553589
+    checksum: sha256:88722d34eb28634a02de398d1de06a9bf5a33d2828d742903cceaca80c965b68
     name: criu
-    evr: 3.19-1.2.el9_6
-    sourcerpm: criu-3.19-1.2.el9_6.src.rpm
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/aarch64/appstream/os/Packages/c/criu-libs-3.19-1.2.el9_6.aarch64.rpm
+    evr: 3.19-1.3.el9_6
+    sourcerpm: criu-3.19-1.3.el9_6.src.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/aarch64/appstream/os/Packages/c/criu-libs-3.19-1.3.el9_6.aarch64.rpm
     repoid: rhel-9-for-aarch64-appstream-eus-rpms
-    size: 31089
-    checksum: sha256:d4aff59bbd475551f6bb3f9976d77a06d6098c52564dd341e9c7b03d45e24ea9
+    size: 29987
+    checksum: sha256:cc3d2bcf501d5bbeaabc46f7d5b5486345fd6378169820c4ef1bff34e33b32da
     name: criu-libs
-    evr: 3.19-1.2.el9_6
-    sourcerpm: criu-3.19-1.2.el9_6.src.rpm
+    evr: 3.19-1.3.el9_6
+    sourcerpm: criu-3.19-1.3.el9_6.src.rpm
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/aarch64/appstream/os/Packages/c/crun-1.27-1.el9_6.aarch64.rpm
     repoid: rhel-9-for-aarch64-appstream-eus-rpms
     size: 245064
@@ -67,13 +67,13 @@ arches:
     name: libslirp
     evr: 4.4.0-8.el9
     sourcerpm: libslirp-4.4.0-8.el9.src.rpm
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/aarch64/appstream/os/Packages/s/skopeo-1.18.1-5.el9_6.1.aarch64.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/aarch64/appstream/os/Packages/s/skopeo-1.18.1-6.el9_6.1.aarch64.rpm
     repoid: rhel-9-for-aarch64-appstream-eus-rpms
-    size: 8844438
-    checksum: sha256:b2d58cd41bb5a5353c9b37db78f89fca990ac1189a2e7aa38dec89ab20b4bd93
+    size: 8992675
+    checksum: sha256:76f9882bba6e3ad859e0956e65a8a0f7a300f1db3c88f6ac9e4770bd6148f48a
     name: skopeo
-    evr: 2:1.18.1-5.el9_6.1
-    sourcerpm: skopeo-1.18.1-5.el9_6.1.src.rpm
+    evr: 2:1.18.1-6.el9_6.1
+    sourcerpm: skopeo-1.18.1-6.el9_6.1.src.rpm
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/aarch64/appstream/os/Packages/s/slirp4netns-1.3.2-1.el9.aarch64.rpm
     repoid: rhel-9-for-aarch64-appstream-eus-rpms
     size: 50394
@@ -123,12 +123,12 @@ arches:
     checksum: sha256:3ae3f5c20849053dcd2d8dfc378f1687f63c19280045df9af39071d83d329834
     name: containers-common
     evr: 2:1-117.el9_6
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/aarch64/appstream/source/SRPMS/Packages/c/criu-3.19-1.2.el9_6.src.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/aarch64/appstream/source/SRPMS/Packages/c/criu-3.19-1.3.el9_6.src.rpm
     repoid: rhel-9-for-aarch64-appstream-eus-source-rpms
-    size: 1397633
-    checksum: sha256:b055915dd2fd04c16c79a36775e1647f7c4f020cd341e94cda3a59898c3d6502
+    size: 1405660
+    checksum: sha256:7f5d87cfbed9ccd8812668575be6fa928c91566ce93f2ce5bd759c70af011363
     name: criu
-    evr: 3.19-1.2.el9_6
+    evr: 3.19-1.3.el9_6
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/aarch64/appstream/source/SRPMS/Packages/c/crun-1.27-1.el9_6.src.rpm
     repoid: rhel-9-for-aarch64-appstream-eus-source-rpms
     size: 901530
@@ -153,12 +153,12 @@ arches:
     checksum: sha256:5e740382ebf1511fc7c4fa0c1db0bc72fad624329ff9e359cea75cccbed503e4
     name: libslirp
     evr: 4.4.0-8.el9
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/aarch64/appstream/source/SRPMS/Packages/s/skopeo-1.18.1-5.el9_6.1.src.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/aarch64/appstream/source/SRPMS/Packages/s/skopeo-1.18.1-6.el9_6.1.src.rpm
     repoid: rhel-9-for-aarch64-appstream-eus-source-rpms
-    size: 10656371
-    checksum: sha256:5f509be81d46bb8499548a296c551fa59d61edd69986b40eaf9e5cb835513bec
+    size: 10656578
+    checksum: sha256:f098606996924059355806d84ab6c95d25368b9b4f09b6c749a2e4b3da41177b
     name: skopeo
-    evr: 2:1.18.1-5.el9_6.1
+    evr: 2:1.18.1-6.el9_6.1
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/aarch64/appstream/source/SRPMS/Packages/s/slirp4netns-1.3.2-1.el9.src.rpm
     repoid: rhel-9-for-aarch64-appstream-eus-source-rpms
     size: 76240
@@ -205,20 +205,20 @@ arches:
     name: containers-common
     evr: 2:1-117.el9_6
     sourcerpm: containers-common-1-117.el9_6.src.rpm
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/ppc64le/appstream/os/Packages/c/criu-3.19-1.2.el9_6.ppc64le.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/ppc64le/appstream/os/Packages/c/criu-3.19-1.3.el9_6.ppc64le.rpm
     repoid: rhel-9-for-ppc64le-appstream-eus-rpms
-    size: 603184
-    checksum: sha256:626108bffa2f5d7748b58767533e4155bc901383b5da5ef7c8fabcd23afc97cd
+    size: 602037
+    checksum: sha256:c0801e39f84eb7810864a8c9a484c90ebe8101262269cdfcf91018a97fa7239b
     name: criu
-    evr: 3.19-1.2.el9_6
-    sourcerpm: criu-3.19-1.2.el9_6.src.rpm
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/ppc64le/appstream/os/Packages/c/criu-libs-3.19-1.2.el9_6.ppc64le.rpm
+    evr: 3.19-1.3.el9_6
+    sourcerpm: criu-3.19-1.3.el9_6.src.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/ppc64le/appstream/os/Packages/c/criu-libs-3.19-1.3.el9_6.ppc64le.rpm
     repoid: rhel-9-for-ppc64le-appstream-eus-rpms
-    size: 33648
-    checksum: sha256:c6e29402fb8e5e5fb3b2ed205e94e11e16f342d4763c5619bddfc737f63cfe81
+    size: 32815
+    checksum: sha256:aefb872dd1aba72382a6c64fe4d490f67b141857ca0bf84b6e4c9984ec8e1900
     name: criu-libs
-    evr: 3.19-1.2.el9_6
-    sourcerpm: criu-3.19-1.2.el9_6.src.rpm
+    evr: 3.19-1.3.el9_6
+    sourcerpm: criu-3.19-1.3.el9_6.src.rpm
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/ppc64le/appstream/os/Packages/c/crun-1.27-1.el9_6.ppc64le.rpm
     repoid: rhel-9-for-ppc64le-appstream-eus-rpms
     size: 286067
@@ -261,13 +261,13 @@ arches:
     name: libslirp
     evr: 4.4.0-8.el9
     sourcerpm: libslirp-4.4.0-8.el9.src.rpm
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/ppc64le/appstream/os/Packages/s/skopeo-1.18.1-5.el9_6.1.ppc64le.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/ppc64le/appstream/os/Packages/s/skopeo-1.18.1-6.el9_6.1.ppc64le.rpm
     repoid: rhel-9-for-ppc64le-appstream-eus-rpms
-    size: 9041037
-    checksum: sha256:e86a7506580f084f813cb614b97baad92ad5c89cd4aaaa2c8cf4f089db573807
+    size: 9158905
+    checksum: sha256:8d76919d3a0255d757445820d5ea34fbab7fbd267268100b98c03a58cc95a77a
     name: skopeo
-    evr: 2:1.18.1-5.el9_6.1
-    sourcerpm: skopeo-1.18.1-5.el9_6.1.src.rpm
+    evr: 2:1.18.1-6.el9_6.1
+    sourcerpm: skopeo-1.18.1-6.el9_6.1.src.rpm
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/ppc64le/appstream/os/Packages/s/slirp4netns-1.3.2-1.el9.ppc64le.rpm
     repoid: rhel-9-for-ppc64le-appstream-eus-rpms
     size: 52666
@@ -317,12 +317,12 @@ arches:
     checksum: sha256:3ae3f5c20849053dcd2d8dfc378f1687f63c19280045df9af39071d83d329834
     name: containers-common
     evr: 2:1-117.el9_6
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/ppc64le/appstream/source/SRPMS/Packages/c/criu-3.19-1.2.el9_6.src.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/ppc64le/appstream/source/SRPMS/Packages/c/criu-3.19-1.3.el9_6.src.rpm
     repoid: rhel-9-for-ppc64le-appstream-eus-source-rpms
-    size: 1397633
-    checksum: sha256:b055915dd2fd04c16c79a36775e1647f7c4f020cd341e94cda3a59898c3d6502
+    size: 1405660
+    checksum: sha256:7f5d87cfbed9ccd8812668575be6fa928c91566ce93f2ce5bd759c70af011363
     name: criu
-    evr: 3.19-1.2.el9_6
+    evr: 3.19-1.3.el9_6
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/ppc64le/appstream/source/SRPMS/Packages/c/crun-1.27-1.el9_6.src.rpm
     repoid: rhel-9-for-ppc64le-appstream-eus-source-rpms
     size: 901530
@@ -347,12 +347,12 @@ arches:
     checksum: sha256:5e740382ebf1511fc7c4fa0c1db0bc72fad624329ff9e359cea75cccbed503e4
     name: libslirp
     evr: 4.4.0-8.el9
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/ppc64le/appstream/source/SRPMS/Packages/s/skopeo-1.18.1-5.el9_6.1.src.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/ppc64le/appstream/source/SRPMS/Packages/s/skopeo-1.18.1-6.el9_6.1.src.rpm
     repoid: rhel-9-for-ppc64le-appstream-eus-source-rpms
-    size: 10656371
-    checksum: sha256:5f509be81d46bb8499548a296c551fa59d61edd69986b40eaf9e5cb835513bec
+    size: 10656578
+    checksum: sha256:f098606996924059355806d84ab6c95d25368b9b4f09b6c749a2e4b3da41177b
     name: skopeo
-    evr: 2:1.18.1-5.el9_6.1
+    evr: 2:1.18.1-6.el9_6.1
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/ppc64le/appstream/source/SRPMS/Packages/s/slirp4netns-1.3.2-1.el9.src.rpm
     repoid: rhel-9-for-ppc64le-appstream-eus-source-rpms
     size: 76240
@@ -399,20 +399,20 @@ arches:
     name: containers-common
     evr: 2:1-117.el9_6
     sourcerpm: containers-common-1-117.el9_6.src.rpm
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/s390x/appstream/os/Packages/c/criu-3.19-1.2.el9_6.s390x.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/s390x/appstream/os/Packages/c/criu-3.19-1.3.el9_6.s390x.rpm
     repoid: rhel-9-for-s390x-appstream-eus-rpms
-    size: 537764
-    checksum: sha256:b1c28211c63b7b560dfb28fec511537a36213ad915e170414e03817a466945b5
+    size: 536366
+    checksum: sha256:14c68cf89b926aca70a91a4d516d3fbdbeece8606b4c8fff7e925c80a7df9873
     name: criu
-    evr: 3.19-1.2.el9_6
-    sourcerpm: criu-3.19-1.2.el9_6.src.rpm
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/s390x/appstream/os/Packages/c/criu-libs-3.19-1.2.el9_6.s390x.rpm
+    evr: 3.19-1.3.el9_6
+    sourcerpm: criu-3.19-1.3.el9_6.src.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/s390x/appstream/os/Packages/c/criu-libs-3.19-1.3.el9_6.s390x.rpm
     repoid: rhel-9-for-s390x-appstream-eus-rpms
-    size: 31277
-    checksum: sha256:6182ea4d02e9b0336473785ca8cb62182e2a7fa3db734345363fbc26f4fc6fef
+    size: 30152
+    checksum: sha256:bad647440341a85f183542bfc4957c8c7631edc0b50fe984a01ded19f7fd4a73
     name: criu-libs
-    evr: 3.19-1.2.el9_6
-    sourcerpm: criu-3.19-1.2.el9_6.src.rpm
+    evr: 3.19-1.3.el9_6
+    sourcerpm: criu-3.19-1.3.el9_6.src.rpm
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/s390x/appstream/os/Packages/c/crun-1.27-1.el9_6.s390x.rpm
     repoid: rhel-9-for-s390x-appstream-eus-rpms
     size: 242342
@@ -455,13 +455,13 @@ arches:
     name: libslirp
     evr: 4.4.0-8.el9
     sourcerpm: libslirp-4.4.0-8.el9.src.rpm
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/s390x/appstream/os/Packages/s/skopeo-1.18.1-5.el9_6.1.s390x.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/s390x/appstream/os/Packages/s/skopeo-1.18.1-6.el9_6.1.s390x.rpm
     repoid: rhel-9-for-s390x-appstream-eus-rpms
-    size: 9251309
-    checksum: sha256:adad0f1fe61eedf34b793823257085b6d23d8889b735b292e661e104f235cb45
+    size: 9481854
+    checksum: sha256:80e3d075d02bb9d1a56fbd48bede46159910764a00af3fbcf029fa05f393ea38
     name: skopeo
-    evr: 2:1.18.1-5.el9_6.1
-    sourcerpm: skopeo-1.18.1-5.el9_6.1.src.rpm
+    evr: 2:1.18.1-6.el9_6.1
+    sourcerpm: skopeo-1.18.1-6.el9_6.1.src.rpm
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/s390x/appstream/os/Packages/s/slirp4netns-1.3.2-1.el9.s390x.rpm
     repoid: rhel-9-for-s390x-appstream-eus-rpms
     size: 50223
@@ -511,12 +511,12 @@ arches:
     checksum: sha256:3ae3f5c20849053dcd2d8dfc378f1687f63c19280045df9af39071d83d329834
     name: containers-common
     evr: 2:1-117.el9_6
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/s390x/appstream/source/SRPMS/Packages/c/criu-3.19-1.2.el9_6.src.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/s390x/appstream/source/SRPMS/Packages/c/criu-3.19-1.3.el9_6.src.rpm
     repoid: rhel-9-for-s390x-appstream-eus-source-rpms
-    size: 1397633
-    checksum: sha256:b055915dd2fd04c16c79a36775e1647f7c4f020cd341e94cda3a59898c3d6502
+    size: 1405660
+    checksum: sha256:7f5d87cfbed9ccd8812668575be6fa928c91566ce93f2ce5bd759c70af011363
     name: criu
-    evr: 3.19-1.2.el9_6
+    evr: 3.19-1.3.el9_6
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/s390x/appstream/source/SRPMS/Packages/c/crun-1.27-1.el9_6.src.rpm
     repoid: rhel-9-for-s390x-appstream-eus-source-rpms
     size: 901530
@@ -541,12 +541,12 @@ arches:
     checksum: sha256:5e740382ebf1511fc7c4fa0c1db0bc72fad624329ff9e359cea75cccbed503e4
     name: libslirp
     evr: 4.4.0-8.el9
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/s390x/appstream/source/SRPMS/Packages/s/skopeo-1.18.1-5.el9_6.1.src.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/s390x/appstream/source/SRPMS/Packages/s/skopeo-1.18.1-6.el9_6.1.src.rpm
     repoid: rhel-9-for-s390x-appstream-eus-source-rpms
-    size: 10656371
-    checksum: sha256:5f509be81d46bb8499548a296c551fa59d61edd69986b40eaf9e5cb835513bec
+    size: 10656578
+    checksum: sha256:f098606996924059355806d84ab6c95d25368b9b4f09b6c749a2e4b3da41177b
     name: skopeo
-    evr: 2:1.18.1-5.el9_6.1
+    evr: 2:1.18.1-6.el9_6.1
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/s390x/appstream/source/SRPMS/Packages/s/slirp4netns-1.3.2-1.el9.src.rpm
     repoid: rhel-9-for-s390x-appstream-eus-source-rpms
     size: 76240
@@ -593,20 +593,20 @@ arches:
     name: containers-common
     evr: 2:1-117.el9_6
     sourcerpm: containers-common-1-117.el9_6.src.rpm
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/x86_64/appstream/os/Packages/c/criu-3.19-1.2.el9_6.x86_64.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/x86_64/appstream/os/Packages/c/criu-3.19-1.3.el9_6.x86_64.rpm
     repoid: rhel-9-for-x86_64-appstream-eus-rpms
-    size: 570685
-    checksum: sha256:fcc3972770f19de2ed8030983b30a624aa7a4f93f1f5b70238118ab980375456
+    size: 568833
+    checksum: sha256:01979e679ee08152c1b584738f3024519586cd84f7081e4fa6046c490af8e925
     name: criu
-    evr: 3.19-1.2.el9_6
-    sourcerpm: criu-3.19-1.2.el9_6.src.rpm
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/x86_64/appstream/os/Packages/c/criu-libs-3.19-1.2.el9_6.x86_64.rpm
+    evr: 3.19-1.3.el9_6
+    sourcerpm: criu-3.19-1.3.el9_6.src.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/x86_64/appstream/os/Packages/c/criu-libs-3.19-1.3.el9_6.x86_64.rpm
     repoid: rhel-9-for-x86_64-appstream-eus-rpms
-    size: 31924
-    checksum: sha256:98a67d3218d5961abaea63a4f7bdfc30ec461ec65bca2347e4d9ea067d7ce4e6
+    size: 30867
+    checksum: sha256:962abde282a6be97ba5ff6ecb36449283f01d34b4a9bace478bceaaca517a923
     name: criu-libs
-    evr: 3.19-1.2.el9_6
-    sourcerpm: criu-3.19-1.2.el9_6.src.rpm
+    evr: 3.19-1.3.el9_6
+    sourcerpm: criu-3.19-1.3.el9_6.src.rpm
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/x86_64/appstream/os/Packages/c/crun-1.27-1.el9_6.x86_64.rpm
     repoid: rhel-9-for-x86_64-appstream-eus-rpms
     size: 261140
@@ -649,13 +649,13 @@ arches:
     name: libslirp
     evr: 4.4.0-8.el9
     sourcerpm: libslirp-4.4.0-8.el9.src.rpm
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/x86_64/appstream/os/Packages/s/skopeo-1.18.1-5.el9_6.1.x86_64.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/x86_64/appstream/os/Packages/s/skopeo-1.18.1-6.el9_6.1.x86_64.rpm
     repoid: rhel-9-for-x86_64-appstream-eus-rpms
-    size: 9785972
-    checksum: sha256:07b1e185902de0affdb41d8ba9dbee84bae0916faae901ea783acb6c0063001b
+    size: 9973378
+    checksum: sha256:232d745aee4e922e5d4623b164d016043195a27b5d6a8db753e176dcc6d2c6e3
     name: skopeo
-    evr: 2:1.18.1-5.el9_6.1
-    sourcerpm: skopeo-1.18.1-5.el9_6.1.src.rpm
+    evr: 2:1.18.1-6.el9_6.1
+    sourcerpm: skopeo-1.18.1-6.el9_6.1.src.rpm
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/x86_64/appstream/os/Packages/s/slirp4netns-1.3.2-1.el9.x86_64.rpm
     repoid: rhel-9-for-x86_64-appstream-eus-rpms
     size: 50387
@@ -705,12 +705,12 @@ arches:
     checksum: sha256:3ae3f5c20849053dcd2d8dfc378f1687f63c19280045df9af39071d83d329834
     name: containers-common
     evr: 2:1-117.el9_6
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/x86_64/appstream/source/SRPMS/Packages/c/criu-3.19-1.2.el9_6.src.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/x86_64/appstream/source/SRPMS/Packages/c/criu-3.19-1.3.el9_6.src.rpm
     repoid: rhel-9-for-x86_64-appstream-eus-source-rpms
-    size: 1397633
-    checksum: sha256:b055915dd2fd04c16c79a36775e1647f7c4f020cd341e94cda3a59898c3d6502
+    size: 1405660
+    checksum: sha256:7f5d87cfbed9ccd8812668575be6fa928c91566ce93f2ce5bd759c70af011363
     name: criu
-    evr: 3.19-1.2.el9_6
+    evr: 3.19-1.3.el9_6
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/x86_64/appstream/source/SRPMS/Packages/c/crun-1.27-1.el9_6.src.rpm
     repoid: rhel-9-for-x86_64-appstream-eus-source-rpms
     size: 901530
@@ -735,12 +735,12 @@ arches:
     checksum: sha256:5e740382ebf1511fc7c4fa0c1db0bc72fad624329ff9e359cea75cccbed503e4
     name: libslirp
     evr: 4.4.0-8.el9
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/x86_64/appstream/source/SRPMS/Packages/s/skopeo-1.18.1-5.el9_6.1.src.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/x86_64/appstream/source/SRPMS/Packages/s/skopeo-1.18.1-6.el9_6.1.src.rpm
     repoid: rhel-9-for-x86_64-appstream-eus-source-rpms
-    size: 10656371
-    checksum: sha256:5f509be81d46bb8499548a296c551fa59d61edd69986b40eaf9e5cb835513bec
+    size: 10656578
+    checksum: sha256:f098606996924059355806d84ab6c95d25368b9b4f09b6c749a2e4b3da41177b
     name: skopeo
-    evr: 2:1.18.1-5.el9_6.1
+    evr: 2:1.18.1-6.el9_6.1
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/x86_64/appstream/source/SRPMS/Packages/s/slirp4netns-1.3.2-1.el9.src.rpm
     repoid: rhel-9-for-x86_64-appstream-eus-source-rpms
     size: 76240
