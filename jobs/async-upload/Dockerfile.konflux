@@ -2,13 +2,15 @@
 #  Asynchronous Model-Sync Job image for Kubeflow Model Registry (https://github.com/kubeflow/model-registry/issues/1108)
 ###############################################################################
 
-FROM registry.redhat.io/rhtas/cosign-rhel9@sha256:0bc571d1d9c188579dc5c404134144f660beb62f69f784b48230ff84b3881499 AS cosign
+FROM registry.redhat.io/rhtas/cosign-rhel9@sha256:4f8c62697922ca4ff0007502df1eb6ca3e4a7b695de32d0285582b59e5f9ed3d AS cosign
 
-FROM quay.io/aipcc/base-images/cpu:3.5@sha256:1459233907bdcfe4fdb4f9a8d39de861bacd868d7a1e5cee083ddd46f93c306d AS base
+FROM quay.io/aipcc/base-images/cpu:3.5@sha256:4d73530c0722e64e12138a4dffe51d27d77e1b5c8fb8c9dafe587a766a9aba03 AS base
 
 USER 0
 
 ARG TARGETARCH
+
+RUN python -m pip uninstall -y uv  #uv fails FIPS on s390x
 
 # Install skopeo for Push/Pull of container images to integrate with Model Registry py client and Olot.
 RUN dnf install -y skopeo  && \

@@ -113,8 +113,14 @@ AIPCC_PYTHON_VERSION ?= 3.12
 
 .PHONY: gen-requirements-aipcc
 gen-requirements-aipcc:
-	uv pip compile pyproject.toml \
-        --generate-hashes \
+	# hf-xet 1.6.0 has no AIPCC wheels for ppc64le or s390x.
+	printf '%s\n' \
+		'hf-xet==1.5.2 ; platform_machine == "ppc64le" or platform_machine == "s390x"' \
+		'hf-xet ; platform_machine != "ppc64le" and platform_machine != "s390x"' | \
+	uv pip compile pyproject.toml - \
+		--universal \
+		--generate-hashes \
+		--custom-compile-command 'make gen-requirements-aipcc' \
 		--index-url $(AIPCC_INDEX_URL) \
 		--python-version $(AIPCC_PYTHON_VERSION) \
 		--emit-index-url \
