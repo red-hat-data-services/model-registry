@@ -15,6 +15,9 @@ pydantic = ">=2.0.0,<3.0.0"
 # it breaks hermetic Cachi2 prefetch (cargo vendor on stale Cargo.lock).
 huggingface-hub = ">=0.29.3,<0.31.0"
 requests = "^2.33.0"
+# protobuf 7.34.0's native upb extension segfaults on s390x during signing imports.
+# Keep this pin in Poetry so exporting requirements cannot restore that version.
+protobuf = "7.35.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">=8.3.5,<10.0.0"
