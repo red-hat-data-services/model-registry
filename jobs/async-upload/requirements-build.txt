@@ -78,7 +78,6 @@ maturin==1.14.1
     #   pydantic-core
     #   rfc3161-client
     #   rpds-py
-    #   uv-build
 mypy-extensions==1.1.0
     # via mypy
 mypy==1.15.0
@@ -135,8 +134,9 @@ typing-extensions==4.15.0 ; python_version >= "3.11" and python_version < "4.0"
     # via
     #   mypy
     #   setuptools-scm
-uv-build==0.9.30
-    # via sigstore-models
+# Keep uv-build excluded after regenerating this file: hermetic_fixes.sh removes
+# sigstore-models' uv_build backend before installation. Its unused build backend
+# ships a stale Cargo.lock that breaks Hermeto prefetch (cargo vendor --locked).
 vcs-versioning==2.2.2
     # via setuptools-scm
 wheel==0.48.0
