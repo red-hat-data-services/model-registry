@@ -1,4 +1,4 @@
-# This file is for downstream, which requires `pip install "puccinialin==0.1.5"` 
+# This file is for downstream, which requires `pip install "puccinialin==0.1.5"`
 # merged with upstream/midstream dependencies.
 # All transitive dependencies are explicitly listed for disconnected builds.
 -r requirements.txt
@@ -20,7 +20,7 @@ configargparse==1.7.1 ; python_version >= "3.11" and python_version < "4.0"
 eval-type-backport==0.2.2 ; python_version >= "3.11" and python_version < "4.0"
 filelock==3.18.0 ; python_version >= "3.11" and python_version < "4.0"
 frozenlist==1.7.0 ; python_version >= "3.11" and python_version < "4.0"
-fsspec==2025.7.0 ; python_version >= "3.11" and python_version < "4.0"
+fsspec==2026.9.0 ; python_version >= "3.11" and python_version < "4.0"
 h11==0.16.0 ; python_version >= "3.11" and python_version < "4.0"
 httpcore==1.0.9 ; python_version >= "3.11" and python_version < "4.0"
 httpx==0.28.1 ; python_version >= "3.11" and python_version < "4.0"
