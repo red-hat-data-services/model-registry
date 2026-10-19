@@ -39,6 +39,10 @@ RUN if [ "$TARGETARCH" = "ppc64le" ] || [ "$TARGETARCH" = "s390x" ]; then \
     && echo "Installed packages:" \
     && python -m pip list
 
+# Remove uv/uvx build tools from final image — they bundle aws-lc crypto
+# which fails FIPS compliance scanning (not needed at runtime).
+RUN rm -f /opt/app-root/bin/uv /opt/app-root/bin/uvx
+
 # Copy application source
 COPY . .
 RUN ls -l /app
