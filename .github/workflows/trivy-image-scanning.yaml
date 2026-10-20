@@ -45,7 +45,7 @@ jobs:
           timeout: 30m0s
 
       - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@eb94de7c5cfc51dc10fff26d52210eb23a589b0e # v4
+        uses: github/codeql-action/upload-sarif@3db7caf9014b962f9392088c0fcaf53eeddf47db # v4
         if: always()
         with:
           sarif_file: 'trivy-results-${{ env.SANITIZED_IMAGE_NAME }}.sarif'
