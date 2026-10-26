@@ -1,7 +1,7 @@
 # Build arguments
 ARG SOURCE_CODE=.
 
-FROM registry.access.redhat.com/ubi9/go-toolset:1.26@sha256:edb9452603fa48e9882063f001ecd7d322add20f1564a4f05f38f6683be5ea94 as builder
+FROM registry.access.redhat.com/ubi9/go-toolset:1.26@sha256:c51f0f31cbaa7e91dede6013f636d54fe10dd7d581cfc4cda014ba9d62bcd779 as builder
 
 ## Build args to be used at this step
 ARG SOURCE_CODE
@@ -12,8 +12,6 @@ WORKDIR /workspace
 
 COPY go.mod go.mod
 COPY go.sum go.sum
-COPY go.work go.work
-COPY go.work.sum go.work.sum
 COPY pkg/openapi/go.mod pkg/openapi/go.mod
 COPY catalog/pkg/openapi/go.mod catalog/pkg/openapi/go.mod
 
@@ -24,7 +22,7 @@ COPY . .
  
 RUN CGO_ENABLED=1 GOOS=linux GOEXPERIMENT=strictfipsruntime go build -tags strictfipsruntime -a -o model-registry main.go
  
-FROM registry.access.redhat.com/ubi9/ubi-minimal@sha256:c4c285d42941ebb2bd4da878479008e1e4536bb599aad1dbe568f89de9053661
+FROM registry.access.redhat.com/ubi9/ubi-minimal@sha256:2d4c4551af6831dcd26bbf86108c4385de5183ec8fe6b5868f6f9640fe47f4ed
  
 WORKDIR /
  
