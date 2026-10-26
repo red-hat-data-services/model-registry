@@ -42,7 +42,6 @@ hatchling==1.32.4
     # via
     #   annotated-types
     #   attrs
-    #   colorama
     #   expandvars
     #   filelock
     #   fsspec
@@ -74,7 +73,7 @@ pdm-backend==2.4.6 ; python_version >= "3.11" and python_version < "4.0"
     #   typer
 pkgconfig==1.6.0
     # via aiohttp
-pluggy==1.6.0
+pluggy==1.7.0
     # via hatchling
 poetry-core==2.5.0
     # via
@@ -100,7 +99,7 @@ setuptools-scm==10.3.4
     #   urllib3
 setuptools-scm==7.1.0
     # via python-dateutil
-tomlkit==0.15.1
+tomlkit==0.15.2
     # via hatchling
 trove-classifiers==2026.9.21.13
     # via hatchling
@@ -118,13 +117,14 @@ wheel==0.48.0
 
 # The following packages are considered to be unsafe in a requirements file:
 setuptools==84.0.0
+    # via charset-normalizer
+setuptools==84.2.1
     # via
     #   aiohttp
     #   aiosignal
     #   anyio
     #   calver
     #   certifi
-    #   charset-normalizer
     #   eval-type-backport
     #   frozenlist
     #   maturin
