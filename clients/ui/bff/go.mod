@@ -1,6 +1,6 @@
 module github.com/kubeflow/model-registry/ui/bff
 
-go 1.26.0
+go 1.25.0
 
 require (
 	github.com/brianvoe/gofakeit/v7 v7.3.0
@@ -71,3 +71,5 @@ require (
 	sigs.k8s.io/structured-merge-diff/v6 v6.3.0 // indirect
 	sigs.k8s.io/yaml v1.6.0 // indirect
 )
+
+// snyk control test
