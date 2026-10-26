@@ -214,5 +214,3 @@ require (
 replace github.com/kubeflow/model-registry/pkg/openapi => ./pkg/openapi
 
 replace github.com/kubeflow/model-registry/catalog/pkg/openapi => ./catalog/pkg/openapi
-
-// snyk control test
