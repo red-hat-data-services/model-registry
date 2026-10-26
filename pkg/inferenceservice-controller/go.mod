@@ -9,11 +9,11 @@ require (
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.43.1
 	go.uber.org/zap v1.28.0
-	k8s.io/api v0.36.4
-	k8s.io/apimachinery v0.36.4
-	k8s.io/client-go v0.36.4
+	k8s.io/api v0.34.5
+	k8s.io/apimachinery v0.35.2
+	k8s.io/client-go v0.34.5
 	knative.dev/pkg v0.0.0-20260120122510-4a022ed9999a
-	sigs.k8s.io/controller-runtime v0.24.1
+	sigs.k8s.io/controller-runtime v0.22.5
 )
 
 require (
@@ -102,7 +102,7 @@ require (
 	gopkg.in/go-playground/validator.v9 v9.31.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
-	k8s.io/apiextensions-apiserver v0.36.4 // indirect
+	k8s.io/apiextensions-apiserver v0.34.3 // indirect
 	k8s.io/klog/v2 v2.140.0 // indirect
 	k8s.io/kube-openapi v0.0.0-20260821135717-be32def86098 // indirect
 	k8s.io/utils v0.0.0-20260707023825-cf1189d6abe3 // indirect
@@ -130,8 +130,10 @@ require (
 	github.com/go-openapi/swag/stringutils v0.29.1 // indirect
 	github.com/go-openapi/swag/typeutils v0.29.1 // indirect
 	github.com/go-openapi/swag/yamlutils v0.29.1 // indirect
+	github.com/gogo/protobuf v1.3.2 // indirect
+	github.com/google/btree v1.1.3 // indirect
 	github.com/google/uuid v1.6.0 // indirect
-	github.com/kedacore/keda/v2 v2.21.0 // indirect
+	github.com/kedacore/keda/v2 v2.18.3 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
