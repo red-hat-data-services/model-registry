@@ -19,6 +19,79 @@ docker push quay.io/<org>/model-registry-job-async-upload:<tag>
 # TODO: Run locally...
 ```
 
+## Updating Python dependencies
+
+Dependencies are declared in `pyproject.toml` and resolved in `poetry.lock`.
+The standard container installs from the generated `requirements.txt`; downstream
+Konflux builds also use `requirements-downstream.txt` and `requirements-build.txt`.
+
+Run the following from this directory (`cd jobs/async-upload` from the repository
+root). Use Poetry 2.x and Python 3.12 to match the container's Python version:
+
+```bash
+poetry env use python3.12
+
+# Update a package within its existing version constraints (requests is an example).
+poetry update requests --lock
+
+# Install the locked dependencies and regenerate requirements.txt.
+make install
+```
+
+To select a version outside the current constraint, first edit the package's
+constraint in `pyproject.toml`, then run `poetry update <package> --lock` and
+`make install`. Keep development dependencies in the `dev` group and integration
+test dependencies in the `integration` group. Preserve any required extras, such
+as `boto3` and `olot` on `model-registry`.
+
+The same update command works for transitive dependencies, for example
+`poetry update urllib3 --lock`. If another package's constraints prevent the
+desired version, update that package too. Omit the package name only when you
+intend to update all dependencies. See the [Poetry update documentation](https://python-poetry.org/docs/cli/#update)
+for details.
+
+`make install` installs the Poetry export plugin, installs dependencies, and
+exports the runtime requirements with the generated-file header. Do not edit
+`poetry.lock` or `requirements.txt` manually. CI reruns `make install` and checks
+that generated files remain unchanged.
+
+### Downstream / Konflux requirements
+
+After exporting runtime dependency changes:
+
+1. Update duplicate pins in `requirements-downstream.txt` to match
+   `requirements.txt`, including environment markers. Keep the
+   `-r requirements.txt` include and downstream-only dependencies such as
+   `puccinialin==0.1.5`. Add or remove transitive dependencies as needed; all
+   downstream runtime dependencies must be explicitly pinned for disconnected
+   builds.
+2. Regenerate the source-build requirements using
+   [pybuild-deps](https://pybuild-deps.readthedocs.io/en/latest/usage.html#compile)
+   under Python 3.12. With `pipx` installed:
+
+   ```bash
+   pipx install --python python3.12 pybuild-deps
+   pybuild-deps compile --output-file=requirements-build.txt requirements-downstream.txt
+   ```
+
+   Review the generated pins, including any conflicting versions. Konflux
+   prefetches all three requirements files with binary distributions disabled,
+   so newly introduced source-build dependencies must be included.
+
+### Validate and submit
+
+```bash
+poetry check --lock
+make test
+git diff --check
+git diff -- pyproject.toml poetry.lock requirements.txt requirements-downstream.txt requirements-build.txt
+```
+
+Review and commit the changed dependency files together. For container or storage
+integration changes, also run `make test-e2e` or `make test-integration`; these
+targets require Docker, KinD, and the associated cluster setup described in the
+[integration test README](tests/integration/README.md).
+
 ## Job Configuration
 
 The async job is able to take a number of configuration parameters and environment variables which can be consumed to perform the job of synchronizing a model from a source to a destination.
