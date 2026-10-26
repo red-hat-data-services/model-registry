@@ -55,7 +55,6 @@ hatchling==1.32.0
     #   annotated-types
     #   attrs
     #   colorama
-    #   dnspython
     #   expandvars
     #   filelock
     #   fsspec
@@ -135,8 +134,9 @@ typing-extensions==4.15.0 ; python_version >= "3.11" and python_version < "4.0"
     #   mypy
     #   setuptools-scm
 # Keep uv-build excluded after regenerating this file: hermetic_fixes.sh removes
-# sigstore-models' uv_build backend before installation. Its unused build backend
-# ships a stale Cargo.lock that breaks Hermeto prefetch (cargo vendor --locked).
+# the uv_build backends from sigstore-models and dnspython before installation.
+# This backend ships a stale Cargo.lock that breaks Hermeto prefetch
+# (cargo vendor --locked).
 vcs-versioning==2.2.2
     # via setuptools-scm
 wheel==0.48.0
