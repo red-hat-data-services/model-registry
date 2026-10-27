@@ -15,3 +15,14 @@ catalogs:
       privateProp21: 12345
       privateProp22: privateStringValue2
       yamlCatalogPath: test-yaml-catalog.yaml
+  - name: "Catalog 3"
+    id: catalog3
+    type: yaml
+    properties:
+      yamlCatalogPath: test-yaml-catalog.yaml
+  - name: "Catalog 4"
+    id: catalog4
+    type: yaml
+    enabled: null
+    properties:
+      yamlCatalogPath: test-yaml-catalog.yaml
