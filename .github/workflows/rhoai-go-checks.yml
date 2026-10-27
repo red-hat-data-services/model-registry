@@ -1,0 +1,51 @@
+name: RHOAI Go checks
+
+# Builds and tests every Go module on RHOAI release branches, so dependency
+# updates (e.g. Renovate security PRs) that break a module are caught before merge.
+on:
+  pull_request:
+    branches:
+      - "rhoai-*"
+    paths:
+      - "**.go"
+      - "**/go.mod"
+      - "**/go.sum"
+      - "Makefile"
+      - "catalog/Makefile"
+      - ".github/workflows/rhoai-go-checks.yml"
+
+permissions: # set contents: read at top-level, per OpenSSF ScoreCard rule TokenPermissionsID
+  contents: read
+
+env:
+  GOWORK: "off"
+
+jobs:
+  go-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - name: Setup Go
+        uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6
+        with:
+          go-version: "1.26"
+      - name: Build
+        run: make build/compile
+      - name: Registry unit tests
+        run: make test
+      - name: Catalog unit tests
+        run: make -C catalog test
+      - name: Build and vet Go submodules
+        run: |
+          rc=0
+          for mod in $(find . -name go.mod -not -path './go.mod' -not -path '*/vendor/*' -not -path '*/testdata/*' | sort); do
+            dir=${mod%/go.mod}
+            echo "::group::$dir"
+            if ! (cd "$dir" && go build ./... && go vet ./...); then
+              echo "::error::go build/vet failed in $dir"
+              rc=1
+            fi
+            echo "::endgroup::"
+          done
+          exit $rc
