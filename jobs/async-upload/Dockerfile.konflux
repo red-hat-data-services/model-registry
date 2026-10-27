@@ -4,7 +4,7 @@
 
 FROM registry.redhat.io/rhtas/cosign-rhel9@sha256:4f8c62697922ca4ff0007502df1eb6ca3e4a7b695de32d0285582b59e5f9ed3d AS cosign
 
-FROM quay.io/aipcc/base-images/cpu:3.5@sha256:c47991a804ca8dfbcfa49388462fadf4735c63a2877e9c0bc75055eaa50cb114 AS base
+FROM quay.io/aipcc/base-images/cpu:3.5@sha256:56b86506fa8c09b60eb0b678481c8dfbf618d6b193554f47b597b42028198cfc AS base
 
 USER 0
 
