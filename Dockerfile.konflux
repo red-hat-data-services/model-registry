@@ -26,6 +26,8 @@ RUN CGO_ENABLED=1 GOOS=linux GOEXPERIMENT=strictfipsruntime go build -tags stric
 FROM registry.redhat.io/ubi9/ubi-minimal-pqc@sha256:72187ec58a94bd958ff48e41881d7c5d8bc0b49586cc1661da5ba4d92374c206
  
 WORKDIR /
+
+COPY manifests/kustomize/options/catalog/default-catalog.yaml /default-catalog.yaml
  
 COPY --from=builder /workspace/model-registry .
  
