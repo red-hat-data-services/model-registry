@@ -15,6 +15,7 @@ pydantic = ">=2.13.0,<3.0.0"
 huggingface-hub = ">=1.16.4,<3.0.0"
 requests = "^2.34.2"
 rh-model-signing = ">=1.0.1"
+pyopenssl = "^26.4.0"
 pyjwt = ">=2.15.1"
 
 [tool.poetry.group.dev.dependencies]
@@ -23,7 +24,7 @@ pytest-asyncio = "^1.4.0"
 aiohttp = "^3.13.5"
 
 [tool.poetry.group.integration.dependencies]
-kubernetes = "^33.1.0"
+kubernetes = ">=33.1,<38.0"
 pytest-html = "^4.2.0"
 
 [tool.poetry.requires-plugins]
