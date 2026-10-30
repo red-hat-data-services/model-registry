@@ -3,6 +3,7 @@ import os
 import tarfile
 from contextlib import contextmanager
 from pathlib import Path
+from subprocess import CalledProcessError
 
 import pytest
 
@@ -306,6 +307,29 @@ def test_save_to_oci_registry_auth_params(
     params = args[2]
     assert generic_params[0] in params
     assert generic_params[-1] in params
+
+
+@pytest.mark.parametrize(
+    ("error", "expected_args"),
+    [
+        (
+            CalledProcessError(1, ["skopeo", "copy", "--src-password", "secret"], stderr=b"denied"),
+            ("Problem with command", 1, b"denied"),
+        ),
+        (FileNotFoundError(2, "No such file or directory", "skopeo"), ("Problem with command", None, None)),
+        (PermissionError(13, "Permission denied"), ("Problem with command", None, None)),
+    ],
+)
+def test_skopeo_backend_scrubs_errors(mocker, tmp_path, error, expected_args):
+    mocker.patch("olot.backend.skopeo.skopeo_pull", side_effect=error)
+    backend = utils._get_skopeo_backend()
+
+    with pytest.raises(RuntimeError) as e:
+        backend.pull("busybox", tmp_path)
+
+    assert e.value.args == expected_args
+    assert e.value.__suppress_context__
+    assert "secret" not in repr(e.value)
 
 
 def test_save_to_oci_registry_backend_not_found():
