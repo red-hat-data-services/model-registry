@@ -106,7 +106,8 @@ def _get_upload_params(config: AsyncUploadConfig) -> S3Params | OCIParams:
         return OCIParams(
             base_image=destination_config.base_image,
             oci_ref=destination_config.uri,
-            dest_dir=config.storage.path,
+            # No dest_dir: save_to_oci_registry pulls the base image into its own temp dir.
+            # Pulling into config.storage.path would add the base image layout to the model files.
             oci_username=username,
             oci_password=password,
             # Same as the default backend, but with additional args included
