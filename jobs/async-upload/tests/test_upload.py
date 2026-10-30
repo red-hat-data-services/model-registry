@@ -1,7 +1,12 @@
 from dataclasses import asdict
+import hashlib
+import io
+import json
+from pathlib import Path
+import tarfile
 import pytest
 from unittest.mock import Mock, patch
-from model_registry.utils import S3Params, OCIParams
+from model_registry.utils import BackendDefinition, S3Params, OCIParams
 from job.upload import _get_upload_params, _validate_credentials_path, perform_upload
 from job.models import (
     AsyncUploadConfig,
@@ -243,7 +248,7 @@ class TestGetUploadParams:
         assert isinstance(result, OCIParams)
         assert result.base_image == "foo-bar:latest"
         assert result.oci_ref == "quay.io/example/test:latest"
-        assert result.dest_dir == "/tmp/test-model"
+        assert result.dest_dir is None
         assert result.oci_username is None
         assert result.oci_password is None
 
@@ -320,7 +325,7 @@ class TestGetUploadParams:
         assert isinstance(result, OCIParams)
         assert result.base_image == "foo-bar:latest"
         assert result.oci_ref == "quay.io/example/test:latest"
-        assert result.dest_dir == "/tmp/test-model"
+        assert result.dest_dir is None
         assert result.oci_username is None
         assert result.oci_password is None
 
@@ -448,6 +453,89 @@ class TestPerformUpload:
 
         # Verify client method was called
         mock_save_to_oci_registry.assert_called_once()
+
+    def test_perform_upload_oci_layers_only_model_files(self, tmp_path):
+        """The pulled base image layout must not be added to the image as model files"""
+        model_dir = tmp_path / "model"
+        model_dir.mkdir()
+        (model_dir / "model.onnx").write_bytes(b"weights")
+        (model_dir / "config.json").write_text("{}")
+
+        pushed_layer_paths = []
+
+        def push(src, oci_ref, **kwargs):
+            pushed_layer_paths.extend(_model_layer_paths(Path(src)))
+
+        backend = BackendDefinition(is_available=lambda: True, pull=_write_base_image_layout, push=push)
+
+        config = AsyncUploadConfig(
+            source=S3StorageConfig(
+                bucket="source-bucket",
+                key="source-key",
+                access_key_id="source-key-id",
+                secret_access_key="source-secret",
+                region="us-west-1"
+            ),
+            destination=OCIStorageConfig(
+                uri="localhost:5001/example/model:1",
+                registry="localhost:5001",
+                base_image="busybox:latest",
+            ),
+            model=ModelConfig(
+                intent=UpdateArtifactIntent(artifact_id="123")
+            ),
+            storage=StorageConfig(path=str(model_dir)),
+            registry=RegistryConfig(server_address="test-server")
+        )
+
+        with patch("job.upload._base_image_backend", return_value=backend):
+            perform_upload(config)
+
+        assert sorted(pushed_layer_paths) == ["/models/config.json", "/models/model.onnx"]
+        assert sorted(p.name for p in model_dir.iterdir()) == ["config.json", "model.onnx"]
+
+
+def _add_blob(layout: Path, data: bytes, media_type: str) -> dict:
+    digest = hashlib.sha256(data).hexdigest()
+    blobs = layout / "blobs" / "sha256"
+    blobs.mkdir(parents=True, exist_ok=True)
+    (blobs / digest).write_bytes(data)
+    return {"mediaType": media_type, "digest": f"sha256:{digest}", "size": len(data)}
+
+
+def _write_base_image_layout(base_image, dest, **kwargs):
+    """Stand-in for a skopeo pull: write a single-layer OCI image layout to dest"""
+    dest = Path(dest)
+    layer_tar = io.BytesIO()
+    tarfile.open(fileobj=layer_tar, mode="w").close()
+    layer = _add_blob(dest, layer_tar.getvalue(), "application/vnd.oci.image.layer.v1.tar")
+    image_config = {
+        "architecture": "amd64",
+        "os": "linux",
+        "rootfs": {"type": "layers", "diff_ids": [layer["digest"]]},
+        "history": [{}],
+    }
+    manifest = {
+        "schemaVersion": 2,
+        "mediaType": "application/vnd.oci.image.manifest.v1+json",
+        "config": _add_blob(dest, json.dumps(image_config).encode(), "application/vnd.oci.image.config.v1+json"),
+        "layers": [layer],
+    }
+    manifest_desc = _add_blob(dest, json.dumps(manifest).encode(), manifest["mediaType"])
+    (dest / "oci-layout").write_text(json.dumps({"imageLayoutVersion": "1.0.0"}))
+    (dest / "index.json").write_text(json.dumps({"schemaVersion": 2, "manifests": [manifest_desc]}))
+
+
+def _model_layer_paths(layout: Path) -> list[str]:
+    """In-layer paths of the layers olot added on top of the base image"""
+    blobs = layout / "blobs" / "sha256"
+    index = json.loads((layout / "index.json").read_text())
+    manifest = json.loads((blobs / index["manifests"][0]["digest"].removeprefix("sha256:")).read_text())
+    return [
+        layer["annotations"]["olot.layer.content.inlayerpath"]
+        for layer in manifest["layers"]
+        if "olot.layer.content.inlayerpath" in layer.get("annotations", {})
+    ]
 
 
 class TestValidateCredentialsPath:

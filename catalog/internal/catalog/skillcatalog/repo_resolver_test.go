@@ -355,6 +355,43 @@ func TestCheckImmutableRef_BranchEndingInTagName(t *testing.T) {
 	assert.Error(t, r.checkImmutableRef(ctx, dir, repo, "refs/heads/main", env), "a full branch ref name is refused")
 }
 
+func TestCheckImmutableRef_OnlyTagsAndFullSHAs(t *testing.T) {
+	repo := initFixtureRepo(t)
+	writeSkill(t, repo, "s", "s", "S.")
+	sha := commitAll(t, repo, "init")
+	runGit(t, repo, "tag", "v1.0")
+	runGit(t, repo, "tag", "-a", "v2.0", "-m", "v2.0")
+	// A pull request head, as GitHub publishes it: fetchable, but it moves.
+	runGit(t, repo, "update-ref", "refs/pull/1/head", sha)
+
+	r := testResolver()
+	_, env, err := r.gitEnv(nil)
+	require.NoError(t, err)
+	ctx := context.Background()
+	dir := t.TempDir()
+
+	for _, ref := range []string{"v1.0", "v2.0", "tags/v1.0", "refs/tags/v1.0", sha} {
+		assert.NoErrorf(t, r.checkImmutableRef(ctx, dir, repo, ref, env), "%q is immutable", ref)
+	}
+	// git fetch resolves each of these to a moving ref (main, HEAD or a pull
+	// request head), or cannot fetch it at all (an abbreviated SHA, or a glob
+	// that ls-remote expands to the tags).
+	for _, ref := range []string{"+main", "main:x", "@", "pull/1/head", "refs/pull/1/head", sha[:7], "v*"} {
+		assert.Errorf(t, r.checkImmutableRef(ctx, dir, repo, ref, env), "%q must be refused", ref)
+	}
+}
+
+func TestResolve_RefspecSyntaxDoesNotBypassPinning(t *testing.T) {
+	repo := initFixtureRepo(t)
+	writeSkill(t, repo, "s", "s", "S.")
+	commitAll(t, repo, "init")
+
+	for _, ref := range []string{"+main", "main:x", "@"} {
+		_, err := testResolver().Resolve(context.Background(), repoEntry(repo, nil, nil, nil), ref, nil)
+		assert.Errorf(t, err, "%q fetches the branch tip and must be refused", ref)
+	}
+}
+
 // TestComputeBaseEnv_HardeningOverridesAmbient pins the append order in
 // computeBaseEnv: the git hardening vars go after os.Environ(), and os/exec
 // resolves duplicate keys in favor of later values, so a hostile or careless

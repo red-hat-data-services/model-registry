@@ -17,7 +17,7 @@
 //	      syncIntervalMinutes: 60               # optional
 //	      repositories:                         # inline form (UI-added sources)
 //	        - url: https://github.com/example/skills.git
-//	          refs: [main, v1.0]
+//	          refs: [v1.0, v1.1]
 //	          scanPaths: [skills/]
 //	          credentialRef: github            # file in the mounted credentials dir
 //	          trustTier: communityContributed  # optional provenance label
@@ -78,7 +78,7 @@ type SkillRepository struct {
 	URL string `json:"url"`
 	// CanonicalURL is the upstream identity when URL points at a mirror.
 	CanonicalURL string `json:"canonicalUrl,omitempty"`
-	// Refs are the immutable refs to index: tags or commit SHAs. Branches and HEAD
+	// Refs are the immutable refs to index: tags or full commit SHAs. Branches and HEAD
 	// are refused (skills must be reproducibly pinned), and a repository with no
 	// refs is a configuration error rather than a default-branch sync.
 	Refs []string `json:"refs,omitempty"`
