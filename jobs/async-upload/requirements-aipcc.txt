@@ -43,9 +43,11 @@ blake3==1.0.9 \
 boto3==1.43.50 \
     --hash=sha256:00c080260af44da1faaed39ed97e3d37762e9414426eed89cc9137e7e8ae96a9
     # via model-registry
-botocore==1.43.50 \
-    --hash=sha256:a202e00c75172a292d6cd3f5d217b7c27333c496ef854ead607ea6b3d7b6bb2d
+botocore==1.43.122 \
+    --hash=sha256:2fc53b68b35314b1738cad46e6170d0556496863913451428fc3afccb8c7fa95 \
+    --hash=sha256:668e608edf8847fc4c3c6b38688e183c3bcf19b8a1f7f58d33c03a6f3039bd49
     # via
+    #   async-upload (pyproject.toml)
     #   boto3
     #   s3transfer
 certifi==2026.10.19 \
@@ -202,9 +204,11 @@ protobuf==7.36.1 \
     --hash=sha256:aaff009289d7e3718b91246d31e5b8f0d07eae739032f2dbb5f87a1c0c9e4ed4 \
     --hash=sha256:d48f881e95435e954ecf3dea7e76ac500543a7544eb4d71b85a2454e1948c884
     # via in-toto-attestation
-pyasn1==0.6.4 \
-    --hash=sha256:aa4baf3e3b2b894b21127fc4769773650d15543dec5a3756daaa19c0f3763b7f
+pyasn1==0.6.5 \
+    --hash=sha256:4017b0fce125096b8573b39c989fdb1a4b19cf761e683398184550fea0e66587 \
+    --hash=sha256:6b11616a6bcf3a40e635f082bb232fa57b5e0dd7f517bd7ddd69ec3794508a47
     # via
+    #   async-upload (pyproject.toml)
     #   rh-model-signing
     #   sigstore
 pycparser==3.12 ; implementation_name != 'PyPy' and platform_python_implementation != 'PyPy' \

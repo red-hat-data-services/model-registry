@@ -438,14 +438,14 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.43.15"
+version = "1.43.122"
 description = "Low-level, data-driven core of boto 3."
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "botocore-1.43.15-py3-none-any.whl", hash = "sha256:bda4923998d1bf17f8eb6bc767a0923fbb9e525ecd50f839b041e469b46e1c94"},
-    {file = "botocore-1.43.15.tar.gz", hash = "sha256:eed2e24962af03ec361a1dc6924f6b2cff0215a0a2f5c690eab655f43d1f700f"},
+    {file = "botocore-1.43.122-py3-none-any.whl", hash = "sha256:668e608edf8847fc4c3c6b38688e183c3bcf19b8a1f7f58d33c03a6f3039bd49"},
+    {file = "botocore-1.43.122.tar.gz", hash = "sha256:2fc53b68b35314b1738cad46e6170d0556496863913451428fc3afccb8c7fa95"},
 ]
 
 [package.dependencies]
@@ -454,7 +454,7 @@ python-dateutil = ">=2.1,<3.0.0"
 urllib3 = ">=1.25.4,!=2.2.0,<3"
 
 [package.extras]
-crt = ["awscrt (==0.32.2)"]
+crt = ["awscrt (==0.38.0)"]
 
 [[package]]
 name = "certifi"
@@ -1961,14 +1961,14 @@ files = [
 
 [[package]]
 name = "pyasn1"
-version = "0.6.4"
+version = "0.6.5"
 description = "Pure-Python implementation of ASN.1 types and DER/BER/CER codecs (X.208)"
 optional = false
 python-versions = ">=3.8"
 groups = ["main", "integration"]
 files = [
-    {file = "pyasn1-0.6.4-py3-none-any.whl", hash = "sha256:deda9277cfd454080ec40b207fb6df82206a3a2688735233cdcd8d3d565f088b"},
-    {file = "pyasn1-0.6.4.tar.gz", hash = "sha256:9c447d8431c947fe4c8febc4ed9e760bc29011a5b01e5c74b67025bd9fb8ce81"},
+    {file = "pyasn1-0.6.5-py3-none-any.whl", hash = "sha256:4017b0fce125096b8573b39c989fdb1a4b19cf761e683398184550fea0e66587"},
+    {file = "pyasn1-0.6.5.tar.gz", hash = "sha256:6b11616a6bcf3a40e635f082bb232fa57b5e0dd7f517bd7ddd69ec3794508a47"},
 ]
 
 [[package]]
@@ -3068,4 +3068,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<4.0"
-content-hash = "eb5baf4cdc35f3e1fd3ac95e678b7a7d3e612ff7e4d56c2475f25429f5f598a7"
+content-hash = "c42789637642efa945510e3151aa702a0911c692c5a7927f51531320fcea0857"
