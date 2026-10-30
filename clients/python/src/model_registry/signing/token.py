@@ -34,7 +34,7 @@ def decode_jwt_payload(token: str) -> dict:
         padding = len(payload) % 4
         if padding:
             payload += "=" * (4 - padding)
-        return json.loads(base64.b64decode(payload))
+        return json.loads(base64.urlsafe_b64decode(payload))
     except (IndexError, json.JSONDecodeError, Exception) as e:
         msg = f"Failed to decode JWT token payload: {e}"
         raise ValueError(msg) from e
