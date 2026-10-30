@@ -37,6 +37,17 @@ class TestDecodeJwtPayload:
         result = decode_jwt_payload(token)
         assert result == payload_data
 
+    @pytest.mark.parametrize("payload_data", [
+        {"iss": "https://oauth2.sigstore.dev/auth?x=1"},
+        {"sub": "user>>1"},
+    ])
+    def test_decode_base64url_only_characters(self, payload_data):
+        """Test payloads whose base64url encoding uses '-' or '_', which standard base64 lacks."""
+        token = create_jwt_token(payload_data)
+        assert any(c in token.split(".")[1] for c in "-_")
+        result = decode_jwt_payload(token)
+        assert result == payload_data
+
     @pytest.mark.parametrize(("invalid_token", "error_pattern"), [
         ("not-a-valid-token", "Failed to decode JWT token payload"),
         ("header.payload", "Failed to decode JWT token payload"),  # Missing signature

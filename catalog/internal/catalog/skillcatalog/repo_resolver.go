@@ -321,24 +321,34 @@ func (r *RepoResolver) fetchRef(ctx context.Context, dir, url, ref string, env [
 }
 
 // checkImmutableRef returns an error unless ref is an immutable ref (a tag or
-// commit SHA). HEAD and branches are moving pointers and are refused. It fails
-// closed: if the branch probe itself fails, the ref is rejected rather than
-// assumed non-branch, so a branch cannot slip through on a transient error.
+// full commit SHA). HEAD and branches are moving pointers and are refused, and
+// so is anything else that is neither, since git fetch takes ref as a refspec:
+// +main, main:x, @ and pull/1/head all fetch a moving ref. It fails closed: if
+// the probe itself fails, the ref is rejected rather than assumed immutable, so
+// a branch cannot slip through on a transient error.
 func (r *RepoResolver) checkImmutableRef(ctx context.Context, dir, url, ref string, env []string) error {
 	if ref == "HEAD" || ref == "" {
 		return fmt.Errorf("ref %q is a branch or HEAD; skills must be pinned to a tag or commit SHA", ref)
 	}
-	out, err := runGitCmd(ctx, dir, env, "ls-remote", "--heads", url, ref)
+	out, err := runGitCmd(ctx, dir, env, "ls-remote", "--heads", "--tags", url, ref)
 	if err != nil {
 		return fmt.Errorf("unable to verify ref %q is immutable: %w", ref, err)
 	}
-	// The pattern also lists branches that merely end in /ref (a tag v1.0 next to
-	// a branch release/v1.0), so ref is refused only when it names one of the
-	// listed branches (see refNameMatches).
+	// The pattern also lists refs that merely end in /ref (a tag v1.0 next to a
+	// branch release/v1.0), so only the refs ref names count (see refNameMatches).
+	isTag := false
 	for _, line := range strings.Split(strings.TrimSpace(out), "\n") {
-		if fields := strings.Fields(line); len(fields) >= 2 && refNameMatches(fields[1], ref) {
+		fields := strings.Fields(line)
+		if len(fields) < 2 || !refNameMatches(fields[1], ref) {
+			continue
+		}
+		if strings.HasPrefix(fields[1], "refs/heads/") {
 			return fmt.Errorf("ref %q is a branch; skills must be pinned to a tag or commit SHA", ref)
 		}
+		isTag = true
+	}
+	if !isTag && !fullSHA.MatchString(ref) {
+		return fmt.Errorf("ref %q is not a tag or full commit SHA on the remote; skills must be pinned to a tag or commit SHA", ref)
 	}
 	return nil
 }
