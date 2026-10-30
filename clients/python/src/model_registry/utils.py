@@ -261,7 +261,7 @@ def _scrub_errors(func: Callable[[], CompletedProcess[bytes]]) -> CompletedProce
         return func()
     except (CalledProcessError, Exception) as e:
         msg = """Problem with command"""
-        raise RuntimeError(msg, e.returncode, e.stderr) from None  # type: ignore[attr-defined]
+        raise RuntimeError(msg, getattr(e, "returncode", None), getattr(e, "stderr", None)) from None
 
 
 @dataclass
