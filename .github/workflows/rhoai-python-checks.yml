@@ -1,0 +1,60 @@
+name: RHOAI Python checks
+
+# Test the pinned dependencies shipped in the async-upload product image.
+on:
+  pull_request:
+    branches:
+      - "main"
+      - "rhoai-2.25"
+      - "rhoai-3.4"
+      - "rhoai-3.5"
+      - "rhoai-3.6"
+    paths:
+      - "jobs/async-upload/**"
+      - "scripts/seed_local_busybox.sh"
+      - ".github/workflows/rhoai-python-checks.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  python-checks:
+    name: Async-upload Python checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: jobs/async-upload
+    env:
+      PRODUCT_REQUIREMENTS: requirements-downstream.txt
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Setup Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            jobs/async-upload/requirements*.txt
+            .github/workflows/rhoai-python-checks.yml
+      - name: Install test tools
+        run: python -m pip install "pytest==8.4.2" "pytest-asyncio==1.4.1.post1"
+      - name: Install product dependencies
+        # Install test tools first so they cannot replace the product's pins.
+        # --no-deps requires the product requirements to list the complete graph.
+        run: python -m pip install --no-deps -r "$PRODUCT_REQUIREMENTS"
+      - name: Check dependency compatibility
+        run: python -m pip check
+      - name: Check application imports
+        run: |
+          python - <<'PYTHON'
+          import job.config
+          import job.download
+          import job.entrypoint
+          import job.models
+          import job.mr_client
+          import job.upload
+          PYTHON
+      - name: Run unit tests
+        run: python -m pytest tests --ignore=tests/integration -q
