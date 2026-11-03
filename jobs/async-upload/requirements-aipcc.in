@@ -1,0 +1,12 @@
+--index-url https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.6/cpu-ubi9/simple
+
+# Runtime dependencies for the product image. Poetry manages the development environment.
+configargparse>=1.7.1,<2.0.0
+model-registry[boto3,olot]>=0.3.7,<0.4.0
+platformdirs>=4.0.0,<5.0.0
+pydantic>=2.13.0,<3.0.0
+huggingface-hub>=1.16.4,<3.0.0
+requests>=2.34.2,<3.0.0
+rh-model-signing>=1.0.1
+pyopenssl>=26.4.0,<27.0.0
+pyjwt>=2.15.1
