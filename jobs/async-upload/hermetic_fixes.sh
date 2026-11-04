@@ -29,6 +29,19 @@ sed -i '/^\[build-system\]$/,/^build-backend = "uv_build"$/d' pyproject.toml
 python -m pip install .
 
 # -----------------------------------------------------------------------------
+# dnspython 2.9.0 also uses uv-build, which is excluded from prefetch for the
+# reason described above. Install this pure-Python package with setuptools
+# before rh-model-signing pulls it in through sigstore and email-validator.
+#
+# Remove when: uv-build can be prefetched hermetically, or dnspython switches
+#              to a build backend that can be prefetched.
+# -----------------------------------------------------------------------------
+tar -xzf /cachi2/output/deps/pip/dnspython-2.9.0.tar.gz -C /tmp
+cd /tmp/dnspython-2.9.0
+sed -i '/^\[build-system\]$/,/^build-backend = "uv_build"$/d' pyproject.toml
+python -m pip install .
+
+# -----------------------------------------------------------------------------
 # Fix #2 — rh-model-signing sdist has a broken hatch build config
 #
 # The sdist for rh-model-signing 0.1.0 places the model_signing package at the
