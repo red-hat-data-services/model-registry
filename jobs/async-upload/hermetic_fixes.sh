@@ -29,7 +29,25 @@ sed -i '/^\[build-system\]$/,/^build-backend = "uv_build"$/d' pyproject.toml
 python -m pip install .
 
 # -----------------------------------------------------------------------------
-# Fix #2 — rh-model-signing sdist has a broken hatch build config
+# Fix #2 — dnspython 2.9.0 also uses the excluded uv-build backend
+#
+# uv-build is excluded from requirements-build.txt because its Cargo.lock breaks
+# Hermeto prefetch. Like sigstore_models, dnspython is pure Python and can be
+# installed with setuptools after removing its [build-system] section.
+#
+# Install it before rh-model-signing, whose transitive dependencies include
+# dnspython; otherwise pip tries to build the unpatched archive with uv-build.
+#
+# Remove when: uv-build can be prefetched and built hermetically, or dnspython
+#              switches to a backend supported by this build.
+# -----------------------------------------------------------------------------
+tar -xzf /cachi2/output/deps/pip/dnspython-2.9.0.tar.gz -C /tmp
+cd /tmp/dnspython-2.9.0
+sed -i '/^\[build-system\]$/,/^build-backend = "uv_build"$/d' pyproject.toml
+python -m pip install .
+
+# -----------------------------------------------------------------------------
+# Fix #3 — rh-model-signing sdist has a broken hatch build config
 #
 # The sdist for rh-model-signing 0.1.0 places the model_signing package at the
 # archive root, but pyproject.toml declares packages = ["src/model_signing"]
