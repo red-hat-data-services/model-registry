@@ -22,6 +22,8 @@ requests = "^2.33.0"
 protobuf = "7.35.0"
 pyasn1 = ">=0.6.5"
 pyjwt = ">=2.14.0"
+# dnspython 2.9+ requires uv_build, which is excluded from hermetic builds.
+dnspython = ">=2.8.0,<2.9.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">=8.3.5,<10.0.0"
