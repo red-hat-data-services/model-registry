@@ -4,15 +4,16 @@
 
 FROM registry.redhat.io/rhtas/cosign-rhel9@sha256:0bc571d1d9c188579dc5c404134144f660beb62f69f784b48230ff84b3881499 AS cosign
 
-FROM quay.io/aipcc/base-images/cpu-el9.8@sha256:b42ea43cf2b44fd5d7c662067ccff0a831eeca22f949300590d79dd12b2cf110 AS base
+# UBI 10 Python minimal — RHEL 10 has PQC crypto by default (no ubi-minimal-pqc / crypto-policies step).
+FROM registry.redhat.io/ubi10/python-312-minimal@sha256:16cd9d766f812e706f4994aaacb656d338b1054952dcd0ce9627c32011d9574e AS base
 
 USER 0
 
 ARG TARGETARCH
 
 # Install skopeo for Push/Pull of container images to integrate with Model Registry py client and Olot.
-RUN dnf install -y skopeo  && \
-    dnf clean all
+RUN microdnf install -y skopeo && \
+    microdnf clean all
 
 COPY --from=cosign /usr/local/bin/cosign /usr/local/bin/cosign
 
@@ -67,9 +68,9 @@ HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
 # The Job controller will pass CLI flags/ENV-vars described in issue #1108.
 ENTRYPOINT ["python", "-m", "job.entrypoint"]
 
-LABEL com.redhat.component="odh-model-registry-job-async-upload-rhel9" \
-      name="rhoai/odh-model-registry-job-async-upload-rhel9" \
+LABEL com.redhat.component="odh-model-registry-job-async-upload-rhel10" \
+      name="rhoai/odh-model-registry-job-async-upload-rhel10" \
       description="K8s Job image that copies a model between storage back-ends and registers it in Kubeflow Model Registry." \
       summary="K8s Job image that copies a model between storage back-ends and registers it in Kubeflow Model Registry." \
       io.k8s.display-name="Model Registry Async-Upload Job" \
-      io.k8s.description="odh-kserve-localmodel-rhel9"
+      io.k8s.description="odh-model-registry-job-async-upload-rhel10"
