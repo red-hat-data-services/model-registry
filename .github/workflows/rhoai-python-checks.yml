@@ -1,0 +1,49 @@
+name: RHOAI Python checks
+
+# Test the pinned dependencies shipped in the async-upload product image.
+on:
+  pull_request:
+    branches:
+      - "main"
+      - "rhoai-2.25"
+      - "rhoai-3.4"
+      - "rhoai-3.5"
+      - "rhoai-3.6"
+    paths:
+      - "jobs/async-upload/**"
+      - "scripts/seed_local_busybox.sh"
+      - ".github/workflows/rhoai-python-checks.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  python-checks:
+    name: Async-upload Python checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: jobs/async-upload
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Check product dependencies on RHEL 9
+        # Red Hat wheels require RHEL native libraries, including OpenSSL.
+        # Public UBI supplies those libraries without private image credentials.
+        run: |
+          docker run --rm --user 0 --entrypoint /bin/bash \
+            --env PYTHONDONTWRITEBYTECODE=1 \
+            --volume "$GITHUB_WORKSPACE:/workspace:ro" \
+            --workdir /workspace/jobs/async-upload \
+            registry.access.redhat.com/ubi9/python-312@sha256:3e2ea88a82a27597b8c016db76da9b175f1693df49dc16812f7734a66d7869b9 \
+            -euo pipefail -c '
+              python -m venv /tmp/python-checks
+              export PATH="/tmp/python-checks/bin:$PATH"
+              python --version
+              python -m pip install --index-url https://pypi.org/simple "pytest==8.4.2" "pytest-asyncio==1.4.1.post1"
+              python -m pip install --no-deps -r requirements-aipcc.txt
+              python -m pip check
+              python -c "import job.config; import job.download; import job.entrypoint; import job.models; import job.mr_client; import job.upload"
+              python -m pytest tests --ignore=tests/integration -q -o cache_dir=/tmp/pytest-cache
+            '
