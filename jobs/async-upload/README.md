@@ -19,6 +19,36 @@ docker push quay.io/<org>/model-registry-job-async-upload:<tag>
 # TODO: Run locally...
 ```
 
+## Product image dependencies
+
+`requirements-aipcc.in` declares the runtime dependencies for `Dockerfile.konflux`,
+including the Red Hat package index and any architecture-specific constraints.
+`requirements-aipcc.txt` is its generated lockfile with package hashes. Poetry's
+`pyproject.toml`, `poetry.lock`, and exported `requirements.txt` manage the separate
+PyPI environment used for development and the upstream Dockerfile.
+
+Compilation uses universal resolution to preserve architecture-specific markers.
+The `[tool.uv]` environment in `pyproject.toml` limits it to Linux, matching the
+product image without resolving dependencies for other operating systems.
+
+To refresh the lockfile to the latest versions allowed by the product dependency
+bounds, run from this directory:
+
+```bash
+make gen-requirements-aipcc
+```
+
+The Make target is a convenience wrapper around the `uv pip compile` command
+recorded in the generated header. Renovate's `pip-compile` manager reads that
+command and runs uv directly. Keep the default command header so Renovate can
+reproduce the resolution. The Make target passes `--upgrade`, which uv omits from
+the generated header. To upgrade a single package instead, run the recorded
+command with `--upgrade-package <name>`.
+
+When adding or removing a runtime dependency in the job's code, update both
+`requirements-aipcc.in` and `pyproject.toml`. Their resolved versions can differ
+because the product image uses the Red Hat index.
+
 ## Job Configuration
 
 The async job is able to take a number of configuration parameters and environment variables which can be consumed to perform the job of synchronizing a model from a source to a destination.
@@ -68,7 +98,8 @@ See asterisks below table for details
 | MODEL_SYNC_DESTINATION_OCI_REGISTRY          | --destination-oci-registry          |                   | ✅\+     | When --destination-type is "oci". Indicates which registry the creds belong to                         |
 | MODEL_SYNC_DESTINATION_OCI_USERNAME          | --destination-oci-username          |                   | ✅\+     | "                                                                                                      |
 | MODEL_SYNC_DESTINATION_OCI_PASSWORD          | --destination-oci-password          |                   | ✅\+     | "                                                                                                      |
-| MODEL_SYNC_DESTINATION_OCI_BASE_IMAGE        | --destination-oci-base-image        | busybox:latest    |          | When --destination-type is "oci". The image to use when pushing to an OCI registry                     |
+| MODEL_SYNC_DESTINATION_OCI_BASE_IMAGE        | --destination-oci-base-image        | public.ecr.aws/docker/library/busybox:latest |          | Optional override for OCI destinations. In disconnected environments, supply a registry-qualified base image reachable from the Job pod. |
+| MODEL_SYNC_DESTINATION_OCI_BASE_IMAGE_SOURCE | --destination-oci-base-image-source | explicit | | Diagnostic metadata supplied by the BFF (`deployment-config` or `bff-default`); other callers may omit it. With no image override the Job reports `job-default`. |
 | MODEL_SYNC_DESTINATION_OCI_ENABLE_TLS_VERIFY | --destination-oci-enable-tls-verify | true              |          | When --destination-type is "oci". Specifies whether to use TLS when pushing to registry                |
 | MODEL_SYNC_MODEL_UPLOAD_INTENT               | --model-upload-intent               | update_artifact   |          | The intent of the upload job. Options include `["create_model", "create_version", "update_artifact"]`. |
 | MODEL_SYNC_MODEL_ID                          | --model-id                          |                   | ✅\%     | The `RegisteredModel.id`                                                                               |

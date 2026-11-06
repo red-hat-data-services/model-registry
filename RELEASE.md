@@ -114,7 +114,7 @@ Create the tag from the release branch:
 git switch release/$VVERSION
 git pull
 git tag $VVERSION -m $VVERSION
-git push origin $VVERSION
+git push upstream $VVERSION
 ```
 
 Watch the build progress from Git Hub: _https://github.com/kubeflow/hub/tree/vX.Y.Z_ (`xdg-open https://github.com/kubeflow/hub/tree/$VVERSION`).
@@ -166,7 +166,7 @@ From a local close of `kubeflow/website`:
 ```
 git switch master
 git pull
-echo $VVERSION >layouts/shortcodes/hub/latest-version.html
+echo -n $(echo $VVERSION | cut -b 2-) >layouts/shortcodes/hub/latest-version.html
 git commit -asm "hub: bump hub version to $VVERSION"
 ```
 

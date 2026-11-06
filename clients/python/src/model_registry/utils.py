@@ -5,6 +5,7 @@ from __future__ import annotations
 import base64
 import json
 import os
+import posixpath
 import shutil
 import tempfile
 from collections.abc import Callable, Generator
@@ -260,7 +261,7 @@ def _scrub_errors(func: Callable[[], CompletedProcess[bytes]]) -> CompletedProce
         return func()
     except (CalledProcessError, Exception) as e:
         msg = """Problem with command"""
-        raise RuntimeError(msg, e.returncode, e.stderr) from None  # type: ignore[attr-defined]
+        raise RuntimeError(msg, getattr(e, "returncode", None), getattr(e, "stderr", None)) from None
 
 
 @dataclass
@@ -526,7 +527,8 @@ def _upload_to_s3(  # noqa: C901
     )
     files = _get_files_from_path(path)
     for absolute_path_filename, relative_path_filename in files:
-        s3_key = os.path.join(path_prefix, relative_path_filename)
+        # S3 keys always use "/", whatever the local path separator is.
+        s3_key = posixpath.join(path_prefix, Path(relative_path_filename).as_posix())
         s3.upload_file(
             Filename=absolute_path_filename,
             Bucket=bucket,

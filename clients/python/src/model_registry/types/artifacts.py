@@ -427,12 +427,18 @@ class Parameter(Artifact):
     value: str | bool | int | float | dict
     parameter_type: ParameterType
 
+    def _value_as_str(self) -> str:
+        """Serialize the value so that from_basemodel can parse it back."""
+        if isinstance(self.value, (bool, dict)):
+            return json.dumps(self.value)
+        return str(self.value)
+
     @override
     def create(self, **kwargs) -> ParameterCreate:
         """Create a new ParameterCreate object."""
         return ParameterCreate(
             customProperties=self._map_custom_properties(),
-            value=str(self.value),
+            value=self._value_as_str(),
             **self._props_as_dict(exclude=("id", "value", "custom_properties")),
             artifactType="parameter",
             **kwargs,
@@ -443,7 +449,7 @@ class Parameter(Artifact):
         """Create a new ParameterUpdate object."""
         return ParameterUpdate(
             customProperties=self._map_custom_properties(),
-            value=str(self.value),
+            value=self._value_as_str(),
             **self._props_as_dict(exclude=("id", "name", "value", "custom_properties")),
             artifactType="parameter",
             **kwargs,
@@ -453,7 +459,7 @@ class Parameter(Artifact):
     def as_basemodel(self) -> ParameterBaseModel:
         return ParameterBaseModel(
             customProperties=self._map_custom_properties(),
-            value=str(self.value),
+            value=self._value_as_str(),
             **self._props_as_dict(exclude=("value", "custom_properties")),
             artifactType="parameter",
         )
@@ -468,7 +474,7 @@ class Parameter(Artifact):
         if source.parameter_type is ParameterType.NUMBER:
             value = float(value)  # type: ignore[assignment,arg-type]
         elif source.parameter_type is ParameterType.BOOLEAN:
-            value = bool(value)  # type: ignore[assignment]
+            value = str(value).lower() == "true"  # type: ignore[assignment]
         elif source.parameter_type is ParameterType.OBJECT:
             value = json.loads(value)  # type: ignore[arg-type]
         return cls(
