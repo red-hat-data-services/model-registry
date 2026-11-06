@@ -190,8 +190,8 @@ protobuf==7.36.2 ; sys_platform == 'linux' \
     --hash=sha256:b9bd00e502ad24d8e8be000584b07e30e5bd8eb56d249fd3e910a1f32db5a42f \
     --hash=sha256:fa55ac78125affffd0093a5494254b852d1d9d4d54d1c77cbc63c0f6ea7b0b5a
     # via in-toto-attestation
-pyasn1==0.6.4 ; sys_platform == 'linux' \
-    --hash=sha256:0f3a354d4507457cdf2d74898feecc959e6d1d040d8afda77fb1857de742eb88
+pyasn1==0.6.5 ; sys_platform == 'linux' \
+    --hash=sha256:6735be94c6591189cbead6ddc345236ef88f212e062941f4394382b56370058b
     # via rh-model-signing
 pycparser==3.12 ; implementation_name != 'PyPy' and platform_python_implementation != 'PyPy' and sys_platform == 'linux' \
     --hash=sha256:4d9e76c9a9bb4ff0cc899113045b8c35810f70dee6cc979abbe6edfa73bca1a8
