@@ -46,12 +46,10 @@ boto3==1.43.50 \
 botocore==1.43.122 \
     --hash=sha256:c93126155826c2942b1ba2a482423cc70e79a987ad9607a1bf2d9a5348e83759
     # via
-    #   async-upload (pyproject.toml)
     #   boto3
     #   s3transfer
-certifi==2026.10.19 \
-    --hash=sha256:3aad93ed5a2e5467cbe9c3f8879f96949d85dc5964aed70f2ce24edcf6b833f8 \
-    --hash=sha256:a47d0355ba4428a265002bd50960230cae2b0f61cc49c93c0617f5778df1d304
+certifi==2026.10.23 \
+    --hash=sha256:4654ed7e29e14f0a35d465a7a79e901f5f145dee3ec9b7703129a0f79aec3202
     # via
     #   httpcore
     #   httpx
@@ -208,7 +206,6 @@ protobuf==7.36.1 \
 pyasn1==0.6.5 \
     --hash=sha256:fdaff1dbf2cf5bb53eace764b0eef67f0a0e8a9b18aa1bf8503ad25199575e6f
     # via
-    #   async-upload (pyproject.toml)
     #   rh-model-signing
     #   sigstore
 pycparser==3.12 ; implementation_name != 'PyPy' and platform_python_implementation != 'PyPy' \
