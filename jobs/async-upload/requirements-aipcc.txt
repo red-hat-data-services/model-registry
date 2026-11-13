@@ -229,8 +229,8 @@ pydantic-core==2.46.4 \
 pygments==2.20.0 \
     --hash=sha256:14c06510dc5a2dbf9d83a85463d229907d0456e167a3752d361e6cd1cbfd1152
     # via rich
-pyjwt==2.14.0 \
-    --hash=sha256:050a6c242167127a342838a07c14e2dd3139ace09a035b183d30072baed7024e
+pyjwt==2.15.1 \
+    --hash=sha256:83ee2c39cc7819e908d02a7aae62b6ccdb8191d2b2928d7cdfc5efc676742a6c
     # via sigstore
 pyopenssl==26.3.0 \
     --hash=sha256:dec587615154fbdfe18a790c3865b0c045cdcb7c1ec5478d4858635dd5f5bdab
