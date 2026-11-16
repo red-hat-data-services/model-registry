@@ -1,3 +1,5 @@
+context:
+  containerfile: jobs/async-upload/Dockerfile.konflux
 arches:
   - x86_64
   - aarch64
