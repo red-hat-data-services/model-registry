@@ -2,7 +2,7 @@
 #  Asynchronous Model-Sync Job image for Kubeflow Model Registry (https://github.com/kubeflow/model-registry/issues/1108)
 ###############################################################################
 
-FROM registry.redhat.io/rhtas/cosign-rhel9@sha256:4f8c62697922ca4ff0007502df1eb6ca3e4a7b695de32d0285582b59e5f9ed3d AS cosign
+FROM registry.redhat.io/rhtas/cosign-rhel9:1.5.1@sha256:e50c6793b3985bad3f02e8f4281378525a08fa8938c34cdec8d8c17ddf270130 AS cosign
 
 FROM quay.io/aipcc/base-images/cpu:3.5@sha256:bf203809f20a6f85230a45cc1b8735a1c9327ec3e488f9665569f89f7891afd6 AS base
 
