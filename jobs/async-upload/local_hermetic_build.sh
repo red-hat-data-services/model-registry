@@ -19,7 +19,7 @@ alias hermeto='podman run --rm -ti -v shared-certs:/certs -v "$PWD:$PWD:z" -w "$
 cleanup() { podman exec register-container subscription-manager unregister 2>/dev/null; podman stop register-container 2>/dev/null; podman volume rm shared-certs 2>/dev/null; }
 trap cleanup EXIT
 
-podman run -d --rm --init --name register-container -v shared-certs:/certs registry.access.redhat.com/ubi9/ubi:9.6 sleep infinity
+podman run -d --rm --init --name register-container -v shared-certs:/certs registry.access.redhat.com/ubi9/ubi:9.8 sleep infinity
 podman exec -i register-container /bin/bash <<EOF
     set -e
     subscription-manager config --rhsm.manage_repos=0
