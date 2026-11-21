@@ -79,8 +79,8 @@ cryptography==50.0.2 ; sys_platform == 'linux' \
     #   rfc3161-client
     #   rh-model-signing
     #   sigstore
-dnspython==2.9.0 ; sys_platform == 'linux' \
-    --hash=sha256:a21542d9c34a8e61b9351be44133355c24acafa957f2910194cdebdf51fe8918
+dnspython==2.9.2 ; sys_platform == 'linux' \
+    --hash=sha256:cd4a8fa8aed4e43855dced081a7e7caf08ae57daf75e561ec99f1112d8603bc2
     # via email-validator
 email-validator==2.3.0 ; sys_platform == 'linux' \
     --hash=sha256:ec0a93fc8a746b083ffe537275b931c77b431f572ab1512e0c82c32d6b0c6d84
