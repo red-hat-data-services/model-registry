@@ -19,6 +19,32 @@ docker push quay.io/<org>/model-registry-job-async-upload:<tag>
 # TODO: Run locally...
 ```
 
+## Product image dependencies
+
+`requirements-aipcc.in` declares the runtime dependencies for `Dockerfile.konflux`,
+including the Red Hat package index and any architecture-specific constraints.
+`requirements-aipcc.txt` is its generated lockfile with package hashes. Poetry's
+`pyproject.toml`, `poetry.lock`, and exported `requirements.txt` manage the separate
+PyPI environment used for development and the upstream Dockerfile.
+
+To refresh the lockfile to the latest versions allowed by the product dependency
+bounds, run from this directory on Linux:
+
+```bash
+make gen-requirements-aipcc
+```
+
+The Make target is a convenience wrapper around the `uv pip compile` command
+recorded in the generated header. Renovate's `pip-compile` manager reads that
+command and runs uv directly. Keep the default command header so Renovate can
+reproduce the resolution. The Make target passes `--upgrade`, which uv omits from
+the generated header. To upgrade a single package instead, run the recorded
+command with `--upgrade-package <name>`.
+
+When adding or removing a runtime dependency in the job's code, update both
+`requirements-aipcc.in` and `pyproject.toml`. Their resolved versions can differ
+because the product image uses the Red Hat index.
+
 ## Job Configuration
 
 The async job is able to take a number of configuration parameters and environment variables which can be consumed to perform the job of synchronizing a model from a source to a destination.
