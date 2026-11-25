@@ -4,13 +4,13 @@ lockfileVendor: redhat
 arches:
 - arch: aarch64
   packages:
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/aarch64/appstream/os/Packages/c/containers-common-1-117.el9_6.aarch64.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/aarch64/appstream/os/Packages/c/containers-common-5.8-1.el9_6.aarch64.rpm
     repoid: rhel-9-for-aarch64-appstream-eus-rpms
-    size: 158379
-    checksum: sha256:5571ade0c71bbf0266315f2584693de7e517df4fe6b0ea0e84381030573b08d9
+    size: 152070
+    checksum: sha256:d8d4a95e274b6180f301b6a956108385ab2d32314628d8bd9719d625edbfaef6
     name: containers-common
-    evr: 2:1-117.el9_6
-    sourcerpm: containers-common-1-117.el9_6.src.rpm
+    evr: 2:5.8-1.el9_6
+    sourcerpm: containers-common-5.8-1.el9_6.src.rpm
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/aarch64/appstream/os/Packages/c/criu-3.19-1.3.el9_6.aarch64.rpm
     repoid: rhel-9-for-aarch64-appstream-eus-rpms
     size: 553589
@@ -32,13 +32,13 @@ arches:
     name: crun
     evr: 1.27-1.el9_6
     sourcerpm: crun-1.27-1.el9_6.src.rpm
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/aarch64/appstream/os/Packages/f/fuse-overlayfs-1.14-1.el9.aarch64.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/aarch64/appstream/os/Packages/f/fuse-overlayfs-1.16-1.el9_6.aarch64.rpm
     repoid: rhel-9-for-aarch64-appstream-eus-rpms
-    size: 66963
-    checksum: sha256:aa95ce8a964df785e349e8ef3baf12eacde4695be51923fecfdbdc1b69b41933
+    size: 62954
+    checksum: sha256:6674b4dfd41a91dd348ed2ad51bf0d65bb492c1d0db33122b16443a346417cb8
     name: fuse-overlayfs
-    evr: 1.14-1.el9
-    sourcerpm: fuse-overlayfs-1.14-1.el9.src.rpm
+    evr: 1.16-1.el9_6
+    sourcerpm: fuse-overlayfs-1.16-1.el9_6.src.rpm
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/aarch64/appstream/os/Packages/f/fuse3-3.10.2-9.el9.aarch64.rpm
     repoid: rhel-9-for-aarch64-appstream-eus-rpms
     size: 58189
@@ -67,20 +67,20 @@ arches:
     name: libslirp
     evr: 4.4.0-8.el9
     sourcerpm: libslirp-4.4.0-8.el9.src.rpm
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/aarch64/appstream/os/Packages/s/skopeo-1.18.1-6.el9_6.1.aarch64.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/aarch64/appstream/os/Packages/s/skopeo-1.22.2-7.el9_6.1.aarch64.rpm
     repoid: rhel-9-for-aarch64-appstream-eus-rpms
-    size: 8992675
-    checksum: sha256:76f9882bba6e3ad859e0956e65a8a0f7a300f1db3c88f6ac9e4770bd6148f48a
+    size: 8319398
+    checksum: sha256:3be10cd655399024241560a2b5c2f8246dbd8cdb031dbd03c8d8ff35cb818812
     name: skopeo
-    evr: 2:1.18.1-6.el9_6.1
-    sourcerpm: skopeo-1.18.1-6.el9_6.1.src.rpm
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/aarch64/appstream/os/Packages/s/slirp4netns-1.3.2-1.el9.aarch64.rpm
+    evr: 2:1.22.2-7.el9_6.1
+    sourcerpm: skopeo-1.22.2-7.el9_6.1.src.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/aarch64/appstream/os/Packages/s/slirp4netns-1.3.3-0.el9_6.aarch64.rpm
     repoid: rhel-9-for-aarch64-appstream-eus-rpms
-    size: 50394
-    checksum: sha256:01db172d566e090d3a0789d27c3dd7d7151458765b6264784e0fa3d89b132fee
+    size: 46481
+    checksum: sha256:3a97cbb71dcf0fe14e9526d6f6c6de3530570edffb69ce490d5958f1892fa776
     name: slirp4netns
-    evr: 1.3.2-1.el9
-    sourcerpm: slirp4netns-1.3.2-1.el9.src.rpm
+    evr: 1.3.3-0.el9_6
+    sourcerpm: slirp4netns-1.3.3-0.el9_6.src.rpm
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/aarch64/appstream/os/Packages/y/yajl-2.1.0-25.el9.aarch64.rpm
     repoid: rhel-9-for-aarch64-appstream-eus-rpms
     size: 42219
@@ -117,12 +117,12 @@ arches:
     evr: 2:4.9-12.el9
     sourcerpm: shadow-utils-4.9-12.el9.src.rpm
   source:
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/aarch64/appstream/source/SRPMS/Packages/c/containers-common-1-117.el9_6.src.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/aarch64/appstream/source/SRPMS/Packages/c/containers-common-5.8-1.el9_6.src.rpm
     repoid: rhel-9-for-aarch64-appstream-eus-source-rpms
-    size: 168528
-    checksum: sha256:3ae3f5c20849053dcd2d8dfc378f1687f63c19280045df9af39071d83d329834
+    size: 162281
+    checksum: sha256:d17a14e483bf5e124427ef858fa1498c4ffb18425e49920f8fcdd27607f3aeaa
     name: containers-common
-    evr: 2:1-117.el9_6
+    evr: 2:5.8-1.el9_6
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/aarch64/appstream/source/SRPMS/Packages/c/criu-3.19-1.3.el9_6.src.rpm
     repoid: rhel-9-for-aarch64-appstream-eus-source-rpms
     size: 1405660
@@ -135,12 +135,12 @@ arches:
     checksum: sha256:c67bc0ef627591ddc81255fd97d9d47e30d2bf66b60081a877f2efb25af11bfa
     name: crun
     evr: 1.27-1.el9_6
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/aarch64/appstream/source/SRPMS/Packages/f/fuse-overlayfs-1.14-1.el9.src.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/aarch64/appstream/source/SRPMS/Packages/f/fuse-overlayfs-1.16-1.el9_6.src.rpm
     repoid: rhel-9-for-aarch64-appstream-eus-source-rpms
-    size: 114235
-    checksum: sha256:ed1f6fd4c4c9efc2e499ffcb86c63d0f82657395e579a3f7b8525a4087ba5ece
+    size: 127145
+    checksum: sha256:bff318ac005d59b21632193d8b9782a8f352417fc6ab4d735360599154c3c5f6
     name: fuse-overlayfs
-    evr: 1.14-1.el9
+    evr: 1.16-1.el9_6
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/aarch64/appstream/source/SRPMS/Packages/l/libnet-1.2-7.el9.src.rpm
     repoid: rhel-9-for-aarch64-appstream-eus-source-rpms
     size: 611553
@@ -153,18 +153,18 @@ arches:
     checksum: sha256:5e740382ebf1511fc7c4fa0c1db0bc72fad624329ff9e359cea75cccbed503e4
     name: libslirp
     evr: 4.4.0-8.el9
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/aarch64/appstream/source/SRPMS/Packages/s/skopeo-1.18.1-6.el9_6.1.src.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/aarch64/appstream/source/SRPMS/Packages/s/skopeo-1.22.2-7.el9_6.1.src.rpm
     repoid: rhel-9-for-aarch64-appstream-eus-source-rpms
-    size: 10656578
-    checksum: sha256:f098606996924059355806d84ab6c95d25368b9b4f09b6c749a2e4b3da41177b
+    size: 10186828
+    checksum: sha256:13bc8de0c67908baca0d67fc021078ad66e8700a971ee8b8625390627f0d5f2d
     name: skopeo
-    evr: 2:1.18.1-6.el9_6.1
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/aarch64/appstream/source/SRPMS/Packages/s/slirp4netns-1.3.2-1.el9.src.rpm
+    evr: 2:1.22.2-7.el9_6.1
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/aarch64/appstream/source/SRPMS/Packages/s/slirp4netns-1.3.3-0.el9_6.src.rpm
     repoid: rhel-9-for-aarch64-appstream-eus-source-rpms
-    size: 76240
-    checksum: sha256:9f048c86095d12608596b30fc60180fd0cc5ae4f4e5c25d26567f82b15cafede
+    size: 74047
+    checksum: sha256:9c9d8e7e335e2f847e92a3c5f095bc2642df5abc21bb6369c2ff7b11ecf651a7
     name: slirp4netns
-    evr: 1.3.2-1.el9
+    evr: 1.3.3-0.el9_6
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/aarch64/appstream/source/SRPMS/Packages/y/yajl-2.1.0-25.el9.src.rpm
     repoid: rhel-9-for-aarch64-appstream-eus-source-rpms
     size: 101373
@@ -198,13 +198,13 @@ arches:
   module_metadata: []
 - arch: ppc64le
   packages:
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/ppc64le/appstream/os/Packages/c/containers-common-1-117.el9_6.ppc64le.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/ppc64le/appstream/os/Packages/c/containers-common-5.8-1.el9_6.ppc64le.rpm
     repoid: rhel-9-for-ppc64le-appstream-eus-rpms
-    size: 158353
-    checksum: sha256:d69a20c9463d424df9c50fdefb91a10f7cd4e9e98d65b32739f0bc7412aba84d
+    size: 152088
+    checksum: sha256:668593f7be20c0741a67181717e59d2e85b5df050fe984d3f4a164abeb209050
     name: containers-common
-    evr: 2:1-117.el9_6
-    sourcerpm: containers-common-1-117.el9_6.src.rpm
+    evr: 2:5.8-1.el9_6
+    sourcerpm: containers-common-5.8-1.el9_6.src.rpm
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/ppc64le/appstream/os/Packages/c/criu-3.19-1.3.el9_6.ppc64le.rpm
     repoid: rhel-9-for-ppc64le-appstream-eus-rpms
     size: 602037
@@ -226,13 +226,13 @@ arches:
     name: crun
     evr: 1.27-1.el9_6
     sourcerpm: crun-1.27-1.el9_6.src.rpm
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/ppc64le/appstream/os/Packages/f/fuse-overlayfs-1.14-1.el9.ppc64le.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/ppc64le/appstream/os/Packages/f/fuse-overlayfs-1.16-1.el9_6.ppc64le.rpm
     repoid: rhel-9-for-ppc64le-appstream-eus-rpms
-    size: 72573
-    checksum: sha256:e75b7ccde7aeddf184db04d818e89ef79d3f664497799b9b135ef10fff2a084c
+    size: 68978
+    checksum: sha256:be2e792b5587ba0181f1cba7166388334629bc8aa7444bda680a6afa4e59bdf3
     name: fuse-overlayfs
-    evr: 1.14-1.el9
-    sourcerpm: fuse-overlayfs-1.14-1.el9.src.rpm
+    evr: 1.16-1.el9_6
+    sourcerpm: fuse-overlayfs-1.16-1.el9_6.src.rpm
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/ppc64le/appstream/os/Packages/f/fuse3-3.10.2-9.el9.ppc64le.rpm
     repoid: rhel-9-for-ppc64le-appstream-eus-rpms
     size: 60949
@@ -261,20 +261,20 @@ arches:
     name: libslirp
     evr: 4.4.0-8.el9
     sourcerpm: libslirp-4.4.0-8.el9.src.rpm
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/ppc64le/appstream/os/Packages/s/skopeo-1.18.1-6.el9_6.1.ppc64le.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/ppc64le/appstream/os/Packages/s/skopeo-1.22.2-7.el9_6.1.ppc64le.rpm
     repoid: rhel-9-for-ppc64le-appstream-eus-rpms
-    size: 9158905
-    checksum: sha256:8d76919d3a0255d757445820d5ea34fbab7fbd267268100b98c03a58cc95a77a
+    size: 8488726
+    checksum: sha256:7b0cc3e6f1b5731fd048388e87afa6b97b389f3c5a22caa034bc7d2c9da9b987
     name: skopeo
-    evr: 2:1.18.1-6.el9_6.1
-    sourcerpm: skopeo-1.18.1-6.el9_6.1.src.rpm
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/ppc64le/appstream/os/Packages/s/slirp4netns-1.3.2-1.el9.ppc64le.rpm
+    evr: 2:1.22.2-7.el9_6.1
+    sourcerpm: skopeo-1.22.2-7.el9_6.1.src.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/ppc64le/appstream/os/Packages/s/slirp4netns-1.3.3-0.el9_6.ppc64le.rpm
     repoid: rhel-9-for-ppc64le-appstream-eus-rpms
-    size: 52666
-    checksum: sha256:890db2a14491bda11835eee68db88dc53150b6b60db2164d09e8878b1e068e20
+    size: 48829
+    checksum: sha256:ea8ceea7326476568c67641f8ff5b2de48f1ea89c366dc0925ed5fde0c055654
     name: slirp4netns
-    evr: 1.3.2-1.el9
-    sourcerpm: slirp4netns-1.3.2-1.el9.src.rpm
+    evr: 1.3.3-0.el9_6
+    sourcerpm: slirp4netns-1.3.3-0.el9_6.src.rpm
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/ppc64le/appstream/os/Packages/y/yajl-2.1.0-25.el9.ppc64le.rpm
     repoid: rhel-9-for-ppc64le-appstream-eus-rpms
     size: 44667
@@ -311,12 +311,12 @@ arches:
     evr: 2:4.9-12.el9
     sourcerpm: shadow-utils-4.9-12.el9.src.rpm
   source:
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/ppc64le/appstream/source/SRPMS/Packages/c/containers-common-1-117.el9_6.src.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/ppc64le/appstream/source/SRPMS/Packages/c/containers-common-5.8-1.el9_6.src.rpm
     repoid: rhel-9-for-ppc64le-appstream-eus-source-rpms
-    size: 168528
-    checksum: sha256:3ae3f5c20849053dcd2d8dfc378f1687f63c19280045df9af39071d83d329834
+    size: 162281
+    checksum: sha256:d17a14e483bf5e124427ef858fa1498c4ffb18425e49920f8fcdd27607f3aeaa
     name: containers-common
-    evr: 2:1-117.el9_6
+    evr: 2:5.8-1.el9_6
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/ppc64le/appstream/source/SRPMS/Packages/c/criu-3.19-1.3.el9_6.src.rpm
     repoid: rhel-9-for-ppc64le-appstream-eus-source-rpms
     size: 1405660
@@ -329,12 +329,12 @@ arches:
     checksum: sha256:c67bc0ef627591ddc81255fd97d9d47e30d2bf66b60081a877f2efb25af11bfa
     name: crun
     evr: 1.27-1.el9_6
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/ppc64le/appstream/source/SRPMS/Packages/f/fuse-overlayfs-1.14-1.el9.src.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/ppc64le/appstream/source/SRPMS/Packages/f/fuse-overlayfs-1.16-1.el9_6.src.rpm
     repoid: rhel-9-for-ppc64le-appstream-eus-source-rpms
-    size: 114235
-    checksum: sha256:ed1f6fd4c4c9efc2e499ffcb86c63d0f82657395e579a3f7b8525a4087ba5ece
+    size: 127145
+    checksum: sha256:bff318ac005d59b21632193d8b9782a8f352417fc6ab4d735360599154c3c5f6
     name: fuse-overlayfs
-    evr: 1.14-1.el9
+    evr: 1.16-1.el9_6
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/ppc64le/appstream/source/SRPMS/Packages/l/libnet-1.2-7.el9.src.rpm
     repoid: rhel-9-for-ppc64le-appstream-eus-source-rpms
     size: 611553
@@ -347,18 +347,18 @@ arches:
     checksum: sha256:5e740382ebf1511fc7c4fa0c1db0bc72fad624329ff9e359cea75cccbed503e4
     name: libslirp
     evr: 4.4.0-8.el9
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/ppc64le/appstream/source/SRPMS/Packages/s/skopeo-1.18.1-6.el9_6.1.src.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/ppc64le/appstream/source/SRPMS/Packages/s/skopeo-1.22.2-7.el9_6.1.src.rpm
     repoid: rhel-9-for-ppc64le-appstream-eus-source-rpms
-    size: 10656578
-    checksum: sha256:f098606996924059355806d84ab6c95d25368b9b4f09b6c749a2e4b3da41177b
+    size: 10186828
+    checksum: sha256:13bc8de0c67908baca0d67fc021078ad66e8700a971ee8b8625390627f0d5f2d
     name: skopeo
-    evr: 2:1.18.1-6.el9_6.1
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/ppc64le/appstream/source/SRPMS/Packages/s/slirp4netns-1.3.2-1.el9.src.rpm
+    evr: 2:1.22.2-7.el9_6.1
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/ppc64le/appstream/source/SRPMS/Packages/s/slirp4netns-1.3.3-0.el9_6.src.rpm
     repoid: rhel-9-for-ppc64le-appstream-eus-source-rpms
-    size: 76240
-    checksum: sha256:9f048c86095d12608596b30fc60180fd0cc5ae4f4e5c25d26567f82b15cafede
+    size: 74047
+    checksum: sha256:9c9d8e7e335e2f847e92a3c5f095bc2642df5abc21bb6369c2ff7b11ecf651a7
     name: slirp4netns
-    evr: 1.3.2-1.el9
+    evr: 1.3.3-0.el9_6
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/ppc64le/appstream/source/SRPMS/Packages/y/yajl-2.1.0-25.el9.src.rpm
     repoid: rhel-9-for-ppc64le-appstream-eus-source-rpms
     size: 101373
@@ -392,13 +392,13 @@ arches:
   module_metadata: []
 - arch: s390x
   packages:
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/s390x/appstream/os/Packages/c/containers-common-1-117.el9_6.s390x.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/s390x/appstream/os/Packages/c/containers-common-5.8-1.el9_6.s390x.rpm
     repoid: rhel-9-for-s390x-appstream-eus-rpms
-    size: 158384
-    checksum: sha256:43f617e6883b9888af1d8cd5a97ff4bccc145839a1cffa7c3d07b5d0b27effa5
+    size: 152085
+    checksum: sha256:2bc541cd303099f7a568b40d1867a1e150ef17708687a1201042ffc6b906f1da
     name: containers-common
-    evr: 2:1-117.el9_6
-    sourcerpm: containers-common-1-117.el9_6.src.rpm
+    evr: 2:5.8-1.el9_6
+    sourcerpm: containers-common-5.8-1.el9_6.src.rpm
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/s390x/appstream/os/Packages/c/criu-3.19-1.3.el9_6.s390x.rpm
     repoid: rhel-9-for-s390x-appstream-eus-rpms
     size: 536366
@@ -420,13 +420,13 @@ arches:
     name: crun
     evr: 1.27-1.el9_6
     sourcerpm: crun-1.27-1.el9_6.src.rpm
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/s390x/appstream/os/Packages/f/fuse-overlayfs-1.14-1.el9.s390x.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/s390x/appstream/os/Packages/f/fuse-overlayfs-1.16-1.el9_6.s390x.rpm
     repoid: rhel-9-for-s390x-appstream-eus-rpms
-    size: 67551
-    checksum: sha256:93f1e55607f125f9cee078491ac5e283b27ca8e0f715a2925dc7cd9f2373a340
+    size: 63507
+    checksum: sha256:c2fa8347cf05245c633c8363a0ea0d515c107a7185778b165828614158fa4fb8
     name: fuse-overlayfs
-    evr: 1.14-1.el9
-    sourcerpm: fuse-overlayfs-1.14-1.el9.src.rpm
+    evr: 1.16-1.el9_6
+    sourcerpm: fuse-overlayfs-1.16-1.el9_6.src.rpm
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/s390x/appstream/os/Packages/f/fuse3-3.10.2-9.el9.s390x.rpm
     repoid: rhel-9-for-s390x-appstream-eus-rpms
     size: 58849
@@ -455,20 +455,20 @@ arches:
     name: libslirp
     evr: 4.4.0-8.el9
     sourcerpm: libslirp-4.4.0-8.el9.src.rpm
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/s390x/appstream/os/Packages/s/skopeo-1.18.1-6.el9_6.1.s390x.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/s390x/appstream/os/Packages/s/skopeo-1.22.2-7.el9_6.1.s390x.rpm
     repoid: rhel-9-for-s390x-appstream-eus-rpms
-    size: 9481854
-    checksum: sha256:80e3d075d02bb9d1a56fbd48bede46159910764a00af3fbcf029fa05f393ea38
+    size: 8778046
+    checksum: sha256:f11278527fa348966dc8230b47179f9335af58e346923543ff93baff72bee7d0
     name: skopeo
-    evr: 2:1.18.1-6.el9_6.1
-    sourcerpm: skopeo-1.18.1-6.el9_6.1.src.rpm
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/s390x/appstream/os/Packages/s/slirp4netns-1.3.2-1.el9.s390x.rpm
+    evr: 2:1.22.2-7.el9_6.1
+    sourcerpm: skopeo-1.22.2-7.el9_6.1.src.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/s390x/appstream/os/Packages/s/slirp4netns-1.3.3-0.el9_6.s390x.rpm
     repoid: rhel-9-for-s390x-appstream-eus-rpms
-    size: 50223
-    checksum: sha256:09569926443a6a55fc83ab3f527ba2f7615132dece1ba6c907756b1f5c122a17
+    size: 46394
+    checksum: sha256:4b357a9abe58ac16883f8459ccb87e36d8813b7e7acce080ef13ee46d7d4a6d7
     name: slirp4netns
-    evr: 1.3.2-1.el9
-    sourcerpm: slirp4netns-1.3.2-1.el9.src.rpm
+    evr: 1.3.3-0.el9_6
+    sourcerpm: slirp4netns-1.3.3-0.el9_6.src.rpm
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/s390x/appstream/os/Packages/y/yajl-2.1.0-25.el9.s390x.rpm
     repoid: rhel-9-for-s390x-appstream-eus-rpms
     size: 41891
@@ -505,12 +505,12 @@ arches:
     evr: 2:4.9-12.el9
     sourcerpm: shadow-utils-4.9-12.el9.src.rpm
   source:
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/s390x/appstream/source/SRPMS/Packages/c/containers-common-1-117.el9_6.src.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/s390x/appstream/source/SRPMS/Packages/c/containers-common-5.8-1.el9_6.src.rpm
     repoid: rhel-9-for-s390x-appstream-eus-source-rpms
-    size: 168528
-    checksum: sha256:3ae3f5c20849053dcd2d8dfc378f1687f63c19280045df9af39071d83d329834
+    size: 162281
+    checksum: sha256:d17a14e483bf5e124427ef858fa1498c4ffb18425e49920f8fcdd27607f3aeaa
     name: containers-common
-    evr: 2:1-117.el9_6
+    evr: 2:5.8-1.el9_6
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/s390x/appstream/source/SRPMS/Packages/c/criu-3.19-1.3.el9_6.src.rpm
     repoid: rhel-9-for-s390x-appstream-eus-source-rpms
     size: 1405660
@@ -523,12 +523,12 @@ arches:
     checksum: sha256:c67bc0ef627591ddc81255fd97d9d47e30d2bf66b60081a877f2efb25af11bfa
     name: crun
     evr: 1.27-1.el9_6
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/s390x/appstream/source/SRPMS/Packages/f/fuse-overlayfs-1.14-1.el9.src.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/s390x/appstream/source/SRPMS/Packages/f/fuse-overlayfs-1.16-1.el9_6.src.rpm
     repoid: rhel-9-for-s390x-appstream-eus-source-rpms
-    size: 114235
-    checksum: sha256:ed1f6fd4c4c9efc2e499ffcb86c63d0f82657395e579a3f7b8525a4087ba5ece
+    size: 127145
+    checksum: sha256:bff318ac005d59b21632193d8b9782a8f352417fc6ab4d735360599154c3c5f6
     name: fuse-overlayfs
-    evr: 1.14-1.el9
+    evr: 1.16-1.el9_6
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/s390x/appstream/source/SRPMS/Packages/l/libnet-1.2-7.el9.src.rpm
     repoid: rhel-9-for-s390x-appstream-eus-source-rpms
     size: 611553
@@ -541,18 +541,18 @@ arches:
     checksum: sha256:5e740382ebf1511fc7c4fa0c1db0bc72fad624329ff9e359cea75cccbed503e4
     name: libslirp
     evr: 4.4.0-8.el9
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/s390x/appstream/source/SRPMS/Packages/s/skopeo-1.18.1-6.el9_6.1.src.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/s390x/appstream/source/SRPMS/Packages/s/skopeo-1.22.2-7.el9_6.1.src.rpm
     repoid: rhel-9-for-s390x-appstream-eus-source-rpms
-    size: 10656578
-    checksum: sha256:f098606996924059355806d84ab6c95d25368b9b4f09b6c749a2e4b3da41177b
+    size: 10186828
+    checksum: sha256:13bc8de0c67908baca0d67fc021078ad66e8700a971ee8b8625390627f0d5f2d
     name: skopeo
-    evr: 2:1.18.1-6.el9_6.1
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/s390x/appstream/source/SRPMS/Packages/s/slirp4netns-1.3.2-1.el9.src.rpm
+    evr: 2:1.22.2-7.el9_6.1
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/s390x/appstream/source/SRPMS/Packages/s/slirp4netns-1.3.3-0.el9_6.src.rpm
     repoid: rhel-9-for-s390x-appstream-eus-source-rpms
-    size: 76240
-    checksum: sha256:9f048c86095d12608596b30fc60180fd0cc5ae4f4e5c25d26567f82b15cafede
+    size: 74047
+    checksum: sha256:9c9d8e7e335e2f847e92a3c5f095bc2642df5abc21bb6369c2ff7b11ecf651a7
     name: slirp4netns
-    evr: 1.3.2-1.el9
+    evr: 1.3.3-0.el9_6
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/s390x/appstream/source/SRPMS/Packages/y/yajl-2.1.0-25.el9.src.rpm
     repoid: rhel-9-for-s390x-appstream-eus-source-rpms
     size: 101373
@@ -586,13 +586,13 @@ arches:
   module_metadata: []
 - arch: x86_64
   packages:
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/x86_64/appstream/os/Packages/c/containers-common-1-117.el9_6.x86_64.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/x86_64/appstream/os/Packages/c/containers-common-5.8-1.el9_6.x86_64.rpm
     repoid: rhel-9-for-x86_64-appstream-eus-rpms
-    size: 158417
-    checksum: sha256:4a45b00847d30c3c804a6184af69e0e11836be975e51960596ce31c459a5d532
+    size: 152108
+    checksum: sha256:e9eb65fa1ce8ba16c2d7f0c2e4b71f45215b5135b99bfc6d000a69cc74bc7d77
     name: containers-common
-    evr: 2:1-117.el9_6
-    sourcerpm: containers-common-1-117.el9_6.src.rpm
+    evr: 2:5.8-1.el9_6
+    sourcerpm: containers-common-5.8-1.el9_6.src.rpm
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/x86_64/appstream/os/Packages/c/criu-3.19-1.3.el9_6.x86_64.rpm
     repoid: rhel-9-for-x86_64-appstream-eus-rpms
     size: 568833
@@ -614,13 +614,13 @@ arches:
     name: crun
     evr: 1.27-1.el9_6
     sourcerpm: crun-1.27-1.el9_6.src.rpm
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/x86_64/appstream/os/Packages/f/fuse-overlayfs-1.14-1.el9.x86_64.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/x86_64/appstream/os/Packages/f/fuse-overlayfs-1.16-1.el9_6.x86_64.rpm
     repoid: rhel-9-for-x86_64-appstream-eus-rpms
-    size: 71022
-    checksum: sha256:884e4034c930e0305d2402da2bdc1eac5a91295da06e554b75c1c9a4529ddbc2
+    size: 66834
+    checksum: sha256:a473aa7a053d1dbee833f8527ee31dad8dfb483f48eda7b51d72e9691024f6c6
     name: fuse-overlayfs
-    evr: 1.14-1.el9
-    sourcerpm: fuse-overlayfs-1.14-1.el9.src.rpm
+    evr: 1.16-1.el9_6
+    sourcerpm: fuse-overlayfs-1.16-1.el9_6.src.rpm
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/x86_64/appstream/os/Packages/f/fuse3-3.10.2-9.el9.x86_64.rpm
     repoid: rhel-9-for-x86_64-appstream-eus-rpms
     size: 58706
@@ -649,20 +649,20 @@ arches:
     name: libslirp
     evr: 4.4.0-8.el9
     sourcerpm: libslirp-4.4.0-8.el9.src.rpm
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/x86_64/appstream/os/Packages/s/skopeo-1.18.1-6.el9_6.1.x86_64.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/x86_64/appstream/os/Packages/s/skopeo-1.22.2-7.el9_6.1.x86_64.rpm
     repoid: rhel-9-for-x86_64-appstream-eus-rpms
-    size: 9973378
-    checksum: sha256:232d745aee4e922e5d4623b164d016043195a27b5d6a8db753e176dcc6d2c6e3
+    size: 9242784
+    checksum: sha256:9056af98b17072c4f2328c66efd1c27b4737589af7e1730fa1cb4b579fd83e19
     name: skopeo
-    evr: 2:1.18.1-6.el9_6.1
-    sourcerpm: skopeo-1.18.1-6.el9_6.1.src.rpm
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/x86_64/appstream/os/Packages/s/slirp4netns-1.3.2-1.el9.x86_64.rpm
+    evr: 2:1.22.2-7.el9_6.1
+    sourcerpm: skopeo-1.22.2-7.el9_6.1.src.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/x86_64/appstream/os/Packages/s/slirp4netns-1.3.3-0.el9_6.x86_64.rpm
     repoid: rhel-9-for-x86_64-appstream-eus-rpms
-    size: 50387
-    checksum: sha256:25a2a6c5cee50c6f4693ee66c782e9644f4ba1fe410c795391afcc07546496e7
+    size: 46568
+    checksum: sha256:54e2746faa23948838dd0bc975b05d32c4cfe81aec7d9b20156bb464c41f3009
     name: slirp4netns
-    evr: 1.3.2-1.el9
-    sourcerpm: slirp4netns-1.3.2-1.el9.src.rpm
+    evr: 1.3.3-0.el9_6
+    sourcerpm: slirp4netns-1.3.3-0.el9_6.src.rpm
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/x86_64/appstream/os/Packages/y/yajl-2.1.0-25.el9.x86_64.rpm
     repoid: rhel-9-for-x86_64-appstream-eus-rpms
     size: 42487
@@ -699,12 +699,12 @@ arches:
     evr: 2:4.9-12.el9
     sourcerpm: shadow-utils-4.9-12.el9.src.rpm
   source:
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/x86_64/appstream/source/SRPMS/Packages/c/containers-common-1-117.el9_6.src.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/x86_64/appstream/source/SRPMS/Packages/c/containers-common-5.8-1.el9_6.src.rpm
     repoid: rhel-9-for-x86_64-appstream-eus-source-rpms
-    size: 168528
-    checksum: sha256:3ae3f5c20849053dcd2d8dfc378f1687f63c19280045df9af39071d83d329834
+    size: 162281
+    checksum: sha256:d17a14e483bf5e124427ef858fa1498c4ffb18425e49920f8fcdd27607f3aeaa
     name: containers-common
-    evr: 2:1-117.el9_6
+    evr: 2:5.8-1.el9_6
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/x86_64/appstream/source/SRPMS/Packages/c/criu-3.19-1.3.el9_6.src.rpm
     repoid: rhel-9-for-x86_64-appstream-eus-source-rpms
     size: 1405660
@@ -717,12 +717,12 @@ arches:
     checksum: sha256:c67bc0ef627591ddc81255fd97d9d47e30d2bf66b60081a877f2efb25af11bfa
     name: crun
     evr: 1.27-1.el9_6
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/x86_64/appstream/source/SRPMS/Packages/f/fuse-overlayfs-1.14-1.el9.src.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/x86_64/appstream/source/SRPMS/Packages/f/fuse-overlayfs-1.16-1.el9_6.src.rpm
     repoid: rhel-9-for-x86_64-appstream-eus-source-rpms
-    size: 114235
-    checksum: sha256:ed1f6fd4c4c9efc2e499ffcb86c63d0f82657395e579a3f7b8525a4087ba5ece
+    size: 127145
+    checksum: sha256:bff318ac005d59b21632193d8b9782a8f352417fc6ab4d735360599154c3c5f6
     name: fuse-overlayfs
-    evr: 1.14-1.el9
+    evr: 1.16-1.el9_6
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/x86_64/appstream/source/SRPMS/Packages/l/libnet-1.2-7.el9.src.rpm
     repoid: rhel-9-for-x86_64-appstream-eus-source-rpms
     size: 611553
@@ -735,18 +735,18 @@ arches:
     checksum: sha256:5e740382ebf1511fc7c4fa0c1db0bc72fad624329ff9e359cea75cccbed503e4
     name: libslirp
     evr: 4.4.0-8.el9
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/x86_64/appstream/source/SRPMS/Packages/s/skopeo-1.18.1-6.el9_6.1.src.rpm
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/x86_64/appstream/source/SRPMS/Packages/s/skopeo-1.22.2-7.el9_6.1.src.rpm
     repoid: rhel-9-for-x86_64-appstream-eus-source-rpms
-    size: 10656578
-    checksum: sha256:f098606996924059355806d84ab6c95d25368b9b4f09b6c749a2e4b3da41177b
+    size: 10186828
+    checksum: sha256:13bc8de0c67908baca0d67fc021078ad66e8700a971ee8b8625390627f0d5f2d
     name: skopeo
-    evr: 2:1.18.1-6.el9_6.1
-  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/x86_64/appstream/source/SRPMS/Packages/s/slirp4netns-1.3.2-1.el9.src.rpm
+    evr: 2:1.22.2-7.el9_6.1
+  - url: https://cdn.redhat.com/content/eus/rhel9/9.6/x86_64/appstream/source/SRPMS/Packages/s/slirp4netns-1.3.3-0.el9_6.src.rpm
     repoid: rhel-9-for-x86_64-appstream-eus-source-rpms
-    size: 76240
-    checksum: sha256:9f048c86095d12608596b30fc60180fd0cc5ae4f4e5c25d26567f82b15cafede
+    size: 74047
+    checksum: sha256:9c9d8e7e335e2f847e92a3c5f095bc2642df5abc21bb6369c2ff7b11ecf651a7
     name: slirp4netns
-    evr: 1.3.2-1.el9
+    evr: 1.3.3-0.el9_6
   - url: https://cdn.redhat.com/content/eus/rhel9/9.6/x86_64/appstream/source/SRPMS/Packages/y/yajl-2.1.0-25.el9.src.rpm
     repoid: rhel-9-for-x86_64-appstream-eus-source-rpms
     size: 101373
