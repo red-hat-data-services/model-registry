@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"net/http"
 	"regexp"
 	"strings"
 
@@ -34,10 +35,19 @@ type ModelRegistryProvider struct {
 }
 
 func NewModelRegistryProvider(client *openapi.APIClient, allowedURIPrefixes []string) (*ModelRegistryProvider, error) {
+	validator := NewURIValidator(allowedURIPrefixes)
+	// kserve's default HTTP(S) provider follows redirects without checking them,
+	// so register one whose client validates each redirect target.
+	httpProvider := &kserve.HTTPSProvider{
+		Client: &http.Client{CheckRedirect: validator.CheckRedirect},
+	}
 	return &ModelRegistryProvider{
-		Client:       client,
-		Providers:    map[kserve.Protocol]kserve.Provider{},
-		URIValidator: NewURIValidator(allowedURIPrefixes),
+		Client: client,
+		Providers: map[kserve.Protocol]kserve.Provider{
+			kserve.HTTP:  httpProvider,
+			kserve.HTTPS: httpProvider,
+		},
+		URIValidator: validator,
 	}, nil
 }
 
@@ -79,7 +89,10 @@ func (p *ModelRegistryProvider) DownloadModel(modelDir string, modelName string,
 
 	log.Printf("Fetching model artifacts: version=%v", version)
 
+	// Only model artifacts can be served. A version can also hold metrics,
+	// parameters, or documentation, which may be newer than its model artifact.
 	artifacts, _, err := p.Client.ModelRegistryServiceAPI.GetModelVersionArtifacts(context.Background(), *version.Id).
+		ArtifactType(openapi.ARTIFACTTYPEQUERYPARAM_MODEL_ARTIFACT).
 		OrderBy(openapi.ORDERBYFIELD_CREATE_TIME).
 		SortOrder(openapi.SORTORDER_DESC).
 		Execute()

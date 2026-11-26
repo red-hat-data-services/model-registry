@@ -45,3 +45,7 @@ markers = [
 
 [tool.ruff]
 line-length = 119
+
+[tool.uv]
+# Product wheels target Linux; universal resolution covers its architectures.
+environments = ["sys_platform == 'linux'"]
