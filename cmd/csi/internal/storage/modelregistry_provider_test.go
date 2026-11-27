@@ -1,8 +1,14 @@
 package storage
 
 import (
+	"errors"
+	"fmt"
+	"net/http"
+	"net/http/httptest"
+	"strings"
 	"testing"
 
+	kserve "github.com/kserve/kserve/pkg/agent/storage"
 	"github.com/kubeflow/hub/pkg/openapi"
 	"github.com/stretchr/testify/assert"
 )
@@ -182,6 +188,118 @@ func TestExtractProtocol(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.expected, string(protocol))
 			}
+		})
+	}
+}
+
+type recordingProvider struct {
+	storageURI string
+}
+
+func (r *recordingProvider) DownloadModel(_ string, _ string, storageURI string) error {
+	r.storageURI = storageURI
+	return nil
+}
+
+func (*recordingProvider) UploadObject(string, string, []byte) error {
+	return nil
+}
+
+func TestDownloadModelUsesModelArtifactWhenNewerArtifactsExist(t *testing.T) {
+	const modelArtifact = `{"artifactType":"model-artifact","id":"3","name":"iris","uri":"s3://bucket/iris"}`
+	// A metric logged on the version after it was registered is the newest artifact.
+	const metric = `{"artifactType":"metric","id":"4","name":"accuracy","value":0.9}`
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch {
+		case strings.HasSuffix(r.URL.Path, "/registered_model"):
+			_, _ = fmt.Fprint(w, `{"id":"1","name":"iris"}`)
+		case strings.HasSuffix(r.URL.Path, "/model_version"):
+			_, _ = fmt.Fprint(w, `{"id":"2","name":"v1","registeredModelId":"1"}`)
+		case strings.HasSuffix(r.URL.Path, "/model_versions/2/artifacts"):
+			items := metric + "," + modelArtifact
+			size := 2
+			if r.URL.Query().Get("artifactType") == string(openapi.ARTIFACTTYPEQUERYPARAM_MODEL_ARTIFACT) {
+				items, size = modelArtifact, 1
+			}
+			_, _ = fmt.Fprintf(w, `{"items":[%s],"size":%d,"pageSize":100,"nextPageToken":""}`, items, size)
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	defer server.Close()
+
+	cfg := openapi.NewConfiguration()
+	cfg.Host = strings.TrimPrefix(server.URL, "http://")
+	cfg.Scheme = "http"
+	s3 := &recordingProvider{}
+	provider := &ModelRegistryProvider{
+		Client:       openapi.NewAPIClient(cfg),
+		Providers:    map[kserve.Protocol]kserve.Provider{kserve.S3: s3},
+		URIValidator: NewURIValidator(nil),
+	}
+
+	err := provider.DownloadModel(t.TempDir(), "", "model-registry://iris/v1")
+
+	assert.NoError(t, err)
+	assert.Equal(t, "s3://bucket/iris", s3.storageURI)
+}
+
+func TestDownloadModelValidatesRedirectTargets(t *testing.T) {
+	tests := []struct {
+		name        string
+		redirectTo  func(serverURL string) string
+		expectedErr error
+	}{
+		{
+			name:        "redirect outside allowlist",
+			redirectTo:  func(serverURL string) string { return serverURL + "/private/secret.bin" },
+			expectedErr: ErrArtifactURINotAllowed,
+		},
+		{
+			name:        "redirect to metadata endpoint",
+			redirectTo:  func(string) string { return "http://metadata.google.internal/computeMetadata/v1/" },
+			expectedErr: ErrArtifactURIBlocked,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			privateHit := false
+			var server *httptest.Server
+			server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				switch {
+				case strings.HasSuffix(r.URL.Path, "/registered_model"):
+					w.Header().Set("Content-Type", "application/json")
+					_, _ = fmt.Fprint(w, `{"id":"1","name":"iris"}`)
+				case strings.HasSuffix(r.URL.Path, "/model_version"):
+					w.Header().Set("Content-Type", "application/json")
+					_, _ = fmt.Fprint(w, `{"id":"2","name":"v1","registeredModelId":"1"}`)
+				case strings.HasSuffix(r.URL.Path, "/model_versions/2/artifacts"):
+					w.Header().Set("Content-Type", "application/json")
+					_, _ = fmt.Fprintf(w, `{"items":[{"artifactType":"model-artifact","id":"3","name":"iris","uri":"%s/models/iris.bin"}],"size":1,"pageSize":100,"nextPageToken":""}`, server.URL)
+				case r.URL.Path == "/models/iris.bin":
+					http.Redirect(w, r, tt.redirectTo(server.URL), http.StatusFound)
+				case r.URL.Path == "/private/secret.bin":
+					privateHit = true
+					_, _ = fmt.Fprint(w, "secret")
+				default:
+					http.NotFound(w, r)
+				}
+			}))
+			defer server.Close()
+
+			cfg := openapi.NewConfiguration()
+			cfg.Host = strings.TrimPrefix(server.URL, "http://")
+			cfg.Scheme = "http"
+			provider, err := NewModelRegistryProvider(openapi.NewAPIClient(cfg), []string{server.URL + "/models/"})
+			assert.NoError(t, err)
+
+			err = provider.DownloadModel(t.TempDir(), "", "model-registry://iris/v1")
+
+			assert.True(t, errors.Is(err, tt.expectedErr), "expected %v, got %v", tt.expectedErr, err)
+			assert.False(t, privateHit, "redirect target outside the allowlist was fetched")
 		})
 	}
 }
